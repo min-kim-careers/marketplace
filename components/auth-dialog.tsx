@@ -5,30 +5,30 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger
 } from '@/components/shadcn/components/ui/dialog'
 import { Input } from '@/components/shadcn/components/ui/input'
 import { Label } from '@/components/shadcn/components/ui/label'
-import { useState } from 'react'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import auth from '@/utils/firebase/auth'
+import Link from 'next/link'
 
 export default function AuthDialog({
-  trigger
+  children
 }: {
-  trigger: React.ReactNode
+  children: React.ReactNode
 }) {
-  const [email, setEmail] = useState<string>('')
-  const [password, setPassword] = useState<string>('')
   const { toast } = useToast()
-  const [isOpen, setOpen] = useState(false)
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    const form = new FormData(e.target as HTMLFormElement)
+    const email = form.get('email') as string
+    const password = form.get('password') as string
+
     if (!email || !password) {
       console.log('Email and password are required')
       toast({
@@ -46,7 +46,6 @@ export default function AuthDialog({
       toast({
         description: 'Login successful'
       })
-      setOpen(false)
     } catch (error) {
       console.error('Error logging in:', error)
       toast({
@@ -56,46 +55,62 @@ export default function AuthDialog({
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
+    <Dialog>
+      <DialogTrigger asChild>{children}</DialogTrigger>
 
       <DialogContent
         onInteractOutside={(e) => e.preventDefault()}
         className="sm:max-w-[425px]"
       >
         <DialogHeader>
-          <DialogTitle>Login</DialogTitle>
+          <DialogTitle className="text-2xl">
+            Login
+          </DialogTitle>
           <DialogDescription>
-            Welcome back!
+            Enter your email below to login to your account
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label className="text-right">Email</Label>
-            <Input
-              onChange={(e) => setEmail(e.target.value)}
-              type="email"
-              value={email}
-              className="col-span-3"
-              required
-            />
+        <form onSubmit={handleSubmit}>
+          <div className="flex flex-col gap-6">
+            <div className="grid gap-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                type="email"
+                name="email"
+                placeholder="m@example.com"
+                required
+              />
+            </div>
+            <div className="grid gap-2">
+              <div className="flex items-center">
+                <Label htmlFor="password">Password</Label>
+                <Link
+                  href="#"
+                  className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                >
+                  Forgot your password?
+                </Link>
+              </div>
+              <Input
+                type="password"
+                name="password"
+                required
+              />
+            </div>
+            <Button type="submit" className="w-full">
+              Login
+            </Button>
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label className="text-right">Password</Label>
-            <Input
-              onChange={(e) => setPassword(e.target.value)}
-              value={password}
-              type="password"
-              className="col-span-3"
-              required
-            />
+          <div className="mt-4 text-center text-sm">
+            Don&apos;t have an account?{' '}
+            <Link
+              href="signup"
+              className="underline underline-offset-4"
+            >
+              Sign up
+            </Link>
           </div>
-        </div>
-        <DialogFooter>
-          <Button type="submit" onClick={handleLogin}>
-            Login
-          </Button>
-        </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   )

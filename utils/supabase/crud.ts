@@ -1,5 +1,5 @@
 import supabase from './client'
-import { Item } from '../../types/Item'
+import { Item } from '../../types/item'
 import { TABLE_NAME } from './config'
 
 // Create
