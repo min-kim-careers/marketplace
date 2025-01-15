@@ -1,11 +1,11 @@
 export interface Item {
-  id: string
+  // id: string
   name: string
   description: string
   price: number
   imageUrl: string
   category: string
-  userId: string
+  userEmail: string
   createdAt: Date
   updatedAt: Date
 }

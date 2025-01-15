@@ -7,7 +7,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
+  DialogTrigger,
 } from '@/components/shadcn/components/ui/dialog'
 import { Input } from '@/components/shadcn/components/ui/input'
 import { Label } from '@/components/shadcn/components/ui/label'
@@ -15,13 +15,15 @@ import { useToast } from '@/components/shadcn/hooks/use-toast'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import auth from '@/utils/firebase/auth'
 import Link from 'next/link'
+import { useState } from 'react'
 
-export default function AuthDialog({
-  children
+export default function LoginDialog({
+  children,
 }: {
   children: React.ReactNode
 }) {
   const { toast } = useToast()
+  const [open, setOpen] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -32,7 +34,7 @@ export default function AuthDialog({
     if (!email || !password) {
       console.log('Email and password are required')
       toast({
-        description: 'Email and password are required'
+        description: 'Email and password are required',
       })
       return
     }
@@ -44,26 +46,26 @@ export default function AuthDialog({
         password
       )
       toast({
-        description: 'Login successful'
+        description: 'Login successful',
       })
     } catch (error) {
       console.error('Error logging in:', error)
       toast({
-        description: 'Error logging in. Please try again.'
+        description: 'Error logging in. Please try again.',
       })
     }
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
 
       <DialogContent
         onInteractOutside={(e) => e.preventDefault()}
-        className="sm:max-w-[425px]"
+        className='sm:max-w-[425px]'
       >
         <DialogHeader>
-          <DialogTitle className="text-2xl">
+          <DialogTitle className='text-2xl'>
             Login
           </DialogTitle>
           <DialogDescription>
@@ -71,41 +73,46 @@ export default function AuthDialog({
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
-          <div className="flex flex-col gap-6">
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
+          <div className='flex flex-col gap-6'>
+            <div className='flex flex-col gap-2'>
+              <Label htmlFor='email'>Email</Label>
               <Input
-                type="email"
-                name="email"
-                placeholder="m@example.com"
+                id='email'
+                type='email'
+                name='email'
+                placeholder='m@example.com'
                 required
               />
             </div>
-            <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
+            <div className='flex flex-col gap-2'>
+              <div className='flex items-center'>
+                <Label htmlFor='password'>Password</Label>
                 <Link
-                  href="#"
-                  className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                  href='#'
+                  className='ml-auto inline-block text-sm underline-offset-4 hover:underline'
                 >
                   Forgot your password?
                 </Link>
               </div>
               <Input
-                type="password"
-                name="password"
+                id='password'
+                type='password'
+                name='password'
                 required
               />
             </div>
-            <Button type="submit" className="w-full">
+            <Button type='submit' className='w-full'>
               Login
             </Button>
           </div>
-          <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{' '}
+          <div className='mt-4 text-center text-sm'>
+            {`Don't have an account? `}
             <Link
-              href="signup"
-              className="underline underline-offset-4"
+              href='signup'
+              className='underline underline-offset-4'
+              onClick={() => {
+                setOpen(false)
+              }}
             >
               Sign up
             </Link>
