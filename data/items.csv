@@ -1,0 +1,11 @@
+id,name,description,price,imageUrl,category,userEmail,createdAt,updatedAt
+037f1e8b-9c2e-4ad0-9ed2-fac62b0885b1,Intel Core i9-11900K,11th Gen Intel Core i9 processor with 8 cores and 16 threads,539.99,https://example.com/intel_i9_11900k.jpg,CPU,a@a.com,2023-10-01 12:00:00+00,2023-10-01 12:00:00+00
+15f446a4-44fc-4508-8def-ba643e2c2e8c,ASUS VG248QE,24-inch gaming monitor with 144Hz refresh rate and 1ms response time,249.99,https://example.com/asus_vg248qe.jpg,Monitor,a@a.com,2023-10-10 12:00:00+00,2023-10-10 12:00:00+00
+18f1cf4f-1210-46e6-b015-b5b543bf336f,Logitech G Pro X,Gaming headset with Blue VO!CE technology,129.99,https://example.com/logitech_g_pro_x.jpg,Peripherals,a@a.com,2023-10-09 12:00:00+00,2023-10-09 12:00:00+00
+24fb0f6c-1c6d-4711-926d-e8db6ac716e3,Cooler Master Hyper 212 EVO,Air CPU cooler with 4 heat pipes and 120mm fan,39.99,https://example.com/cooler_master_hyper_212_evo.jpg,Cooling,a@a.com,2023-10-06 12:00:00+00,2023-10-06 12:00:00+00
+55adb65d-8a54-495d-9f82-650354e2dcbe,NZXT H510,Mid-tower ATX case with tempered glass side panel,69.99,https://example.com/nzxt_h510.jpg,Case,a@a.com,2023-10-08 12:00:00+00,2023-10-08 12:00:00+00
+5c8f8e00-5f35-4298-bedf-62122bdd3df3,Samsung 970 EVO Plus 1TB,NVMe M.2 SSD with read speeds up to 3500MB/s,169.99,https://example.com/samsung_970_evo_plus_1tb.jpg,Storage,a@a.com,2023-10-05 12:00:00+00,2023-10-05 12:00:00+00
+8a1e02c5-b46c-480a-9a85-8d4ef7f38501,ASUS ROG Strix Z590-E,Gaming motherboard with Intel Z590 chipset,379.99,https://example.com/asus_rog_strix_z590e.jpg,Motherboard,a@a.com,2023-10-03 12:00:00+00,2023-10-03 12:00:00+00
+af48fce7-f5ce-480d-a3f7-84f0019a66b2,NVIDIA GeForce RTX 3080,High-end graphics card with 10GB GDDR6X memory,699.99,https://example.com/rtx_3080.jpg,GPU,a@a.com,2023-10-02 12:00:00+00,2023-10-02 12:00:00+00
+ed7c432e-4ca3-4e9f-81c1-2749d0ac18b2,Corsair Vengeance LPX 32GB,High-performance DDR4 memory kit with 3200MHz speed,159.99,https://example.com/corsair_vengeance_lpx_32gb.jpg,RAM,a@a.com,2023-10-04 12:00:00+00,2023-10-04 12:00:00+00
+fbecac4d-28d5-489b-972b-23340ab5a818,EVGA SuperNOVA 850 G5,850W fully modular power supply with 80+ Gold certification,139.99,https://example.com/evga_supernova_850_g5.jpg,PSU,a@a.com,2023-10-07 12:00:00+00,2023-10-07 12:00:00+00

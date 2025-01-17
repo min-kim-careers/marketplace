@@ -1,13 +1,13 @@
 'use client'
 
-import Link from 'next/link'
-import { Button } from './shadcn/components/ui/button'
-import LoginDialog from './login-dialog'
-import { toast } from './shadcn/hooks/use-toast'
 import useAuthStore from '@/store/auth-store'
+import Link from 'next/link'
+import { AuthDialog } from './auth-dialog'
+import { Button } from './shadcn/components/ui/button'
+import { toast } from './shadcn/hooks/use-toast'
 
 export default function NavBar() {
-  const { firebaseUser: user, logout } = useAuthStore()
+  const { user: user, logout } = useAuthStore()
 
   const handleLogout = () => {
     logout()
@@ -16,23 +16,28 @@ export default function NavBar() {
     })
   }
 
+  const LoggedIn = () => (
+    <span className='flex gap-4'>
+      <Button>Post Ad</Button>
+      <Button onClick={handleLogout}>Logout</Button>
+    </span>
+  )
+
+  const LoggedOut = () => (
+    <span>
+      <AuthDialog />
+    </span>
+  )
+
   return (
-    <nav className='flex w-full justify-between p-2'>
+    <nav className='flex w-full justify-between p-4 pb-2'>
       <Link href='/' className='text-2xl font-bold'>
         Marketplace
       </Link>
 
-      <ul className='flex gap-4'>
-        <li>
-          {user ? (
-            <Button onClick={handleLogout}>Logout</Button>
-          ) : (
-            <LoginDialog>
-              <Button>Login</Button>
-            </LoginDialog>
-          )}
-        </li>
-      </ul>
+      <span className='flex gap-4'>
+        {user ? <LoggedIn /> : <LoggedOut />}
+      </span>
     </nav>
   )
 }

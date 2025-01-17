@@ -7,41 +7,62 @@ import {
 import auth from '@/utils/firebase/auth'
 import { User as SupabaseUser } from '@/utils/supabase/types/user'
 import { getUserByEmail } from '@/utils/supabase/crud/user'
-import { setUserInCache } from '@/utils/cache'
+
+const USER_CACHE_KEY = 'user'
 
 interface AuthState {
-  firebaseUser: FirebaseUser | null
-  supabaseUser: SupabaseUser | null
+  user: FirebaseUser | null
+  profile: SupabaseUser | null
   logout: () => Promise<void>
 }
 
-// const useAuthStore = create<AuthState>((set) => {
+const useAuthStore = create<AuthState>((set) => {
   onAuthStateChanged(auth, async (user) => {
-    set({ firebaseUser: user })
-    console.log('firebaseUser loaded')
+    if (!user) return
+
+    set({ user })
+    console.log('user authenticated')
 
     if (user && user.email) {
-      let userProfile: SupabaseUser =
-        await getUserByEmail(user.email)
-
-      if (userProfile) {
-        setUserInCache(user.email, userProfile)
-        console.log('user cached')
+      const cachedUser =
+        localStorage.getItem(USER_CACHE_KEY)
+      if (cachedUser) {
+        const profile: SupabaseUser = JSON.parse(cachedUser)
+        set({ profile })
+        console.log('profile loaded from cache')
+        return
       }
-      
-      set({ supabaseUser: userProfile })
-      console.log('supabaseUser loaded')
+
+      const profile: SupabaseUser = await getUserByEmail(
+        user.email,
+      )
+
+      if (profile) {
+        localStorage.setItem(
+          USER_CACHE_KEY,
+          JSON.stringify(profile),
+        )
+        console.log('profile cached')
+      }
+
+      set({ profile })
+      console.log('profile loaded')
     }
+
+    set({ user: null, profile: null })
   })
 
   const logout = async () => {
+    localStorage.removeItem(USER_CACHE_KEY)
+    console.log('userProfile cache cleared')
     await signOut(auth)
-    set({ firebaseUser: null, supabaseUser: null })
+    console.log('user logged out')
+    set({ user: null, profile: null })
   }
 
   return {
-    firebaseUser: null,
-    supabaseUser: null,
+    user: null,
+    profile: null,
     logout,
   }
 })

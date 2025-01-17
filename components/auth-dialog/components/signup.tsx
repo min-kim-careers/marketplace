@@ -17,11 +17,9 @@ import {
   createUserWithEmailAndPassword as createFirebaseUser,
   deleteUser as deleteFirebaseUser,
 } from 'firebase/auth'
-import { useRouter } from 'next/navigation'
 
-export default function SignupPage() {
+export default function Signup() {
   const { toast } = useToast()
-  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -67,7 +65,6 @@ export default function SignupPage() {
       toast({
         description: 'Signup successful',
       })
-      router.push('/')
     } catch (error) {
       if (userCredential) {
         await deleteFirebaseUser(userCredential.user)

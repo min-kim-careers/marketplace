@@ -2,28 +2,21 @@
 
 import { Button } from '@/components/shadcn/components/ui/button'
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/shadcn/components/ui/dialog'
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/shadcn/components/ui/card'
 import { Input } from '@/components/shadcn/components/ui/input'
 import { Label } from '@/components/shadcn/components/ui/label'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import auth from '@/utils/firebase/auth'
 import Link from 'next/link'
-import { useState } from 'react'
 
-export default function LoginDialog({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function Login() {
   const { toast } = useToast()
-  const [open, setOpen] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -43,7 +36,7 @@ export default function LoginDialog({
       await signInWithEmailAndPassword(
         auth,
         email,
-        password
+        password,
       )
       toast({
         description: 'Login successful',
@@ -57,21 +50,14 @@ export default function LoginDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-
-      <DialogContent
-        onInteractOutside={(e) => e.preventDefault()}
-        className='sm:max-w-[425px]'
-      >
-        <DialogHeader>
-          <DialogTitle className='text-2xl'>
-            Login
-          </DialogTitle>
-          <DialogDescription>
-            Enter your email below to login to your account
-          </DialogDescription>
-        </DialogHeader>
+    <Card>
+      <CardHeader>
+        <CardTitle className='text-2xl'>Login</CardTitle>
+        <CardDescription>
+          Enter your email below to login to your account
+        </CardDescription>
+      </CardHeader>
+      <CardContent className='sm:max-w-[425px]'>
         <form onSubmit={handleSubmit}>
           <div className='flex flex-col gap-6'>
             <div className='flex flex-col gap-2'>
@@ -110,15 +96,13 @@ export default function LoginDialog({
             <Link
               href='signup'
               className='underline underline-offset-4'
-              onClick={() => {
-                setOpen(false)
-              }}
+              onClick={() => {}}
             >
               Sign up
             </Link>
           </div>
         </form>
-      </DialogContent>
-    </Dialog>
+      </CardContent>
+    </Card>
   )
 }
