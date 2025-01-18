@@ -17,7 +17,7 @@ export default function Home() {
       ) : (
         <p>You are not logged in</p>
       )}
-      <Link href='parts'>
+      <Link href='market'>
         <Button>Browse parts</Button>
       </Link>
     </div>

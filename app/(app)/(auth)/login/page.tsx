@@ -11,14 +11,11 @@ import {
 import { Input } from '@/components/shadcn/components/ui/input'
 import { Label } from '@/components/shadcn/components/ui/label'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
+import { signInWithEmailAndPassword } from 'firebase/auth'
 import auth from '@/utils/firebase/auth'
-import { createUser as createSupabaseUser } from '@/utils/supabase/crud/user'
-import {
-  createUserWithEmailAndPassword as createFirebaseUser,
-  deleteUser as deleteFirebaseUser,
-} from 'firebase/auth'
+import Link from 'next/link'
 
-export default function Signup() {
+export default function LoginPage() {
   const { toast } = useToast()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -26,52 +23,28 @@ export default function Signup() {
     const form = new FormData(e.target as HTMLFormElement)
     const email = form.get('email') as string
     const password = form.get('password') as string
-    const handle = form.get('handle') as string
 
-    if (!email || !password || !handle) {
-      console.log(
-        'Email, password, and handle are required',
-      )
+    if (!email || !password) {
+      console.log('Email and password are required')
       toast({
-        description:
-          'Email, password, and handle are required',
+        description: 'Email and password are required',
       })
       return
     }
 
-    let userCredential
-
     try {
-      userCredential = await createFirebaseUser(
+      await signInWithEmailAndPassword(
         auth,
         email,
         password,
       )
-    } catch (error) {
-      console.error('Error signing up:', error)
       toast({
-        description: 'Error signing up. Please try again.',
-      })
-      return
-    }
-
-    try {
-      await createSupabaseUser({
-        email,
-        handle,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      })
-      toast({
-        description: 'Signup successful',
+        description: 'Login successful',
       })
     } catch (error) {
-      if (userCredential) {
-        await deleteFirebaseUser(userCredential.user)
-      }
-      console.error('Error signing up:', error)
+      console.error('Error logging in:', error)
       toast({
-        description: 'Error signing up. Please try again.',
+        description: 'Error logging in. Please try again.',
       })
     }
   }
@@ -79,9 +52,9 @@ export default function Signup() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className='text-2xl'>Sign Up</CardTitle>
+        <CardTitle className='text-2xl'>Login</CardTitle>
         <CardDescription>
-          Fill in the form below to create an account.
+          Enter your email below to login to your account
         </CardDescription>
       </CardHeader>
       <CardContent className='sm:max-w-[425px]'>
@@ -97,9 +70,16 @@ export default function Signup() {
                 required
               />
             </div>
-
             <div className='flex flex-col gap-2'>
-              <Label htmlFor='password'>Password</Label>
+              <div className='flex items-center'>
+                <Label htmlFor='password'>Password</Label>
+                <Link
+                  href='#'
+                  className='ml-auto inline-block text-sm underline-offset-4 hover:underline'
+                >
+                  Forgot your password?
+                </Link>
+              </div>
               <Input
                 id='password'
                 type='password'
@@ -107,20 +87,19 @@ export default function Signup() {
                 required
               />
             </div>
-
-            <div className='flex flex-col gap-2'>
-              <Label htmlFor='handle'>Handle</Label>
-              <Input
-                id='handle'
-                type='text'
-                name='handle'
-                placeholder='PcMasterRace'
-                required
-              />
-            </div>
             <Button type='submit' className='w-full'>
-              Create Account
+              Login
             </Button>
+          </div>
+          <div className='mt-4 text-center text-sm'>
+            {`Don't have an account? `}
+            <Link
+              href='auth/signup'
+              className='underline underline-offset-4'
+              onClick={() => {}}
+            >
+              Sign up
+            </Link>
           </div>
         </form>
       </CardContent>

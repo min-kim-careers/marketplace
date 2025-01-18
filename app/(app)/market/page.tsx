@@ -28,7 +28,7 @@ import { Item } from '@/utils/supabase/types/item'
 import { Grip, Menu, Search } from 'lucide-react'
 import { useState } from 'react'
 
-export default function PartsPage() {
+export default function MarketPage() {
   const [columns, setColumns] = useState(3)
 
   const items: Item[] = itemJson.map((item) => ({

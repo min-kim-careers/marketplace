@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import '@/app/globals.css'
 import { Toaster } from '@/components/shadcn/components/ui/toaster'
-import NavBar from '@/components/nav-bar'
+import Navbar from '@/components/navbar'
 import Footer from '@/components/footer'
 
 const geistSans = Geist({
@@ -32,7 +32,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <div className='flex min-h-screen flex-col items-center justify-between font-[family-name:var(--font-geist-sans)]'>
-          <NavBar />
+          <Navbar />
           {children}
           <Footer />
         </div>

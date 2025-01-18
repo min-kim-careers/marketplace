@@ -2,12 +2,11 @@
 
 import useAuthStore from '@/store/auth-store'
 import Link from 'next/link'
-import { AuthDialog } from './auth-dialog'
 import { Button } from './shadcn/components/ui/button'
 import { toast } from './shadcn/hooks/use-toast'
 
-export default function NavBar() {
-  const { user: user, logout } = useAuthStore()
+export default function Navbar() {
+  const { user, logout } = useAuthStore()
 
   const handleLogout = () => {
     logout()
@@ -18,26 +17,34 @@ export default function NavBar() {
 
   const LoggedIn = () => (
     <span className='flex gap-4'>
-      <Button>Post Ad</Button>
+      <Button>
+        <Link href='/market'>Browse</Link>
+      </Button>
+      <Button>
+        <Link href='/market/post'>Post Ad</Link>
+      </Button>
       <Button onClick={handleLogout}>Logout</Button>
     </span>
   )
 
   const LoggedOut = () => (
-    <span>
-      <AuthDialog />
+    <span className='flex gap-4'>
+      <Link href='/login'>
+        <Button>Login</Button>
+      </Link>
+      <Link href='/signup'>
+        <Button>Signup</Button>
+      </Link>
     </span>
   )
 
   return (
-    <nav className='flex w-full justify-between p-4 pb-2'>
+    <nav className='flex w-full items-center justify-between p-4 pb-2'>
       <Link href='/' className='text-2xl font-bold'>
         Marketplace
       </Link>
 
-      <span className='flex gap-4'>
-        {user ? <LoggedIn /> : <LoggedOut />}
-      </span>
+      {user ? <LoggedIn /> : <LoggedOut />}
     </nav>
   )
 }
