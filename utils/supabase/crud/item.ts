@@ -1,27 +1,27 @@
-import client from '../client'
+import supabase from '../config'
 import { Item } from '../types/item'
 
-const ITEMS_TABLE = 'items'
+const TABLE_NAME = 'items'
 
 export const getItems = async () => {
-  const { data: result, error } = await client
-    .from(ITEMS_TABLE)
+  const { data: result, error } = await supabase
+    .from(TABLE_NAME)
     .select('*')
   if (error) throw error
   return result
 }
 
 export const createItem = async (data: Item) => {
-  const { data: result, error } = await client
-    .from(ITEMS_TABLE)
+  const { data: result, error } = await supabase
+    .from(TABLE_NAME)
     .insert([data])
   if (error) throw error
   return result
 }
 
 export const getItem = async (id: string) => {
-  const { data: result, error } = await client
-    .from(ITEMS_TABLE)
+  const { data: result, error } = await supabase
+    .from(TABLE_NAME)
     .select('*')
     .eq('id', id)
     .single()
@@ -33,8 +33,8 @@ export const updateItem = async (
   id: string,
   data: Partial<Item>
 ) => {
-  const { data: result, error } = await client
-    .from(ITEMS_TABLE)
+  const { data: result, error } = await supabase
+    .from(TABLE_NAME)
     .update(data)
     .eq('id', id)
   if (error) throw error
@@ -42,8 +42,8 @@ export const updateItem = async (
 }
 
 export const deleteItem = async (id: string) => {
-  const { data: result, error } = await client
-    .from(ITEMS_TABLE)
+  const { data: result, error } = await supabase
+    .from(TABLE_NAME)
     .delete()
     .eq('id', id)
   if (error) throw error

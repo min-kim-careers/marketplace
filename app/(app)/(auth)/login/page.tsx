@@ -12,7 +12,7 @@ import { Input } from '@/components/shadcn/components/ui/input'
 import { Label } from '@/components/shadcn/components/ui/label'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
 import { signInWithEmailAndPassword } from 'firebase/auth'
-import auth from '@/utils/firebase/auth'
+import firebase from '@/utils/firebase/config'
 import Link from 'next/link'
 
 export default function LoginPage() {
@@ -34,7 +34,7 @@ export default function LoginPage() {
 
     try {
       await signInWithEmailAndPassword(
-        auth,
+        firebase,
         email,
         password,
       )

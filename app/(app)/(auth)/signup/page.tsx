@@ -11,8 +11,8 @@ import {
 import { Input } from '@/components/shadcn/components/ui/input'
 import { Label } from '@/components/shadcn/components/ui/label'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
-import auth from '@/utils/firebase/auth'
-import { createUser as createSupabaseUser } from '@/utils/supabase/crud/user'
+import firebase from '@/utils/firebase/config'
+import { createProfile as createSupabaseUser } from '@/utils/supabase/crud/profile'
 import {
   createUserWithEmailAndPassword as createFirebaseUser,
   deleteUser as deleteFirebaseUser,
@@ -43,10 +43,11 @@ export default function SignupPage() {
 
     try {
       userCredential = await createFirebaseUser(
-        auth,
+        firebase,
         email,
         password,
       )
+      firebase.signOut()
     } catch (error) {
       console.error('Error signing up:', error)
       toast({
@@ -57,6 +58,7 @@ export default function SignupPage() {
 
     try {
       await createSupabaseUser({
+        uid: userCredential.user.uid,
         email,
         handle,
         createdAt: new Date(),

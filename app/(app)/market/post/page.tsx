@@ -12,7 +12,7 @@ import { Input } from '@/components/shadcn/components/ui/input'
 import { Label } from '@/components/shadcn/components/ui/label'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
 import { signInWithEmailAndPassword } from 'firebase/auth'
-import auth from '@/utils/firebase/auth'
+import firebase from '@/utils/firebase/config'
 import Link from 'next/link'
 
 export default function PostPage() {
@@ -34,7 +34,7 @@ export default function PostPage() {
 
     try {
       await signInWithEmailAndPassword(
-        auth,
+        firebase,
         email,
         password,
       )
@@ -87,18 +87,8 @@ export default function PostPage() {
               />
             </div>
             <Button type='submit' className='w-full'>
-              Login
+              Post Ad
             </Button>
-          </div>
-          <div className='mt-4 text-center text-sm'>
-            {`Don't have an account? `}
-            <Link
-              href='auth/signup'
-              className='underline underline-offset-4'
-              onClick={() => {}}
-            >
-              Sign up
-            </Link>
           </div>
         </form>
       </CardContent>

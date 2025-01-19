@@ -1,5 +1,5 @@
-export interface User {
-    // id: string
+export interface Profile {
+    uid: string
     handle: string
     email: string
     createdAt: Date
