@@ -11,15 +11,18 @@ import {
 import { Input } from '@/components/shadcn/components/ui/input'
 import { Label } from '@/components/shadcn/components/ui/label'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
+import { ROUTES } from '@/constants/routes'
 import firebase from '@/utils/firebase/config'
 import { createProfile as createSupabaseUser } from '@/utils/supabase/crud/profile'
 import {
   createUserWithEmailAndPassword as createFirebaseUser,
   deleteUser as deleteFirebaseUser,
 } from 'firebase/auth'
+import { useRouter } from 'next/navigation'
 
 export default function SignupPage() {
   const { toast } = useToast()
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -76,6 +79,8 @@ export default function SignupPage() {
         description: 'Error signing up. Please try again.',
       })
     }
+
+    router.push(ROUTES.HOME)
   }
 
   return (

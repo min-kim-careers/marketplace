@@ -23,41 +23,35 @@ const useAuthStore = create<AuthState>((set) => {
     set({ user })
     console.log('user authenticated')
 
-    if (user && user.email) {
-      const cachedUser = localStorage.getItem(
-        PROFILE_CACHE_KEY,
-      )
-      if (cachedUser) {
-        const profile: ProfileCache = JSON.parse(cachedUser)
-        set({ profile })
-        console.log('profile loaded from cache')
-        return
-      }
+    const cache = localStorage.getItem(PROFILE_CACHE_KEY)
 
-      const profileCache: ProfileCache = await getProfileCache(
-        user.uid
-      )
-
-      if (profileCache) {
-        localStorage.setItem(
-          PROFILE_CACHE_KEY,
-          JSON.stringify(profileCache),
-        )
-        console.log('profile cached')
-      }
-
+    if (cache) {
+      const profileCache: ProfileCache = JSON.parse(cache)
       set({ profile: profileCache })
-      console.log('profile loaded')
+      console.log('profile loaded from cache')
+      return
     }
 
-    set({ user: null, profile: null })
+    const profileCache: ProfileCache =
+      await getProfileCache(user.uid)
+
+    if (profileCache) {
+      localStorage.setItem(
+        PROFILE_CACHE_KEY,
+        JSON.stringify(profileCache),
+      )
+      console.log('profile cached')
+    }
+
+    set({ profile: profileCache })
+    console.log('profile loaded')
   })
 
   const logout = async () => {
     localStorage.removeItem(PROFILE_CACHE_KEY)
-    console.log('userProfile cache cleared')
+    console.log('profile cache cleared')
     await signOut(firebase)
-    console.log('user logged out')
+    console.log('user signed out')
     set({ user: null, profile: null })
   }
 

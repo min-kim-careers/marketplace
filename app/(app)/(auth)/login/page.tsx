@@ -14,9 +14,12 @@ import { useToast } from '@/components/shadcn/hooks/use-toast'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import firebase from '@/utils/firebase/config'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { ROUTES } from '@/constants/routes'
 
 export default function LoginPage() {
   const { toast } = useToast()
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -47,6 +50,8 @@ export default function LoginPage() {
         description: 'Error logging in. Please try again.',
       })
     }
+
+    router.push(ROUTES.HOME)
   }
 
   return (

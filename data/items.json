@@ -7,7 +7,7 @@
     "imageUrl": "https://example.com/intel_i9_11900k.jpg",
     "category": "CPU",
     "userEmail": "a@a.com",
-    "userHandle": "pcm",
+    "userHandle": "randomhandle",
     "createdAt": "2023-10-01 12:00:00+00",
     "updatedAt": "2023-10-01 12:00:00+00"
   },
@@ -19,7 +19,7 @@
     "imageUrl": "https://example.com/asus_vg248qe.jpg",
     "category": "Monitor",
     "userEmail": "a@a.com",
-    "userHandle": "pcm",
+    "userHandle": "randomhandle",
     "createdAt": "2023-10-10 12:00:00+00",
     "updatedAt": "2023-10-10 12:00:00+00"
   },
@@ -31,7 +31,7 @@
     "imageUrl": "https://example.com/logitech_g_pro_x.jpg",
     "category": "Peripherals",
     "userEmail": "a@a.com",
-    "userHandle": "pcm",
+    "userHandle": "randomhandle",
     "createdAt": "2023-10-09 12:00:00+00",
     "updatedAt": "2023-10-09 12:00:00+00"
   },
@@ -43,7 +43,7 @@
     "imageUrl": "https://example.com/cooler_master_hyper_212_evo.jpg",
     "category": "Cooling",
     "userEmail": "a@a.com",
-    "userHandle": "pcm",
+    "userHandle": "randomhandle",
     "createdAt": "2023-10-06 12:00:00+00",
     "updatedAt": "2023-10-06 12:00:00+00"
   },
@@ -55,7 +55,7 @@
     "imageUrl": "https://example.com/nzxt_h510.jpg",
     "category": "Case",
     "userEmail": "a@a.com",
-    "userHandle": "pcm",
+    "userHandle": "randomhandle",
     "createdAt": "2023-10-08 12:00:00+00",
     "updatedAt": "2023-10-08 12:00:00+00"
   },
@@ -67,7 +67,7 @@
     "imageUrl": "https://example.com/samsung_970_evo_plus_1tb.jpg",
     "category": "Storage",
     "userEmail": "a@a.com",
-    "userHandle": "pcm",
+    "userHandle": "randomhandle",
     "createdAt": "2023-10-05 12:00:00+00",
     "updatedAt": "2023-10-05 12:00:00+00"
   },
@@ -79,7 +79,7 @@
     "imageUrl": "https://example.com/asus_rog_strix_z590e.jpg",
     "category": "Motherboard",
     "userEmail": "a@a.com",
-    "userHandle": "pcm",
+    "userHandle": "randomhandle",
     "createdAt": "2023-10-03 12:00:00+00",
     "updatedAt": "2023-10-03 12:00:00+00"
   },
@@ -91,7 +91,7 @@
     "imageUrl": "https://example.com/rtx_3080.jpg",
     "category": "GPU",
     "userEmail": "a@a.com",
-    "userHandle": "pcm",
+    "userHandle": "randomhandle",
     "createdAt": "2023-10-02 12:00:00+00",
     "updatedAt": "2023-10-02 12:00:00+00"
   },
@@ -103,7 +103,7 @@
     "imageUrl": "https://example.com/corsair_vengeance_lpx_32gb.jpg",
     "category": "RAM",
     "userEmail": "a@a.com",
-    "userHandle": "pcm",
+    "userHandle": "randomhandle",
     "createdAt": "2023-10-04 12:00:00+00",
     "updatedAt": "2023-10-04 12:00:00+00"
   },
@@ -115,7 +115,7 @@
     "imageUrl": "https://example.com/evga_supernova_850_g5.jpg",
     "category": "PSU",
     "userEmail": "a@a.com",
-    "userHandle": "pcm",
+    "userHandle": "randomhandle",
     "createdAt": "2023-10-07 12:00:00+00",
     "updatedAt": "2023-10-07 12:00:00+00"
   }
