@@ -3,36 +3,35 @@ interface Location {
   state: string
 }
 
-type Condition =
-  | 'new'
-  | 'used'
-  | 'refurbished'
-  | 'defective'
+// type Condition =
+//   | 'new'
+//   | 'used'
+//   | 'refurbished'
+//   | 'defective'
 
-type Category =
-  | 'CPU'
-  | 'GPU'
-  | 'RAM'
-  | 'Motherboard'
-  | 'PSU'
-  | 'Storage'
-  | 'Case'
-  | 'Cooling'
-  | 'Monitor'
-  | 'Peripheral'
-  | 'Software'
-  | 'Other'
+// type Category =
+//   | 'CPU'
+//   | 'GPU'
+//   | 'RAM'
+//   | 'Motherboard'
+//   | 'PSU'
+//   | 'Storage'
+//   | 'Case'
+//   | 'Cooling'
+//   | 'Monitor'
+//   | 'Peripheral'
+//   | 'Software'
+//   | 'Other'
 
 export interface Item {
   name: string
   description: string
   price: number
-  imageUrl: string
-  category: Category
-  userEmail: string
-  userHandle: string
+  image_url: string
+  category: string
+  profile_id: string
+  created_at: Date
+  updated_at: Date
   location: Location
-  condition: Condition
-  createdAt: Date
-  updatedAt: Date
+  condition: string
 }

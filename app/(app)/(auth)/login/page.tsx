@@ -99,7 +99,7 @@ export default function LoginPage() {
           <div className='mt-4 text-center text-sm'>
             {`Don't have an account? `}
             <Link
-              href='auth/signup'
+              href={ROUTES.SIGNUP}
               className='underline underline-offset-4'
               onClick={() => {}}
             >

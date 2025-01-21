@@ -33,14 +33,14 @@ export default function MarketPage() {
 
   const items: Item[] = itemJson.map((item) => ({
     ...item,
-    createdAt: new Date(item.createdAt),
-    updatedAt: new Date(item.updatedAt),
+    created_at: new Date(item.created_at),
+    updated_at: new Date(item.updated_at),
   }))
 
   return (
     <div className='flex min-w-full flex-col gap-4 p-4'>
       <Card className='flex items-center justify-evenly p-2'>
-        <span className='flex gap-2 w-1/3'>
+        <span className='flex w-1/3 gap-2'>
           <Input placeholder='Search' />
           <Button>
             <Search />
@@ -84,9 +84,9 @@ export default function MarketPage() {
           gridTemplateColumns: `repeat(${columns}, 1fr)`,
         }}
       >
-        {items.map((item) => (
+        {items.map((item: Item, i) => (
           <Card
-            key={item.id}
+            key={i}
             className='flex h-full w-full flex-col'
           >
             <CardHeader className='flex-1'>
@@ -95,7 +95,7 @@ export default function MarketPage() {
               </CardTitle>
               <CardDescription className='line-clamp-1'>
                 <div className='flex justify-between'>
-                  <p>User: {item.userHandle}</p>
+                  <p>User: {item.profile_id}</p>
                   {/* <p>{item.createdAt.toISOString()}</p> */}
                 </div>
               </CardDescription>

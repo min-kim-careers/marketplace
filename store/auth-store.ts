@@ -1,5 +1,6 @@
 import firebase from '@/utils/firebase/config'
-import { getProfileCache as getProfileCache } from '@/utils/supabase/crud/profile'
+import { setSession } from '@/utils/supabase/config'
+import { getProfileCache } from '@/utils/supabase/crud/profile'
 import { ProfileCache } from '@/utils/supabase/types/cache'
 import {
   User,
@@ -9,6 +10,7 @@ import {
 import { create } from 'zustand'
 
 const PROFILE_CACHE_KEY = 'profile'
+const SESSION_SET_KEY = 'session_set'
 
 interface AuthState {
   user: User | null
@@ -23,8 +25,16 @@ const useAuthStore = create<AuthState>((set) => {
     set({ user })
     console.log('user authenticated')
 
-    const cache = localStorage.getItem(PROFILE_CACHE_KEY)
+    const sessionSet = localStorage.getItem(SESSION_SET_KEY)
+    if (sessionSet) {
+      console.log('session already set')
+    } else {
+      await setSession(user.uid)
+      localStorage.setItem(SESSION_SET_KEY, 'true')
+      console.log('session set successfully')
+    }
 
+    const cache = localStorage.getItem(PROFILE_CACHE_KEY)
     if (cache) {
       const profileCache: ProfileCache = JSON.parse(cache)
       set({ profile: profileCache })
@@ -34,7 +44,6 @@ const useAuthStore = create<AuthState>((set) => {
 
     const profileCache: ProfileCache =
       await getProfileCache(user.uid)
-
     if (profileCache) {
       localStorage.setItem(
         PROFILE_CACHE_KEY,
@@ -49,6 +58,8 @@ const useAuthStore = create<AuthState>((set) => {
 
   const logout = async () => {
     localStorage.removeItem(PROFILE_CACHE_KEY)
+    console.log('session flag cleared')
+    localStorage.removeItem(SESSION_SET_KEY)
     console.log('profile cache cleared')
     await signOut(firebase)
     console.log('user signed out')

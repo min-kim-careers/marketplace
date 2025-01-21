@@ -64,8 +64,8 @@ export default function SignupPage() {
         uid: userCredential.user.uid,
         email,
         handle,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        created_at: new Date(),
+        updated_at: new Date(),
       })
       toast({
         description: 'Signup successful',

@@ -30,7 +30,7 @@ export const getProfileCache = async (uid: string): Promise<ProfileCache> => {
   return {
     handle: data.handle,
     email: data.email,
-    createdAt: new Date(data.createdAt),
-    updatedAt: new Date(data.updatedAt),
+    created_at: new Date(data.createdAt),
+    updated_at: new Date(data.updatedAt),
   }
 }

@@ -12,24 +12,13 @@ import { Input } from '@/components/shadcn/components/ui/input'
 import { Label } from '@/components/shadcn/components/ui/label'
 import { Textarea } from '@/components/shadcn/components/ui/textarea'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
-import { ROUTES } from '@/constants/routes'
-import { useRouter } from 'next/navigation'
-// import { useToast } from '@/components/shadcn/hooks/use-toast'
-
-export const mockItem = {
-  name: 'Sample Item',
-  price: '100',
-  imageUrl: 'https://via.placeholder.com/150',
-  category: 'Electronics',
-  location: 'New York, NY',
-  condition: 'New',
-  description:
-    'This is a sample item for testing purposes.',
-}
+import { insertItem } from '@/utils/supabase/crud/item'
+// import { ROUTES } from '@/constants/routes'
+// import { useRouter } from 'next/navigation'
 
 export default function PostPage() {
   const { toast } = useToast()
-  const router = useRouter()
+  // const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -62,24 +51,34 @@ export default function PostPage() {
     //   return
     // }
 
-    console.log('Post ad:', {
-      name,
-      price,
-      imageUrl,
-      category,
-      location,
-      condition,
-      description,
-    })
+    const mockItem = {
+      name: 'AMD Ryzen 9 5900X',
+      description:
+        '12-core, 24-thread unlocked desktop processor',
+      price: 499.99,
+      image_url:
+        'https://example.com/amd_ryzen_9_5900x.jpg',
+      category: 'CPU',
+      profile_id: '0e141d61-4d0a-479d-9041-ef5062ea47fb',
+      created_at: new Date(),
+      updated_at: new Date(),
+      location: {
+        suburb: 'Melbourne',
+        state: 'VIC',
+      },
+      condition: 'New',
+    }
 
-    console.log('Mock item:', mockItem)
+    await insertItem(mockItem)
 
     // router.push(ROUTES.MARKET)
   }
 
-  const gridStyle = 'grid grid-cols-3 items-center gap-2'
-  const labelStyle = 'col-span-1'
-  const inputStyle = 'col-span-2'
+  const styles = {
+    field: 'grid grid-cols-3 items-center gap-2',
+    label: 'col-span-1',
+    input: 'col-span-2',
+  }
 
   return (
     <Card>
@@ -92,95 +91,101 @@ export default function PostPage() {
       <CardContent className='sm:max-w-[425px]'>
         <form onSubmit={handleSubmit}>
           <div className='flex flex-col gap-4'>
-            <div className={gridStyle}>
-              <Label className={labelStyle} htmlFor='name'>
+            <div className={styles.field}>
+              <Label
+                className={styles.label}
+                htmlFor='name'
+              >
                 Name
               </Label>
               <Input
-                className={inputStyle}
+                className={styles.input}
                 id='name'
                 type='text'
                 name='name'
               />
             </div>
 
-            <div className={gridStyle}>
-              <Label className={labelStyle} htmlFor='price'>
+            <div className={styles.field}>
+              <Label
+                className={styles.label}
+                htmlFor='price'
+              >
                 Price
               </Label>
               <Input
-                className={inputStyle}
+                className={styles.input}
                 id='price'
                 type='number'
                 name='price'
               />
             </div>
-            <div className={gridStyle}>
+            <div className={styles.field}>
               <Label
-                className={labelStyle}
+                className={styles.label}
                 htmlFor='imageUrl'
               >
                 Image URL
               </Label>
               <Input
-                className={inputStyle}
+                className={styles.input}
                 id='imageUrl'
                 type='url'
                 name='imageUrl'
               />
             </div>
-            <div className={gridStyle}>
+            <div className={styles.field}>
               <Label
-                className={labelStyle}
+                className={styles.label}
                 htmlFor='category'
               >
                 Category
               </Label>
               <Input
-                className={inputStyle}
+                className={styles.input}
                 id='category'
                 type='text'
                 name='category'
               />
             </div>
-            <div className={gridStyle}>
+            <div className={styles.field}>
               <Label
-                className={labelStyle}
+                className={styles.label}
                 htmlFor='location'
               >
                 Location
               </Label>
               <Input
-                className={inputStyle}
+                className={styles.input}
                 id='location'
                 type='text'
                 name='location'
               />
             </div>
-            <div className={gridStyle}>
+            <div className={styles.field}>
               <Label
-                className={labelStyle}
+                className={styles.label}
                 htmlFor='condition'
               >
                 Condition
               </Label>
               <Input
-                className={inputStyle}
+                className={styles.input}
                 id='condition'
                 type='text'
                 name='condition'
               />
             </div>
 
-            <div className={gridStyle}>
+            <div className={styles.field}>
               <Label
-                className={labelStyle}
+                className={styles.label}
                 htmlFor='description'
               >
                 Description
               </Label>
               <Textarea
-                className={inputStyle}
+                className={styles.input}
                 id='description'
                 name='description'
               />
