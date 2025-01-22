@@ -11,11 +11,10 @@ import {
 import { Input } from '@/components/shadcn/components/ui/input'
 import { Label } from '@/components/shadcn/components/ui/label'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
-import { signInWithEmailAndPassword } from 'firebase/auth'
-import firebase from '@/utils/firebase/config'
+import { ROUTES } from '@/constants/routes'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { ROUTES } from '@/constants/routes'
+import { login } from '../actions'
 
 export default function LoginPage() {
   const { toast } = useToast()
@@ -24,33 +23,18 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const form = new FormData(e.target as HTMLFormElement)
-    const email = form.get('email') as string
-    const password = form.get('password') as string
 
-    if (!email || !password) {
-      console.log('Email and password are required')
-      toast({
-        description: 'Email and password are required',
-      })
-      return
-    }
+    const error = login(form)
 
-    try {
-      await signInWithEmailAndPassword(
-        firebase,
-        email,
-        password,
-      )
+    if (error) {
       toast({
-        description: 'Login successful',
-      })
-    } catch (error) {
-      console.error('Error logging in:', error)
-      toast({
-        description: 'Error logging in. Please try again.',
+        description: error,
       })
     }
 
+    toast({
+      description: 'Logged in successfully',
+    })
     router.push(ROUTES.HOME)
   }
 

@@ -12,13 +12,8 @@ import { Input } from '@/components/shadcn/components/ui/input'
 import { Label } from '@/components/shadcn/components/ui/label'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
 import { ROUTES } from '@/constants/routes'
-import firebase from '@/utils/firebase/config'
-import { createProfile as createSupabaseUser } from '@/utils/supabase/crud/profile'
-import {
-  createUserWithEmailAndPassword as createFirebaseUser,
-  deleteUser as deleteFirebaseUser,
-} from 'firebase/auth'
 import { useRouter } from 'next/navigation'
+import { signup } from '../actions'
 
 export default function SignupPage() {
   const { toast } = useToast()
@@ -27,59 +22,19 @@ export default function SignupPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const form = new FormData(e.target as HTMLFormElement)
-    const email = form.get('email') as string
-    const password = form.get('password') as string
-    const handle = form.get('handle') as string
 
-    if (!email || !password || !handle) {
-      console.log(
-        'Email, password, and handle are required',
-      )
+    const error = signup(form)
+
+    if (error) {
       toast({
-        description:
-          'Email, password, and handle are required',
+        description: error,
       })
       return
     }
 
-    let userCredential
-
-    try {
-      userCredential = await createFirebaseUser(
-        firebase,
-        email,
-        password,
-      )
-      firebase.signOut()
-    } catch (error) {
-      console.error('Error signing up:', error)
-      toast({
-        description: 'Error signing up. Please try again.',
-      })
-      return
-    }
-
-    try {
-      await createSupabaseUser({
-        uid: userCredential.user.uid,
-        email,
-        handle,
-        created_at: new Date(),
-        updated_at: new Date(),
-      })
-      toast({
-        description: 'Signup successful',
-      })
-    } catch (error) {
-      if (userCredential) {
-        await deleteFirebaseUser(userCredential.user)
-      }
-      console.error('Error signing up:', error)
-      toast({
-        description: 'Error signing up. Please try again.',
-      })
-    }
-
+    toast({
+      description: 'Sign up successful',
+    })
     router.push(ROUTES.HOME)
   }
 
@@ -101,7 +56,6 @@ export default function SignupPage() {
                 type='email'
                 name='email'
                 placeholder='m@example.com'
-                required
               />
             </div>
 
@@ -111,7 +65,6 @@ export default function SignupPage() {
                 id='password'
                 type='password'
                 name='password'
-                required
               />
             </div>
 
@@ -122,7 +75,6 @@ export default function SignupPage() {
                 type='text'
                 name='handle'
                 placeholder='PcMasterRace'
-                required
               />
             </div>
             <Button type='submit' className='w-full'>

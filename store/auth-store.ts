@@ -1,5 +1,4 @@
 import firebase from '@/utils/firebase/config'
-import { setSession } from '@/utils/supabase/config'
 import { getProfileCache } from '@/utils/supabase/crud/profile'
 import { ProfileCache } from '@/utils/supabase/types/cache'
 import {
@@ -20,19 +19,11 @@ interface AuthState {
 
 const useAuthStore = create<AuthState>((set) => {
   onAuthStateChanged(firebase, async (user) => {
+    return 
     if (!user) return
 
     set({ user })
     console.log('user authenticated')
-
-    const sessionSet = localStorage.getItem(SESSION_SET_KEY)
-    if (sessionSet) {
-      console.log('session already set')
-    } else {
-      await setSession(user.uid)
-      localStorage.setItem(SESSION_SET_KEY, 'true')
-      console.log('session set successfully')
-    }
 
     const cache = localStorage.getItem(PROFILE_CACHE_KEY)
     if (cache) {
