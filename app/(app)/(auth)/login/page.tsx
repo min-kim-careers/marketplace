@@ -12,13 +12,14 @@ import { Input } from '@/components/shadcn/components/ui/input'
 import { Label } from '@/components/shadcn/components/ui/label'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
 import { ROUTES } from '@/constants/routes'
+import useAuthStore from '@/store/auth-store'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { login } from '../actions'
 
 export default function LoginPage() {
   const { toast } = useToast()
   const router = useRouter()
+  const { actions } = useAuthStore()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -32,7 +33,7 @@ export default function LoginPage() {
       })
     }
 
-    const { error } = await login(email, password)
+    const error = await actions.login(email, password)
 
     if (error) {
       toast({
@@ -41,10 +42,10 @@ export default function LoginPage() {
       return
     }
 
+    router.push(ROUTES.HOME)
     toast({
       description: 'Logged in successfully',
     })
-    router.push(ROUTES.HOME)
   }
 
   return (

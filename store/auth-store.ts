@@ -1,10 +1,27 @@
 import { createClient } from '@/utils/supabase/client'
-import { Profile } from '@/utils/supabase/types/profile'
+import { Profile } from '@/types/profile'
 import { create } from 'zustand'
+import {
+  loginAction,
+  signupAction,
+} from './auth-actions'
+import { AuthError } from '@supabase/supabase-js'
 
 interface AuthState {
   profile: Profile | null
-  logout: () => Promise<void>
+  
+  actions: {
+    login: (
+      email: string,
+      password: string,
+    ) => Promise<AuthError | null>
+    signup: (
+      email: string,
+      password: string,
+      handle: string,
+    ) => Promise<AuthError | null>
+    logout: () => void
+  }
 }
 
 const supabase = createClient()
@@ -13,25 +30,56 @@ const useAuthStore = create<AuthState>((set) => {
   supabase.auth.onAuthStateChange(
     async (event, session) => {
       console.log(event, session?.user.email)
-      const user = session?.user
-      set({
-        profile: {
-          handle: user?.user_metadata.handle,
-          email: user?.email || 'No email',
-        },
-      })
-      if (event === 'INITIAL_SESSION') {
-      } else if (event === 'SIGNED_IN') {
-      } else if (event === 'SIGNED_OUT') {
+
+      if (
+        event === 'SIGNED_IN' ||
+        event === 'INITIAL_SESSION'
+      ) {
+        const user = session?.user
+        if (user) {
+          set({
+            profile: {
+              email: user.user_metadata.email,
+              handle: user.user_metadata.handle,
+            } as Profile,
+          })
+        }
+        return
+      }
+
+      if (event === 'SIGNED_OUT') {
         set({
           profile: null,
         })
-        // } else if (event === 'PASSWORD_RECOVERY') {
-      } else if (event === 'TOKEN_REFRESHED') {
-        // } else if (event === 'USER_UPDATED') {
+        return
       }
     },
   )
+
+  const login = async (email: string, password: string) => {
+    const { profile, error } = await loginAction(
+      email,
+      password,
+    )
+
+    set({ profile })
+    return error
+  }
+
+  const signup = async (
+    email: string,
+    password: string,
+    handle: string,
+  ) => {
+    const { profile, error } = await signupAction(
+      email,
+      password,
+      handle,
+    )
+
+    set({ profile })
+    return error
+  }
 
   const logout = async () => {
     await supabase.auth.signOut()
@@ -39,7 +87,7 @@ const useAuthStore = create<AuthState>((set) => {
 
   return {
     profile: null,
-    logout,
+    actions: { login, signup, logout },
   }
 })
 

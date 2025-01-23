@@ -12,12 +12,13 @@ import { Input } from '@/components/shadcn/components/ui/input'
 import { Label } from '@/components/shadcn/components/ui/label'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
 import { ROUTES } from '@/constants/routes'
+import useAuthStore from '@/store/auth-store'
 import { useRouter } from 'next/navigation'
-import { login, signup } from '../actions'
 
 export default function SignupPage() {
   const { toast } = useToast()
   const router = useRouter()
+  const { actions } = useAuthStore()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -27,10 +28,18 @@ export default function SignupPage() {
     const handle = form.get('handle') as string
 
     if (!email || !password || !handle) {
-      return 'Email, password, and handle are required'
+      toast({
+        description:
+          'Email, password, and handle are required',
+      })
+      return
     }
 
-    const { error } = await signup(email, password, handle)
+    const error = await actions.signup(
+      email,
+      password,
+      handle,
+    )
 
     if (error) {
       toast({
@@ -39,11 +48,10 @@ export default function SignupPage() {
       return
     }
 
+    router.push(ROUTES.HOME)
     toast({
       description: 'Sign up successful',
     })
-    await login(email, password)
-    router.push(ROUTES.HOME)
   }
 
   return (

@@ -7,10 +7,10 @@ import { toast } from './shadcn/hooks/use-toast'
 import { ROUTES } from '@/constants/routes'
 
 export default function Navbar() {
-  const { profile, logout } = useAuthStore()
+  const { profile, actions } = useAuthStore()
 
   const handleLogout = () => {
-    logout()
+    actions.logout()
     toast({
       description: 'You have been logged out',
     })
