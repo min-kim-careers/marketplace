@@ -7,7 +7,7 @@ import { toast } from './shadcn/hooks/use-toast'
 import { ROUTES } from '@/constants/routes'
 
 export default function Navbar() {
-  const { user, logout } = useAuthStore()
+  const { profile, logout } = useAuthStore()
 
   const handleLogout = () => {
     logout()
@@ -48,7 +48,7 @@ export default function Navbar() {
         Marketplace
       </Link>
 
-      {user ? <LoggedIn /> : <LoggedOut />}
+      {profile ? <LoggedIn /> : <LoggedOut />}
     </nav>
   )
 }

@@ -1,34 +1,24 @@
+'use server'
+
 import { Profile } from '@/utils/supabase/types/profile'
-import supabase from '../config'
-import { ProfileCache } from '../types/cache'
+import { createClient } from '../server'
 
 const TABLE_NAME = 'profiles'
 
-export const createProfile = async (profile: Profile) => {
-  const { data, error } = await supabase
-    .from(TABLE_NAME)
-    .insert([profile])
+export const getProfile = async (
+  email: string,
+): Promise<Profile> => {
+  const supabase = await createClient()
 
-  if (error) {
-    throw error
-  }
-
-  return data
-}
-
-export const getProfileCache = async (uid: string): Promise<ProfileCache> => {
   const { data, error } = await supabase
     .from(TABLE_NAME)
     .select('*')
-    .eq('uid', uid)
+    .eq('email', email)
     .single()
 
   if (error) {
     throw error
   }
 
-  return {
-    handle: data.handle,
-    email: data.email,
-  }
+  return data
 }

@@ -23,13 +23,22 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const form = new FormData(e.target as HTMLFormElement)
+    const email = form.get('email') as string
+    const password = form.get('password') as string
 
-    const error = login(form)
+    if (!email || !password) {
+      toast({
+        description: 'Email and password are required',
+      })
+    }
+
+    const { error } = await login(email, password)
 
     if (error) {
       toast({
-        description: error,
+        description: error.message,
       })
+      return
     }
 
     toast({
