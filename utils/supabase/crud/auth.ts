@@ -9,10 +9,10 @@ interface Response {
   profile: Profile | null
 }
 
-export async function getProfile(
+export const getProfile = async (
   email: string,
   password: string,
-): Promise<Response> {
+): Promise<Response> => {
   const supabase = await createClient()
 
   const { data, error } =
@@ -30,11 +30,11 @@ export async function getProfile(
   }
 }
 
-export async function createProfile(
+export const createProfile = async (
   email: string,
   password: string,
   handle: string,
-): Promise<Response> {
+): Promise<Response> => {
   const supabase = await createClient()
 
   const { data, error } = await supabase.auth.signUp({

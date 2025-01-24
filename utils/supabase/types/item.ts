@@ -25,6 +25,7 @@ export interface Item {
   image_url: string
   category: string
   user_email: string
+  user_handle: string
   created_at: Date
   updated_at: Date
   suburb: string

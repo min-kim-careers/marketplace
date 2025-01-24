@@ -31,7 +31,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className='flex min-h-screen flex-col items-center justify-between font-[family-name:var(--font-geist-sans)]'>
+        <div className='flex min-h-screen flex-col items-center font-[family-name:var(--font-geist-sans)]'>
           <Navbar />
           {children}
           <Footer />

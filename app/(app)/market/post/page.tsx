@@ -97,9 +97,10 @@ export default function PostPage() {
       ...values,
       created_at: new Date(),
       updated_at: new Date(),
+      user_handle: profile?.handle,
       user_email: profile?.email,
     } as Item)
-    
+
     router.push(ROUTES.MARKET)
     toast({
       description:
