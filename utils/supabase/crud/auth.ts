@@ -9,7 +9,7 @@ interface Response {
   profile: Profile | null
 }
 
-export async function loginAction(
+export async function getProfile(
   email: string,
   password: string,
 ): Promise<Response> {
@@ -22,7 +22,7 @@ export async function loginAction(
     })
 
   return {
-    error: error,
+    error,
     profile: {
       email: data.user?.user_metadata.email,
       handle: data.user?.user_metadata.handle,
@@ -30,39 +30,28 @@ export async function loginAction(
   }
 }
 
-export async function signupAction(
+export async function createProfile(
   email: string,
   password: string,
   handle: string,
 ): Promise<Response> {
   const supabase = await createClient()
 
-  const { error: signupError } = await supabase.auth.signUp(
-    {
-      email: email,
-      password: password,
-      options: {
-        data: {
-          handle: handle,
-        },
+  const { data, error } = await supabase.auth.signUp({
+    email: email,
+    password: password,
+    options: {
+      data: {
+        handle: handle,
       },
     },
-  )
-
-  if (signupError) {
-    return {
-      error: signupError,
-      profile: null
-    }
-  }
-
-  const { profile, error: loginError } = await loginAction(
-    email,
-    password,
-  )
+  })
 
   return {
-    error: loginError,
-    profile,
+    error,
+    profile: {
+      email: data.user?.user_metadata.email,
+      handle: data.user?.user_metadata.handle,
+    },
   }
 }

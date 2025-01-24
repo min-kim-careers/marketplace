@@ -1,25 +1,29 @@
-import { createClient } from '@/utils/supabase/client'
 import { Profile } from '@/types/profile'
+import { createClient } from '@/utils/supabase/client'
 import { create } from 'zustand'
 import {
-  loginAction,
-  signupAction,
-} from './auth-actions'
+  createProfile,
+  getProfile,
+} from '../utils/supabase/crud/auth'
 import { AuthError } from '@supabase/supabase-js'
+
+interface Response {
+  error: AuthError | null
+}
 
 interface AuthState {
   profile: Profile | null
-  
+
   actions: {
     login: (
       email: string,
       password: string,
-    ) => Promise<AuthError | null>
+    ) => Promise<Response>
     signup: (
       email: string,
       password: string,
       handle: string,
-    ) => Promise<AuthError | null>
+    ) => Promise<Response>
     logout: () => void
   }
 }
@@ -44,26 +48,22 @@ const useAuthStore = create<AuthState>((set) => {
             } as Profile,
           })
         }
-        return
-      }
-
-      if (event === 'SIGNED_OUT') {
+      } else if (event === 'SIGNED_OUT') {
         set({
           profile: null,
         })
-        return
       }
     },
   )
 
   const login = async (email: string, password: string) => {
-    const { profile, error } = await loginAction(
+    const { profile, error } = await getProfile(
       email,
       password,
     )
 
     set({ profile })
-    return error
+    return { error }
   }
 
   const signup = async (
@@ -71,14 +71,17 @@ const useAuthStore = create<AuthState>((set) => {
     password: string,
     handle: string,
   ) => {
-    const { profile, error } = await signupAction(
+    const { error } = await createProfile(
       email,
       password,
       handle,
     )
 
-    set({ profile })
-    return error
+    if (error) {
+      return { error }
+    }
+
+    return await login(email, password)
   }
 
   const logout = async () => {

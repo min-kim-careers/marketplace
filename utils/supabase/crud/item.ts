@@ -1,4 +1,6 @@
-import supabase from '../config'
+'use server'
+
+import { createClient } from '../server'
 import { Item } from '../types/item'
 
 const TABLE_NAME = 'items'
@@ -12,40 +14,14 @@ const TABLE_NAME = 'items'
 // }
 
 export const insertItem = async (item: Item) => {
-  const { data: result, error } = await supabase
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
     .from(TABLE_NAME)
     .insert([item])
-  if (error) throw error
-  return result
+  if (error) {
+    console.error(error)
+    throw error
+  }
+  return data
 }
-
-// export const getItem = async (id: string) => {
-//   const { data: result, error } = await supabase
-//     .from(TABLE_NAME)
-//     .select('*')
-//     .eq('id', id)
-//     .single()
-//   if (error) throw error
-//   return result
-// }
-
-// export const updateItem = async (
-//   id: string,
-//   data: Partial<Item>,
-// ) => {
-//   const { data: result, error } = await supabase
-//     .from(TABLE_NAME)
-//     .update(data)
-//     .eq('id', id)
-//   if (error) throw error
-//   return result
-// }
-
-// export const deleteItem = async (id: string) => {
-//   const { data: result, error } = await supabase
-//     .from(TABLE_NAME)
-//     .delete()
-//     .eq('id', id)
-//   if (error) throw error
-//   return result
-// }

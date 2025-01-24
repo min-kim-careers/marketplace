@@ -35,7 +35,7 @@ export default function SignupPage() {
       return
     }
 
-    const error = await actions.signup(
+    const { error } = await actions.signup(
       email,
       password,
       handle,

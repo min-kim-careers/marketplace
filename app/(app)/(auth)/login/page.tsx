@@ -33,7 +33,7 @@ export default function LoginPage() {
       })
     }
 
-    const error = await actions.login(email, password)
+    const { error } = await actions.login(email, password)
 
     if (error) {
       toast({
@@ -56,7 +56,7 @@ export default function LoginPage() {
           Enter your email below to login to your account
         </CardDescription>
       </CardHeader>
-      <CardContent className='sm:max-w-[425px]'>
+      <CardContent className='flex flex-col gap-4 sm:max-w-[425px]'>
         <form onSubmit={handleSubmit}>
           <div className='flex flex-col gap-6'>
             <div className='flex flex-col gap-2'>
@@ -90,17 +90,16 @@ export default function LoginPage() {
               Login
             </Button>
           </div>
-          <div className='mt-4 text-center text-sm'>
-            {`Don't have an account? `}
-            <Link
-              href={ROUTES.SIGNUP}
-              className='underline underline-offset-4'
-              onClick={() => {}}
-            >
-              Sign up
-            </Link>
-          </div>
         </form>
+        <div className='p-0 text-center text-sm'>
+          {`Don't have an account? `}
+          <Link
+            href={ROUTES.SIGNUP}
+            className='underline underline-offset-4'
+          >
+            Sign up
+          </Link>
+        </div>
       </CardContent>
     </Card>
   )

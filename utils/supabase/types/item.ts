@@ -1,8 +1,3 @@
-interface Location {
-  suburb: string
-  state: string
-}
-
 // type Condition =
 //   | 'new'
 //   | 'used'
@@ -29,9 +24,10 @@ export interface Item {
   price: number
   image_url: string
   category: string
-  profile_id: string
+  user_email: string
   created_at: Date
   updated_at: Date
-  location: Location
+  suburb: string
+  state: string
   condition: string
 }
