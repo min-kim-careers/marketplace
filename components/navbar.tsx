@@ -19,7 +19,14 @@ export default function Navbar() {
   const LoggedIn = () => (
     <span className='flex gap-4'>
       <Button>
-        <Link href={ROUTES.MARKET}>Browse</Link>
+        <Link
+          href={{
+            pathname: ROUTES.MARKET,
+            query: { page: '1', limit: '10' },
+          }}
+        >
+          Browse
+        </Link>
       </Button>
       <Button>
         <Link href={ROUTES.POST}>Post Ad</Link>
