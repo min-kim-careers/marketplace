@@ -49,7 +49,7 @@ export default function Toolbar({
       <span>
         <Select>
           <SelectTrigger className='w-[180px]'>
-            <SelectValue placeholder='Sorted by' />
+            <SelectValue placeholder='Sorted by' defaultValue='relevance'/>
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>

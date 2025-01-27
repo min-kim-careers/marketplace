@@ -1,87 +1,80 @@
 import {
   Pagination as PaginationContainer,
   PaginationContent,
+  PaginationFirst,
   PaginationItem,
+  PaginationLast,
   PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
 } from '@/components/shadcn/components/ui/pagination'
-import useMarketStore from '@/store/market-store'
-import { useState } from 'react'
+import { ROUTES } from '@/constants/routes'
+import { SearchParams } from '@/types/search'
+
+const PAGINATION_SIZE = 5
 
 export default function Pagination({
-  page,
-  limit,
+  params,
+  totalCount,
 }: {
-  page: number
-  limit: number
+  params: SearchParams
+  totalCount: number
 }) {
-  const [currentPage, setCurrentPage] = useState(page)
-  const [currentLimit, setCurrentLimit] = useState(limit)
+  const currentPage = params.page
+  const lastPage = Math.floor(totalCount / params.limit)
 
-  const { count, getItems } = useMarketStore()
-
-  const handlePageChange = async (page: number) => {
-    // getItems(page, limit)
-  }
+  const paginationArray = Array.from(
+    { length: PAGINATION_SIZE },
+    (_, index) => {
+      if (currentPage < 3) {
+        return index + 1
+      } else {
+        if (currentPage + 3 > lastPage) {
+          return lastPage - 4 + index
+        }
+        return currentPage - 2 + index
+      }
+    },
+  )
 
   return (
     <PaginationContainer>
       <PaginationContent>
-        <PaginationItem>
-          <PaginationPrevious
-            href=''
-            onClick={(e) => {
-              e.preventDefault()
-              handlePageChange(page - 1)
-            }}
-          />
-        </PaginationItem>
+        <PaginationFirst
+          href={{
+            pathname: ROUTES.SEARCH,
+            query: {
+              page: 1,
+            },
+          }}
+        />
 
-        <PaginationItem>
-          <PaginationLink
-            isActive={page === page}
-            onClick={(e) => {
-              e.preventDefault()
-              handlePageChange(page)
-            }}
-          >
-            {page === 1 ? page : page - 1}
-          </PaginationLink>
-        </PaginationItem>
+        {paginationArray.map(
+          (page, index) =>
+            1 <= page &&
+            page <= lastPage && (
+              <PaginationItem key={index}>
+                <PaginationLink
+                  isActive={currentPage === page}
+                  href={{
+                    pathname: ROUTES.SEARCH,
+                    query: {
+                      page: page,
+                    },
+                  }}
+                >
+                  {page}
+                </PaginationLink>
+              </PaginationItem>
+            ),
+        )}
 
-        <PaginationItem>
-          <PaginationLink
-            isActive={page === page}
-            onClick={(e) => {
-              e.preventDefault()
-              handlePageChange(page)
-            }}
-          >
-            {page === 1 ? page + 1 : page}
-          </PaginationLink>
-        </PaginationItem>
-
-        <PaginationItem>
-          <PaginationLink
-            isActive={page === page}
-            onClick={(e) => {
-              e.preventDefault()
-              handlePageChange(page)
-            }}
-          >
-            {page === 1 ? page + 2 : page + 1}
-          </PaginationLink>
-        </PaginationItem>
-
-        <PaginationItem>
-          <PaginationNext
-            onClick={(e) => {
-              e.preventDefault()
-              handlePageChange(page + 1)
-            }}
-          />
-        </PaginationItem>
+        <PaginationLast
+          href={{
+            pathname: ROUTES.SEARCH,
+            query: {
+              page: lastPage,
+            },
+          }}
+        />
       </PaginationContent>
     </PaginationContainer>
   )

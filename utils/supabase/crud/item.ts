@@ -22,7 +22,7 @@ export const fetchItems = async (
   return data
 }
 
-export const fetchCount = async () => {
+export const fetchTotalCount = async () => {
   const supabase = await createClient()
 
   const { data, error } = await supabase

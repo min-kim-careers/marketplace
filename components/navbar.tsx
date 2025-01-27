@@ -22,10 +22,10 @@ export default function Navbar() {
         <Link
           href={{
             pathname: ROUTES.SEARCH,
-            query: { page: '1', limit: '10' },
+            query: { page: '1' },
           }}
         >
-          Browse
+          Market
         </Link>
       </Button>
       <Button>

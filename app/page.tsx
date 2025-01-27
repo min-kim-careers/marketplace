@@ -1,5 +1,12 @@
 import Market from '@/components/market'
 
+const DEFAULT_LIMIT = 9
+
 export default function HomePage() {
-  return <Market page={1} limit={10} />
+  const params = {
+    page: 1,
+    limit: DEFAULT_LIMIT,
+  }
+
+  return <Market params={params}/>
 }

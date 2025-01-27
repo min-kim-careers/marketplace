@@ -1,13 +1,24 @@
 'use client'
 
 import Market from '@/components/market'
+import { SearchParams, SortOrder } from '@/types/search'
 import { useSearchParams } from 'next/navigation'
+
+const DEFAULT_LIMIT = 9
 
 export default function SearchPage() {
   const searchParams = useSearchParams()
 
-  const page = Number(searchParams.get('page')) || 1
-  const limit = Number(searchParams.get('limit')) || 10
+  const validateParams = (
+    searchParams: URLSearchParams,
+  ): SearchParams => ({
+    page: Number(searchParams.get('page')) || 1,
+    limit: DEFAULT_LIMIT,
+    keyword: searchParams.get('keyword') || '',
+    sortOrder: searchParams.get('sortOrder') as SortOrder,
+  })
 
-  return <Market page={page} limit={limit} />
+  const params = validateParams(searchParams)
+
+  return <Market params={params} />
 }
