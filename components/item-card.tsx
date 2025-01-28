@@ -22,7 +22,7 @@ export default function ItemCard({
         minHeight: columns === 1 ? '12rem' : '15rem',
       }}
     >
-      <div>
+      <div className='flex-1'>
         <CardHeader className='flex-1'>
           <CardTitle className='line-clamp-1'>
             {item.name}
@@ -41,7 +41,7 @@ export default function ItemCard({
         </CardFooter>
       </div>
       {columns === 1 && (
-        <div className='m-2 flex min-h-full w-1/4 items-center justify-center rounded shadow'>
+        <div className='m-2 flex min-h-full flex-[0.5] items-center justify-center rounded shadow'>
           <p className='text-gray-400 italic'>No image</p>
         </div>
       )}

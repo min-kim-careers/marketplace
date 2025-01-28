@@ -1,23 +1,16 @@
 'use client'
 
+import { ROUTES } from '@/constants/routes'
 import useAuthStore from '@/store/auth-store'
 import Link from 'next/link'
+import AvatarDropdown from './avatar-dropdown'
 import { Button } from './shadcn/components/ui/button'
-import { toast } from './shadcn/hooks/use-toast'
-import { ROUTES } from '@/constants/routes'
 
 export default function Navbar() {
-  const { profile, actions } = useAuthStore()
-
-  const handleLogout = () => {
-    actions.logout()
-    toast({
-      description: 'You have been logged out',
-    })
-  }
+  const { profile } = useAuthStore()
 
   const LoggedIn = () => (
-    <span className='flex gap-4'>
+    <span className='flex items-center justify-between gap-4'>
       <Button>
         <Link
           href={{
@@ -25,13 +18,13 @@ export default function Navbar() {
             query: { page: '1' },
           }}
         >
-          Market
+          Browse
         </Link>
       </Button>
       <Button>
         <Link href={ROUTES.POST}>Post Ad</Link>
       </Button>
-      <Button onClick={handleLogout}>Logout</Button>
+      <AvatarDropdown />
     </span>
   )
 

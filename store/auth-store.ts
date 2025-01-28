@@ -33,7 +33,7 @@ const supabase = createClient()
 const useAuthStore = create<AuthState>((set) => {
   supabase.auth.onAuthStateChange(
     async (event, session) => {
-      console.log(event, session?.user.email)
+      // console.log(event, session?.user.email)
 
       if (
         event === 'SIGNED_IN' ||

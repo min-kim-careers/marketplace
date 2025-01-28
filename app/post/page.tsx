@@ -22,7 +22,7 @@ import {
   FormMessage,
 } from '@/components/shadcn/components/ui/form'
 import { Input } from '@/components/shadcn/components/ui/input'
-import { formSchema } from './schema'
+import { postSchema } from './schema'
 import { insertItem } from '@/utils/supabase/crud/item'
 import { Item } from '@/utils/supabase/types/item'
 import useAuthStore from '@/store/auth-store'
@@ -37,10 +37,10 @@ function Field({
   control,
   description,
 }: {
-  name: keyof z.infer<typeof formSchema>
+  name: keyof z.infer<typeof postSchema>
   label: string
   placeholder: string
-  control: Control<z.infer<typeof formSchema>>
+  control: Control<z.infer<typeof postSchema>>
   description?: string
 }) {
   return (
@@ -66,8 +66,8 @@ export default function PostPage() {
   const { toast } = useToast()
   const router = useRouter()
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof postSchema>>({
+    resolver: zodResolver(postSchema),
     // defaultValues: {
     //   name: '',
     //   description: '',
@@ -91,7 +91,7 @@ export default function PostPage() {
   })
 
   async function onSubmit(
-    values: z.infer<typeof formSchema>,
+    values: z.infer<typeof postSchema>,
   ) {
     await insertItem({
       ...values,

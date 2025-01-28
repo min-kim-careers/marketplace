@@ -21,11 +21,17 @@ export const fetchProfile = async (
       password: password,
     })
 
+  const metadata = data.user!.user_metadata
+
   return {
     error,
     profile: {
-      email: data.user?.user_metadata.email,
-      handle: data.user?.user_metadata.handle,
+      handle: metadata.handle,
+      email: metadata.email,
+      postcode: metadata.postcode,
+      rating: metadata.rating,
+      ratingCount: metadata.ratingCount,
+      avatarUrl: metadata.avatarUrl,
     },
   }
 }
@@ -37,21 +43,25 @@ export const createProfile = async (
 ): Promise<Response> => {
   const supabase = await createClient()
 
-  const { data, error } = await supabase.auth.signUp({
+  const profile: Profile = {
+    email,
+    handle,
+    postcode: undefined,
+    avatarUrl: undefined,
+    rating: 0,
+    ratingCount: 0,
+  }
+
+  const { error } = await supabase.auth.signUp({
     email: email,
     password: password,
     options: {
-      data: {
-        handle: handle,
-      },
+      data: profile,
     },
   })
 
   return {
     error,
-    profile: {
-      email: data.user?.user_metadata.email,
-      handle: data.user?.user_metadata.handle,
-    },
+    profile,
   }
 }
