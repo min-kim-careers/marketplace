@@ -8,6 +8,7 @@ import {
 } from '@/components/shadcn/components/ui/pagination'
 import { ROUTES } from '@/constants/routes'
 import { SearchParams } from '@/types/search'
+import { notFound } from 'next/navigation'
 
 const PAGINATION_SIZE = 5
 
@@ -20,6 +21,10 @@ export default function Pagination({
 }) {
   const currentPage = params.page
   const lastPage = Math.floor(totalCount / params.limit)
+
+  if (currentPage < 1 || lastPage < currentPage) {
+    notFound()
+  }
 
   const paginationArray = Array.from(
     { length: PAGINATION_SIZE },
