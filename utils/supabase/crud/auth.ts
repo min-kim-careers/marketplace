@@ -9,7 +9,7 @@ interface Response {
   profile: Profile | null
 }
 
-export const fetchProfile = async (
+export const getProfile = async (
   email: string,
   password: string,
 ): Promise<Response> => {

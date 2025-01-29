@@ -3,8 +3,8 @@
 import { ROUTES } from '@/constants/routes'
 import useAuthStore from '@/store/auth-store'
 import Link from 'next/link'
-import AvatarDropdown from './avatar-dropdown'
-import { Button } from './shadcn/components/ui/button'
+import ProfileIcon from './profile-icon'
+import { Button } from '../shadcn/components/ui/button'
 
 export default function Navbar() {
   const { profile } = useAuthStore()
@@ -24,7 +24,7 @@ export default function Navbar() {
       <Button>
         <Link href={ROUTES.POST}>Post Ad</Link>
       </Button>
-      <AvatarDropdown />
+      <ProfileIcon />
     </span>
   )
 

@@ -1,17 +1,17 @@
 'use client'
 
-import Pagination from '@/components/pagination'
+import Pagination from '@/components/content/pagination'
 import {
   Card
 } from '@/components/shadcn/components/ui/card'
-import Toolbar from '@/components/toolbar'
-import { SearchParams } from '@/types/search'
+import Toolbar from '@/components/content/toolbar'
+import { SearchParams } from '@/types/search-params'
 import { Item } from '@/utils/supabase/types/item'
 import { useEffect, useState } from 'react'
 
 import jsonData from '@/data/items.json'
-import ItemCard from './item-card'
-import { Skeleton } from './shadcn/components/ui/skeleton'
+import ItemCard from '@/components/content/item-card'
+import { Skeleton } from '@/components/shadcn/components/ui/skeleton'
 
 const mockItems: Item[] = jsonData.map((data) => ({
   ...data,

@@ -7,7 +7,7 @@ import {
   PaginationLink,
 } from '@/components/shadcn/components/ui/pagination'
 import { ROUTES } from '@/constants/routes'
-import { SearchParams } from '@/types/search'
+import { SearchParams } from '@/types/search-params'
 import { notFound } from 'next/navigation'
 
 const PAGINATION_SIZE = 5

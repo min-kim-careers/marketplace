@@ -3,7 +3,7 @@ import { createClient } from '@/utils/supabase/client'
 import { create } from 'zustand'
 import {
   createProfile,
-  fetchProfile,
+  getProfile,
 } from '../utils/supabase/crud/auth'
 import { AuthError } from '@supabase/supabase-js'
 
@@ -57,7 +57,7 @@ const useAuthStore = create<AuthState>((set) => {
   )
 
   const login = async (email: string, password: string) => {
-    const { profile, error } = await fetchProfile(
+    const { profile, error } = await getProfile(
       email,
       password,
     )
