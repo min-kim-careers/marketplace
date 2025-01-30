@@ -1,17 +1,14 @@
 'use client'
 
 import Pagination from '@/components/content/pagination'
-import {
-  Card
-} from '@/components/shadcn/components/ui/card'
 import Toolbar from '@/components/content/toolbar'
-import { SearchParams } from '@/types/search-params'
 import { Item } from '@/utils/supabase/types/item'
 import { useEffect, useState } from 'react'
 
-import jsonData from '@/data/items.json'
 import ItemCard from '@/components/content/item-card'
-import { Skeleton } from '@/components/shadcn/components/ui/skeleton'
+import jsonData from '@/data/items.json'
+import Spinner from '../spinner'
+import { Params } from '@/types/params'
 
 const mockItems: Item[] = jsonData.map((data) => ({
   ...data,
@@ -21,18 +18,22 @@ const mockItems: Item[] = jsonData.map((data) => ({
 
 export default function Market({
   params,
+  limit,
 }: {
-  params: SearchParams
+  params: Params
+  limit: number
 }) {
+  console.log(params)
+
   const [columns, setColumns] = useState(1)
 
   const [totalCount, setTotalCount] = useState<number>(
     mockItems.length,
   )
-  const [items, setItems] = useState<Item[]>(mockItems)
+  const [items, setItems] = useState<Item[]>([])
   const [loading, setLoading] = useState(false)
 
-  // const loadItems = async (page: number, limit: number) => {
+  // const loadItems = async (page: number) => {
   //   setLoading(true)
 
   //   const from = (page - 1) * limit
@@ -47,48 +48,47 @@ export default function Market({
   //   setLoading(false)
   // }
 
-  const loadMockItems = (page: number, limit: number) => {
+  const loadMockItems = (params: Params) => {
     setLoading(true)
 
-    const from = (page - 1) * limit
-    const to = page * limit
+    let _items: Item[] = mockItems
 
-    const items: Item[] = mockItems.slice(from, to)
-    setItems(items)
-
-    const totalCount: number = mockItems.length
+    if (params.keywords) {
+      _items = _items.filter((item: Item) =>
+        params.keywords
+          ?.split(',')
+          .some(
+            (keyword) =>
+              item.category
+                .toLowerCase()
+                .includes(keyword.toLowerCase()) ||
+              item.name
+                .toLowerCase()
+                .includes(keyword.toLowerCase()) ||
+              item.description
+                .toLowerCase()
+                .includes(keyword.toLowerCase()),
+          ),
+      )
+    }
+    const totalCount: number = _items.length
     setTotalCount(totalCount)
+
+    const from = (params.page - 1) * limit
+    const to = params.page * limit
+
+    _items = _items.slice(from, to)
+    setItems(_items)
+
+    console.log(_items)
 
     setLoading(false)
   }
 
   useEffect(() => {
-    loadMockItems(params.page, params.limit)
+    loadMockItems(params)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params])
-
-  const renderSkeletons = () => {
-    return (
-      <div className='grid min-w-full flex-1 items-start gap-4'>
-        {Array.from(
-          { length: params.limit },
-          (_, index) => (
-            <Card
-              key={index}
-              className='flex min-h-48 min-w-full flex-row gap-4 p-4'
-            >
-              <div className='flex w-full flex-[3] flex-col gap-6'>
-                <Skeleton className='w-full flex-1' />
-                <Skeleton className='w-3/4 flex-1' />
-                <Skeleton className='w-1/2 flex-1' />
-                <div className='w-1/2 flex-1' />
-              </div>
-              <Skeleton className='min-h-full w-full flex-1 rounded-lg' />
-            </Card>
-          ),
-        )}
-      </div>
-    )
-  }
 
   const renderItems = () => {
     return (
@@ -99,7 +99,7 @@ export default function Market({
         }}
       >
         {items.map((item: Item, i) => (
-          <ItemCard key={i} item={item} columns={columns}/>
+          <ItemCard key={i} item={item} columns={columns} />
         ))}
         <style jsx>{`
           @media (max-width: 640px) {
@@ -116,25 +116,36 @@ export default function Market({
   }
 
   return (
-    <div className='flex min-w-full flex-col gap-2 p-4'>
+    <div className='flex min-w-full flex-1 flex-col gap-2 p-4'>
       <Toolbar
         setColumns={setColumns}
         defaultColumns={columns}
       />
-      <div className='flex w-full items-center justify-between px-2 text-sm'>
-        <span>{totalCount} items</span>
-        <span>
+      {loading ? (
+        <Spinner className='flex flex-1 items-center justify-center' />
+      ) : (
+        <>
+          <div className='flex w-full items-center justify-between px-2 text-sm'>
+            <span>{totalCount} items</span>
+            <span>
+              <Pagination
+                params={params}
+                limit={limit}
+                totalCount={totalCount}
+              />
+            </span>
+            <span>
+              {`${(params.page - 1) * limit + 1} - ${limit * (params.page - 1) + items.length} of ${totalCount}`}
+            </span>
+          </div>
+          {renderItems()}
           <Pagination
             params={params}
+            limit={limit}
             totalCount={totalCount}
           />
-        </span>
-        <span>
-          {`${(params.page - 1) * params.limit + 1} - ${params.limit * (params.page - 1) + items.length} of ${totalCount}`}
-        </span>
-      </div>
-      {loading ? renderSkeletons() : renderItems()}
-      <Pagination params={params} totalCount={totalCount} />
+        </>
+      )}
     </div>
   )
 }

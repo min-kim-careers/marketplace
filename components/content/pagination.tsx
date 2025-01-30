@@ -7,20 +7,23 @@ import {
   PaginationLink,
 } from '@/components/shadcn/components/ui/pagination'
 import { ROUTES } from '@/constants/routes'
-import { SearchParams } from '@/types/search-params'
+import { paramsToQuery } from '@/helpers/params'
+import { Params } from '@/types/params'
 import { notFound } from 'next/navigation'
 
 const PAGINATION_SIZE = 5
 
 export default function Pagination({
   params,
+  limit,
   totalCount,
 }: {
-  params: SearchParams
+  params: Params
+  limit: number
   totalCount: number
 }) {
   const currentPage = params.page
-  const lastPage = Math.floor(totalCount / params.limit)
+  const lastPage = Math.ceil(totalCount / limit)
 
   if (currentPage < 1 || lastPage < currentPage) {
     notFound()
@@ -44,11 +47,10 @@ export default function Pagination({
     <PaginationContainer>
       <PaginationContent>
         <PaginationFirst
+          disabled={currentPage === 1}
           href={{
             pathname: ROUTES.SEARCH,
-            query: {
-              page: 1,
-            },
+            query: { ...paramsToQuery(params), page: 1 },
           }}
         />
 
@@ -62,6 +64,7 @@ export default function Pagination({
                   href={{
                     pathname: ROUTES.SEARCH,
                     query: {
+                      ...paramsToQuery(params),
                       page: page,
                     },
                   }}
@@ -73,9 +76,11 @@ export default function Pagination({
         )}
 
         <PaginationLast
+          disabled={currentPage === lastPage}
           href={{
             pathname: ROUTES.SEARCH,
             query: {
+              ...paramsToQuery(params),
               page: lastPage,
             },
           }}

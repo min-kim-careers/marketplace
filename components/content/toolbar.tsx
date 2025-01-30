@@ -14,9 +14,14 @@ import {
   ToggleGroupItem,
 } from '@/components/shadcn/components/ui/toggle-group'
 import { ROUTES } from '@/constants/routes'
+import {
+  extractParams,
+  paramsToQuery,
+} from '@/helpers/params'
 import useRouter from '@/hooks/use-router'
-import type { SortOrder } from '@/types/sort-order'
+import type { SortOrder } from '@/types/params'
 import { Grip, Menu, Search } from 'lucide-react'
+import { useSearchParams } from 'next/navigation'
 import { ChangeEvent, useState } from 'react'
 
 export default function Toolbar({
@@ -26,6 +31,8 @@ export default function Toolbar({
   setColumns: (value: number) => void
   defaultColumns: number
 }) {
+  const searchParams = useSearchParams()
+  const params = extractParams(searchParams)
   const router = useRouter()
 
   const viewToggle = () => (
@@ -52,11 +59,15 @@ export default function Toolbar({
   }
 
   const handleSearch = async () => {
-    // router.push({
-    //   pathname: ROUTES.SEARCH,
-    //   query: { ...params, keyword: searchValue },
-    // })
-    setSearchValue('')
+    const query = paramsToQuery({
+      page: 1,
+      keywords: searchValue,
+    })
+    router.push({
+      pathname: ROUTES.SEARCH,
+      query,
+    })
+    // setSearchValue('')
   }
 
   const searchInput = () => (
@@ -88,7 +99,13 @@ export default function Toolbar({
 
   const handleSortValueChange = (value: string) => {
     setSelectedSort(value as SortOrder)
-    router.push({ pathname: ROUTES.SEARCH, query: {} })
+    router.push({
+      pathname: ROUTES.SEARCH,
+      query: {
+        ...paramsToQuery(params),
+        sortOrder: selectedSort,
+      },
+    })
   }
 
   const sortDropdown = () => (
@@ -113,7 +130,7 @@ export default function Toolbar({
 
   return (
     <Card className='flex h-full items-center p-2'>
-      <span className='flex flex-1 justify-start'>
+      <span className='hidden flex-1 justify-start sm:flex'>
         {viewToggle()}
       </span>
 

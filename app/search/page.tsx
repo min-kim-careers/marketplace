@@ -1,25 +1,21 @@
 'use client'
 
 import Market from '@/components/content/market'
-import useSearchStore from '@/store/search-store'
-import { SortOrder } from '@/types/sort-order'
+import Spinner from '@/components/spinner'
+import { extractParams } from '@/helpers/params'
 import { useSearchParams } from 'next/navigation'
-import { useEffect } from 'react'
+
+const DEFAULT_LIMIT = 9
 
 export default function SearchPage() {
   const searchParams = useSearchParams()
 
-  const { params, setParams } = useSearchStore()
+  const params = extractParams(searchParams)
 
-  useEffect(() => {
-    setParams({
-      page: Number(searchParams.get('page')),
-      limit: 
-      keywords: searchParams.get('keyword') || undefined,
-      sortOrder: searchParams.get('sortOrder') as SortOrder || undefined,
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  if (!params)
+    return (
+      <Spinner className='flex flex-1 items-center justify-center' />
+    )
 
-  return <Market params={params} />
+  return <Market params={params} limit={DEFAULT_LIMIT}/>
 }
