@@ -7,7 +7,7 @@ import {
 
 export default function Footer() {
   return (
-    <footer className='flex w-full flex-col items-start text-sm'>
+    <div className='flex flex-col items-start text-xs'>
       <CardHeader>
         <CardTitle>Marketplace</CardTitle>
       </CardHeader>
@@ -26,6 +26,6 @@ export default function Footer() {
         Copyright © 2025-2025 Marketplace ABN: 00 000 000
         000
       </CardFooter>
-    </footer>
+    </div>
   )
 }

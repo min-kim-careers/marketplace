@@ -19,10 +19,10 @@ import {
   paramsToQuery,
 } from '@/helpers/params'
 import useRouter from '@/hooks/use-router'
-import type { SortOrder } from '@/types/params'
+import type { Sort } from '@/types/params'
 import { Grip, Menu, Search } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
-import { ChangeEvent, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 
 export default function Toolbar({
   setColumns,
@@ -60,6 +60,7 @@ export default function Toolbar({
 
   const handleSearch = async () => {
     const query = paramsToQuery({
+      ...params,
       page: 1,
       keywords: searchValue,
     })
@@ -86,27 +87,35 @@ export default function Toolbar({
     </div>
   )
 
-  const sortValues: SortOrder[] = [
-    'relevance',
-    'newest',
-    'oldest',
-    'lowest price',
-    'highest price',
-  ]
-  const [selectedSort, setSelectedSort] = useState(
-    sortValues[0],
-  )
+  const SORT_MAP: Record<string, Sort> = {
+    Relevance: 'relevance',
+    Newest: 'created_desc',
+    Oldest: 'created_asc',
+    'Lowest price': 'price_asc',
+    'Highest price': 'price_desc',
+  }
+
+  const sortValues: string[] =
+    Object.keys(SORT_MAP)
+
+  const [selectedSort, setSelectedSort] =
+    useState(sortValues[0])
 
   const handleSortValueChange = (value: string) => {
-    setSelectedSort(value as SortOrder)
+    setSelectedSort(value)
+  }
+
+  useEffect(() => {
+    const serverSort = SORT_MAP[selectedSort]
     router.push({
       pathname: ROUTES.SEARCH,
       query: {
         ...paramsToQuery(params),
-        sortOrder: selectedSort,
+        sort: serverSort,
       },
     })
-  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedSort])
 
   const sortDropdown = () => (
     <Select
@@ -114,13 +123,18 @@ export default function Toolbar({
       onValueChange={handleSortValueChange}
     >
       <SelectTrigger className='w-[180px]'>
-        <SelectValue>Sorted by {selectedSort}</SelectValue>
+        <SelectValue>
+          Sorted by {selectedSort}
+        </SelectValue>
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
           {sortValues.map((s, i) => (
-            <SelectItem key={i} value={s}>
-              {s[0].toUpperCase() + s.substring(1)}
+            <SelectItem
+              key={i}
+              value={s}
+            >
+              {s}
             </SelectItem>
           ))}
         </SelectGroup>
@@ -129,7 +143,7 @@ export default function Toolbar({
   )
 
   return (
-    <Card className='flex h-full items-center p-2'>
+    <Card className='flex items-center p-2'>
       <span className='hidden flex-1 justify-start sm:flex'>
         {viewToggle()}
       </span>

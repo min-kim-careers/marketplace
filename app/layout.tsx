@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import '@/app/globals.css'
 import { Toaster } from '@/components/shadcn/components/ui/toaster'
 import Navbar from '@/components/header/navbar'
-import Footer from '@/components/footer/footer'
+import Footer from '@/components/footer'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -31,9 +31,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className='flex min-h-screen flex-col items-center font-[family-name:var(--font-geist-sans)]'>
-          <Navbar />
-          {children}
+        <div className='flex flex-col font-[family-name:var(--font-geist-sans)]'>
+          <div className='flex min-h-screen w-full flex-col items-center'>
+            <Navbar />
+            <div className='flex w-full flex-1 px-4'>
+              {children}
+            </div>
+          </div>
           <Footer />
         </div>
         <Toaster />

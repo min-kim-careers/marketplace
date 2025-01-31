@@ -20,5 +20,9 @@ export default async function UserLayout({
     redirect(ROUTES.LOGIN)
   }
 
-  return <>{children}</>
+  return (
+    <div className='flex flex-1 items-center justify-center'>
+      {children}
+    </div>
+  )
 }

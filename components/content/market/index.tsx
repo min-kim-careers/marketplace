@@ -1,14 +1,17 @@
 'use client'
 
-import Pagination from '@/components/content/pagination'
-import Toolbar from '@/components/content/toolbar'
+import Pagination from '@/components/content/market/pagination'
+import Toolbar from '@/components/content/market/toolbar'
 import { Item } from '@/utils/supabase/types/item'
 import { useEffect, useState } from 'react'
 
-import ItemCard from '@/components/content/item-card'
+import ItemCard from '@/components/content/market/item-card'
 import jsonData from '@/data/items.json'
-import Spinner from '../spinner'
+import Spinner from '../../spinner'
 import { Params } from '@/types/params'
+import { notFound } from 'next/navigation'
+
+const DEFAULT_LIMIT = 9
 
 const mockItems: Item[] = jsonData.map((data) => ({
   ...data,
@@ -18,13 +21,9 @@ const mockItems: Item[] = jsonData.map((data) => ({
 
 export default function Market({
   params,
-  limit,
 }: {
   params: Params
-  limit: number
 }) {
-  console.log(params)
-
   const [columns, setColumns] = useState(1)
 
   const [totalCount, setTotalCount] = useState<number>(
@@ -71,23 +70,56 @@ export default function Market({
           ),
       )
     }
+
+    if (params.sort) {
+      const sort = params.sort
+      _items = _items.sort((a: Item, b: Item) => {
+        if (
+          sort === 'created_asc' ||
+          sort === 'relevance'
+        ) {
+          return a.created_at < b.created_at
+            ? -1
+            : a.created_at > b.created_at
+              ? 1
+              : 0
+        } else if (sort === 'created_desc') {
+          return a.created_at > b.created_at
+            ? -1
+            : a.created_at < b.created_at
+              ? 1
+              : 0
+        } else if (sort === 'price_asc') {
+          return a.price < b.price
+            ? -1
+            : a.price > b.price
+              ? 1
+              : 0
+        } else if (sort === 'price_desc') {
+          return a.price > b.price
+            ? -1
+            : a.price < b.price
+              ? 1
+              : 0
+        }
+        throw notFound()
+      })
+    }
+
     const totalCount: number = _items.length
     setTotalCount(totalCount)
 
-    const from = (params.page - 1) * limit
-    const to = params.page * limit
+    const from = (params.page - 1) * DEFAULT_LIMIT
+    const to = params.page * DEFAULT_LIMIT
 
     _items = _items.slice(from, to)
     setItems(_items)
-
-    console.log(_items)
 
     setLoading(false)
   }
 
   useEffect(() => {
     loadMockItems(params)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params])
 
   const renderItems = () => {
@@ -116,7 +148,7 @@ export default function Market({
   }
 
   return (
-    <div className='flex min-w-full flex-1 flex-col gap-2 p-4'>
+    <div className='flex w-full flex-col gap-2'>
       <Toolbar
         setColumns={setColumns}
         defaultColumns={columns}
@@ -130,18 +162,18 @@ export default function Market({
             <span>
               <Pagination
                 params={params}
-                limit={limit}
+                limit={DEFAULT_LIMIT}
                 totalCount={totalCount}
               />
             </span>
             <span>
-              {`${(params.page - 1) * limit + 1} - ${limit * (params.page - 1) + items.length} of ${totalCount}`}
+              {`${(params.page - 1) * DEFAULT_LIMIT + 1} - ${DEFAULT_LIMIT * (params.page - 1) + items.length} of ${totalCount}`}
             </span>
           </div>
           {renderItems()}
           <Pagination
             params={params}
-            limit={limit}
+            limit={DEFAULT_LIMIT}
             totalCount={totalCount}
           />
         </>

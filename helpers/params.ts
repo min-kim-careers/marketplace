@@ -1,4 +1,4 @@
-import { Params, SortOrder } from '@/types/params'
+import { Params, Sort } from '@/types/params'
 import { ReadonlyURLSearchParams } from 'next/navigation'
 
 export const extractParams = (
@@ -7,7 +7,7 @@ export const extractParams = (
   return {
     page: Number(params.get('page')) || 1,
     keywords: params.get('keywords'),
-    sortOrder: params.get('sortOrder') as SortOrder,
+    sort: params.get('sort') as Sort,
   }
 }
 

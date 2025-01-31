@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/shadcn/components/ui/dropdown-menu'
 import useAuthStore from '@/store/auth-store'
-import { toast } from '../shadcn/hooks/use-toast'
+import { toast } from '../../shadcn/hooks/use-toast'
 import Link from 'next/link'
 import { ROUTES } from '@/constants/routes'
 import { useRouter } from 'next/navigation'
