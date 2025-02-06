@@ -53,21 +53,21 @@ export const insertItem = async (item: Item) => {
   return data
 }
 
-export const searchItems = async (keywords: string[]) => {
-  const supabase = await createClient()
+// export const searchItems = async (keywords: string[]) => {
+//   const supabase = await createClient()
 
-  const joinedKeywords = `'${keywords.join(`' | '`)}'`
+//   const joinedKeywords = `'${keywords.join(`' | '`)}'`
 
-  console.log(joinedKeywords);
+//   console.log(joinedKeywords);
   
-  // const { data, error } = await supabase
-  //   .from(TABLE_NAME)
-  //   .select()
-  //   .textSearch('name_description_category', joinedKeywords)
+//   const { data, error } = await supabase
+//     .from(TABLE_NAME)
+//     .select()
+//     .textSearch('name_description_category', joinedKeywords)
 
-  // if (error) {
-  //   console.error(error)
-  //   throw error
-  // }
-  // return data
-}
+//   if (error) {
+//     console.error(error)
+//     throw error
+//   }
+//   return data
+// }

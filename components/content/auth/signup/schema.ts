@@ -1,6 +1,9 @@
 import { z } from 'zod'
 
 export const signupSchema = z.object({
+  email: z.string().email({
+    message: 'Email must be a valid email address',
+  }),
   handle: z
     .string()
     .min(2, {
@@ -34,18 +37,4 @@ export const signupSchema = z.object({
   //   message:
   //     'Password must contain at least one special character',
   // }),
-  email: z.string().email({
-    message: 'Email must be a valid email address',
-  }),
-
-  postcode: z
-    .number()
-    .int()
-    .min(1000, {
-      message: 'Postcode must be at least 4 digits',
-    })
-    .max(9999, {
-      message: 'Postcode must be at most 4 digits',
-    })
-    .optional(),
 })

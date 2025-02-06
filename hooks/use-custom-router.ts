@@ -1,6 +1,6 @@
 import { useRouter as useNextRouter } from 'next/navigation'
 
-const useRouter = () => {
+const useCustomRouter = () => {
   const { push: nextPush, ...rest } = useNextRouter()
 
   const customPush = ({
@@ -20,4 +20,4 @@ const useRouter = () => {
   return { ...rest, push: customPush }
 }
 
-export default useRouter
+export default useCustomRouter

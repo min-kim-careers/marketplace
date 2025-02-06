@@ -1,4 +1,4 @@
-import { cn } from './shadcn/lib/utils'
+import { cn } from '../shadcn/lib/utils'
 
 export default function Spinner({
   className,

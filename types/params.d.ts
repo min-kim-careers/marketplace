@@ -1,5 +1,5 @@
 export type Sort =
-  | 'relevance'
+  | 'default'
   | 'created_desc'
   | 'created_asc'
   | 'price_asc'

@@ -18,7 +18,7 @@ import {
   extractParams,
   paramsToQuery,
 } from '@/helpers/params'
-import useRouter from '@/hooks/use-router'
+import useCustomRouter from '@/hooks/use-custom-router'
 import type { Sort } from '@/types/params'
 import { Grip, Menu, Search } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
@@ -33,7 +33,7 @@ export default function Toolbar({
 }) {
   const searchParams = useSearchParams()
   const params = extractParams(searchParams)
-  const router = useRouter()
+  const router = useCustomRouter()
 
   const viewToggle = () => (
     <ToggleGroup
@@ -88,9 +88,9 @@ export default function Toolbar({
   )
 
   const SORT_MAP: Record<string, Sort> = {
-    Relevance: 'relevance',
-    Newest: 'created_desc',
-    Oldest: 'created_asc',
+    'Default': 'default',
+    'Newest': 'created_desc',
+    'Oldest': 'created_asc',
     'Lowest price': 'price_asc',
     'Highest price': 'price_desc',
   }

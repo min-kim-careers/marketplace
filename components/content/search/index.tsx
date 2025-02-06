@@ -1,13 +1,13 @@
 'use client'
 
-import Pagination from '@/components/content/market/pagination'
-import Toolbar from '@/components/content/market/toolbar'
+import Pagination from '@/components/content/search/pagination'
+import Toolbar from '@/components/content/search/toolbar'
 import { Item } from '@/utils/supabase/types/item'
 import { useEffect, useState } from 'react'
 
-import ItemCard from '@/components/content/market/item-card'
+import ItemCard from '@/components/content/search/item-card'
 import jsonData from '@/data/items.json'
-import Spinner from '../../spinner'
+import Spinner from '@/components/ui/spinner'
 import { Params } from '@/types/params'
 import { notFound } from 'next/navigation'
 
@@ -15,11 +15,12 @@ const DEFAULT_LIMIT = 9
 
 const mockItems: Item[] = jsonData.map((data) => ({
   ...data,
+  postcode: data.suburb,
   created_at: new Date(data.created_at),
   updated_at: new Date(data.updated_at),
 }))
 
-export default function Market({
+export default function Search({
   params,
 }: {
   params: Params
@@ -74,10 +75,7 @@ export default function Market({
     if (params.sort) {
       const sort = params.sort
       _items = _items.sort((a: Item, b: Item) => {
-        if (
-          sort === 'created_asc' ||
-          sort === 'relevance'
-        ) {
+        if (sort === 'created_asc') {
           return a.created_at < b.created_at
             ? -1
             : a.created_at > b.created_at
@@ -89,7 +87,10 @@ export default function Market({
             : a.created_at < b.created_at
               ? 1
               : 0
-        } else if (sort === 'price_asc') {
+        } else if (
+          sort === 'price_asc' ||
+          sort === 'default'
+        ) {
           return a.price < b.price
             ? -1
             : a.price > b.price
@@ -118,9 +119,7 @@ export default function Market({
     setLoading(false)
   }
 
-  useEffect(() => {
-    loadMockItems(params)
-  }, [params])
+  useEffect(() => loadMockItems(params), [params])
 
   const renderItems = () => {
     return (

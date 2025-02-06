@@ -1,7 +1,7 @@
 'use client'
 
-import Market from '@/components/content/market'
-import Spinner from '@/components/spinner'
+import Search from '@/components/content/search'
+import Spinner from '@/components/ui/spinner'
 import { extractParams } from '@/helpers/params'
 import { useSearchParams } from 'next/navigation'
 
@@ -12,5 +12,5 @@ export default function SearchPage() {
 
   if (!params) return <Spinner />
 
-  return <Market params={params} />
+  return <Search params={params} />
 }

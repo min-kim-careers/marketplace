@@ -1,7 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Control, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 import { Button } from '@/components/shadcn/components/ui/button'
@@ -26,45 +26,7 @@ import { useToast } from '@/components/shadcn/hooks/use-toast'
 import { ROUTES } from '@/constants/routes'
 import useAuthStore from '@/store/auth-store'
 import { useRouter } from 'next/navigation'
-import { HTMLInputTypeAttribute } from 'react'
-import { signupSchema } from '../../../components/content/signup/schema'
-
-function Field({
-  name,
-  type,
-  label,
-  placeholder,
-  control,
-  description,
-}: {
-  name: keyof z.infer<typeof signupSchema>
-  type: HTMLInputTypeAttribute
-  label: string
-  placeholder: string
-  control: Control<z.infer<typeof signupSchema>>
-  description?: string
-}) {
-  return (
-    <FormField
-      control={control}
-      name={name}
-      render={({ field }) => (
-        <FormItem className='flex flex-col gap-2'>
-          <FormLabel>{label}</FormLabel>
-          <FormControl>
-            <Input
-              type={type}
-              placeholder={placeholder}
-              {...field}
-            />
-          </FormControl>
-          <FormDescription>{description}</FormDescription>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  )
-}
+import { signupSchema } from './schema'
 
 export default function Signup() {
   const { actions } = useAuthStore()
@@ -102,6 +64,35 @@ export default function Signup() {
     })
   }
 
+  const renderInputField = (
+    name: keyof z.infer<typeof signupSchema>,
+    type: string,
+    label: string,
+    placeholder: string,
+    description?: string,
+  ) => {
+    return (
+      <FormField
+        control={form.control}
+        name={name}
+        render={({ field }) => (
+          <FormItem className='flex flex-col gap-2'>
+            <FormLabel>{label}</FormLabel>
+            <FormControl>
+              <Input
+                type={type}
+                placeholder={placeholder}
+                {...field}
+              />
+            </FormControl>
+            <FormDescription>{description}</FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    )
+  }
+
   return (
     <Card className='my-4 flex flex-col'>
       <CardHeader>
@@ -114,27 +105,24 @@ export default function Signup() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className='flex flex-col gap-2'>
-              <Field
-                type='email'
-                name='email'
-                label='Email'
-                placeholder='Enter your name'
-                control={form.control}
-              />
-              <Field
-                type='password'
-                name='password'
-                label='Password'
-                placeholder='Enter your password'
-                control={form.control}
-              />
-              <Field
-                type='text'
-                name='handle'
-                label='Handle'
-                placeholder='Enter your handle'
-                control={form.control}
-              />
+              {renderInputField(
+                'email',
+                'email',
+                'Email',
+                'Enter your email',
+              )}
+              {renderInputField(
+                'password',
+                'password',
+                'Password',
+                'Enter your password',
+              )}
+              {renderInputField(
+                'handle',
+                'text',
+                'Handle',
+                'Enter your handle',
+              )}
 
               <Button type='submit' className='w-full'>
                 Sign Up
