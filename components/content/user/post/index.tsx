@@ -23,11 +23,10 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
+  FormMessage
 } from '@/components/shadcn/components/ui/form'
 import { Input } from '@/components/shadcn/components/ui/input'
 import {
@@ -39,12 +38,13 @@ import { useToast } from '@/components/shadcn/hooks/use-toast'
 import { cn } from '@/components/shadcn/lib/utils'
 import { ROUTES } from '@/constants/routes'
 // import useAuthStore from '@/store/auth-store'
+import Spinner from '@/components/ui/spinner'
+import { searchLocations } from '@/lib/fuse/locations'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { KeyboardEvent, useState } from 'react'
+import { CATEGORIES, CONDITIONS } from './constants'
 import { postSchema } from './schema'
-import { LOCATIONS } from '@/constants/locations'
-import { CATEGORIES } from '@/constants/categories'
-import { CONDITIONS } from '@/constants/conditions'
 
 export default function Post() {
   // const { profile } = useAuthStore()
@@ -56,25 +56,16 @@ export default function Post() {
     defaultValues: {
       name: '',
       description: '',
-      price: 0,
+      price: undefined,
       image_url: '',
       category: '',
       location: '',
       condition: '',
     },
-    // defaultValues: {
-    //   name: 'Sample Item',
-    //   description: 'This is a sample item description.',
-    //   price: 100,
-    //   image_url: 'https://via.placeholder.com/150',
-    //   category: 'Electronics',
-    //   suburb: 'Sample Suburb',
-    //   state: 'Sample State',
-    //   condition: 'New',
-    // },
   })
 
   async function onSubmit(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     values: z.infer<typeof postSchema>,
   ) {
     // await insertItem({
@@ -92,12 +83,15 @@ export default function Post() {
     })
   }
 
-  const renderInputField = (
-    name: keyof z.infer<typeof postSchema>,
-    label: string,
-    placeholder: string,
-    description?: string,
-  ) => {
+  const InputField = ({
+    name,
+    label,
+    placeholder,
+  }: {
+    name: keyof z.infer<typeof postSchema>
+    label: string
+    placeholder?: string
+  }) => {
     return (
       <FormField
         control={form.control}
@@ -108,7 +102,6 @@ export default function Post() {
             <FormControl>
               <Input placeholder={placeholder} {...field} />
             </FormControl>
-            <FormDescription>{description}</FormDescription>
             <FormMessage />
           </FormItem>
         )}
@@ -116,14 +109,19 @@ export default function Post() {
     )
   }
 
-  const renderSuggestionField = (
-    name: keyof z.infer<typeof postSchema>,
-    label: string,
-    placeholder: string,
-    suggestions: Record<string, string>,
-    description?: string,
-  ) => {
-    const handleSearch = (value: string, search:string) => value.startsWith(search) ? 1 : 0
+  const DropdownField = ({
+    name,
+    label,
+    placeholder,
+    lookup,
+  }: {
+    name: keyof z.infer<typeof postSchema>
+    label: string
+    lookup: Record<string, string>
+    placeholder?: string
+  }) => {
+    const handleSearch = (value: string, search: string) =>
+      value.startsWith(search) ? 1 : 0
 
     return (
       <FormField
@@ -144,8 +142,7 @@ export default function Post() {
                         'text-muted-foreground',
                     )}
                   >
-                    {suggestions[field.value] ??
-                      placeholder}
+                    {lookup[field.value] ?? placeholder}
                     <ChevronsUpDown className='opacity-50' />
                   </Button>
                 </FormControl>
@@ -161,33 +158,127 @@ export default function Post() {
                       No {name} found.
                     </CommandEmpty>
                     <CommandGroup>
-                      {Object.keys(suggestions).map(
-                        (key) => (
+                      {Object.keys(lookup).map((key) => (
+                        <CommandItem
+                          value={key}
+                          key={key}
+                          onSelect={(value) => {
+                            form.setValue(name, value)
+                          }}
+                        >
+                          {lookup[key]}
+                          <Check
+                            className={cn(
+                              'ml-auto',
+                              key === field.value
+                                ? 'opacity-100'
+                                : 'opacity-0',
+                            )}
+                          />
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    )
+  }
+
+  const LocationField = ({
+    name = 'location',
+    label = 'Location',
+    placeholder,
+  }: {
+    name?: keyof z.infer<typeof postSchema>
+    label?: string
+    placeholder?: string
+  }) => {
+    const [loading, setLoading] = useState(false)
+    const [query, setQuery] = useState('')
+    const [locations, setLocations] = useState<string[]>([])
+
+    const handleSearch = async (
+      e: KeyboardEvent<HTMLInputElement>,
+    ) => {
+      if (e.key === 'Enter') {
+        setLoading(true)
+        const res = await searchLocations(query)
+        setLocations(res)
+        setLoading(false)
+      }
+    }
+
+    return (
+      <FormField
+        control={form.control}
+        name={name}
+        render={({ field }) => (
+          <FormItem className='flex flex-col gap-2'>
+            <FormLabel>{label}</FormLabel>
+            <Popover>
+              <PopoverTrigger asChild>
+                <FormControl>
+                  <Button
+                    variant='outline'
+                    role='combobox'
+                    className={cn(
+                      'justify-between',
+                      !field.value &&
+                        'text-muted-foreground',
+                    )}
+                  >
+                    {field.value || placeholder}
+                    <ChevronsUpDown className='opacity-50' />
+                  </Button>
+                </FormControl>
+              </PopoverTrigger>
+              <PopoverContent className='p-0'>
+                <Command shouldFilter={false}>
+                  <CommandInput
+                    placeholder={`Search ${name}...`}
+                    className='h-9'
+                    value={query}
+                    onValueChange={setQuery}
+                    onKeyDown={handleSearch}
+                  />
+                  <CommandList>
+                    <CommandEmpty>
+                      No {name} found.
+                    </CommandEmpty>
+                    <CommandGroup>
+                      {loading ? (
+                        <Spinner />
+                      ) : (
+                        locations.map((location, i) => (
                           <CommandItem
-                            value={key}
-                            key={key}
+                            value={location}
+                            key={i}
                             onSelect={(value) => {
                               form.setValue(name, value)
                             }}
                           >
-                            {suggestions[key]}
+                            {location}
                             <Check
                               className={cn(
                                 'ml-auto',
-                                key === field.value
+                                location === field.value
                                   ? 'opacity-100'
                                   : 'opacity-0',
                               )}
                             />
                           </CommandItem>
-                        ),
+                        ))
                       )}
                     </CommandGroup>
                   </CommandList>
                 </Command>
               </PopoverContent>
             </Popover>
-            <FormDescription>{description}</FormDescription>
             <FormMessage />
           </FormItem>
         )}
@@ -209,45 +300,40 @@ export default function Post() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
-              <div className='flex flex-col gap-2'>
-                {renderInputField(
-                  'name',
-                  'Name',
-                  'Enter your name',
-                )}
-                {renderInputField(
-                  'description',
-                  'Description',
-                  'Enter a description',
-                )}
-                {renderInputField(
-                  'price',
-                  'Price',
-                  'Enter the price',
-                )}
-                {renderInputField(
-                  'image_url',
-                  'Image URL',
-                  'Enter the image URL',
-                )}
-                {renderSuggestionField(
-                  'category',
-                  'Category',
-                  'Select category',
-                  CATEGORIES,
-                )}
-                {renderSuggestionField(
-                  'condition',
-                  'Condition',
-                  'Select condition',
-                  CONDITIONS,
-                )}
-                {renderSuggestionField(
-                  'location',
-                  'Location',
-                  'Select location',
-                  LOCATIONS,
-                )}
+              <div className='flex flex-col gap-4'>
+                <InputField
+                  name='name'
+                  label='Name'
+                  placeholder='Enter the item name, e.g., AMD RYZEN 7 7800X3D'
+                />
+                <InputField
+                  name='description'
+                  label='Description'
+                  placeholder='Provide details about the item, such as size or material'
+                />
+                <InputField
+                  name='price'
+                  label='Price'
+                  placeholder='Enter the price in AUD, e.g., 150.00'
+                />
+                <InputField
+                  name='image_url'
+                  label='Image URL'
+                  placeholder='Paste a valid image link, e.g., https://example.com/image.jpg'
+                />
+                <DropdownField
+                  name='category'
+                  label='Category'
+                  placeholder='Select an item category'
+                  lookup={CATEGORIES}
+                />
+                <DropdownField
+                  name='condition'
+                  label='Condition'
+                  placeholder='Choose the condition, e.g., New or Used'
+                  lookup={CONDITIONS}
+                />
+                <LocationField placeholder='Search for a location, e.g., Sydney' />
 
                 <Button type='submit' className='w-full'>
                   Post Ad
@@ -257,7 +343,7 @@ export default function Post() {
           </Form>
         </CardContent>
       </div>
-      <div className='flex flex-1 items-center justify-center bg-muted italic'>
+      <div className='flex flex-1 items-center justify-center bg-muted italic max-md:h-52'>
         No image
       </div>
     </Card>

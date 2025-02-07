@@ -1,7 +1,7 @@
 'use server'
 
 import { Profile } from '@/types/profile'
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import { AuthError } from '@supabase/supabase-js'
 
 interface Response {

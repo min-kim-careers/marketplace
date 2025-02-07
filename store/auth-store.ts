@@ -1,10 +1,10 @@
 import { Profile } from '@/types/profile'
-import { createClient } from '@/utils/supabase/client'
+import { createClient } from '@/lib/supabase/client'
 import { create } from 'zustand'
 import {
   createProfile,
   getProfile,
-} from '../utils/supabase/crud/auth'
+} from '../lib/supabase/crud/auth'
 import { AuthError } from '@supabase/supabase-js'
 
 interface Response {
