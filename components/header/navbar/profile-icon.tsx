@@ -11,23 +11,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/shadcn/components/ui/dropdown-menu'
-import useAuthStore from '@/store/auth-store'
-import { toast } from '../../shadcn/hooks/use-toast'
-import Link from 'next/link'
 import { ROUTES } from '@/constants/routes'
-import { useRouter } from 'next/navigation'
+import useAuthStore from '@/store/auth-store'
+import Link from 'next/link'
 
-export default function ProfileIcon() {
-  const { profile, actions } = useAuthStore()
-  const router = useRouter()
-
-  const handleLogout = () => {
-    actions.logout()
-    router.replace(ROUTES.HOME)
-    toast({
-      description: 'You have been logged out',
-    })
-  }
+export default function ProfileIcon({
+  handleLogout,
+}: {
+  handleLogout: () => void
+}) {
+  const { profile } = useAuthStore()
 
   return (
     <DropdownMenu>

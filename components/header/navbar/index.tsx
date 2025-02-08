@@ -5,9 +5,25 @@ import useAuthStore from '@/store/auth-store'
 import Link from 'next/link'
 import ProfileIcon from './profile-icon'
 import { Button } from '../../shadcn/components/ui/button'
+import { toast } from '@/components/shadcn/hooks/use-toast'
+import { useRouter } from 'next/navigation'
 
 export default function Navbar() {
-  const { profile } = useAuthStore()
+  const { profile, logout } = useAuthStore()
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    if (await logout()) {
+      router.replace(ROUTES.HOME)
+      toast({
+        description: `You logged out successfully. Good bye ${profile?.handle}`,
+      })
+    } else {
+      toast({
+        description: `You failed to log out `,
+      })
+    }
+  }
 
   const LoggedIn = () => (
     <span className='flex items-center justify-between gap-4'>
@@ -24,7 +40,7 @@ export default function Navbar() {
       <Button>
         <Link href={ROUTES.POST}>Post Ad</Link>
       </Button>
-      <ProfileIcon />
+      <ProfileIcon handleLogout={handleLogout} />
     </span>
   )
 

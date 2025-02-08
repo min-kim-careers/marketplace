@@ -12,29 +12,21 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/shadcn/components/ui/card'
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/shadcn/components/ui/form'
-import { Input } from '@/components/shadcn/components/ui/input'
+import { Form } from '@/components/shadcn/components/ui/form'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
 import { ROUTES } from '@/constants/routes'
 import useAuthStore from '@/store/auth-store'
 import { useRouter } from 'next/navigation'
-import { signupSchema } from './schema'
+import { Email, Handle, Password } from './fields'
+import { SignupFormSchema } from './schema'
 
 export default function Signup() {
-  const { actions } = useAuthStore()
+  const { profile, signup } = useAuthStore()
   const { toast } = useToast()
   const router = useRouter()
 
-  const form = useForm<z.infer<typeof signupSchema>>({
-    resolver: zodResolver(signupSchema),
+  const form = useForm<z.infer<typeof SignupFormSchema>>({
+    resolver: zodResolver(SignupFormSchema),
     defaultValues: {
       handle: '',
       email: '',
@@ -43,54 +35,18 @@ export default function Signup() {
   })
 
   async function onSubmit(
-    values: z.infer<typeof signupSchema>,
+    formData: z.infer<typeof SignupFormSchema>,
   ) {
-    const { error } = await actions.signup(
-      values.email,
-      values.password,
-      values.handle,
-    )
-
-    if (error) {
+    if (await signup(formData)) {
+      router.replace(ROUTES.HOME)
       toast({
-        description: error.message,
+        description: `Signed up successfully. Welcome ${profile?.handle}`,
       })
-      return
+    } else {
+      toast({
+        description: `Sign up was unsuccessful`,
+      })
     }
-
-    router.push(ROUTES.HOME)
-    toast({
-      description: 'Sign up successful',
-    })
-  }
-
-  const renderInputField = (
-    name: keyof z.infer<typeof signupSchema>,
-    type: string,
-    label: string,
-    placeholder: string,
-    description?: string,
-  ) => {
-    return (
-      <FormField
-        control={form.control}
-        name={name}
-        render={({ field }) => (
-          <FormItem className='flex flex-col gap-2'>
-            <FormLabel>{label}</FormLabel>
-            <FormControl>
-              <Input
-                type={type}
-                placeholder={placeholder}
-                {...field}
-              />
-            </FormControl>
-            <FormDescription>{description}</FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    )
   }
 
   return (
@@ -105,24 +61,9 @@ export default function Signup() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className='flex flex-col gap-2'>
-              {renderInputField(
-                'email',
-                'email',
-                'Email',
-                'Enter your email',
-              )}
-              {renderInputField(
-                'password',
-                'password',
-                'Password',
-                'Enter your password',
-              )}
-              {renderInputField(
-                'handle',
-                'text',
-                'Handle',
-                'Enter your handle',
-              )}
+              <Handle form={form} />
+              <Email form={form} />
+              <Password form={form} />
 
               <Button type='submit' className='w-full'>
                 Sign Up

@@ -1,8 +1,12 @@
 import { z } from 'zod'
-import { CATEGORIES, CONDITIONS } from './constants'
+import {
+  CATEGORIES,
+  CONDITIONS,
+  MAX_DESCRIPTION_LENGTH,
+} from './constants'
 import { checkLocationExists } from '@/lib/fuse/locations'
 
-export const postSchema = z.object({
+export const PostFormSchema = z.object({
   name: z
     .string()
     .min(2, {
@@ -11,6 +15,7 @@ export const postSchema = z.object({
     .max(50, {
       message: 'Name must be at most 50 characters long',
     })
+    .trim()
     .refine((val) => val.trim() !== '', {
       message: 'Name is required',
     }),
@@ -20,6 +25,9 @@ export const postSchema = z.object({
     .min(10, {
       message:
         'Description must be at least 10 characters long',
+    })
+    .max(MAX_DESCRIPTION_LENGTH, {
+      message: `Description must be at most ${MAX_DESCRIPTION_LENGTH} characters long`,
     })
     .refine((val) => val.trim() !== '', {
       message: 'Description is required',
@@ -32,17 +40,12 @@ export const postSchema = z.object({
       message: 'Price is required',
     }),
 
-  image_url: z
-    .string()
-    .url({ message: 'Image URL must be a valid URL' })
-    .refine((val) => val.trim() !== '', {
-      message: 'Image URL is required',
-    }),
-
-  category: z
-    .enum(Object.keys(CATEGORIES) as [string, ...string[]], {
+  category: z.enum(
+    Object.keys(CATEGORIES) as [string, ...string[]],
+    {
       message: 'Category is required',
-    }),
+    },
+  ),
 
   condition: z.enum(
     Object.keys(CONDITIONS) as [string, ...string[]],
@@ -53,4 +56,6 @@ export const postSchema = z.object({
     .refine((val) => checkLocationExists(val), {
       message: 'Invalid location',
     }),
+
+  expires_in: z.number(),
 })

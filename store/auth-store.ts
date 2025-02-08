@@ -1,31 +1,25 @@
-import { Profile } from '@/types/profile'
+import { LoginFormSchema } from '@/components/content/auth/login/schema'
+import { SignupFormSchema } from '@/components/content/auth/signup/schema'
 import { createClient } from '@/lib/supabase/client'
-import { create } from 'zustand'
 import {
-  createProfile,
-  getProfile,
-} from '../lib/supabase/crud/auth'
-import { AuthError } from '@supabase/supabase-js'
-
-interface Response {
-  error: AuthError | null
-}
+  login as serverLogin,
+  logout as serverLogout,
+  signup as serverSignup,
+} from '@/lib/supabase/crud/auth'
+import { Profile } from '@/types/profile'
+import { z } from 'zod'
+import { create } from 'zustand'
 
 interface AuthState {
   profile: Profile | null
 
-  actions: {
-    login: (
-      email: string,
-      password: string,
-    ) => Promise<Response>
-    signup: (
-      email: string,
-      password: string,
-      handle: string,
-    ) => Promise<Response>
-    logout: () => void
-  }
+  login: (
+    formData: z.infer<typeof LoginFormSchema>,
+  ) => Promise<boolean>
+  signup: (
+    formData: z.infer<typeof SignupFormSchema>,
+  ) => Promise<boolean>
+  logout: () => Promise<boolean>
 }
 
 const supabase = createClient()
@@ -39,13 +33,10 @@ const useAuthStore = create<AuthState>((set) => {
         event === 'SIGNED_IN' ||
         event === 'INITIAL_SESSION'
       ) {
-        const user = session?.user
-        if (user) {
+        const metadata = session?.user.user_metadata
+        if (metadata) {
           set({
-            profile: {
-              email: user.user_metadata.email,
-              handle: user.user_metadata.handle,
-            } as Profile,
+            profile: metadata as Profile,
           })
         }
       } else if (event === 'SIGNED_OUT') {
@@ -56,41 +47,51 @@ const useAuthStore = create<AuthState>((set) => {
     },
   )
 
-  const login = async (email: string, password: string) => {
-    const { profile, error } = await getProfile(
-      email,
-      password,
-    )
+  const login = async (
+    formData: z.infer<typeof LoginFormSchema>,
+  ) => {
+    const { success, message, profile } =
+      await serverLogin(formData)
 
-    set({ profile })
-    return { error }
+    console.log(message)
+
+    if (success && profile) {
+      set({ profile })
+    }
+    return success
   }
 
   const signup = async (
-    email: string,
-    password: string,
-    handle: string,
+    formData: z.infer<typeof SignupFormSchema>,
   ) => {
-    const { error } = await createProfile(
-      email,
-      password,
-      handle,
-    )
+    const { success, message, profile } =
+      await serverSignup(formData)
 
-    if (error) {
-      return { error }
+    console.log(message)
+
+    if (success && profile) {
+      set({ profile })
     }
-
-    return await login(email, password)
+    return success
   }
 
   const logout = async () => {
-    await supabase.auth.signOut()
+    const { success, message } =
+      await serverLogout()
+
+    console.log(message)
+
+    if (success) {
+      set({ profile: null })
+    }
+    return success
   }
 
   return {
     profile: null,
-    actions: { login, signup, logout },
+    login,
+    signup,
+    logout,
   }
 })
 

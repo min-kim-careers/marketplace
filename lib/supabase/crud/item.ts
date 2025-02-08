@@ -1,14 +1,17 @@
 'use server'
 
+import { z } from 'zod'
 import { createClient } from '../server'
 import { Item } from '../types/item'
+import { PostFormSchema } from '@/components/content/user/post/schema'
+import { Profile } from '@/types/profile'
 
 const TABLE_NAME = 'items'
 
 export const getItems = async (
   from: number,
   to: number,
-  sortColumn: keyof Item = 'created_at',
+  sort: keyof Item = 'created_at',
 ) => {
   const supabase = await createClient()
 
@@ -16,7 +19,7 @@ export const getItems = async (
     .from(TABLE_NAME)
     .select('*')
     .range(from, to)
-    .order(sortColumn, { ascending: true })
+    .order(sort, { ascending: true })
 
   if (error) {
     console.error(error)
@@ -40,17 +43,39 @@ export const getTotalCount = async () => {
   return data
 }
 
-export const insertItem = async (item: Item) => {
+const getExpiresAt = (expires_in: number): Date => {
+  return new Date(
+    new Date().setDate(new Date().getDate() + expires_in),
+  )
+}
+
+export const insertItem = async (
+  formData: z.infer<typeof PostFormSchema>,
+  profile: Profile | null,
+) => {
+  if (!profile) {
+    return
+  }
+
+  const item: Item = {
+    ...formData,
+    user_email: profile.email,
+    user_handle: profile.handle,
+    updated_at: new Date(),
+    created_at: new Date(),
+    expires_at: getExpiresAt(formData.expires_in),
+  }
+
   const supabase = await createClient()
 
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from(TABLE_NAME)
     .insert([item])
+
   if (error) {
     console.error(error)
     throw error
   }
-  return data
 }
 
 // export const searchItems = async (keywords: string[]) => {
@@ -59,7 +84,7 @@ export const insertItem = async (item: Item) => {
 //   const joinedKeywords = `'${keywords.join(`' | '`)}'`
 
 //   console.log(joinedKeywords);
-  
+
 //   const { data, error } = await supabase
 //     .from(TABLE_NAME)
 //     .select()
