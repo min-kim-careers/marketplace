@@ -7,9 +7,8 @@ import { Profile } from '@/types/profile'
 import { z } from 'zod'
 
 interface AuthResponse {
-  success: boolean
-  message: string
-  profile?: Profile
+  log: string
+  profile: Profile | null
 }
 
 export const login = async (
@@ -17,25 +16,25 @@ export const login = async (
 ): Promise<AuthResponse> => {
   const supabase = await createClient()
 
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: formData.email,
-    password: formData.password,
-  })
+  const { data, error } =
+    await supabase.auth.signInWithPassword({
+      email: formData.email,
+      password: formData.password,
+    })
 
   if (error) {
     console.error(error.message)
     return {
-      success: false,
-      message: 'Login failed',
+      log: 'Login failed',
+      profile: null,
     }
   }
 
   const metadata = data.user.user_metadata
 
   return {
-    success: false,
-    message: 'Login successful',
-    profile: metadata as Profile
+    log: 'Login successful',
+    profile: metadata as Profile,
   }
 }
 
@@ -65,8 +64,8 @@ export const signup = async (
   if (signupError) {
     console.error(signupError.message)
     return {
-      success: false,
-      message: 'Sign up failed',
+      log: 'Sign up failed',
+      profile: null,
     }
   }
 
@@ -79,35 +78,38 @@ export const signup = async (
   if (loginError) {
     console.error(loginError.message)
     return {
-      success: false,
-      message: 'Sign up failed',
+      log: 'Sign up failed',
+      profile: null,
     }
   }
 
   const metadata = data.user.user_metadata
 
   return {
-    success: false,
-    message: 'Sign up successful',
-    profile: metadata as Profile
+    log: 'Sign up successful',
+    profile: metadata as Profile,
   }
 }
 
 export const logout = async (): Promise<AuthResponse> => {
   const supabase = await createClient()
 
+  const user = await supabase.auth.getUser()
+
+  const profile = user.data.user?.user_metadata as Profile
+
   const { error } = await supabase.auth.signOut()
 
   if (error) {
     console.error(error.message)
     return {
-      success: false,
-      message: 'Log out failed',
+      log: 'Log out failed',
+      profile: null,
     }
   }
 
   return {
-    success: false,
-    message: 'Log out successful',
+    log: 'Log out successful',
+    profile,
   }
 }

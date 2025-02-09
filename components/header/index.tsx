@@ -3,20 +3,22 @@
 import { ROUTES } from '@/constants/routes'
 import useAuthStore from '@/store/auth-store'
 import Link from 'next/link'
-import ProfileIcon from './profile-icon'
-import { Button } from '../../shadcn/components/ui/button'
+import Menu from './menu'
+import { Button } from '../shadcn/components/ui/button'
 import { toast } from '@/components/shadcn/hooks/use-toast'
 import { useRouter } from 'next/navigation'
 
-export default function Navbar() {
+export default function Header() {
   const { profile, logout } = useAuthStore()
   const router = useRouter()
 
   const handleLogout = async () => {
-    if (await logout()) {
+    const { handle } = await logout()
+
+    if (handle) {
       router.replace(ROUTES.HOME)
       toast({
-        description: `You logged out successfully. Good bye ${profile?.handle}`,
+        description: `You logged out successfully. Good bye ${handle}`,
       })
     } else {
       toast({
@@ -40,7 +42,7 @@ export default function Navbar() {
       <Button>
         <Link href={ROUTES.POST}>Post Ad</Link>
       </Button>
-      <ProfileIcon handleLogout={handleLogout} />
+      <Menu handleLogout={handleLogout} />
     </span>
   )
 

@@ -10,16 +10,20 @@ import { Profile } from '@/types/profile'
 import { z } from 'zod'
 import { create } from 'zustand'
 
+interface AuthResult {
+  handle: string | null
+}
+
 interface AuthState {
   profile: Profile | null
 
   login: (
     formData: z.infer<typeof LoginFormSchema>,
-  ) => Promise<boolean>
+  ) => Promise<AuthResult>
   signup: (
     formData: z.infer<typeof SignupFormSchema>,
-  ) => Promise<boolean>
-  logout: () => Promise<boolean>
+  ) => Promise<AuthResult>
+  logout: () => Promise<AuthResult>
 }
 
 const supabase = createClient()
@@ -27,7 +31,7 @@ const supabase = createClient()
 const useAuthStore = create<AuthState>((set) => {
   supabase.auth.onAuthStateChange(
     async (event, session) => {
-      // console.log(event, session?.user.email)
+      console.log(event)
 
       if (
         event === 'SIGNED_IN' ||
@@ -49,42 +53,45 @@ const useAuthStore = create<AuthState>((set) => {
 
   const login = async (
     formData: z.infer<typeof LoginFormSchema>,
-  ) => {
-    const { success, message, profile } =
-      await serverLogin(formData)
+  ): Promise<AuthResult> => {
+    const { log, profile } = await serverLogin(formData)
 
-    console.log(message)
+    console.log(log)
 
-    if (success && profile) {
+    if (profile) {
       set({ profile })
+      return { handle: profile.handle }
     }
-    return success
+
+    return { handle: null }
   }
 
   const signup = async (
     formData: z.infer<typeof SignupFormSchema>,
-  ) => {
-    const { success, message, profile } =
-      await serverSignup(formData)
+  ): Promise<AuthResult> => {
+    const { log, profile } = await serverSignup(formData)
 
-    console.log(message)
+    console.log(log)
 
-    if (success && profile) {
+    if (profile) {
       set({ profile })
+      return { handle: profile.handle }
     }
-    return success
+
+    return { handle: null }
   }
 
-  const logout = async () => {
-    const { success, message } =
-      await serverLogout()
+  const logout = async (): Promise<AuthResult> => {
+    const { log, profile } = await serverLogout()
 
-    console.log(message)
+    console.log(log)
 
-    if (success) {
+    if (profile) {
       set({ profile: null })
+      return { handle: profile.handle }
     }
-    return success
+
+    return { handle: null }
   }
 
   return {

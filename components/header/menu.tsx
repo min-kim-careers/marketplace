@@ -14,8 +14,9 @@ import {
 import { ROUTES } from '@/constants/routes'
 import useAuthStore from '@/store/auth-store'
 import Link from 'next/link'
+import Spinner from '../ui/spinner'
 
-export default function ProfileIcon({
+export default function Menu({
   handleLogout,
 }: {
   handleLogout: () => void
@@ -28,13 +29,17 @@ export default function ProfileIcon({
         <Avatar>
           <AvatarImage src='https://github.com/shadcn.png' />
           <AvatarFallback>
-            {profile?.handle[0].toUpperCase()}
+            {profile ? (
+              profile.handle[0].toUpperCase()
+            ) : (
+              <Spinner />
+            )}
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent side='bottom' align='end'>
         <DropdownMenuLabel>
-          {profile?.handle}
+          {profile ? profile.handle : <Spinner />}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>

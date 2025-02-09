@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import '@/app/globals.css'
 import { Toaster } from '@/components/shadcn/components/ui/toaster'
-import Navbar from '@/components/header/navbar'
+import Header from '@/components/header'
 import Footer from '@/components/footer'
 
 const geistSans = Geist({
@@ -33,7 +33,7 @@ export default function RootLayout({
       >
         <div className='flex flex-col font-[family-name:var(--font-geist-sans)]'>
           <div className='flex min-h-screen w-full flex-col items-center'>
-            <Navbar />
+            <Header />
             <div className='flex w-full flex-1 px-4'>
               {children}
             </div>

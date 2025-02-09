@@ -21,7 +21,7 @@ import { Email, Handle, Password } from './fields'
 import { SignupFormSchema } from './schema'
 
 export default function Signup() {
-  const { profile, signup } = useAuthStore()
+  const { signup } = useAuthStore()
   const { toast } = useToast()
   const router = useRouter()
 
@@ -37,10 +37,12 @@ export default function Signup() {
   async function onSubmit(
     formData: z.infer<typeof SignupFormSchema>,
   ) {
-    if (await signup(formData)) {
+    const { handle } = await signup(formData)
+
+    if (handle) {
       router.replace(ROUTES.HOME)
       toast({
-        description: `Signed up successfully. Welcome ${profile?.handle}`,
+        description: `Signed up successfully. Welcome ${handle}`,
       })
     } else {
       toast({
