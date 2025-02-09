@@ -2,7 +2,7 @@
 
 import { z } from 'zod'
 import { createClient } from '../server'
-import { Item } from '../types/item'
+import { Item } from './type'
 import { PostFormSchema } from '@/components/content/user/post/schema'
 import { Profile } from '@/types/profile'
 

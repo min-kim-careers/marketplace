@@ -2,7 +2,7 @@ import Fuse from 'fuse.js'
 import data from './locations.json'
 
 const locations = new Fuse(data, {
-  keys: ['locality'],
+  keys: ['locality', 'postcode'],
   threshold: 0.3,
   useExtendedSearch: true
 })

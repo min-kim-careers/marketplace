@@ -23,11 +23,11 @@ import {
   PopoverTrigger,
 } from '@/components/shadcn/components/ui/popover'
 import { cn } from '@/components/shadcn/lib/utils'
+import Spinner from '@/components/ui/spinner'
 import { searchLocations } from '@/lib/fuse/locations'
 import { Check, ChevronsUpDown } from 'lucide-react'
-import { KeyboardEvent, useState } from 'react'
+import { useState } from 'react'
 import { PostFormSchema } from '../schema'
-import Spinner from '@/components/ui/spinner'
 
 export default function Location({
   form,
@@ -42,15 +42,23 @@ export default function Location({
   const [query, setQuery] = useState('')
   const [locations, setLocations] = useState<string[]>([])
 
-  const handleSearch = async (
-    e: KeyboardEvent<HTMLInputElement>,
-  ) => {
-    if (e.key === 'Enter') {
-      setLoading(true)
-      const res = await searchLocations(query)
-      setLocations(res)
-      setLoading(false)
-    }
+  // const handleSearch = async (
+  //   e: KeyboardEvent<HTMLInputElement>,
+  // ) => {
+  //   if (e.key === 'Enter') {
+  //     setLoading(true)
+  //     const res = await searchLocations(query)
+  //     setLocations(res)
+  //     setLoading(false)
+  //   }
+  // }
+
+  const handleChange = async (search: string) => {
+    setQuery(search)
+    setLoading(true)
+    const res = await searchLocations(search)
+    setLocations(res)
+    setLoading(false)
   }
 
   return (
@@ -82,8 +90,8 @@ export default function Location({
                   placeholder={`Search ${name}...`}
                   className='h-9'
                   value={query}
-                  onValueChange={setQuery}
-                  onKeyDown={handleSearch}
+                  onValueChange={handleChange}
+                  // onKeyDown={handleSearch}
                 />
                 <CommandList>
                   <CommandEmpty>

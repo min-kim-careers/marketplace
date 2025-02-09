@@ -15,13 +15,14 @@ import {
 import { Form } from '@/components/shadcn/components/ui/form'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
 import { ROUTES } from '@/constants/routes'
-import { insertItem } from '@/lib/supabase/crud/item'
+import { insertItem } from '@/lib/supabase/items/actions'
 import useAuthStore from '@/store/auth-store'
 import { useRouter } from 'next/navigation'
 import {
   Category,
   Condition,
   Description,
+  Image,
   Location,
   Name,
   Price,
@@ -45,8 +46,6 @@ export default function Post() {
       expires_in: 0,
     },
   })
-
-
 
   async function onSubmit(
     values: z.infer<typeof PostFormSchema>,
@@ -72,6 +71,8 @@ export default function Post() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          <Image form={form} />
+
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <div className='flex flex-col gap-4'>

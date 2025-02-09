@@ -58,4 +58,6 @@ export const PostFormSchema = z.object({
     }),
 
   expires_in: z.number(),
+
+  image_urls: z.array(z.string().url()),
 })

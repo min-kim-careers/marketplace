@@ -10,4 +10,5 @@ export interface Item {
   expires_at: Date
   location: string
   condition: string
+  image_urls: string[]
 }

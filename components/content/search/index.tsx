@@ -2,7 +2,7 @@
 
 import Pagination from '@/components/content/search/pagination'
 import Toolbar from '@/components/content/search/toolbar'
-import { Item } from '@/lib/supabase/types/item'
+import { Item } from '@/lib/supabase/items/type'
 import { useEffect, useState } from 'react'
 
 import ItemCard from '@/components/content/search/item-card'
