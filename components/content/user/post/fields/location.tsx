@@ -29,7 +29,7 @@ import { Check, ChevronsUpDown } from 'lucide-react'
 import { useState } from 'react'
 import { PostFormSchema } from '../schema'
 
-export default function Location({
+export default function LocationField({
   form,
 }: {
   form: UseFormReturn<z.infer<typeof PostFormSchema>>
@@ -106,7 +106,9 @@ export default function Location({
                           value={location}
                           key={i}
                           onSelect={(value) => {
-                            form.setValue(name, value)
+                            form.setValue(name, value, {
+                              shouldValidate: true,
+                            })
                           }}
                         >
                           {location}

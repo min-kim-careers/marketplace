@@ -19,15 +19,24 @@ import { insertItem } from '@/lib/supabase/items/actions'
 import useAuthStore from '@/store/auth-store'
 import { useRouter } from 'next/navigation'
 import {
-  Category,
-  Condition,
-  Description,
-  Image,
-  Location,
-  Name,
-  Price,
+  CategoryField,
+  ConditionField,
+  DescriptionField,
+  ImageField,
+  LocationField,
+  NameField,
+  PriceField,
 } from './fields'
 import { PostFormSchema } from './schema'
+import { useState } from 'react'
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/shadcn/components/ui/carousel'
+import Image from 'next/image'
 
 export default function Post() {
   const { profile } = useAuthStore()
@@ -44,6 +53,7 @@ export default function Post() {
       location: '',
       condition: '',
       expires_in: 0,
+      image_urls: [],
     },
   })
 
@@ -59,6 +69,47 @@ export default function Post() {
     })
   }
 
+  const [imageUrls, setImageUrls] = useState<string[]>(
+    Array.from({ length: 3 }, () => ''),
+  )
+
+  const renderImageFields = () => {
+    return (
+      <ImageField
+        form={form}
+        imageUrls={imageUrls}
+        setImageUrls={setImageUrls}
+      />
+    )
+  }
+
+  const renderImagePreviews = () => {
+    return (
+      <Carousel className='w-full bg-black'>
+        <CarouselContent>
+          {imageUrls.map((_, index) => (
+            <CarouselItem key={index}>
+              <div className='flex aspect-square items-center justify-center'>
+                {imageUrls[index] ? (
+                  <Image
+                    src={imageUrls[index]}
+                    alt='preview-image'
+                    layout='fill'
+                    objectFit='contain'
+                  />
+                ) : (
+                  '+'
+                )}
+              </div>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselPrevious />
+        <CarouselNext />
+      </Carousel>
+    )
+  }
+
   return (
     <Card className='flex w-full flex-col md:min-w-3xl md:flex-row'>
       <div className='flex-1'>
@@ -71,17 +122,17 @@ export default function Post() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Image form={form} />
-
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <div className='flex flex-col gap-4'>
-                <Name form={form} />
-                <Price form={form} />
-                <Description form={form} />
-                <Condition form={form} />
-                <Category form={form} />
-                <Location form={form} />
+                {renderImageFields()}
+
+                <NameField form={form} />
+                <PriceField form={form} />
+                <DescriptionField form={form} />
+                <ConditionField form={form} />
+                <CategoryField form={form} />
+                <LocationField form={form} />
 
                 <Button
                   type='submit'
@@ -94,8 +145,8 @@ export default function Post() {
           </Form>
         </CardContent>
       </div>
-      <div className='flex flex-1 items-center justify-center bg-muted italic max-md:h-52'>
-        No image
+      <div className='flex flex-1 items-center justify-center bg-muted'>
+        {renderImagePreviews()}
       </div>
     </Card>
   )

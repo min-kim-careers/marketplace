@@ -10,7 +10,7 @@ import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 import { PostFormSchema } from '../schema'
 
-export default function Name({
+export default function NameField({
   form,
 }: {
   form: UseFormReturn<z.infer<typeof PostFormSchema>>

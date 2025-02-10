@@ -1,2 +1,2 @@
-export { default as Email } from './email'
-export { default as Password } from './password'
+export { default as EmailField } from './email'
+export { default as PasswordField } from './password'

@@ -17,7 +17,7 @@ import { useToast } from '@/components/shadcn/hooks/use-toast'
 import { ROUTES } from '@/constants/routes'
 import useAuthStore from '@/store/auth-store'
 import { useRouter } from 'next/navigation'
-import { Email, Password } from './fields'
+import { EmailField, PasswordField } from './fields'
 import { LoginFormSchema } from './schema'
 
 export default function Signup() {
@@ -62,8 +62,8 @@ export default function Signup() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className='flex flex-col gap-4'>
-              <Email form={form} />
-              <Password form={form} />
+              <EmailField form={form} />
+              <PasswordField form={form} />
 
               <Button type='submit' className='mt-4 w-full'>
                 Login

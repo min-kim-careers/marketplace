@@ -20,7 +20,7 @@ import { z } from 'zod'
 import { PostFormSchema } from '../schema'
 import { MAX_DESCRIPTION_LENGTH } from '../constants'
 
-export default function Description({
+export default function DescriptionField({
   form,
 }: {
   form: UseFormReturn<z.infer<typeof PostFormSchema>>

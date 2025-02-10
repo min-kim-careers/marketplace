@@ -11,7 +11,7 @@ import { Input } from '@/components/shadcn/components/ui/input'
 import { UseFormReturn } from 'react-hook-form'
 import { SignupFormSchema } from '../schema'
 
-export default function Password({
+export default function PasswordField({
   form,
 }: {
   form: UseFormReturn<z.infer<typeof SignupFormSchema>>

@@ -27,7 +27,7 @@ import { Check, ChevronsUpDown } from 'lucide-react'
 import { CONDITIONS } from '../constants'
 import { PostFormSchema } from '../schema'
 
-export default function Condition({
+export default function ConditionField({
   form,
 }: {
   form: UseFormReturn<z.infer<typeof PostFormSchema>>
@@ -80,7 +80,7 @@ export default function Condition({
                         value={key}
                         key={key}
                         onSelect={(value) => {
-                          form.setValue(name, value)
+                          form.setValue(name, value, {shouldValidate: true})
                         }}
                       >
                         {lookup[key]}

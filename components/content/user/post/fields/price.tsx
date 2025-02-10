@@ -11,7 +11,7 @@ import { z } from 'zod'
 import { PostFormSchema } from '../schema'
 import { KeyboardEvent } from 'react'
 
-export default function Price({
+export default function PriceField({
   form,
 }: {
   form: UseFormReturn<z.infer<typeof PostFormSchema>>

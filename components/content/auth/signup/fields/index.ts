@@ -1,3 +1,3 @@
-export { default as Handle } from './handle'
-export { default as Email } from './email'
-export { default as Password } from './password'
+export { default as HandleField } from './handle'
+export { default as EmailField } from './email'
+export { default as PasswordField } from './password'

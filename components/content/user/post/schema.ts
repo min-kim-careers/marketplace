@@ -6,6 +6,11 @@ import {
 } from './constants'
 import { checkLocationExists } from '@/lib/fuse/locations'
 
+const cloudinaryUrlSchema = z
+  .string()
+  .url()
+  .regex(/^https:\/\/res\.cloudinary\.com\/.+/)
+
 export const PostFormSchema = z.object({
   name: z
     .string()
@@ -59,5 +64,7 @@ export const PostFormSchema = z.object({
 
   expires_in: z.number(),
 
-  image_urls: z.array(z.string().url()),
+  image_urls: z
+    .array(cloudinaryUrlSchema)
+    .optional(),
 })

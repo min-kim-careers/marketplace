@@ -3,31 +3,31 @@ import { z } from 'zod'
 
 import { Button } from '@/components/shadcn/components/ui/button'
 import {
-    Command,
-    CommandEmpty,
-    CommandGroup,
-    CommandInput,
-    CommandItem,
-    CommandList,
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
 } from '@/components/shadcn/components/ui/command'
 import {
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from '@/components/shadcn/components/ui/form'
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
 } from '@/components/shadcn/components/ui/popover'
 import { cn } from '@/components/shadcn/lib/utils'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { CATEGORIES } from '../constants'
 import { PostFormSchema } from '../schema'
 
-export default function Category({
+export default function CategoryField({
   form,
 }: {
   form: UseFormReturn<z.infer<typeof PostFormSchema>>
@@ -79,7 +79,9 @@ export default function Category({
                         value={key}
                         key={key}
                         onSelect={(value) => {
-                          form.setValue(name, value)
+                          form.setValue(name, value, {
+                            shouldValidate: true,
+                          })
                         }}
                       >
                         {lookup[key]}
