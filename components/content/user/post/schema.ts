@@ -14,36 +14,28 @@ const cloudinaryUrlSchema = z
 export const PostFormSchema = z.object({
   name: z
     .string()
+    .trim()
     .min(2, {
       message: 'Name must be at least 2 characters long',
     })
     .max(50, {
       message: 'Name must be at most 50 characters long',
-    })
-    .trim()
-    .refine((val) => val.trim() !== '', {
-      message: 'Name is required',
     }),
 
   description: z
     .string()
+    .trim()
     .min(10, {
       message:
         'Description must be at least 10 characters long',
     })
     .max(MAX_DESCRIPTION_LENGTH, {
       message: `Description must be at most ${MAX_DESCRIPTION_LENGTH} characters long`,
-    })
-    .refine((val) => val.trim() !== '', {
-      message: 'Description is required',
     }),
 
   price: z
     .number()
-    .min(0, { message: 'Price must be a positive number' })
-    .refine((val) => !isNaN(val), {
-      message: 'Price is required',
-    }),
+    .min(0, { message: 'Price must be a positive number' }),
 
   category: z.enum(
     Object.keys(CATEGORIES) as [string, ...string[]],
@@ -56,6 +48,7 @@ export const PostFormSchema = z.object({
     Object.keys(CONDITIONS) as [string, ...string[]],
     { message: 'Condition is required' },
   ),
+
   location: z
     .string({ message: 'Location is required' })
     .refine((val) => checkLocationExists(val), {
@@ -66,5 +59,6 @@ export const PostFormSchema = z.object({
 
   image_urls: z
     .array(cloudinaryUrlSchema)
-    .optional(),
+    .max(3)
+    .optional()
 })

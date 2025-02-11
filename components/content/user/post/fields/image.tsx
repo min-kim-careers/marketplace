@@ -8,24 +8,17 @@ import {
 import { Input } from '@/components/shadcn/components/ui/input'
 import { Label } from '@/components/shadcn/components/ui/label'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
+import { Plus, Trash } from 'lucide-react'
 import Image from 'next/image'
-import {
-  ChangeEvent,
-  Dispatch,
-  SetStateAction
-} from 'react'
+import { ChangeEvent } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 import { PostFormSchema } from '../schema'
 
 export default function ImageField({
   form,
-  imageUrls,
-  setImageUrls,
 }: {
   form: UseFormReturn<z.infer<typeof PostFormSchema>>
-  imageUrls: string[]
-  setImageUrls: Dispatch<SetStateAction<string[]>>
 }) {
   const name = 'image_urls'
   const label = 'Images'
@@ -38,12 +31,9 @@ export default function ImageField({
     const file = e.target.files?.[0] || null
     if (file) {
       const imageUrl = URL.createObjectURL(file)
-      const newImageUrls = [...imageUrls]
+      const newImageUrls = [...form.getValues().image_urls!]
       newImageUrls[index] = imageUrl
-      setImageUrls(newImageUrls)
-      // form.setValue(name, [imageUrl], {
-      //   shouldValidate: true,
-      // })
+      form.setValue('image_urls', newImageUrls)
     } else {
       toast({
         description:
@@ -52,43 +42,56 @@ export default function ImageField({
     }
   }
 
-  const renderInput = (index: number) => {
-    return (
-      <div key={index}>
-        <Label className='relative flex aspect-square w-[150px] cursor-pointer items-center justify-center rounded bg-gray-300 text-gray-400 shadow-sm'>
-          <Input
-            type='file'
-            accept='image/x'
-            onChange={(e) => handleFileChange(e, index)}
-            className='hidden'
-          />
-          {imageUrls[index] ? (
-            <Image
-              src={imageUrls[index]}
-              alt='preview-image'
-              layout='fill'
-              objectFit='contain'
-            />
-          ) : (
-            '+'
-          )}
-        </Label>
-      </div>
-    )
+  const handleDelete = (index: number) => {
+    const newImageUrls = [...form.getValues().image_urls!]
+    newImageUrls[index] = ''
+    form.setValue('image_urls', newImageUrls)
   }
 
   return (
     <FormField
       control={form.control}
       name={name}
-      render={() => (
+      render={({ field }) => (
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
             <div className='flex gap-2'>
-              {imageUrls.map((_, i) =>
-                renderInput(i),
-              )}
+              {field.value &&
+                field.value.map((_, index) => (
+                  <div key={index}>
+                    <Label className='relative flex aspect-square w-[150px] cursor-pointer items-center justify-center rounded bg-gray-300 text-gray-400 shadow-sm'>
+                      <Input
+                        type='file'
+                        accept='image/x'
+                        onChange={(e) =>
+                          handleFileChange(e, index)
+                        }
+                        className='hidden'
+                      />
+                      {field.value?.[index] ? (
+                        <div>
+                          <Image
+                            src={field.value[index]}
+                            alt='preview-image'
+                            layout='fill'
+                            objectFit='contain'
+                          />
+                          <button
+                            type='button'
+                            onClick={() =>
+                              handleDelete(index)
+                            }
+                          >
+                            <Trash className='absolute bottom-0 right-0 z-50 m-1 cursor-pointer text-black' />
+                          </button>
+                        </div>
+                      ) : (
+                        <Plus />
+                      )}
+                    </Label>
+                  </div>
+                ))}
             </div>
           </FormControl>
           <FormMessage />

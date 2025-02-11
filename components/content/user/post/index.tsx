@@ -27,16 +27,8 @@ import {
   NameField,
   PriceField,
 } from './fields'
+import Preview from './preview'
 import { PostFormSchema } from './schema'
-import { useState } from 'react'
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from '@/components/shadcn/components/ui/carousel'
-import Image from 'next/image'
 
 export default function Post() {
   const { profile } = useAuthStore()
@@ -53,7 +45,7 @@ export default function Post() {
       location: '',
       condition: '',
       expires_in: 0,
-      image_urls: [],
+      image_urls: Array.from({ length: 3 }, () => ''),
     },
   })
 
@@ -67,47 +59,6 @@ export default function Post() {
       description:
         'Your item has been posted successfully!',
     })
-  }
-
-  const [imageUrls, setImageUrls] = useState<string[]>(
-    Array.from({ length: 3 }, () => ''),
-  )
-
-  const renderImageFields = () => {
-    return (
-      <ImageField
-        form={form}
-        imageUrls={imageUrls}
-        setImageUrls={setImageUrls}
-      />
-    )
-  }
-
-  const renderImagePreviews = () => {
-    return (
-      <Carousel className='w-full bg-black'>
-        <CarouselContent>
-          {imageUrls.map((_, index) => (
-            <CarouselItem key={index}>
-              <div className='flex aspect-square items-center justify-center'>
-                {imageUrls[index] ? (
-                  <Image
-                    src={imageUrls[index]}
-                    alt='preview-image'
-                    layout='fill'
-                    objectFit='contain'
-                  />
-                ) : (
-                  '+'
-                )}
-              </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
-      </Carousel>
-    )
   }
 
   return (
@@ -125,7 +76,7 @@ export default function Post() {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <div className='flex flex-col gap-4'>
-                {renderImageFields()}
+                <ImageField form={form} />
 
                 <NameField form={form} />
                 <PriceField form={form} />
@@ -146,7 +97,7 @@ export default function Post() {
         </CardContent>
       </div>
       <div className='flex flex-1 items-center justify-center bg-muted'>
-        {renderImagePreviews()}
+        <Preview form={form} />
       </div>
     </Card>
   )
