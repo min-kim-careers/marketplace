@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/shadcn/components/ui/card'
-import { Item } from '@/lib/supabase/items/type'
+import { Item } from '@/types/type'
 
 export default function ItemCard({
   item,

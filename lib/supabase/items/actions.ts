@@ -2,7 +2,7 @@
 
 import { z } from 'zod'
 import { createClient } from '../server'
-import { Item } from './type'
+import { Item } from '../../../types/type'
 import { PostFormSchema } from '@/components/content/user/post/schema'
 import { Profile } from '@/types/profile'
 
@@ -64,6 +64,7 @@ export const insertItem = async (
     updated_at: new Date(),
     created_at: new Date(),
     expires_at: getExpiresAt(formData.expires_in),
+    image_urls: []
   }
 
   const supabase = await createClient()

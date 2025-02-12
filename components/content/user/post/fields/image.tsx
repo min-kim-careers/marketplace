@@ -83,7 +83,7 @@ export default function ImageField({
                               handleDelete(index)
                             }
                           >
-                            <Trash className='absolute bottom-0 right-0 z-50 m-1 cursor-pointer text-black' />
+                            <Trash className='absolute bottom-0 right-0 z-50 m-1 cursor-pointer invert' />
                           </button>
                         </div>
                       ) : (

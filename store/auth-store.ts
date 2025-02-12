@@ -5,7 +5,7 @@ import {
   login as serverLogin,
   logout as serverLogout,
   signup as serverSignup,
-} from '@/lib/supabase/auth/actions'
+} from '@/api/auth'
 import { Profile } from '@/types/profile'
 import { z } from 'zod'
 import { create } from 'zustand'

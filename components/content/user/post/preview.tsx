@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 import { PostFormSchema } from './schema'
+import { CircleSlash2 } from 'lucide-react'
 
 export default function Preview({
   form,
@@ -39,10 +40,12 @@ export default function Preview({
     setCurrent(1)
   }, [watchField])
 
+  if (!count) return <CircleSlash2 size={48} className='text-gray-300'/>
+
   return (
     <Carousel
       setApi={setApi}
-      className='relative m-0 flex-1 bg-gray-400'
+      className='relative m-0 flex-1'
     >
       <CarouselContent className='m-0'>
         {form.getValues().image_urls!.map(
