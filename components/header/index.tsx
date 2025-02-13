@@ -1,7 +1,7 @@
 'use client'
 
 import { ROUTES } from '@/constants/routes'
-import useAuthStore from '@/store/auth-store'
+import useAuthStore from '@/stores/auth-store'
 import Link from 'next/link'
 import Menu from './menu'
 import { Button } from '../shadcn/components/ui/button'

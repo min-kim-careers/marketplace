@@ -15,7 +15,7 @@ import {
 import { Form } from '@/components/shadcn/components/ui/form'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
 import { ROUTES } from '@/constants/routes'
-import useAuthStore from '@/store/auth-store'
+import useAuthStore from '@/stores/auth-store'
 import { useRouter } from 'next/navigation'
 import { EmailField, PasswordField } from './fields'
 import { LoginFormSchema } from './schema'

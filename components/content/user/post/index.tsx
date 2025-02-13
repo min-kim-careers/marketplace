@@ -16,7 +16,7 @@ import { Form } from '@/components/shadcn/components/ui/form'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
 import { ROUTES } from '@/constants/routes'
 import { insertItem } from '@/lib/supabase/items/actions'
-import useAuthStore from '@/store/auth-store'
+import useAuthStore from '@/stores/auth-store'
 import { useRouter } from 'next/navigation'
 import {
   CategoryField,

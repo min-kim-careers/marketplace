@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/shadcn/components/ui/button'
 import { ROUTES } from '@/constants/routes'
-import useAuthStore from '@/store/auth-store'
+import useAuthStore from '@/stores/auth-store'
 import Link from 'next/link'
 
 export default function Landing() {
