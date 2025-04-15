@@ -1,0 +1,6 @@
+[submodule "chat"]
+	path = chat
+	url = ../chat.git
+[submodule "marketplace-app"]
+	path = marketplace-app
+	url = ../marketplace-app.git

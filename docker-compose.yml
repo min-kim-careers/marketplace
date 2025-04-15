@@ -1,0 +1,52 @@
+services:
+  marketplace-db-service:
+    container_name: 'marketplace-db-container'
+    restart: 'always'
+    image: 'postgres:latest'
+    env_file:
+      - .env
+    ports:
+      - '5432:5432'
+    volumes:
+      - 'marketplace-db-data:/var/lib/postgresql/data'
+
+  marketplace-cache-service:
+    container_name: 'marketplace-cache-container'
+    restart: 'always'
+    image: 'redis:latest'
+    env_file:
+      - '.env'
+    ports:
+      - '6379:6379'
+    command: [ '/bin/sh', '-c', 'redis-server --save 20 1 --loglevel warning --requirepass $$REDIS_PASSWORD' ]
+    volumes:
+      - 'marketplace-cache-data:/data'
+
+  marketplace-server-service:
+    depends_on:
+      - 'marketplace-db-service'
+      - 'marketplace-cache-service'
+    container_name: 'marketplace-container-server'
+    restart: 'always'
+    build: 'marketplace/marketplace-server'
+    ports:
+      - '8080:8080'
+    env_file:
+      - 'marketplace/marketplace-server/.env'
+    volumes:
+      - 'marketplace/marketplace-server/app:/app'
+
+  marketplace-app-service:
+    container_name: 'container-marketplace-app'
+    restart: 'always'
+    build: ./marketplace-app
+    ports:
+      - '3000:3000'
+    env_file:
+      - './marketplace-app/.env'
+    volumes:
+      - './marketplace-app:/app'
+
+  volumes:
+    marketplace-db-data:
+    marketplace-cache-data:
