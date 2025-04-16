@@ -18,6 +18,9 @@ const mockItems: Item[] = jsonData.map((data) => ({
   postcode: data.suburb,
   created_at: new Date(data.created_at),
   updated_at: new Date(data.updated_at),
+  expires_at: new Date(),
+  image_urls: [],
+  location: `${data.suburb}, ${data.state}`
 }))
 
 export default function Search({

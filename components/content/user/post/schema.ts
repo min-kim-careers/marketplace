@@ -1,15 +1,11 @@
+import { checkLocationExists } from '@/lib/fuse/locations'
 import { z } from 'zod'
 import {
   CATEGORIES,
   CONDITIONS,
   MAX_DESCRIPTION_LENGTH,
 } from './constants'
-import { checkLocationExists } from '@/lib/fuse/locations'
 
-const cloudinaryUrlSchema = z
-  .string()
-  .url()
-  .regex(/^https:\/\/res\.cloudinary\.com\/.+/)
 
 export const PostFormSchema = z.object({
   name: z
@@ -58,7 +54,7 @@ export const PostFormSchema = z.object({
   expires_in: z.number(),
 
   image_urls: z
-    .array(cloudinaryUrlSchema)
+    .array(z.string().url())
     .max(3)
     .optional()
 })
