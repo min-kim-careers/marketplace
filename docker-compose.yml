@@ -3,10 +3,13 @@ services:
     container_name: 'marketplace-db-container'
     restart: 'always'
     image: 'postgres:latest'
-    env_file:
-      - .env
+    environment:
+      - 'POSTGRES_USER=marketplaceuser'
+      - 'POSTGRES_PASSWORD=marketplacepassword'
+      - 'POSTGRES_DB=marketplacedb'
+
     ports:
-      - '5432:5432'
+      - '5433:5432'
     volumes:
       - 'marketplace-db-data:/var/lib/postgresql/data'
 
@@ -14,10 +17,12 @@ services:
     container_name: 'marketplace-cache-container'
     restart: 'always'
     image: 'redis:latest'
-    env_file:
-      - '.env'
+    environment:
+      - 'REDIS_HOST=marketplace-cache-service'
+      - 'REDIS_PORT=6379'
+      - 'REDIS_PASSWORD=redispassword'
     ports:
-      - '6379:6379'
+      - '6380:6379'
     command: [ '/bin/sh', '-c', 'redis-server --save 20 1 --loglevel warning --requirepass $$REDIS_PASSWORD' ]
     volumes:
       - 'marketplace-cache-data:/data'
@@ -26,18 +31,18 @@ services:
     depends_on:
       - 'marketplace-db-service'
       - 'marketplace-cache-service'
-    container_name: 'marketplace-container-server'
+    container_name: 'marketplace-server-container'
     restart: 'always'
-    build: 'marketplace/marketplace-server'
+    build: './marketplace-server'
     ports:
-      - '8080:8080'
+      - '8001:80'
     env_file:
-      - 'marketplace/marketplace-server/.env'
+      - './marketplace-server/.env'
     volumes:
-      - 'marketplace/marketplace-server/app:/app'
+      - './marketplace-server/app:/app'
 
   marketplace-app-service:
-    container_name: 'container-marketplace-app'
+    container_name: 'marketplace-app-container'
     restart: 'always'
     build: ./marketplace-app
     ports:
@@ -47,6 +52,22 @@ services:
     volumes:
       - './marketplace-app:/app'
 
-  volumes:
-    marketplace-db-data:
-    marketplace-cache-data:
+
+  chat-db-service:
+    extends:
+      file: './chat/docker-compose.yml'
+      service: 'chat-db-service'
+
+  chat-cache-service:
+    extends:
+      file: './chat/docker-compose.yml'
+      service: 'chat-cache-service'
+
+  chat-server-service:
+    extends:
+      file: './chat/docker-compose.yml'
+      service: 'chat-server-service'
+
+volumes:
+  chat-db-data:
+  chat-cache-data:

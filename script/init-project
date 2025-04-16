@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -e
+
+if ! command -v pnpm &> /dev/null; then
+    curl -fsSL https://get.pnpm.io/install.sh | sh -
+fi
+
+source ~/.bashrc
+
+# Init marketplace
+
+cd marketplace-app
+
+pnpm install
+
+
+# Init chat
+
+cd ../chat
+
+script/init-project
