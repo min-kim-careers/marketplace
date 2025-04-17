@@ -35,7 +35,17 @@ services:
     restart: 'always'
     build: './marketplace-server'
     ports:
-      - '8001:80'
+      - '8001:8000'
+    environment:
+      - DB_NAME=marketplacedb
+      - DB_USER=marketplaceuser
+      - DB_PASSWORD=REDACTED
+      - DB_HOST=marketplace-db-service
+      - DB_PORT=5433
+      - CACHE_HOST=marketplace-cache-service
+      - CACHE_PORT=6380
+      - CACHE_PASSWORD=REDACTED
+      - CACHE_DB=0
     env_file:
       - './marketplace-server/.env'
     volumes:
@@ -52,22 +62,6 @@ services:
     volumes:
       - './marketplace-app:/app'
 
-
-  chat-db-service:
-    extends:
-      file: './chat/docker-compose.yml'
-      service: 'chat-db-service'
-
-  chat-cache-service:
-    extends:
-      file: './chat/docker-compose.yml'
-      service: 'chat-cache-service'
-
-  chat-server-service:
-    extends:
-      file: './chat/docker-compose.yml'
-      service: 'chat-server-service'
-
 volumes:
-  chat-db-data:
-  chat-cache-data:
+  marketplace-db-data:
+  marketplace-cache-data:

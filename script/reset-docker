@@ -1,0 +1,8 @@
+#!/bin/bash
+
+docker compose down
+
+docker rmi -f $(docker images -aq)
+docker rm -vf $(docker ps -aq)
+docker network prune -f
+docker system prune -a -f
