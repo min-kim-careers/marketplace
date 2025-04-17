@@ -11,3 +11,9 @@ source ~/.bashrc
 cd marketplace-app
 
 pnpm install
+
+cd ../marketplace-server
+
+python3 -m venv .venv && \
+source .venv/bin/activate && \
+pip install -r requirements.txt
