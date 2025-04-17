@@ -5,3 +5,7 @@
 [submodule "marketplace-server"]
 	path = marketplace-server
 	url = ../marketplace-server.git
+
+[submodule "docker-script"]
+	path = docker-script
+	url = ../docker-script.git

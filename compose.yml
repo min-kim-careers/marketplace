@@ -1,66 +1,60 @@
 services:
   marketplace-db-service:
-    container_name: 'marketplace-db-container'
-    restart: 'always'
-    image: 'postgres:latest'
+    container_name: marketplace-db-container
+    restart: always
+    image: postgres:latest
     environment:
-      - 'POSTGRES_USER=marketplaceuser'
-      - 'POSTGRES_PASSWORD=marketplacepassword'
-      - 'POSTGRES_DB=marketplacedb'
-
+      - POSTGRES_USER=marketplaceuser
+      - POSTGRES_PASSWORD=REDACTED
+      - POSTGRES_DB=marketplacedb
     ports:
-      - '5433:5432'
+      - 5432:5432
     volumes:
-      - 'marketplace-db-data:/var/lib/postgresql/data'
+      - marketplace-db-data:/var/lib/postgresql/data
 
   marketplace-cache-service:
-    container_name: 'marketplace-cache-container'
-    restart: 'always'
-    image: 'redis:latest'
+    container_name: marketplace-cache-container
+    restart: always
+    image: redis:latest
     environment:
-      - 'REDIS_HOST=marketplace-cache-service'
-      - 'REDIS_PORT=6379'
-      - 'REDIS_PASSWORD=redispassword'
+      - REDIS_HOST=marketplace-cache-service
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=REDACTED
     ports:
-      - '6380:6379'
+      - 6379:6379
     command: [ '/bin/sh', '-c', 'redis-server --save 20 1 --loglevel warning --requirepass $$REDIS_PASSWORD' ]
     volumes:
-      - 'marketplace-cache-data:/data'
+      - marketplace-cache-data:/data
 
   marketplace-server-service:
     depends_on:
-      - 'marketplace-db-service'
-      - 'marketplace-cache-service'
-    container_name: 'marketplace-server-container'
-    restart: 'always'
-    build: './marketplace-server'
+      - marketplace-db-service
+      - marketplace-cache-service
+    container_name: marketplace-server-container
+    restart: always
+    build: ./marketplace-server
     ports:
-      - '8001:8000'
+      - 8000:8000
     environment:
-      - DB_NAME=marketplacedb
-      - DB_USER=marketplaceuser
-      - DB_PASSWORD=REDACTED
       - DB_HOST=marketplace-db-service
-      - DB_PORT=5433
+      - DB_PORT=5432
       - CACHE_HOST=marketplace-cache-service
       - CACHE_PORT=6380
-      - CACHE_PASSWORD=REDACTED
-      - CACHE_DB=0
     env_file:
-      - './marketplace-server/.env'
+      - ./marketplace-server/.env
     volumes:
-      - './marketplace-server/app:/app'
+      - ./marketplace-server/app:/app
 
   marketplace-app-service:
-    container_name: 'marketplace-app-container'
-    restart: 'always'
+    container_name: marketplace-app-container
+    restart: always
     build: ./marketplace-app
     ports:
-      - '3000:3000'
+      - 3000:3000
     env_file:
-      - './marketplace-app/.env'
+      - ./marketplace-app/.env
     volumes:
-      - './marketplace-app:/app'
+      - ./marketplace-app:/app
 
 volumes:
   marketplace-db-data:

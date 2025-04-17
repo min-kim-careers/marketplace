@@ -8,15 +8,6 @@ fi
 
 source ~/.bashrc
 
-# Init marketplace
-
 cd marketplace-app
 
 pnpm install
-
-
-# Init chat
-
-cd ../chat
-
-script/init-project
