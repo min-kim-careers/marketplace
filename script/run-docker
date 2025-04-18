@@ -1,6 +1,0 @@
-#!/bin/bash
-
-docker image prune -f
-docker compose pull
-docker buildx bake
-docker compose up --build

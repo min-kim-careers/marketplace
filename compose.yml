@@ -43,7 +43,7 @@ services:
     env_file:
       - ./marketplace-server/.env
     volumes:
-      - ./marketplace-server/app:/app
+      - ./marketplace-server/app:/code/app
 
   marketplace-app-service:
     container_name: marketplace-app-container
