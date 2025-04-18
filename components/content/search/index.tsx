@@ -2,26 +2,15 @@
 
 import Pagination from '@/components/content/search/pagination'
 import Toolbar from '@/components/content/search/toolbar'
-import { Item } from '@/types/type'
+import { Item } from '@/interfaces/item'
 import { useEffect, useState } from 'react'
 
 import ItemCard from '@/components/content/search/item-card'
-import jsonData from '@/data/items.json'
 import Spinner from '@/components/ui/spinner'
-import { Params } from '@/types/params'
+import { Params } from '@/interfaces/params'
 import { notFound } from 'next/navigation'
 
 const DEFAULT_LIMIT = 9
-
-const mockItems: Item[] = jsonData.map((data) => ({
-  ...data,
-  postcode: data.suburb,
-  created_at: new Date(data.created_at),
-  updated_at: new Date(data.updated_at),
-  expires_at: new Date(),
-  image_urls: [],
-  location: `${data.suburb}, ${data.state}`
-}))
 
 export default function Search({
   params,
@@ -30,9 +19,7 @@ export default function Search({
 }) {
   const [columns, setColumns] = useState(1)
 
-  const [totalCount, setTotalCount] = useState<number>(
-    mockItems.length,
-  )
+  const [totalCount, setTotalCount] = useState<number>(0)
   const [items, setItems] = useState<Item[]>([])
   const [loading, setLoading] = useState(false)
 
@@ -50,79 +37,6 @@ export default function Search({
 
   //   setLoading(false)
   // }
-
-  const loadMockItems = (params: Params) => {
-    setLoading(true)
-
-    let _items: Item[] = mockItems
-
-    if (params.keywords) {
-      _items = _items.filter((item: Item) =>
-        params.keywords
-          ?.split(',')
-          .some(
-            (keyword) =>
-              item.category
-                .toLowerCase()
-                .includes(keyword.toLowerCase()) ||
-              item.name
-                .toLowerCase()
-                .includes(keyword.toLowerCase()) ||
-              item.description
-                .toLowerCase()
-                .includes(keyword.toLowerCase()),
-          ),
-      )
-    }
-
-    if (params.sort) {
-      const sort = params.sort
-      _items = _items.sort((a: Item, b: Item) => {
-        if (sort === 'created_asc') {
-          return a.created_at < b.created_at
-            ? -1
-            : a.created_at > b.created_at
-              ? 1
-              : 0
-        } else if (sort === 'created_desc') {
-          return a.created_at > b.created_at
-            ? -1
-            : a.created_at < b.created_at
-              ? 1
-              : 0
-        } else if (
-          sort === 'price_asc' ||
-          sort === 'default'
-        ) {
-          return a.price < b.price
-            ? -1
-            : a.price > b.price
-              ? 1
-              : 0
-        } else if (sort === 'price_desc') {
-          return a.price > b.price
-            ? -1
-            : a.price < b.price
-              ? 1
-              : 0
-        }
-        throw notFound()
-      })
-    }
-
-    const totalCount: number = _items.length
-    setTotalCount(totalCount)
-
-    const from = (params.page - 1) * DEFAULT_LIMIT
-    const to = params.page * DEFAULT_LIMIT
-
-    _items = _items.slice(from, to)
-    setItems(_items)
-
-    setLoading(false)
-  }
-
-  useEffect(() => loadMockItems(params), [params])
 
   const renderItems = () => {
     return (

@@ -1,4 +1,4 @@
-import { Params, Sort } from '@/types/params'
+import { Params, Sort } from '@/interfaces/params'
 import { ReadonlyURLSearchParams } from 'next/navigation'
 
 export const extractParams = (

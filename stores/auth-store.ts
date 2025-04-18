@@ -6,7 +6,7 @@ import {
   logout as serverLogout,
   signup as serverSignup,
 } from '@/api/auth'
-import { Profile } from '@/types/profile'
+import { Profile } from '@/interfaces/profile'
 import { z } from 'zod'
 import { create } from 'zustand'
 

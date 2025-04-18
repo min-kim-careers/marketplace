@@ -6,7 +6,7 @@ import {
 import { z } from 'zod'
 import { LoginFormSchema } from '@/components/content/auth/login/schema'
 import { SignupFormSchema } from '@/components/content/auth/signup/schema'
-import { Profile } from '@/types/profile'
+import { Profile } from '@/interfaces/profile'
 
 interface AuthResponse {
   log: string

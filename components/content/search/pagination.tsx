@@ -8,7 +8,7 @@ import {
 } from '@/components/shadcn/components/ui/pagination'
 import { ROUTES } from '@/constants/routes'
 import { paramsToQuery } from '@/helpers/params'
-import { Params } from '@/types/params'
+import { Params } from '@/interfaces/params'
 import { notFound } from 'next/navigation'
 
 const PAGINATION_SIZE = 5

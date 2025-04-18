@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/shadcn/components/ui/card'
-import { Item } from '@/types/type'
+import { Item } from '@/interfaces/item'
 
 export default function ItemCard({
   item,
@@ -29,7 +29,7 @@ export default function ItemCard({
           </CardTitle>
           <CardDescription className='line-clamp-1'>
             <div className='flex justify-between'>
-              <p>User: {item.user_handle}</p>
+              <p>User: {item.userHandle}</p>
             </div>
           </CardDescription>
         </CardHeader>

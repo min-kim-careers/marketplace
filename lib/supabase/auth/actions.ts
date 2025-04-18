@@ -3,7 +3,7 @@
 import { LoginFormSchema } from '@/components/content/auth/login/schema'
 import { SignupFormSchema } from '@/components/content/auth/signup/schema'
 import { createClient } from '@/lib/supabase/server'
-import { Profile } from '@/types/profile'
+import { Profile } from '@/interfaces/profile'
 import { z } from 'zod'
 
 interface AuthResponse {

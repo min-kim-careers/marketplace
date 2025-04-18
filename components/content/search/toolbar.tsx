@@ -19,7 +19,7 @@ import {
   paramsToQuery,
 } from '@/helpers/params'
 import useCustomRouter from '@/hooks/use-custom-router'
-import type { Sort } from '@/types/params'
+import type { Sort } from '@/interfaces/params'
 import { Grip, Menu, Search } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 import { ChangeEvent, useEffect, useState } from 'react'

@@ -15,7 +15,6 @@ import {
 import { Form } from '@/components/shadcn/components/ui/form'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
 import { ROUTES } from '@/constants/routes'
-import { insertItem } from '@/lib/supabase/items/actions'
 import useAuthStore from '@/stores/auth-store'
 import { useRouter } from 'next/navigation'
 import {
@@ -29,6 +28,7 @@ import {
 } from './fields'
 import Preview from './preview'
 import { PostFormSchema } from './schema'
+import { insertItem } from '@/api/items'
 
 export default function Post() {
   const { profile } = useAuthStore()

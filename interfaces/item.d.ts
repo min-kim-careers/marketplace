@@ -3,12 +3,12 @@ export interface Item {
   description: string
   price: number
   category: string
-  user_email: string
-  user_handle: string
-  created_at: Date
-  updated_at: Date
-  expires_at: Date
+  userEmail: string
+  userHandle: string
+  createdAt: Date
+  updatedAt: Date
+  expiresAt: Date
   location: string
   condition: string
-  image_urls: string[]
+  imageUrls: string[]
 }

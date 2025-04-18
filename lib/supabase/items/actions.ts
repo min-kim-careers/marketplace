@@ -2,16 +2,16 @@
 
 import { z } from 'zod'
 import { createClient } from '../server'
-import { Item } from '../../../types/type'
+import { Item } from '../../../interfaces/item'
 import { PostFormSchema } from '@/components/content/user/post/schema'
-import { Profile } from '@/types/profile'
+import { Profile } from '@/interfaces/profile'
 
 const TABLE_NAME = 'items'
 
 export const getItems = async (
   from: number,
   to: number,
-  sort: keyof Item = 'created_at',
+  sort: keyof Item = 'createdAt',
 ) => {
   const supabase = await createClient()
 
@@ -59,12 +59,12 @@ export const insertItem = async (
 
   const item: Item = {
     ...formData,
-    user_email: profile.email,
-    user_handle: profile.handle,
-    updated_at: new Date(),
-    created_at: new Date(),
-    expires_at: getExpiresAt(formData.expires_in),
-    image_urls: []
+    userEmail: profile.email,
+    userHandle: profile.handle,
+    updatedAt: new Date(),
+    createdAt: new Date(),
+    expiresAt: getExpiresAt(formData.expires_in),
+    imageUrls: []
   }
 
   const supabase = await createClient()
