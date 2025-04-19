@@ -1,11 +1,11 @@
 'use server'
 
-import { ROUTES } from '@/constants/routes'
-import { createClient } from '@/lib/supabase/server'
+import { ROUTES } from '@/lib/routes'
+import { createClient } from '@/lib/services/supabase/server'
 import { redirect } from 'next/navigation'
 import { ReactNode } from 'react'
 
-export default async function AuthLayout({
+export default async function Layout({
   children,
 }: {
   children: ReactNode

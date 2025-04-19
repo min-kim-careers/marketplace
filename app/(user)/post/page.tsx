@@ -1,5 +1,5 @@
-import Post from '@/components/content/user/post'
+import Post from '@/components/02_main/user/post'
 
-export default function PostPage() {
+export default function Page() {
   return <Post />
 }
