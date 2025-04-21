@@ -24,7 +24,7 @@ import {
 } from '@/components/shadcn/components/ui/popover'
 import { cn } from '@/components/shadcn/lib/utils'
 import { Check, ChevronsUpDown } from 'lucide-react'
-import { CONDITIONS } from '../constants'
+import { CONDITIONS } from '../../../../../lib/constants/categories'
 import { PostFormSchema } from '../schema'
 
 export default function ConditionField({

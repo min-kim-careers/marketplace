@@ -14,8 +14,8 @@ import {
 } from '@/components/shadcn/components/ui/card'
 import { Form } from '@/components/shadcn/components/ui/form'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
-import { ROUTES } from '@/lib/routes'
-import useAuthStore from '@/lib/stores/auth-store'
+import { ROUTES } from '@/lib/constants/routes'
+import useAuthStore from '@/lib/stores/auth'
 import { useRouter } from 'next/navigation'
 import {
   CategoryField,
@@ -28,7 +28,7 @@ import {
 } from './fields'
 import Preview from './preview'
 import { PostFormSchema } from './schema'
-import { insertItem } from '@/lib/api/items'
+import { insertItem } from '@/lib/server/item'
 
 export default function Post() {
   const { profile } = useAuthStore()
@@ -52,7 +52,7 @@ export default function Post() {
   async function onSubmit(
     values: z.infer<typeof PostFormSchema>,
   ) {
-    await insertItem(values, profile)
+    await insertItem(values, profile!)
 
     router.push(ROUTES.MARKET)
     toast({

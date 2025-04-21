@@ -1,10 +1,10 @@
-import { checkLocationExists } from '@/lib/services/fuse/locations'
+import { checkLocationExists } from '@/lib/utils/fuse/locations'
 import { z } from 'zod'
 import {
   CATEGORIES,
   CONDITIONS,
   MAX_DESCRIPTION_LENGTH,
-} from './constants'
+} from '../../../../lib/constants/categories'
 
 
 export const PostFormSchema = z.object({

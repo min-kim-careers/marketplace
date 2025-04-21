@@ -24,7 +24,7 @@ import {
 } from '@/components/shadcn/components/ui/popover'
 import { cn } from '@/components/shadcn/lib/utils'
 import { Check, ChevronsUpDown } from 'lucide-react'
-import { CATEGORIES } from '../constants'
+import { CATEGORIES } from '../../../../../lib/constants/categories'
 import { PostFormSchema } from '../schema'
 
 export default function CategoryField({

@@ -1,8 +1,8 @@
 'use client'
 
 import { Button } from '@/components/shadcn/components/ui/button'
-import { ROUTES } from '@/lib/routes'
-import useAuthStore from '@/lib/stores/auth-store'
+import { ROUTES } from '@/lib/constants/routes'
+import useAuthStore from '@/lib/stores/auth'
 import Link from 'next/link'
 
 export default function Landing() {

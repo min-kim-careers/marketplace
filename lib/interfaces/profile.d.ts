@@ -1,8 +1,9 @@
 export interface Profile {
+    userId: string
     handle: string
     email: string
     rating: number
     ratingCount: number
-    postcode?: number
+    location?: string
     avatarUrl?: string
 }

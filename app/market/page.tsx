@@ -1,5 +1,5 @@
 import Market from '@/components/02_main/market'
-import { QueryParams } from '@/lib/interfaces/params'
+import { URLParams } from '@/lib/interfaces/params'
 
 export default async function Page({
   searchParams,
@@ -10,12 +10,12 @@ export default async function Page({
 }) {
   const params = await searchParams
 
-  const queryParams: QueryParams = {
-    page: Number(params.page),
+  const urlParams: URLParams = {
+    page: Number(params.page) || 1,
     keyword: params.keyword as string,
     sortBy: params.sortBy as string,
     sortOrder: params.sortOrder as string,
   }
 
-  return <Market queryParams={queryParams} />
+  return <Market urlParams={urlParams} />
 }

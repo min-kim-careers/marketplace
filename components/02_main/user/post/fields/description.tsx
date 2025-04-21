@@ -18,7 +18,7 @@ import {
 } from 'react-hook-form'
 import { z } from 'zod'
 import { PostFormSchema } from '../schema'
-import { MAX_DESCRIPTION_LENGTH } from '../constants'
+import { MAX_DESCRIPTION_LENGTH } from '../../../../../lib/constants/categories'
 
 export default function DescriptionField({
   form,

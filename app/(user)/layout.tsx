@@ -1,6 +1,6 @@
 'use server'
 
-import { ROUTES } from '@/lib/routes'
+import { ROUTES } from '@/lib/constants/routes'
 import { createClient } from '@/lib/services/supabase/server'
 import { redirect } from 'next/navigation'
 import { ReactNode } from 'react'

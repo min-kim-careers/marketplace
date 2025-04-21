@@ -6,24 +6,24 @@ import {
   PaginationLast,
   PaginationLink,
 } from '@/components/shadcn/components/ui/pagination'
-import { ROUTES } from '@/lib/routes'
-import { paramsToQuery } from '@/lib/helpers'
-import { QueryParams as Params } from '@/lib/interfaces/params'
+import { ROUTES } from '@/lib/constants/routes'
+import { paramsToQuery } from '@/lib/utils/helpers'
+import { URLParams as URLParams } from '@/lib/interfaces/params'
 import { notFound } from 'next/navigation'
 
 const PAGINATION_SIZE = 5
 
 export default function Pagination({
-  params,
+  urlParams,
   limit,
-  totalCount,
+  count,
 }: {
-  params: Params
+  urlParams: URLParams
   limit: number
-  totalCount: number
+  count: number
 }) {
-  const currentPage = params.page
-  const lastPage = Math.ceil(totalCount / limit)
+  const currentPage = urlParams.page
+  const lastPage = Math.ceil(count / limit)
 
   if (currentPage < 1 && lastPage < currentPage) {
     notFound()
@@ -50,7 +50,7 @@ export default function Pagination({
           disabled={currentPage === 1}
           href={{
             pathname: ROUTES.MARKET,
-            query: { ...paramsToQuery(params), page: 1 },
+            query: { ...paramsToQuery(urlParams), page: 1 },
           }}
         />
 
@@ -64,7 +64,7 @@ export default function Pagination({
                   href={{
                     pathname: ROUTES.MARKET,
                     query: {
-                      ...paramsToQuery(params),
+                      ...paramsToQuery(urlParams),
                       page: page,
                     },
                   }}
@@ -80,7 +80,7 @@ export default function Pagination({
           href={{
             pathname: ROUTES.MARKET,
             query: {
-              ...paramsToQuery(params),
+              ...paramsToQuery(urlParams),
               page: lastPage,
             },
           }}

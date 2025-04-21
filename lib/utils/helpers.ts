@@ -1,9 +1,9 @@
-import { QueryParams } from '@/lib/interfaces/params'
+import { URLParams } from '@/lib/interfaces/params'
 import { ReadonlyURLSearchParams } from 'next/navigation'
 
 export const extractParams = (
   params: ReadonlyURLSearchParams,
-): QueryParams => {
+): URLParams => {
   return {
     page: Number(params.get('page')) || 1,
     keyword: params.get('keyword'),
@@ -18,7 +18,7 @@ const isValidParam = (value: unknown): boolean => {
   )
 }
 
-export const paramsToQuery = (params: QueryParams) => {
+export const paramsToQuery = (params: URLParams) => {
   const query = Object.fromEntries(
     Object.entries(params)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars

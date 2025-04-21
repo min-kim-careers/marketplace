@@ -1,7 +1,7 @@
 'use client'
 
-import { ROUTES } from '@/lib/routes'
-import useAuthStore from '@/lib/stores/auth-store'
+import { ROUTES } from '@/lib/constants/routes'
+import useAuthStore from '@/lib/stores/auth'
 import Link from 'next/link'
 import Menu from './menu'
 import { Button } from '../shadcn/components/ui/button'
@@ -13,9 +13,9 @@ export default function Header() {
   const router = useRouter()
 
   const handleLogout = async () => {
-    const { handle } = await logout()
+    const { success, handle } = await logout()
 
-    if (handle) {
+    if (success && !!handle) {
       router.replace(ROUTES.HOME)
       toast({
         description: `You logged out successfully. Good bye ${handle}`,
@@ -27,7 +27,7 @@ export default function Header() {
     }
   }
 
-  const LoggedIn = () => (
+  const renderLoggedIn = () => (
     <span className='flex items-center justify-between gap-4'>
       <Button>
         <Link
@@ -46,7 +46,7 @@ export default function Header() {
     </span>
   )
 
-  const LoggedOut = () => (
+  const renderLoggedOut = () => (
     <span className='flex gap-4'>
       <Link href={ROUTES.LOGIN}>
         <Button>Login</Button>
@@ -66,7 +66,7 @@ export default function Header() {
         Marketplace
       </Link>
 
-      {profile ? <LoggedIn /> : <LoggedOut />}
+      {profile ? renderLoggedIn() : renderLoggedOut()}
     </div>
   )
 }

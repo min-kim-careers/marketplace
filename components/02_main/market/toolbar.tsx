@@ -13,11 +13,11 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from '@/components/shadcn/components/ui/toggle-group'
-import { ROUTES } from '@/lib/routes'
+import { ROUTES } from '@/lib/constants/routes'
 import {
   extractParams,
   paramsToQuery,
-} from '@/lib/helpers'
+} from '@/lib/utils/helpers'
 import useCustomRouter from '@/lib/hooks/use-custom-router'
 import { Grip, Menu, Search } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
@@ -31,7 +31,7 @@ export default function Toolbar({
   defaultColumns: number
 }) {
   const searchParams = useSearchParams()
-  const params = extractParams(searchParams)
+  const urlParams = extractParams(searchParams)
   const router = useCustomRouter()
 
   const viewToggle = () => (
@@ -59,7 +59,7 @@ export default function Toolbar({
 
   const handleSearch = async () => {
     const query = paramsToQuery({
-      ...params,
+      ...urlParams,
       page: 1,
       keyword: searchValue,
     })
@@ -104,7 +104,7 @@ export default function Toolbar({
     router.push({
       pathname: ROUTES.MARKET,
       query: {
-        ...paramsToQuery(params),
+        ...paramsToQuery(urlParams),
       },
     })
   // eslint-disable-next-line react-hooks/exhaustive-deps

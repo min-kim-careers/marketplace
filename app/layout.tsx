@@ -4,6 +4,7 @@ import '@/app/globals.css'
 import { Toaster } from '@/components/shadcn/components/ui/toaster'
 import Header from '@/components/01_header'
 import Footer from '@/components/03_footer'
+import AuthProvider from '@/lib/providers/auth'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -31,10 +32,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <AuthProvider />
         <div className='flex flex-col font-[family-name:var(--font-geist-sans)]'>
           <div className='flex min-h-screen w-full flex-col items-center'>
             <Header />
-            <div className='flex w-full flex-1 px-4'>
+            <div className='flex w-full flex-1 px-2'>
               {children}
             </div>
           </div>

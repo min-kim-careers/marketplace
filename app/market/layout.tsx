@@ -21,7 +21,7 @@ export default function Layout({
         defaultColumns={columns}
       />
       <ColumnContext.Provider value={columns}>
-        <div className='flex flex-1 justify-center items-center w-full text-center'>{children}</div>
+        {children}
       </ColumnContext.Provider>
     </div>
   )

@@ -1,102 +1,130 @@
 'use client'
 
 import Pagination from '@/components/02_main/market/pagination'
-import Toolbar from '@/components/02_main/market/toolbar'
 import { Item } from '@/lib/interfaces/item'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
-import ItemCard from '@/components/02_main/market/item-card'
-import Spinner from '@/components/ui/spinner'
-import { QueryParams } from '@/lib/interfaces/params'
 import { useColumns } from '@/app/market/layout'
+import ItemCard from '@/components/ui/item-card'
+import Spinner from '@/components/ui/spinner'
+import { URLParams } from '@/lib/interfaces/params'
+import {
+  fetchItems,
+} from '@/lib/server/item'
+import { ServerResponse } from '@/lib/interfaces/server'
 
-const DEFAULT_LIMIT = 9
+const PAGINATION_LIMIT = 9
 
 export default function Market({
-  queryParams,
+  urlParams,
 }: {
-  queryParams: QueryParams
+  urlParams: URLParams
 }) {
   const columns = useColumns()
 
-  const [totalCount, setTotalCount] = useState<number>(0)
+  const [count, setCount] = useState<number>(0)
   const [items, setItems] = useState<Item[]>([])
+  const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
 
-  // const loadItems = async (page: number) => {
-  //   setLoading(true)
+  useEffect(() => {
+    const getItems = async () => {
+      setLoading(true)
 
-  //   const from = (page - 1) * limit
-  //   const to = page * limit
+      await fetchItems({
+        page: urlParams.page,
+        keyword: urlParams.keyword,
+        sort_by: urlParams.sortBy,
+        sort_order: urlParams.sortOrder,
+      })
+        .then((response) => {
+          const { data, count }: ServerResponse =
+            response
 
-  //   const items: Item[] = await fetchItems(from, to)
-  //   setItems(items)
+          const items: Item[] = data
 
-  //   const totalCount: number = await fetchTotalCount()
-  //   setTotalCount(totalCount)
-
-  //   setLoading(false)
-  // }
-
-  const renderItems = () => {
-    return (
-      <div
-        className='grid w-full flex-1 items-start gap-2'
-        style={{
-          gridTemplateColumns: `repeat(${columns}, 1fr)`,
-        }}
-      >
-        {items.map((item: Item, i) => (
-          <ItemCard key={i} item={item} columns={columns} />
-        ))}
-        <style jsx>{`
-          @media (max-width: 640px) {
-            div.grid {
-              grid-template-columns: repeat(
-                1,
-                1fr
-              ) !important;
-            }
+          if (!!!items.length || !!!count) {
+            setMessage('No items found...')
+            return
           }
-        `}</style>
-      </div>
-    )
-  }
+
+          setItems([...items])
+          setCount(count)
+        })
+        .catch((error) => {
+          setMessage(error.message)
+        })
+        .finally(() => {
+          setLoading(false)
+        })
+    }
+
+    getItems()
+  }, [urlParams])
+
+  const renderLoading = () => (
+    <div className='flex w-full flex-1 items-center justify-center'>
+      <Spinner />
+    </div>
+  )
 
   const renderNoResults = () => (
-    <div className='w-full flex-1 items-center justify-center'>
-      <p>No results found..</p>
+    <div className='flex w-full flex-1 items-center justify-center'>
+      <p>{message}</p>
+    </div>
+  )
+
+  const renderItems = () => (
+    <div
+      className='grid w-full flex-1 items-start gap-2'
+      style={{
+        gridTemplateColumns: `repeat(${columns}, 1fr)`,
+      }}
+    >
+      {items.map((item: Item, i) => (
+        <ItemCard key={i} item={item} columns={columns} />
+      ))}
+      <style jsx>{`
+        @media (max-width: 640px) {
+          div.grid {
+            grid-template-columns: repeat(
+              1,
+              1fr
+            ) !important;
+          }
+        }
+      `}</style>
     </div>
   )
 
   const renderContent = () => (
     <>
       <div className='flex w-full items-center justify-between px-2 text-sm'>
-        <span>{totalCount} items</span>
+        <span>{items.length} items</span>
         <span>
           <Pagination
-            params={queryParams}
-            limit={DEFAULT_LIMIT}
-            totalCount={totalCount}
+            urlParams={urlParams}
+            limit={PAGINATION_LIMIT}
+            count={count}
           />
         </span>
         <span>
-          {`${(queryParams.page - 1) * DEFAULT_LIMIT + 1} - ${DEFAULT_LIMIT * (queryParams.page - 1) + items.length} of ${totalCount}`}
+          {`${(urlParams.page - 1) * PAGINATION_LIMIT + 1} - ${PAGINATION_LIMIT * (urlParams.page - 1) + items.length} of ${count}`}
         </span>
       </div>
+
       {renderItems()}
-      <div>
-        <Pagination
-          params={queryParams}
-          limit={DEFAULT_LIMIT}
-          totalCount={totalCount}
-        />
-      </div>
+
+      <Pagination
+        urlParams={urlParams}
+        limit={PAGINATION_LIMIT}
+        count={count}
+      />
     </>
   )
 
   if (loading) {
-    return <Spinner />
+    return renderLoading()
   } else if (!!!items.length) {
     return renderNoResults()
   } else {
