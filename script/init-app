@@ -2,6 +2,9 @@
 
 set -e
 
+SERVER_SERVICE=marketplace-server-service
+SERVER_PORT=8000
+
 if ! command -v pnpm &> /dev/null; then
     curl -fsSL https://get.pnpm.io/install.sh | sh -
 fi
@@ -11,5 +14,3 @@ source ~/.bashrc
 cd marketplace-app
 
 pnpm install
-
-echo -e "\nSERVER_URL=http://$(hostname -I | awk '{print $1}'):8000/" >> .env
