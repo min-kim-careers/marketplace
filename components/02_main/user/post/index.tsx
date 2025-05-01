@@ -28,7 +28,7 @@ import {
 } from './fields'
 import Preview from './preview'
 import { PostFormSchema } from './schema'
-import { insertItem } from '@/lib/server/item'
+import { insertItem } from '@/lib/api/item'
 
 export default function Post() {
   const { profile } = useAuthStore()

@@ -15,7 +15,7 @@ export default function Layout({
   const [columns, setColumns] = useState(1)
 
   return (
-    <div className='flex w-full flex-col gap-2'>
+    <div className='flex w-full flex-col gap-2 flex-1'>
       <Toolbar
         setColumns={setColumns}
         defaultColumns={columns}

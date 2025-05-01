@@ -1,20 +1,16 @@
 'use client'
 
-import { LoginFormSchema } from '@/components/02_main/auth/login/schema'
-import { SignupFormSchema } from '@/components/02_main/auth/signup/schema'
-import { Profile } from '@/lib/interfaces/profile'
 import {
-  login as authLogin,
-  logout as authLogout,
-  signup as authSignup,
-} from '@/lib/server/auth'
+  signInWithGoogle as authSignInWithGoogle,
+  signOut as authSignOut,
+  signUpWithEmail as authSignUpWithEmail,
+  deleteUser
+} from '@/lib/api/auth'
+import { Profile } from '@/lib/interfaces/profile'
 import { z } from 'zod'
 import { create } from 'zustand'
-import {
-  persist,
-  createJSONStorage,
-} from 'zustand/middleware'
-import { addProfile, fetchProfile } from '../server/profile'
+import { addProfile } from '../api/profile'
+import { clearProfile } from '../cache/profile'
 
 interface AuthStoreResult {
   success: boolean
@@ -23,105 +19,34 @@ interface AuthStoreResult {
 
 interface AuthStore {
   profile: Profile | null
-  setProfile: (profile: Profile) => void
+  setProfile: (profile: Profile | null) => void
 
-  login: (
-    formData: z.infer<typeof LoginFormSchema>,
-  ) => Promise<AuthStoreResult>
-  signup: (
-    formData: z.infer<typeof SignupFormSchema>,
-  ) => Promise<AuthStoreResult>
-  logout: () => Promise<AuthStoreResult>
-
-  hasHydrated: boolean
-  setHasHydrated: () => void
+  signIn: () => Promise<AuthStoreResult>
+  signOut: () => Promise<AuthStoreResult>
 }
 
-const useAuthStore = create<AuthStore>()(
-  persist<AuthStore>(
-    (set, get) => {
-      const login = async (
-        formData: z.infer<typeof LoginFormSchema>,
-      ): Promise<AuthStoreResult> => {
-        const { userId } = await authLogin(formData)
+const useAuthStore = create<AuthStore>((set) => ({
+  profile: null,
 
-        if (!!!userId) return { success: false }
+  setProfile: (profile: Profile | null) => set({ profile }),
 
-        const { data, success } = await fetchProfile(userId)
+  signIn: async (): Promise<AuthStoreResult> => {
+    const { success } = await authSignInWithGoogle()
 
-        if (!success) return { success: false }
+    return { success: false }
+  },
 
-        const profile: Profile = data
+  signOut: async (): Promise<AuthStoreResult> => {
+    const { success } = await authSignOut()
 
-        set({ profile })
+    if (!success) return { success: false }
 
-        return { success: true, handle: profile.handle }
-      }
+    set({ profile: null })
 
-      const signup = async (
-        formData: z.infer<typeof SignupFormSchema>,
-      ): Promise<AuthStoreResult> => {
-        const { success: signupSuccess, userId } =
-          await authSignup(formData)
+    clearProfile()
 
-        if (!signupSuccess || !!!userId)
-          return { success: false }
-
-        const profile: Profile = {
-          userId,
-          email: formData.email,
-          handle: formData.handle,
-          rating: 0,
-          ratingCount: 0,
-          avatarUrl: '',
-          location: '',
-        }
-
-        const { success } = await addProfile(profile)
-
-        if (!success) {
-          logout()
-          return { success: false }
-        }
-
-        return { success: true, handle: formData.handle }
-      }
-
-      const logout = async (): Promise<AuthStoreResult> => {
-        const profile = get().profile
-
-        if (!!!profile) return { success: false }
-
-        const { success } = await authLogout()
-
-        if (!success) return { success: false }
-
-        set({ profile: null })
-
-        return { success: true, handle: profile.handle }
-      }
-
-      return {
-        profile: null,
-        setProfile: (profile: Profile) => set({ profile }),
-
-        login,
-        signup,
-        logout,
-
-        hasHydrated: false,
-        setHasHydrated: () => set({ hasHydrated: true }),
-      }
-    },
-    {
-      name: 'auth-storage',
-      storage: createJSONStorage(() => localStorage),
-      onRehydrateStorage: (state) => () =>
-        state.setHasHydrated(),
-      partialize: (state) =>
-        ({ profile: state.profile }) as AuthStore,
-    },
-  ),
-)
+    return { success: true }
+  },
+}))
 
 export default useAuthStore

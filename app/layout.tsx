@@ -5,6 +5,8 @@ import { Toaster } from '@/components/shadcn/components/ui/toaster'
 import Header from '@/components/01_header'
 import Footer from '@/components/03_footer'
 import AuthProvider from '@/lib/providers/auth'
+import { APP_TITLE } from '@/lib/constants'
+import LoadingProvider from '@/lib/providers/loading'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -17,7 +19,7 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Marketplace',
+  title: APP_TITLE,
   description:
     'A marketplace for buying and selling goods.',
 }
@@ -33,12 +35,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AuthProvider />
-        <div className='flex flex-col font-[family-name:var(--font-geist-sans)]'>
-          <div className='flex min-h-screen w-full flex-col items-center'>
-            <Header />
-            <div className='flex w-full flex-1 px-2'>
-              {children}
-            </div>
+        <LoadingProvider/>
+        <div className='flex flex-col font-[family-name:var(--font-geist-sans)] p-2'>
+          <Header />
+          <div className='flex min-h-screen w-full flex-1 flex-col items-center'>
+            {children}
           </div>
           <Footer />
         </div>

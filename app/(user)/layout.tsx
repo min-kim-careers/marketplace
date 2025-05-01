@@ -17,7 +17,7 @@ export default async function Layout({
   } = await supabase.auth.getSession()
 
   if (!session) {
-    redirect(ROUTES.LOGIN)
+    redirect(ROUTES.SIGNIN)
   }
 
   return (

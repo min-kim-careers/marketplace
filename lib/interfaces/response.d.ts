@@ -1,4 +1,4 @@
-export interface ServerResponse {
+export interface APIResponse {
   success: boolean
   message?: string
   count?: number

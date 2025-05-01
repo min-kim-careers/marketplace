@@ -1,6 +1,6 @@
 'use server'
 
-import { LoginFormSchema } from '@/components/02_main/auth/login/schema'
+import { SignInWithEmailFormSchema } from '@/components/02_main/auth/signin/email/schema'
 import { SignupFormSchema } from '@/components/02_main/auth/signup/schema'
 import { createClient } from '@/lib/services/supabase/server'
 import { z } from 'zod'
@@ -10,8 +10,8 @@ export interface AuthResponse {
   userId?: string
 }
 
-export const login = async (
-  formData: z.infer<typeof LoginFormSchema>,
+export const signInWithEmail = async (
+  formData: z.infer<typeof SignInWithEmailFormSchema>,
 ): Promise<AuthResponse> => {
   const supabase = await createClient()
 
@@ -34,7 +34,7 @@ export const login = async (
   }
 }
 
-export const signup = async (
+export const signUpWithEmail = async (
   formData: z.infer<typeof SignupFormSchema>,
 ): Promise<AuthResponse> => {
   const supabase = await createClient()
@@ -54,7 +54,7 @@ export const signup = async (
   const userId = data.user?.id
 
   if (!!!userId) {
-    console.error('No used ID found after sign up.')
+    console.error('No user ID found after sign up.')
     return {
       success: false,
     }
@@ -66,10 +66,46 @@ export const signup = async (
   }
 }
 
-export const logout = async (): Promise<AuthResponse> => {
+export const signInWithGoogle =
+  async (): Promise<AuthResponse> => {
+    const supabase = await createClient()
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+    })
+
+    if (error) {
+      console.error(error.message)
+      return {
+        success: false,
+      }
+    }
+
+    return {
+      success: true,
+    }
+  }
+
+export const signOut = async (): Promise<AuthResponse> => {
   const supabase = await createClient()
 
   const { error } = await supabase.auth.signOut()
+
+  if (error) {
+    console.error(error.message)
+    return { success: false }
+  }
+
+  return { success: true }
+}
+
+export const deleteUser = async (
+  userId: string,
+): Promise<AuthResponse> => {
+  const supabase = await createClient()
+
+  const { error } =
+    await supabase.auth.admin.deleteUser(userId)
 
   if (error) {
     console.error(error.message)

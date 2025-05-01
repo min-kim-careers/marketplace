@@ -10,8 +10,9 @@ import Spinner from '@/components/ui/spinner'
 import { URLParams } from '@/lib/interfaces/params'
 import {
   fetchItems,
-} from '@/lib/server/item'
-import { ServerResponse } from '@/lib/interfaces/server'
+} from '@/lib/api/item'
+import { APIResponse } from '@/lib/interfaces/response'
+import LoadingDots from '@/components/ui/loading-dots'
 
 const PAGINATION_LIMIT = 9
 
@@ -34,11 +35,11 @@ export default function Market({
       await fetchItems({
         page: urlParams.page,
         keyword: urlParams.keyword,
-        sort_by: urlParams.sortBy,
-        sort_order: urlParams.sortOrder,
+        sortBy: urlParams.sortBy,
+        sortOrder: urlParams.sortOrder,
       })
         .then((response) => {
-          const { data, count }: ServerResponse =
+          const { data, count }: APIResponse =
             response
 
           const items: Item[] = data
@@ -64,7 +65,7 @@ export default function Market({
 
   const renderLoading = () => (
     <div className='flex w-full flex-1 items-center justify-center'>
-      <Spinner />
+      <LoadingDots />
     </div>
   )
 

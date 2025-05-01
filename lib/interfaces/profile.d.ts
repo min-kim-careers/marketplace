@@ -1,5 +1,5 @@
 export interface Profile {
-    userId: string
+    userId?: string
     handle: string
     email: string
     rating: number

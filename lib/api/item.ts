@@ -4,17 +4,17 @@ import { PostFormSchema } from '@/components/02_main/user/post/schema'
 import { Profile } from '@/lib/interfaces/profile'
 import { z } from 'zod'
 import { APIParams } from '../interfaces/params'
-import server from '../utils/axios'
-import { ServerResponse } from '../interfaces/server'
+import api from '../utils/axios'
+import { APIResponse } from '../interfaces/response'
 
 export const fetchItems = async (
   params: APIParams,
-): Promise<ServerResponse> => {
-  return server
+): Promise<APIResponse> => {
+  return api
     .get('/get-items', {
       params,
     })
-    .then((response) => response.data as ServerResponse)
+    .then((response) => response.data as APIResponse)
     .catch((error) => {
       throw error
     })
