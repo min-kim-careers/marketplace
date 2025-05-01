@@ -1,16 +1,16 @@
-import { Profile } from "../interfaces/profile"
+import { Profile } from '../interfaces/profile'
 
-const PROFILE_KEY = 'profile'
+const profileKey = 'profile'
 
-export const saveProfile = (profile: Profile): void => {
-  localStorage.setItem(PROFILE_KEY, JSON.stringify(profile))
+export const cacheProfile = (profile: Profile) => {
+  localStorage.setItem(profileKey, JSON.stringify(profile))
 }
 
 export const loadProfile = (): Profile | null => {
-  const profile = localStorage.getItem(PROFILE_KEY)
-  return profile ? JSON.parse(profile) : null
+  const cached = localStorage.getItem(profileKey)
+  return cached ? JSON.parse(cached) : null
 }
 
 export const clearProfile = () => {
-  localStorage.setItem(PROFILE_KEY, JSON.stringify(null))
+  localStorage.removeItem(profileKey)
 }

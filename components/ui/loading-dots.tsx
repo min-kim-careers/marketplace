@@ -7,14 +7,28 @@ export default function LoadingDots({
 }) {
   return (
     <div
-      className={cn(
-        'flex items-center justify-center gap-4 p-2 dark:invert',
-        className,
-      )}
+      className={
+        'flex items-center justify-center gap-4 p-2 dark:invert'
+      }
     >
-      <div className='w-3 h-3 animate-bounce rounded-full bg-white [animation-delay:-0.3s]' />
-      <div className='w-3 h-3 animate-bounce rounded-full bg-white [animation-delay:-0.15s]' />
-      <div className='w-3 h-3 animate-bounce rounded-full bg-white' />
+      <div
+        className={cn(
+          `h-3 w-3 animate-bounce rounded-full bg-white [animation-delay:-0.3s]`,
+          className,
+        )}
+      />
+      <div
+        className={cn(
+          `h-3 w-3 animate-bounce rounded-full bg-white [animation-delay:-0.15s]`,
+          className,
+        )}
+      />
+      <div
+        className={cn(
+          `h-3 w-3 animate-bounce rounded-full bg-white`,
+          className,
+        )}
+      />
     </div>
   )
 }

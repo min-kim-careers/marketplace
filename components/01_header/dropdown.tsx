@@ -16,10 +16,10 @@ import useAuthStore from '@/lib/stores/auth'
 import Link from 'next/link'
 import Spinner from '../ui/spinner'
 
-export default function Menu({
-  handleLogout,
+export default function Dropdown({
+  handleSignOut,
 }: {
-  handleLogout: () => void
+  handleSignOut: () => void
 }) {
   const { profile } = useAuthStore()
 
@@ -45,8 +45,8 @@ export default function Menu({
         <DropdownMenuItem asChild>
           <Link href={ROUTES.PROFILE}>Profile</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleLogout}>
-          Log out
+        <DropdownMenuItem onClick={handleSignOut}>
+          Sign Out
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
