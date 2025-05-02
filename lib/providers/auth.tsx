@@ -2,8 +2,6 @@
 
 import { useEffect } from 'react'
 import useAuthStore from '../stores/auth'
-import { onAuthStateChanged, User } from 'firebase/auth'
-import { auth } from '../services/firebase/config'
 import {
   cacheProfile,
   clearProfile,
@@ -13,44 +11,46 @@ import {
 export default function AuthProvider() {
   const { setProfile, setInitialised } = useAuthStore()
 
-  const handleSignedIn = (user: User) => {
-    console.log('User signed in')
+  // const handleSignedIn = (user: User) => {
+  //   console.log('User signed in')
 
-    const cachedProfile = loadProfile()
+  //   const cachedProfile = loadProfile()
 
-    if (!!cachedProfile) return setProfile(cachedProfile)
+  //   if (!!cachedProfile) return setProfile(cachedProfile)
 
-    const newProfile = {
-      userId: user.uid,
-      email: user.email || 'some email',
-      handle: '',
-      rating: 0,
-      ratingCount: 0,
-    }
+  //   const newProfile = {
+  //     userId: user.uid,
+  //     email: user.email || 'some email',
+  //     handle: '',
+  //     rating: 0,
+  //     ratingCount: 0,
+  //   }
 
-    cacheProfile(newProfile)
+  //   cacheProfile(newProfile)
 
-    setProfile(newProfile)
-  }
+  //   setProfile(newProfile)
+  // }
 
-  const handleSignedOut = () => {
-    console.log('User signed out')
+  // const handleSignedOut = () => {
+  //   console.log('User signed out')
 
-    clearProfile()
-  }
+  //   clearProfile()
+  // }
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setInitialised(true)
+    setInitialised(true)
 
-      if (!!user) {
-        handleSignedIn(user)
-      } else {
-        handleSignedOut()
-      }
-    })
+    // const unsubscribe = onAuthStateChanged(auth, (user) => {
+    //   setInitialised(true)
 
-    return () => unsubscribe()
+    //   if (!!user) {
+    //     handleSignedIn(user)
+    //   } else {
+    //     handleSignedOut()
+    //   }
+    // })
+
+    // return () => unsubscribe()
   }, [])
 
   return null
