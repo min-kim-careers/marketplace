@@ -1,18 +1,15 @@
 import { create } from 'zustand'
 
 type LoadingState = {
-  loading: boolean
-  setLoading: (loading: boolean, message?: string) => void
-  message: string
+  setLoadingMessage: (message: string | null) => void
+  loadingMessage: string | null
 }
 
 export const useLoadingStore = create<LoadingState>(
   (set) => ({
-    loading: false,
-    setLoading: (loading: boolean, message?: string) => {
-      set({ loading, message: message || '' })
+    loadingMessage: '',
+    setLoadingMessage: (message: string | null) => {
+      set({ loadingMessage: message })
     },
-    
-    message: '',
   }),
 )

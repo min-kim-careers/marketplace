@@ -1,11 +1,11 @@
 import axios from 'axios'
-import { env } from './env'
+import { env } from '../env'
 
-const api = axios.create({
-  baseURL: env.serverUrl,
+const itemsApi = axios.create({
+  baseURL: env.serverUrl+'/items',
 })
 
-api.interceptors.request.use(
+itemsApi.interceptors.request.use(
   (config) => {
     return config
   },
@@ -14,7 +14,7 @@ api.interceptors.request.use(
   },
 )
 
-api.interceptors.response.use(
+itemsApi.interceptors.response.use(
   (response) => {
     return response
   },
@@ -23,4 +23,4 @@ api.interceptors.response.use(
   },
 )
 
-export default api
+export default itemsApi

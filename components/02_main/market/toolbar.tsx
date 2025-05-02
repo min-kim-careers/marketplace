@@ -17,7 +17,7 @@ import { ROUTES } from '@/lib/constants/routes'
 import {
   extractParams,
   paramsToQuery,
-} from '@/lib/utils/helpers'
+} from '@/lib/utils/common'
 import useCustomRouter from '@/lib/hooks/use-custom-router'
 import { Grip, Menu, Search } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'

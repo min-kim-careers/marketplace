@@ -4,6 +4,5 @@ interface Env {
 }
 
 export const env: Env = {
-  // serverUrl: process.env.SERVER_URL!,
-  serverUrl: 'http://marketplace-server-service:8000',
+  serverUrl: process.env.SERVER_URL!,
 }

@@ -1,12 +1,12 @@
 'use client'
 
-import { Profile } from '@/lib/interfaces/profile'
+import { User } from '@/lib/interfaces/user'
 import { create } from 'zustand'
 
 
 interface AuthStore {
-  profile: Profile | null
-  setProfile: (profile: Profile | null) => void
+  user: User | null
+  setUser: (user: User | null) => void
 
   initialised: boolean
   setInitialised: (b: boolean) => void
@@ -14,9 +14,9 @@ interface AuthStore {
 
 const useAuthStore = create<AuthStore>((set) => {
   return {
-    profile: null,
-    setProfile: (profile: Profile | null) =>
-      set({ profile }),
+    user: null,
+    setUser: (user: User | null) =>
+      set({ user }),
 
     initialised: false,
     setInitialised: (initialised: boolean) =>

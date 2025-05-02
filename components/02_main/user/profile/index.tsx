@@ -14,7 +14,7 @@ import { Label } from '@/components/shadcn/components/ui/label'
 import useAuthStore from '@/lib/stores/auth'
 
 export default function Profile() {
-  const { profile } = useAuthStore()
+  const { user } = useAuthStore()
 
   return (
     <Card>
@@ -33,14 +33,14 @@ export default function Profile() {
               <Input
                 disabled
                 id='handle'
-                placeholder={profile?.handle}
+                placeholder={user?.handle}
               />
             </div>
             <div className='flex flex-col space-y-1.5'>
               <Label htmlFor='email'>Email</Label>
               <Input
                 id='email'
-                placeholder={profile?.email}
+                placeholder={user?.email}
               />
             </div>
             <div className='flex flex-col space-y-1.5'>

@@ -9,7 +9,7 @@ import {
 } from '../cache/profile'
 
 export default function AuthProvider() {
-  const { setProfile, setInitialised } = useAuthStore()
+  const { setUser, setInitialised } = useAuthStore()
 
   // const handleSignedIn = (user: User) => {
   //   console.log('User signed in')

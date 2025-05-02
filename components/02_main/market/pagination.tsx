@@ -7,7 +7,7 @@ import {
   PaginationLink,
 } from '@/components/shadcn/components/ui/pagination'
 import { ROUTES } from '@/lib/constants/routes'
-import { paramsToQuery } from '@/lib/utils/helpers'
+import { paramsToQuery } from '@/lib/utils/common'
 import { URLParams as URLParams } from '@/lib/interfaces/params'
 import { notFound } from 'next/navigation'
 

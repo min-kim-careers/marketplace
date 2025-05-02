@@ -31,7 +31,7 @@ import { PostFormSchema } from './schema'
 import { insertItem } from '@/lib/api/item'
 
 export default function Post() {
-  const { profile } = useAuthStore()
+  const { user } = useAuthStore()
   const { toast } = useToast()
   const router = useRouter()
 
@@ -52,7 +52,7 @@ export default function Post() {
   async function onSubmit(
     values: z.infer<typeof PostFormSchema>,
   ) {
-    await insertItem(values, profile!)
+    await insertItem(values, user!)
 
     router.push(ROUTES.MARKET)
     toast({

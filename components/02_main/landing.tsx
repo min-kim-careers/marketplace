@@ -8,7 +8,7 @@ import Link from 'next/link'
 import { AuthGate } from '../00_common/auth-gate'
 
 export default function Landing() {
-  const { profile } = useAuthStore()
+  const { user } = useAuthStore()
 
   return (
     <div className='flex w-full flex-1 items-center justify-center'>
@@ -17,8 +17,8 @@ export default function Landing() {
           Welcome to the {APP_TITLE}!
         </h1>
         <AuthGate>
-          {profile ? (
-            <p>Welcome, {profile.handle}!</p>
+          {user ? (
+            <p>Welcome, {user.handle}!</p>
           ) : (
             <p>You are not logged in</p>
           )}

@@ -1,12 +1,12 @@
-import { Profile } from '../interfaces/profile'
+import { User } from '../interfaces/user'
 
 const profileKey = 'profile'
 
-export const cacheProfile = (profile: Profile) => {
+export const cacheProfile = (profile: User) => {
   localStorage.setItem(profileKey, JSON.stringify(profile))
 }
 
-export const loadProfile = (): Profile | null => {
+export const loadProfile = (): User | null => {
   const cached = localStorage.getItem(profileKey)
   return cached ? JSON.parse(cached) : null
 }

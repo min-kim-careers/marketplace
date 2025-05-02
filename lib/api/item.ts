@@ -1,17 +1,17 @@
 'use server'
 
 import { PostFormSchema } from '@/components/02_main/user/post/schema'
-import { Profile } from '@/lib/interfaces/profile'
+import { User } from '@/lib/interfaces/user'
 import { z } from 'zod'
 import { APIParams } from '../interfaces/params'
-import api from '../utils/axios'
+import itemsApi from '../utils/axios/items'
 import { APIResponse } from '../interfaces/response'
 
 export const fetchItems = async (
   params: APIParams,
 ): Promise<APIResponse> => {
-  return api
-    .get('/get-items', {
+  return itemsApi
+    .get('/get', {
       params,
     })
     .then((response) => response.data as APIResponse)
@@ -22,7 +22,7 @@ export const fetchItems = async (
 
 export const insertItem = async (
   formData: z.infer<typeof PostFormSchema>,
-  profile: Profile,
+  user: User,
 ) => {
   return null
 }

@@ -11,13 +11,14 @@ export function AuthGate({
   children: React.ReactNode
   fallback?: React.ReactNode
 }) {
-  const { profile, initialised } = useAuthStore()
+  const { user, initialised } = useAuthStore()
   const router = useRouter()
+  
   useEffect(() => {
-    if (initialised && !!!profile) {
+    if (initialised && !!!user) {
       router.replace(ROUTES.HOME)
     }
-  }, [profile, initialised])
+  }, [user, initialised])
 
   if (!initialised) return fallback
   
