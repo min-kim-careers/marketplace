@@ -1,5 +1,6 @@
 'use server'
 
+import { AuthGate } from '@/components/00_common/auth-gate'
 import { ReactNode } from 'react'
 
 export default async function Layout({
@@ -7,9 +8,5 @@ export default async function Layout({
 }: {
   children: ReactNode
 }) {
-  return (
-    <div className='flex flex-1 items-center justify-center'>
-      {children}
-    </div>
-  )
+  return <AuthGate>{children}</AuthGate>
 }

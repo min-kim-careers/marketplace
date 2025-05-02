@@ -5,7 +5,7 @@ import { Item } from '@/lib/interfaces/item'
 import { useEffect, useState } from 'react'
 
 import { useColumns } from '@/app/market/layout'
-import ItemCard from '@/components/ui/item-card'
+import ItemCard from '@/components/00_common/item-card'
 import Spinner from '@/components/ui/spinner'
 import { URLParams } from '@/lib/interfaces/params'
 import {

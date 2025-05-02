@@ -30,7 +30,7 @@ export default function Dropdown({
           <AvatarImage src='https://github.com/shadcn.png' />
           <AvatarFallback>
             {profile ? (
-              profile.handle[0].toUpperCase()
+              profile.handle
             ) : (
               <Spinner />
             )}

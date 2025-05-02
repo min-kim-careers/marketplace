@@ -1,4 +1,9 @@
-import { AuthError, signInWithPopup } from 'firebase/auth'
+import {
+  AuthError,
+  browserLocalPersistence,
+  setPersistence,
+  signInWithPopup,
+} from 'firebase/auth'
 import { Button } from '../shadcn/components/ui/button'
 import {
   auth,
@@ -12,39 +17,40 @@ export default function SignedOut() {
 
   const handleSignIn = async () => {
     setLoading(true, 'Signing you in...')
-    try {
-      await signInWithPopup(auth, googleProvider)
-
-      toast({
-        description: `Signed in successfully.`,
+    await setPersistence(auth, browserLocalPersistence)
+      .then(() => {
+        signInWithPopup(auth, googleProvider)
+        toast({
+          description: `Signed in successfully.`,
+        })
       })
-    } catch (error) {
-      const firebaseError = error as AuthError
-      switch (firebaseError.code) {
-        case 'auth/user-cancelled':
-          console.log('User cancelled the sign-in process')
-          break
-        case 'auth/network-request-failed':
-          console.log(
-            'Network error, please try again later.',
-          )
-          break
-        case 'auth/invalid-email':
-          console.log('The email address is invalid.')
-          break
-        default:
-          console.log(
-            'Firebase error:',
-            firebaseError.message,
-          )
-      }
-      toast({
-        description: `Failed to sign in.`,
+      .catch((error) => {
+        const firebaseError = error as AuthError
+        switch (firebaseError.code) {
+          case 'auth/user-cancelled':
+            console.log(
+              'User cancelled the sign-in process',
+            )
+            break
+          case 'auth/network-request-failed':
+            console.log(
+              'Network error, please try again later.',
+            )
+            break
+          case 'auth/invalid-email':
+            console.log('The email address is invalid.')
+            break
+          default:
+            console.log(
+              'Firebase error:',
+              firebaseError.message,
+            )
+        }
+        toast({
+          description: `Failed to sign in.`,
+        })
       })
-      return
-    } finally {
-      setLoading(false)
-    }
+      .finally(() => setLoading(false))
   }
 
   return (
