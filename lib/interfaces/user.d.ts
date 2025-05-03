@@ -8,3 +8,7 @@ export interface User {
     state?: string
     avatarUrl?: string
 }
+
+export interface UserCreate extends User {
+    password: string
+}

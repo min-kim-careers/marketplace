@@ -2,7 +2,7 @@ import axios from 'axios'
 import { env } from '../env'
 
 const usersApi = axios.create({
-  baseURL: env.serverUrl+'/items',
+  baseURL: env.serverUrl+'/users',
 })
 
 usersApi.interceptors.request.use(

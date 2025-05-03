@@ -1,10 +1,8 @@
 'use server'
 
-import { User } from '../interfaces/user'
 import { APIResponse } from '../interfaces/response'
+import { User, UserCreate } from '../interfaces/user'
 import usersApi from '../utils/axios/users'
-import { z } from 'zod'
-import { SignupFormSchema } from '@/components/01_header/auth-dialog/sign-up-form/schema'
 
 export const fetchUser = async (
   userId: string,
@@ -22,10 +20,10 @@ export const fetchUser = async (
 }
 
 export const addUser = async (
-  user: User,
+  user: UserCreate,
 ): Promise<APIResponse> => {
   return await usersApi
-    .post('/add', user)
+    .post('/create', { ...user })
     .then((response) => response.data as APIResponse)
     .catch((error) => {
       throw error
