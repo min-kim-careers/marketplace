@@ -13,25 +13,27 @@ import {
 } from './fields'
 import { SignupFormSchema } from './schema'
 import { toast } from '@/components/shadcn/hooks/use-toast'
-import { useLoadingStore } from '@/lib/stores/loading'
-import { addUser } from '@/lib/api/user'
+import { useLoadingOverlayStore } from '@/lib/stores/loading-overlay'
+import { signUp } from '@/lib/api/user/service'
 
 export default function SignupForm() {
-  const { setLoadingMessage } = useLoadingStore()
+  const { setLoadingMessage } = useLoadingOverlayStore()
 
   const onSubmit = async (
     formData: z.infer<typeof SignupFormSchema>,
   ) => {
-    setLoadingMessage('Signing you in...')
+    setLoadingMessage('Signing you up...')
     try {
-      await addUser({...formData})
+      const { success } = await signUp({ ...formData })
+
+      if (!success) throw Error()
 
       toast({
-        description: `Signed in successfully.`,
+        description: `Signed up successfully.`,
       })
     } catch (error) {
       toast({
-        description: `Failed to sign in.`,
+        description: `Failed to sign up.`,
       })
     } finally {
       setLoadingMessage(null)

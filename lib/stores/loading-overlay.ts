@@ -1,11 +1,11 @@
 import { create } from 'zustand'
 
-type LoadingState = {
+type LoadingOverlayState = {
   setLoadingMessage: (message: string | null) => void
   loadingMessage: string | null
 }
 
-export const useLoadingStore = create<LoadingState>(
+export const useLoadingOverlayStore = create<LoadingOverlayState>(
   (set) => ({
     loadingMessage: '',
     setLoadingMessage: (message: string | null) => {

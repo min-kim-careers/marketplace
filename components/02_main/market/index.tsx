@@ -1,27 +1,25 @@
 'use client'
 
 import Pagination from '@/components/02_main/market/pagination'
-import { Item } from '@/lib/interfaces/item'
+import { Item } from '@/lib/interfaces/items'
 import { useEffect, useState } from 'react'
 
-import { useColumns } from '@/app/market/layout'
 import ItemCard from '@/components/00_common/item-card'
-import Spinner from '@/components/ui/spinner'
-import { URLParams } from '@/lib/interfaces/params'
-import {
-  fetchItems,
-} from '@/lib/api/item'
-import { APIResponse } from '@/lib/interfaces/response'
-import LoadingDots from '@/components/ui/loading-dots'
+import { SearchParams } from '@/lib/interfaces/items/params'
+import { fetchItems } from '@/lib/api/item/service'
+import LoadingDots from '@/components/00_common/widgets/loading-dots'
+import { useUIStore } from '@/lib/stores/ui'
+import { useSearchParams } from 'next/navigation'
+import { PAGINATION_LIMIT } from '../../../lib/constants/pagination'
+import { extractSearchParams } from '@/lib/utils/common'
 
-const PAGINATION_LIMIT = 9
+export default function Market() {
+  const searchParams = useSearchParams()
+  const [params, setParams] = useState<SearchParams>(
+    extractSearchParams(searchParams),
+  )
 
-export default function Market({
-  urlParams,
-}: {
-  urlParams: URLParams
-}) {
-  const columns = useColumns()
+  const { columns } = useUIStore()
 
   const [count, setCount] = useState<number>(0)
   const [items, setItems] = useState<Item[]>([])
@@ -31,25 +29,13 @@ export default function Market({
   useEffect(() => {
     const getItems = async () => {
       setLoading(true)
-
-      await fetchItems({
-        page: urlParams.page,
-        keyword: urlParams.keyword,
-        sortBy: urlParams.sortBy,
-        sortOrder: urlParams.sortOrder,
-      })
+      const newParams = extractSearchParams(searchParams)
+      setParams(newParams)
+      await fetchItems(newParams)
         .then((response) => {
-          const { data, count }: APIResponse =
-            response
+          const { items, count } = response
 
-          const items: Item[] = data
-
-          if (!!!items.length || !!!count) {
-            setMessage('No items found...')
-            return
-          }
-
-          setItems([...items])
+          setItems(items)
           setCount(count)
         })
         .catch((error) => {
@@ -61,7 +47,7 @@ export default function Market({
     }
 
     getItems()
-  }, [urlParams])
+  }, [searchParams])
 
   const renderLoading = () => (
     <div className='flex w-full flex-1 items-center justify-center'>
@@ -103,24 +89,16 @@ export default function Market({
       <div className='flex w-full items-center justify-between px-2 text-sm'>
         <span>{items.length} items</span>
         <span>
-          <Pagination
-            urlParams={urlParams}
-            limit={PAGINATION_LIMIT}
-            count={count}
-          />
+          <Pagination params={params} count={count} />
         </span>
         <span>
-          {`${(urlParams.page - 1) * PAGINATION_LIMIT + 1} - ${PAGINATION_LIMIT * (urlParams.page - 1) + items.length} of ${count}`}
+          {`${(params.page - 1) * PAGINATION_LIMIT + 1} - ${PAGINATION_LIMIT * (params.page - 1) + items.length} of ${count}`}
         </span>
       </div>
 
       {renderItems()}
 
-      <Pagination
-        urlParams={urlParams}
-        limit={PAGINATION_LIMIT}
-        count={count}
-      />
+      <Pagination params={params} count={count} />
     </>
   )
 

@@ -2,9 +2,9 @@ import '@/app/globals.css'
 import Header from '@/components/01_header'
 import Footer from '@/components/03_footer'
 import { Toaster } from '@/components/shadcn/components/ui/toaster'
-import { APP_TITLE } from '@/lib/constants'
+import { APP_TITLE } from '@/lib/constants/common'
 import AuthProvider from '@/lib/providers/auth'
-import LoadingProvider from '@/lib/providers/loading'
+import LoadingOverlayProvider from '@/lib/providers/loading-overlay'
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 
@@ -35,10 +35,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AuthProvider />
-        <LoadingProvider />
-        <div className='flex flex-col p-2 font-[family-name:var(--font-geist-sans)]'>
+        <LoadingOverlayProvider />
+        <div className='flex min-h-screen flex-col p-2 font-[family-name:var(--font-geist-sans)]'>
           <Header />
-          <div className='flex min-h-screen w-full flex-1 flex-col items-center'>
+          <div className='flex w-full flex-1 flex-col items-center'>
             {children}
           </div>
           <Footer />

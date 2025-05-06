@@ -14,7 +14,7 @@ import {
 import { ROUTES } from '@/lib/constants/routes'
 import useAuthStore from '@/lib/stores/auth'
 import Link from 'next/link'
-import Spinner from '../../ui/spinner'
+import Spinner from '../../00_common/widgets/spinner'
 
 export default function Dropdown({
   handleSignOut,

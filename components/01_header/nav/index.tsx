@@ -1,13 +1,13 @@
 import { toast } from '@/components/shadcn/hooks/use-toast'
 import { ROUTES } from '@/lib/constants/routes'
-import { useLoadingStore } from '@/lib/stores/loading'
-import { paramsToQuery } from '@/lib/utils/common'
+import { useLoadingOverlayStore } from '@/lib/stores/loading-overlay'
+import { serialize } from '@/lib/utils/common'
 import Link from 'next/link'
 import { Button } from '../../shadcn/components/ui/button'
 import Dropdown from './dropdown'
 
 export default function Nav() {
-  const { setLoadingMessage } = useLoadingStore()
+  const { setLoadingMessage } = useLoadingOverlayStore()
 
   const handleSignOut = async () => {
     setLoadingMessage('Signing you out...')
@@ -32,7 +32,7 @@ export default function Nav() {
       <Link
         href={{
           pathname: ROUTES.MARKET,
-          query: paramsToQuery({ page: 1 }),
+          query: serialize({ page: 1 }),
         }}
         passHref
       >

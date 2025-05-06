@@ -1,10 +1,10 @@
 export interface Item {
+  id: str
+  userId: str
   name: string
   description: string
   price: number
   category: string
-  userEmail: string
-  userHandle: string
   createdAt: Date
   updatedAt: Date
   expiresAt: Date

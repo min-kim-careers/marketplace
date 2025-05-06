@@ -6,7 +6,7 @@ import {
   cacheProfile,
   clearProfile,
   loadProfile,
-} from '../cache/profile'
+} from '../cache/user'
 
 export default function AuthProvider() {
   const { setUser, setInitialised } = useAuthStore()

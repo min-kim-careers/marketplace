@@ -15,30 +15,25 @@ import {
 } from '@/components/shadcn/components/ui/toggle-group'
 import { ROUTES } from '@/lib/constants/routes'
 import {
-  extractParams,
-  paramsToQuery,
+  extractSearchParams,
+  serialize,
 } from '@/lib/utils/common'
 import useCustomRouter from '@/lib/hooks/use-custom-router'
 import { Grip, Menu, Search } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 import { ChangeEvent, useEffect, useState } from 'react'
+import { useUIStore } from '@/lib/stores/ui'
 
-export default function Toolbar({
-  setColumns,
-  defaultColumns,
-}: {
-  setColumns: (value: number) => void
-  defaultColumns: number
-}) {
+export default function Toolbar() {
   const searchParams = useSearchParams()
-  const urlParams = extractParams(searchParams)
   const router = useCustomRouter()
+  const { columns, setColumns } = useUIStore()
 
   const viewToggle = () => (
     <ToggleGroup
       type='single'
       onValueChange={(value) => setColumns(+value)}
-      defaultValue={defaultColumns.toString()}
+      defaultValue={columns.toString()}
     >
       <ToggleGroupItem value='1'>
         <Menu />
@@ -58,8 +53,8 @@ export default function Toolbar({
   }
 
   const handleSearch = async () => {
-    const query = paramsToQuery({
-      ...urlParams,
+    const query = serialize({
+      ...extractSearchParams(searchParams),
       page: 1,
       keyword: searchValue,
     })
@@ -88,12 +83,11 @@ export default function Toolbar({
 
   const SORT_MAP: Record<string, string> = {}
 
+  const sortValues: string[] = Object.keys(SORT_MAP)
 
-  const sortValues: string[] =
-    Object.keys(SORT_MAP)
-
-  const [selectedSort, setSelectedSort] =
-    useState(sortValues[0])
+  const [selectedSort, setSelectedSort] = useState(
+    sortValues[0],
+  )
 
   const handleSortValueChange = (value: string) => {
     setSelectedSort(value)
@@ -103,11 +97,9 @@ export default function Toolbar({
     const serverSort = SORT_MAP[selectedSort]
     router.push({
       pathname: ROUTES.MARKET,
-      query: {
-        ...paramsToQuery(urlParams),
-      },
+      query: serialize(extractSearchParams(searchParams)),
     })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSort])
 
   const sortDropdown = () => (
@@ -116,17 +108,12 @@ export default function Toolbar({
       onValueChange={handleSortValueChange}
     >
       <SelectTrigger className='w-[180px]'>
-        <SelectValue>
-          Sorted by {selectedSort}
-        </SelectValue>
+        <SelectValue>Sorted by {selectedSort}</SelectValue>
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
           {sortValues.map((s, i) => (
-            <SelectItem
-              key={i}
-              value={s}
-            >
+            <SelectItem key={i} value={s}>
               {s}
             </SelectItem>
           ))}

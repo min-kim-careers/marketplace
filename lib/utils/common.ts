@@ -1,11 +1,13 @@
-import { URLParams } from '@/lib/interfaces/params'
+import { SearchParams } from '@/lib/interfaces/items/params'
 import { ReadonlyURLSearchParams } from 'next/navigation'
 
-export const extractParams = (
+const defaultPage = 1
+
+export const extractSearchParams = (
   params: ReadonlyURLSearchParams,
-): URLParams => {
+): SearchParams => {
   return {
-    page: Number(params.get('page')) || 1,
+    page: Number(params.get('page')) || defaultPage,
     keyword: params.get('keyword'),
     sortBy: params.get('sortBy'),
     sortOrder: params.get('sortOrder'),
@@ -18,9 +20,9 @@ const isValidParam = (value: unknown): boolean => {
   )
 }
 
-export const paramsToQuery = (params: URLParams) => {
+export const serialize = (object: Object) => {
   const query = Object.fromEntries(
-    Object.entries(params)
+    Object.entries(object)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .filter(([_, value]) => isValidParam(value))
       .map(([key, value]) => [key, String(value)]),

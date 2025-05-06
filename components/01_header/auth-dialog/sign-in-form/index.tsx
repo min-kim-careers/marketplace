@@ -9,17 +9,30 @@ import { Form } from '@/components/shadcn/components/ui/form'
 import { EmailField, PasswordField } from './fields'
 import { LoginFormSchema } from './schema'
 import { toast } from '@/components/shadcn/hooks/use-toast'
-import { useLoadingStore } from '@/lib/stores/loading'
+import { useLoadingOverlayStore } from '@/lib/stores/loading-overlay'
+import { signIn } from '@/lib/api/auth/service'
+import { useRouter } from 'next/navigation'
+import { ROUTES } from '@/lib/constants/routes'
 
 export default function SignInForm() {
-  const { setLoadingMessage } = useLoadingStore()
+  const { setLoadingMessage } = useLoadingOverlayStore()
+  const router = useRouter()
 
-  const onSubmit = async () => {
+  const onSubmit = async (
+    formData: z.infer<typeof LoginFormSchema>,
+  ) => {
     setLoadingMessage('Signing you in...')
     try {
+      const { success } = await signIn({
+        ...formData,
+      })
+
+      if (!success) throw Error()
+
       toast({
         description: `Signed in successfully.`,
       })
+      router.replace(ROUTES.HOME)
     } catch (error) {
       toast({
         description: `Failed to sign in.`,
@@ -46,7 +59,7 @@ export default function SignInForm() {
             <PasswordField form={form} />
 
             <Button type='submit' className='mt-2 w-full'>
-              Login
+              Sign In
             </Button>
           </div>
         </form>

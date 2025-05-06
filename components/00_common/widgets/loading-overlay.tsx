@@ -1,4 +1,4 @@
-import { cn } from '../shadcn/lib/utils'
+import { cn } from '../../shadcn/lib/utils'
 import LoadingDots from './loading-dots'
 
 export default function LoadingOverlay({

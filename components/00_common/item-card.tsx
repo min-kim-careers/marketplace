@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/shadcn/components/ui/card'
-import { Item } from '@/lib/interfaces/item'
+import { Item } from '@/lib/interfaces/items'
 
 export default function ItemCard({
   item,

@@ -7,23 +7,23 @@ import {
   PaginationLink,
 } from '@/components/shadcn/components/ui/pagination'
 import { ROUTES } from '@/lib/constants/routes'
-import { paramsToQuery } from '@/lib/utils/common'
-import { URLParams as URLParams } from '@/lib/interfaces/params'
+import { serialize } from '@/lib/utils/common'
+import { SearchParams as SearchParams } from '@/lib/interfaces/items/params'
 import { notFound } from 'next/navigation'
-
-const PAGINATION_SIZE = 5
+import {
+  PAGINATION_LIMIT,
+  PAGINATION_SIZE,
+} from '@/lib/constants/pagination'
 
 export default function Pagination({
-  urlParams,
-  limit,
+  params,
   count,
 }: {
-  urlParams: URLParams
-  limit: number
+  params: SearchParams
   count: number
 }) {
-  const currentPage = urlParams.page
-  const lastPage = Math.ceil(count / limit)
+  const currentPage = params.page
+  const lastPage = Math.ceil(count / PAGINATION_LIMIT)
 
   if (currentPage < 1 && lastPage < currentPage) {
     notFound()
@@ -50,7 +50,7 @@ export default function Pagination({
           disabled={currentPage === 1}
           href={{
             pathname: ROUTES.MARKET,
-            query: { ...paramsToQuery(urlParams), page: 1 },
+            query: serialize({ ...params, page: 1 }),
           }}
         />
 
@@ -63,10 +63,10 @@ export default function Pagination({
                   isActive={currentPage === page}
                   href={{
                     pathname: ROUTES.MARKET,
-                    query: {
-                      ...paramsToQuery(urlParams),
+                    query: serialize({
+                      ...params,
                       page: page,
-                    },
+                    }),
                   }}
                 >
                   {page}
@@ -79,10 +79,7 @@ export default function Pagination({
           disabled={currentPage === lastPage}
           href={{
             pathname: ROUTES.MARKET,
-            query: {
-              ...paramsToQuery(urlParams),
-              page: lastPage,
-            },
+            query: serialize({ ...params, page: lastPage }),
           }}
         />
       </PaginationContent>

@@ -23,7 +23,7 @@ import {
   PopoverTrigger,
 } from '@/components/shadcn/components/ui/popover'
 import { cn } from '@/components/shadcn/lib/utils'
-import Spinner from '@/components/ui/spinner'
+import Spinner from '@/components/00_common/widgets/spinner'
 import { searchLocations } from '@/lib/utils/fuse/locations'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { useState } from 'react'

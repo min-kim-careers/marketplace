@@ -9,6 +9,13 @@ export interface User {
     avatarUrl?: string
 }
 
-export interface UserCreate extends User {
+export interface UserCreate {
+    handle: string
+    email: string
+    password: string
+}
+
+export interface UserAuth {
+    email: string
     password: string
 }
