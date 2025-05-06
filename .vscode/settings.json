@@ -1,0 +1,4 @@
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}/marketplace-server/.venv/bin/python",
+  "python.envFile": "${workspaceFolder}/.env"
+}
