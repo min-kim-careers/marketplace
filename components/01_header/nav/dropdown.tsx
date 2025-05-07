@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/shadcn/components/ui/dropdown-menu'
-import { ROUTES } from '@/lib/constants/routes'
+import { PATHNAMES } from '@/lib/constants/pathnames'
 import useAuthStore from '@/lib/stores/auth'
 import Link from 'next/link'
 import Spinner from '../../00_common/widgets/spinner'
@@ -43,7 +43,7 @@ export default function Dropdown({
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href={ROUTES.PROFILE}>Profile</Link>
+          <Link href={PATHNAMES.PROFILE}>Profile</Link>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={handleSignOut}>
           Sign Out

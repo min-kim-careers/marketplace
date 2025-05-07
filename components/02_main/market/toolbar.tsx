@@ -13,7 +13,7 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from '@/components/shadcn/components/ui/toggle-group'
-import { ROUTES } from '@/lib/constants/routes'
+import { PATHNAMES } from '@/lib/constants/pathnames'
 import {
   extractSearchParams,
   serialize,
@@ -59,7 +59,7 @@ export default function Toolbar() {
       keyword: searchValue,
     })
     router.push({
-      pathname: ROUTES.MARKET,
+      pathname: PATHNAMES.MARKET,
       query,
     })
     // setSearchValue('')
@@ -96,7 +96,7 @@ export default function Toolbar() {
   useEffect(() => {
     const serverSort = SORT_MAP[selectedSort]
     router.push({
-      pathname: ROUTES.MARKET,
+      pathname: PATHNAMES.MARKET,
       query: serialize(extractSearchParams(searchParams)),
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps

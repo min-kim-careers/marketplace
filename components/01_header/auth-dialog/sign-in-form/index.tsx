@@ -12,7 +12,7 @@ import { toast } from '@/components/shadcn/hooks/use-toast'
 import { useLoadingOverlayStore } from '@/lib/stores/loading-overlay'
 import { signIn } from '@/lib/api/auth/service'
 import { useRouter } from 'next/navigation'
-import { ROUTES } from '@/lib/constants/routes'
+import { PATHNAMES } from '@/lib/constants/pathnames'
 
 export default function SignInForm() {
   const { setLoadingMessage } = useLoadingOverlayStore()
@@ -33,7 +33,7 @@ export default function SignInForm() {
       toast({
         description: `Signed in successfully.`,
       })
-      router.replace(ROUTES.HOME)
+      router.replace(PATHNAMES.HOME)
     } catch (error) {
       toast({
         description: `Failed to sign in.`,

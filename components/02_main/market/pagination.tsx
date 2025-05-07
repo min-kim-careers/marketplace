@@ -6,7 +6,7 @@ import {
   PaginationLast,
   PaginationLink,
 } from '@/components/shadcn/components/ui/pagination'
-import { ROUTES } from '@/lib/constants/routes'
+import { PATHNAMES } from '@/lib/constants/pathnames'
 import { serialize } from '@/lib/utils/common'
 import { SearchParams as SearchParams } from '@/lib/interfaces/items/params'
 import { notFound } from 'next/navigation'
@@ -49,7 +49,7 @@ export default function Pagination({
         <PaginationFirst
           disabled={currentPage === 1}
           href={{
-            pathname: ROUTES.MARKET,
+            pathname: PATHNAMES.MARKET,
             query: serialize({ ...params, page: 1 }),
           }}
         />
@@ -62,7 +62,7 @@ export default function Pagination({
                 <PaginationLink
                   isActive={currentPage === page}
                   href={{
-                    pathname: ROUTES.MARKET,
+                    pathname: PATHNAMES.MARKET,
                     query: serialize({
                       ...params,
                       page: page,
@@ -78,7 +78,7 @@ export default function Pagination({
         <PaginationLast
           disabled={currentPage === lastPage}
           href={{
-            pathname: ROUTES.MARKET,
+            pathname: PATHNAMES.MARKET,
             query: serialize({ ...params, page: lastPage }),
           }}
         />

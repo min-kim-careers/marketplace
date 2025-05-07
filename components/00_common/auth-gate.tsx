@@ -2,7 +2,7 @@ import useAuthStore from '@/lib/stores/auth'
 import LoadingDots from './widgets/loading-dots'
 import { useEffect } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { PROTECTED_ROUTES, ROUTES } from '@/lib/constants/routes'
+import { PROTECTED_PATHNAMES, PATHNAMES } from '@/lib/constants/pathnames'
 
 export function AuthGate({
   children,
@@ -16,8 +16,8 @@ export function AuthGate({
   const pathname = usePathname()
   
   useEffect(() => {
-    if (initialised && !!!user && PROTECTED_ROUTES.includes(pathname)) {
-      router.replace(ROUTES.HOME)
+    if (initialised && !!!user && PROTECTED_PATHNAMES.includes(pathname)) {
+      router.replace(PATHNAMES.HOME)
     }
   }, [user, initialised, pathname])
 

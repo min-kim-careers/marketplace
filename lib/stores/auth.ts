@@ -2,10 +2,6 @@
 
 import { User } from '@/lib/interfaces/users'
 import { create } from 'zustand'
-import { signIn as serverSignIn } from '../api/auth'
-import { signUp as serverSignUp } from '../api/user'
-import { AuthResponse } from '../interfaces/auth/response'
-import { UserResponse } from '../interfaces/users/response'
 
 interface AuthStore {
   user: User | null
