@@ -1,6 +1,5 @@
 'use server'
 
-import { UserCreate } from '../../interfaces/users'
 import { UserResponse } from '../../interfaces/users/response'
 import usersApi from '.'
 
@@ -15,17 +14,19 @@ export const fetchUser = async (
     })
     .then((response) => response.data as UserResponse)
     .catch((error) => {
-      throw Error()
+      throw error
     })
 }
 
 export const signUp = async (
-  userCreate: UserCreate,
+  email: string,
+  password: string,
+  handle: string,
 ): Promise<UserResponse> => {
   return await usersApi
-    .post('/sign-up', userCreate)
+    .post('/sign-up', {email, password, handle})
     .then((response) => response.data as UserResponse)
     .catch((error) => {
-      throw Error()
+      throw error
     })
 }

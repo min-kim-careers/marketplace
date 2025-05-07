@@ -13,7 +13,7 @@ export const fetchItems = async (
     })
     .then((response) => response.data as ItemResponse)
     .catch((error) => {
-      throw Error()
+      throw error
     })
 }
 

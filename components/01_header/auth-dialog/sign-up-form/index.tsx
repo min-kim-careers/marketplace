@@ -24,7 +24,11 @@ export default function SignupForm() {
   ) => {
     setLoadingMessage('Signing you up...')
     try {
-      const { success } = await signUp({ ...formData })
+      const { success } = await signUp(
+        formData.email,
+        formData.password,
+        formData.handle,
+      )
 
       if (!success) throw Error()
 

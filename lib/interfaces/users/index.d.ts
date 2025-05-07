@@ -8,14 +8,3 @@ export interface User {
     state?: string
     avatarUrl?: string
 }
-
-export interface UserCreate {
-    handle: string
-    email: string
-    password: string
-}
-
-export interface UserAuth {
-    email: string
-    password: string
-}

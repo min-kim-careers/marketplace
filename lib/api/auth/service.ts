@@ -1,24 +1,26 @@
 'use server'
 
 import { AuthResponse } from '../../interfaces/auth/response'
-import { UserAuth } from '../../interfaces/users'
 import authApi from '.'
+import { UserResponse } from '@/lib/interfaces/users/response'
+import { fetchUser } from '../user/service'
 
 export const signIn = async (
-  userAuth: UserAuth,
-): Promise<AuthResponse> => {
+  email: string,
+  password: string,
+): Promise<UserResponse> => {
   const formData = new FormData()
-  formData.append('username', userAuth.email)
-  formData.append('password', userAuth.password)
+  formData.append('username', email)
+  formData.append('password', password)
 
-  return await authApi
-    .post(
-      '/sign-in',
-      formData,
-      { withCredentials: true },
-    )
+  const { success, userId } = await authApi
+    .post('/sign-in', formData, { withCredentials: true })
     .then((response) => response.data as AuthResponse)
     .catch((error) => {
       throw error
     })
+
+  if (!success || !!!userId) throw Error()
+
+  return await fetchUser(userId)
 }

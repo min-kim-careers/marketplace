@@ -23,9 +23,10 @@ export default function SignInForm() {
   ) => {
     setLoadingMessage('Signing you in...')
     try {
-      const { success } = await signIn({
-        ...formData,
-      })
+      const { success } = await signIn(
+        formData.email,
+        formData.password,
+      )
 
       if (!success) throw Error()
 
