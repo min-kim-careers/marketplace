@@ -1,7 +1,7 @@
 import { toast } from '@/components/shadcn/hooks/use-toast'
 import { PATHNAMES } from '@/lib/constants/pathnames'
 import { useLoadingOverlayStore } from '@/lib/stores/loading-overlay'
-import { serialize } from '@/lib/utils/common'
+import { serialize } from '@/lib/utils/params'
 import Link from 'next/link'
 import { Button } from '../../shadcn/components/ui/button'
 import Dropdown from './dropdown'
@@ -17,7 +17,7 @@ export default function Nav() {
       toast({
         description: `Signed out successfully.`,
       })
-    } catch (error) {
+    } catch (err) {
       toast({
         description: `Failed to sign out `,
       })

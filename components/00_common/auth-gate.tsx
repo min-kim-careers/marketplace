@@ -16,7 +16,7 @@ export function AuthGate({
   const pathname = usePathname()
   
   useEffect(() => {
-    if (initialised && !!!user && PROTECTED_PATHNAMES.includes(pathname)) {
+    if (initialised && !user && PROTECTED_PATHNAMES.includes(pathname)) {
       router.replace(PATHNAMES.HOME)
     }
   }, [user, initialised, pathname])

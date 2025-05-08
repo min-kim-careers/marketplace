@@ -17,7 +17,7 @@ import { PATHNAMES } from '@/lib/constants/pathnames'
 import {
   extractSearchParams,
   serialize,
-} from '@/lib/utils/common'
+} from '@/lib/utils/params'
 import useCustomRouter from '@/lib/hooks/use-custom-router'
 import { Grip, Menu, Search } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'

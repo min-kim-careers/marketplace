@@ -7,13 +7,10 @@ import {
   PaginationLink,
 } from '@/components/shadcn/components/ui/pagination'
 import { PATHNAMES } from '@/lib/constants/pathnames'
-import { serialize } from '@/lib/utils/common'
+import { serialize } from '@/lib/utils/params'
 import { SearchParams as SearchParams } from '@/lib/interfaces/items/params'
 import { notFound } from 'next/navigation'
-import {
-  PAGINATION_LIMIT,
-  PAGINATION_SIZE,
-} from '@/lib/constants/pagination'
+import { PAGINATION } from '@/lib/constants/pagination'
 
 export default function Pagination({
   params,
@@ -23,14 +20,14 @@ export default function Pagination({
   count: number
 }) {
   const currentPage = params.page
-  const lastPage = Math.ceil(count / PAGINATION_LIMIT)
+  const lastPage = Math.ceil(count / PAGINATION.LIMIT)
 
   if (currentPage < 1 && lastPage < currentPage) {
     notFound()
   }
 
   const paginationArray = Array.from(
-    { length: PAGINATION_SIZE },
+    { length: PAGINATION.SIZE },
     (_, index) => {
       if (currentPage < 3) {
         return index + 1

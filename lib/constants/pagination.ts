@@ -1,3 +1,4 @@
-export const PAGINATION_LIMIT = 9
-export const PAGINATION_SIZE = 5
-
+export const PAGINATION = {
+  LIMIT: 9,
+  SIZE: 5
+}

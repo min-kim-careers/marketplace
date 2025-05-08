@@ -5,13 +5,13 @@ import { Item } from '@/lib/interfaces/items'
 import { useEffect, useState } from 'react'
 
 import ItemCard from '@/components/00_common/item-card'
-import { SearchParams } from '@/lib/interfaces/items/params'
-import { fetchItems } from '@/lib/api/item/service'
 import LoadingDots from '@/components/00_common/widgets/loading-dots'
+import { SearchParams } from '@/lib/interfaces/items/params'
+import { ItemResponse } from '@/lib/interfaces/items/response'
 import { useUIStore } from '@/lib/stores/ui'
+import { extractSearchParams } from '@/lib/utils/params'
 import { useSearchParams } from 'next/navigation'
-import { PAGINATION_LIMIT } from '../../../lib/constants/pagination'
-import { extractSearchParams } from '@/lib/utils/common'
+import { PAGINATION } from '../../../lib/constants/pagination'
 
 export default function Market() {
   const searchParams = useSearchParams()
@@ -29,21 +29,26 @@ export default function Market() {
   useEffect(() => {
     const getItems = async () => {
       setLoading(true)
-      const newParams = extractSearchParams(searchParams)
-      setParams(newParams)
-      await fetchItems(newParams)
-        .then((response) => {
-          const { items, count } = response
 
-          setItems(items)
-          setCount(count)
-        })
-        .catch((error) => {
-          setMessage(error.message)
-        })
-        .finally(() => {
-          setLoading(false)
-        })
+      try {
+        const newParams: SearchParams =
+          extractSearchParams(searchParams)
+
+        const res = await fetch(`/items?${searchParams}`)
+
+        if (!res.ok) throw new Error()
+
+        const { items, count } =
+          (await res.json()) as ItemResponse
+
+        setItems(items)
+        setCount(count)
+        setParams(newParams)
+      } catch (err) {
+        setMessage('Something went wrong...')
+      } finally {
+        setLoading(false)
+      }
     }
 
     getItems()
@@ -92,7 +97,7 @@ export default function Market() {
           <Pagination params={params} count={count} />
         </span>
         <span>
-          {`${(params.page - 1) * PAGINATION_LIMIT + 1} - ${PAGINATION_LIMIT * (params.page - 1) + items.length} of ${count}`}
+          {`${(params.page - 1) * PAGINATION.LIMIT + 1} - ${PAGINATION.LIMIT * (params.page - 1) + items.length} of ${count}`}
         </span>
       </div>
 
@@ -104,7 +109,7 @@ export default function Market() {
 
   if (loading) {
     return renderLoading()
-  } else if (!!!items.length) {
+  } else if (!items.length) {
     return renderNoResults()
   } else {
     return renderContent()

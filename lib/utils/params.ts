@@ -4,7 +4,7 @@ import { ReadonlyURLSearchParams } from 'next/navigation'
 const defaultPage = 1
 
 export const extractSearchParams = (
-  params: ReadonlyURLSearchParams,
+  params: ReadonlyURLSearchParams | URLSearchParams,
 ): SearchParams => {
   return {
     page: Number(params.get('page')) || defaultPage,

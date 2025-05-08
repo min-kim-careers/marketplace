@@ -14,7 +14,6 @@ import {
 import { SignupFormSchema } from './schema'
 import { toast } from '@/components/shadcn/hooks/use-toast'
 import { useLoadingOverlayStore } from '@/lib/stores/loading-overlay'
-import { signUp } from '@/lib/api/user/service'
 
 export default function SignupForm() {
   const { setLoadingMessage } = useLoadingOverlayStore()
@@ -24,18 +23,12 @@ export default function SignupForm() {
   ) => {
     setLoadingMessage('Signing you up...')
     try {
-      const { success } = await signUp(
-        formData.email,
-        formData.password,
-        formData.handle,
-      )
 
-      if (!success) throw Error()
 
       toast({
         description: `Signed up successfully.`,
       })
-    } catch (error) {
+    } catch (err) {
       toast({
         description: `Failed to sign up.`,
       })

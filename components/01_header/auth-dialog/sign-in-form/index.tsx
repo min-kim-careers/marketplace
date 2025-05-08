@@ -6,35 +6,40 @@ import { z } from 'zod'
 
 import { Button } from '@/components/shadcn/components/ui/button'
 import { Form } from '@/components/shadcn/components/ui/form'
-import { EmailField, PasswordField } from './fields'
-import { LoginFormSchema } from './schema'
 import { toast } from '@/components/shadcn/hooks/use-toast'
 import { useLoadingOverlayStore } from '@/lib/stores/loading-overlay'
-import { signIn } from '@/lib/api/auth/service'
-import { useRouter } from 'next/navigation'
-import { PATHNAMES } from '@/lib/constants/pathnames'
+import { EmailField, PasswordField } from './fields'
+import { SignInFormSchema } from './schema'
+import { AuthResponse } from '@/lib/interfaces/auth/response'
+import useAuthStore from '@/lib/stores/auth'
 
 export default function SignInForm() {
   const { setLoadingMessage } = useLoadingOverlayStore()
-  const router = useRouter()
+  const { setUser } = useAuthStore()
 
   const onSubmit = async (
-    formData: z.infer<typeof LoginFormSchema>,
+    formData: z.infer<typeof SignInFormSchema>,
   ) => {
     setLoadingMessage('Signing you in...')
-    try {
-      const { success } = await signIn(
-        formData.email,
-        formData.password,
-      )
 
-      if (!success) throw Error()
+    try {
+      const res = await fetch('/auth', {
+        method: 'POST',
+        body: JSON.stringify(formData),
+        credentials: 'include',
+      })
+
+      if (!res.ok) throw new Error()
+
+      const data: AuthResponse = await res.json()
+      if (!data.success || !data.user) throw new Error()
+
+      setUser(data.user)
 
       toast({
         description: `Signed in successfully.`,
       })
-      router.replace(PATHNAMES.HOME)
-    } catch (error) {
+    } catch (err) {
       toast({
         description: `Failed to sign in.`,
       })
@@ -43,8 +48,8 @@ export default function SignInForm() {
     }
   }
 
-  const form = useForm<z.infer<typeof LoginFormSchema>>({
-    resolver: zodResolver(LoginFormSchema),
+  const form = useForm<z.infer<typeof SignInFormSchema>>({
+    resolver: zodResolver(SignInFormSchema),
     defaultValues: {
       email: '',
       password: '',

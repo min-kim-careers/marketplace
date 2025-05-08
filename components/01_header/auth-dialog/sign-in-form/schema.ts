@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const LoginFormSchema = z.object({
+export const SignInFormSchema = z.object({
   email: z
     .string({ message: 'Email is required.' })
     .email({ message: 'Please enter a valid email.' })
