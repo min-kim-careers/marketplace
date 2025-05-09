@@ -13,10 +13,10 @@ import {
 } from './fields'
 import { SignupFormSchema } from './schema'
 import { toast } from '@/components/shadcn/hooks/use-toast'
-import { useLoadingOverlayStore } from '@/lib/stores/loading-overlay'
+import { useOverlayStore } from '@/lib/stores/overlay'
 
 export default function SignupForm() {
-  const { setLoadingMessage } = useLoadingOverlayStore()
+  const { setOverlayMessage: setLoadingMessage } = useOverlayStore()
 
   const onSubmit = async (
     formData: z.infer<typeof SignupFormSchema>,

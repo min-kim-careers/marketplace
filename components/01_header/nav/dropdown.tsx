@@ -21,7 +21,7 @@ export default function Dropdown({
 }: {
   handleSignOut: () => void
 }) {
-  const { user } = useAuthStore()
+  const { profile: user } = useAuthStore()
 
   return (
     <DropdownMenu>

@@ -8,7 +8,7 @@ import Link from 'next/link'
 import { AuthGate } from '../00_common/auth-gate'
 
 export default function Landing() {
-  const { user } = useAuthStore()
+  const { profile: user } = useAuthStore()
 
   return (
     <div className='flex w-full flex-1 items-center justify-center'>

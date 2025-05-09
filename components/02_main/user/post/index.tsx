@@ -31,7 +31,7 @@ import { PostFormSchema } from './schema'
 // import { insertItem } from '@/lib/api/item/service'
 
 export default function Post() {
-  const { user } = useAuthStore()
+  const { profile: user } = useAuthStore()
   const { toast } = useToast()
   const router = useRouter()
 

@@ -10,7 +10,7 @@ import Nav from './nav'
 import { Button } from '../shadcn/components/ui/button'
 
 export default function Header() {
-  const { user } = useAuthStore()
+  const { profile: user } = useAuthStore()
 
   return (
     <div className='flex w-full items-start justify-between pb-2'>

@@ -14,7 +14,7 @@ import { Label } from '@/components/shadcn/components/ui/label'
 import useAuthStore from '@/lib/stores/auth'
 
 export default function Profile() {
-  const { user } = useAuthStore()
+  const { profile: user } = useAuthStore()
 
   return (
     <Card>

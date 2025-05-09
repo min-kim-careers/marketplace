@@ -1,11 +1,11 @@
-import { SearchParams } from '@/lib/interfaces/items/params'
+import { MarketParams } from '@/lib/interfaces/items'
 import { ReadonlyURLSearchParams } from 'next/navigation'
 
 const defaultPage = 1
 
-export const extractSearchParams = (
+export const extractMarketParams = (
   params: ReadonlyURLSearchParams | URLSearchParams,
-): SearchParams => {
+): MarketParams => {
   return {
     page: Number(params.get('page')) || defaultPage,
     keyword: params.get('keyword'),

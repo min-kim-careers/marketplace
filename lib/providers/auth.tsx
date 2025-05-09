@@ -2,56 +2,25 @@
 
 import { useEffect } from 'react'
 import useAuthStore from '../stores/auth'
-import {
-  cacheProfile,
-  clearProfile,
-  loadProfile,
-} from '../cache/user'
+import { loadUserCache } from '../cache/user'
 
 export default function AuthProvider() {
-  const { setUser, setInitialised } = useAuthStore()
+  // const { setUser } = useAuthStore()
 
-  // const handleSignedIn = (user: User) => {
-  //   console.log('User signed in')
+  // useEffect(() => {
+  //   const unsubscribe = useAuthStore.subscribe(
+  //     (state) => state.user,
+  //     (user, prevUser) => {
+  //       const cachedUser = loadUserCache()
+  //       if (!cachedUser) return
 
-  //   const cachedProfile = loadProfile()
+  //       setUser(cachedUser)
+  //     },
+  //     { fireImmediately: true },
+  //   )
 
-  //   if (!!cachedProfile) return setProfile(cachedProfile)
-
-  //   const newProfile = {
-  //     userId: user.uid,
-  //     email: user.email || 'some email',
-  //     handle: '',
-  //     rating: 0,
-  //     ratingCount: 0,
-  //   }
-
-  //   cacheProfile(newProfile)
-
-  //   setProfile(newProfile)
-  // }
-
-  // const handleSignedOut = () => {
-  //   console.log('User signed out')
-
-  //   clearProfile()
-  // }
-
-  useEffect(() => {
-    setInitialised(true)
-
-    // const unsubscribe = onAuthStateChanged(auth, (user) => {
-    //   setInitialised(true)
-
-    //   if (!!user) {
-    //     handleSignedIn(user)
-    //   } else {
-    //     handleSignedOut()
-    //   }
-    // })
-
-    // return () => unsubscribe()
-  }, [])
+  //   return () => unsubscribe()
+  // }, [])
 
   return null
 }

@@ -7,45 +7,30 @@ import { z } from 'zod'
 import { Button } from '@/components/shadcn/components/ui/button'
 import { Form } from '@/components/shadcn/components/ui/form'
 import { toast } from '@/components/shadcn/hooks/use-toast'
-import { useLoadingOverlayStore } from '@/lib/stores/loading-overlay'
+import { useOverlayStore } from '@/lib/stores/overlay'
 import { EmailField, PasswordField } from './fields'
 import { SignInFormSchema } from './schema'
-import { AuthResponse } from '@/lib/interfaces/auth/response'
 import useAuthStore from '@/lib/stores/auth'
 
 export default function SignInForm() {
-  const { setLoadingMessage } = useLoadingOverlayStore()
-  const { setUser } = useAuthStore()
+  const { setOverlayMessage: setLoadingMessage } = useOverlayStore()
+  const { signIn } = useAuthStore()
 
   const onSubmit = async (
     formData: z.infer<typeof SignInFormSchema>,
   ) => {
     setLoadingMessage('Signing you in...')
 
-    try {
-      const res = await fetch('/auth', {
-        method: 'POST',
-        body: JSON.stringify(formData),
-        credentials: 'include',
-      })
-
-      if (!res.ok) throw new Error()
-
-      const data: AuthResponse = await res.json()
-      if (!data.success || !data.user) throw new Error()
-
-      setUser(data.user)
-
+    if (await signIn(formData.email, formData.password)) {
       toast({
         description: `Signed in successfully.`,
       })
-    } catch (err) {
+    } else {
       toast({
         description: `Failed to sign in.`,
       })
-    } finally {
-      setLoadingMessage(null)
     }
+    setLoadingMessage(null)
   }
 
   const form = useForm<z.infer<typeof SignInFormSchema>>({

@@ -1,13 +1,13 @@
 import { toast } from '@/components/shadcn/hooks/use-toast'
 import { PATHNAMES } from '@/lib/constants/pathnames'
-import { useLoadingOverlayStore } from '@/lib/stores/loading-overlay'
+import { useOverlayStore } from '@/lib/stores/overlay'
 import { serialize } from '@/lib/utils/params'
 import Link from 'next/link'
 import { Button } from '../../shadcn/components/ui/button'
 import Dropdown from './dropdown'
 
 export default function Nav() {
-  const { setLoadingMessage } = useLoadingOverlayStore()
+  const { setOverlayMessage: setLoadingMessage } = useOverlayStore()
 
   const handleSignOut = async () => {
     setLoadingMessage('Signing you out...')

@@ -6,18 +6,24 @@ import { useEffect, useState } from 'react'
 
 import ItemCard from '@/components/00_common/item-card'
 import LoadingDots from '@/components/00_common/widgets/loading-dots'
-import { SearchParams } from '@/lib/interfaces/items/params'
-import { ItemResponse } from '@/lib/interfaces/items/response'
+import {
+  MarketParams,
+  ItemResponse,
+} from '@/lib/interfaces/items'
 import { useUIStore } from '@/lib/stores/ui'
-import { extractSearchParams } from '@/lib/utils/params'
 import { useSearchParams } from 'next/navigation'
 import { PAGINATION } from '../../../lib/constants/pagination'
+import { extractMarketParams } from '@/lib/utils/params'
 
-export default function Market() {
+export default function Market({
+  marketParams,
+}: {
+  marketParams: MarketParams
+}) {
+  const [params, setParams] =
+    useState<MarketParams>(marketParams)
+
   const searchParams = useSearchParams()
-  const [params, setParams] = useState<SearchParams>(
-    extractSearchParams(searchParams),
-  )
 
   const { columns } = useUIStore()
 
@@ -29,12 +35,10 @@ export default function Market() {
   useEffect(() => {
     const getItems = async () => {
       setLoading(true)
-
       try {
-        const newParams: SearchParams =
-          extractSearchParams(searchParams)
-
-        const res = await fetch(`/items?${searchParams}`)
+        const res = await fetch(
+          `/api/items?${searchParams}`,
+        )
 
         if (!res.ok) throw new Error()
 
@@ -43,7 +47,6 @@ export default function Market() {
 
         setItems(items)
         setCount(count)
-        setParams(newParams)
       } catch (err) {
         setMessage('Something went wrong...')
       } finally {
@@ -52,7 +55,7 @@ export default function Market() {
     }
 
     getItems()
-  }, [searchParams])
+  }, [])
 
   const renderLoading = () => (
     <div className='flex w-full flex-1 items-center justify-center'>

@@ -8,7 +8,7 @@ import {
 } from '@/components/shadcn/components/ui/pagination'
 import { PATHNAMES } from '@/lib/constants/pathnames'
 import { serialize } from '@/lib/utils/params'
-import { SearchParams as SearchParams } from '@/lib/interfaces/items/params'
+import { MarketParams } from '@/lib/interfaces/items'
 import { notFound } from 'next/navigation'
 import { PAGINATION } from '@/lib/constants/pagination'
 
@@ -16,7 +16,7 @@ export default function Pagination({
   params,
   count,
 }: {
-  params: SearchParams
+  params: MarketParams
   count: number
 }) {
   const currentPage = params.page

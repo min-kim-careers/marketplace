@@ -1,9 +1,12 @@
 import { ENDPOINTS } from '@/lib/constants/endpoints'
-import { AuthResponse } from '@/lib/interfaces/auth/response'
+import { AuthResponse } from '@/lib/interfaces/auth'
 import { NextRequest, NextResponse } from 'next/server'
-import { authFetch } from '../common'
+import { authFetch } from '../../common'
+import { Profile } from '@/lib/interfaces/users'
 
-const endpoint = ENDPOINTS.AUTH
+interface Response {
+  profile: Profile
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,20 +17,26 @@ export async function POST(req: NextRequest) {
     if (!username || !password)
       throw new Error('Invalid parameters')
 
-    const authRes = await authFetch(`${endpoint}/sign-in`, {
-      method: 'POST',
-      body: new URLSearchParams({ username, password }),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+    const authRes = await authFetch(
+      `${ENDPOINTS.AUTH}/sign-in`,
+      {
+        method: 'POST',
+        body: new URLSearchParams({ username, password }),
+        headers: {
+          'Content-Type':
+            'application/x-www-form-urlencoded',
+        },
       },
-    })
+    )
     if (!authRes.ok)
       throw new Error('Server error occurred')
 
     const authData: AuthResponse = await authRes.json()
-    if (!authData.success) throw new Error()
+    if (!authData.user) throw new Error()
 
-    const response = NextResponse.json(authData)
+    const response = NextResponse.json({
+      profile: authData.user as Profile,
+    } satisfies Response)
 
     response.cookies.set(
       'access_token',

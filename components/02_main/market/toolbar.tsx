@@ -15,7 +15,7 @@ import {
 } from '@/components/shadcn/components/ui/toggle-group'
 import { PATHNAMES } from '@/lib/constants/pathnames'
 import {
-  extractSearchParams,
+  extractMarketParams,
   serialize,
 } from '@/lib/utils/params'
 import useCustomRouter from '@/lib/hooks/use-custom-router'
@@ -54,7 +54,7 @@ export default function Toolbar() {
 
   const handleSearch = async () => {
     const query = serialize({
-      ...extractSearchParams(searchParams),
+      ...extractMarketParams(searchParams),
       page: 1,
       keyword: searchValue,
     })
@@ -97,7 +97,7 @@ export default function Toolbar() {
     const serverSort = SORT_MAP[selectedSort]
     router.push({
       pathname: PATHNAMES.MARKET,
-      query: serialize(extractSearchParams(searchParams)),
+      query: serialize(extractMarketParams(searchParams)),
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSort])

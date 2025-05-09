@@ -1,7 +1,6 @@
-import { Response } from "../common"
-import { User } from "../users"
+import { User } from "./api/users"
 
-export interface AuthResponse extends Response {
+export interface AuthResponse  {
   user: User
   accessToken: string
   accessTokenExpires: number
