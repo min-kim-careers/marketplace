@@ -1,15 +1,28 @@
-import { ItemResponse } from '../interfaces/items'
+'use server'
+
+import {
+  ItemQuery as ItemsQuery,
+  ItemsResponse,
+} from '@/lib/interfaces/items'
+import { createApi } from './_common'
+import { ENDPOINTS } from '../constants/endpoints'
+
+const itemsApi = createApi(ENDPOINTS.ITEMS)
 
 export const fetchItems = async (
-  params: URLSearchParams,
-): Promise<ItemResponse> => {
-  try {
-    const res = await fetch(`/api/items?${params}`)
+  query: ItemsQuery,
+): Promise<ItemsResponse> => {
+  return itemsApi
+    .get('', {
+      params: query,
+    })
+    .then((response) => response.data as ItemsResponse)
+    .catch((error) => {
+      console.error(error)
+      throw error
+    })
+}
 
-    if (!res.ok) throw new Error()
-
-    return await res.json()
-  } catch (error) {
-    throw new Error()
-  }
+export const insertItem = async () => {
+  return null
 }

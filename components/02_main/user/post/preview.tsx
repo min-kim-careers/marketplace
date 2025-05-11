@@ -6,12 +6,12 @@ import {
   CarouselPrevious,
   type CarouselApi,
 } from '@/components/shadcn/components/ui/carousel'
+import { PostFormSchema } from '@/lib/schemas/post'
+import { CircleSlash2 } from 'lucide-react'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
-import { PostFormSchema } from './schema'
-import { CircleSlash2 } from 'lucide-react'
 
 export default function Preview({
   form,

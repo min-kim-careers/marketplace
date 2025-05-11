@@ -18,6 +18,7 @@ export interface Profile {
   avatarUrl: string
 }
 
-export interface UserResponse {
-  user: User
+export interface UsersResponse {
+  profile?: Profile
+  verified?: bool
 }

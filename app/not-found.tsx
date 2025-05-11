@@ -1,4 +1,5 @@
 import { Button } from '@/components/shadcn/components/ui/button'
+import { ROUTES } from '@/lib/constants/routes'
 import Link from 'next/link'
 
 export default function NotFound() {
@@ -7,7 +8,7 @@ export default function NotFound() {
       <h2>Not Found</h2>
       <p>Could not find requested resource</p>
       <Button>
-        <Link href='/'>Return Home</Link>
+        <Link href={ROUTES.HOME}>Return Home</Link>
       </Button>
     </div>
   )

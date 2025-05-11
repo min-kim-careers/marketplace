@@ -28,7 +28,7 @@ export interface ItemQuery {
   sortOrder?: string | null
 }
 
-export interface ItemResponse {
+export interface ItemsResponse {
   items: List[Item]
   count: number
 }

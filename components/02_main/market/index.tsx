@@ -4,16 +4,17 @@ import Pagination from '@/components/02_main/market/pagination'
 import { Item } from '@/lib/interfaces/items'
 import { useEffect, useState } from 'react'
 
-import ItemCard from '@/components/00_common/item-card'
-import LoadingDots from '@/components/00_common/widgets/loading-dots'
+import ItemCard from '@/components/common/item-card'
+import LoadingDots from '@/components/common/loading-dots'
 import {
   MarketParams,
-  ItemResponse,
+  ItemsResponse,
 } from '@/lib/interfaces/items'
 import { useUIStore } from '@/lib/stores/ui'
 import { useSearchParams } from 'next/navigation'
 import { PAGINATION } from '../../../lib/constants/pagination'
 import { extractMarketParams } from '@/lib/utils/params'
+import { fetchItems } from '@/lib/api/items'
 
 export default function Market({
   marketParams,
@@ -36,14 +37,8 @@ export default function Market({
     const getItems = async () => {
       setLoading(true)
       try {
-        const res = await fetch(
-          `/api/items?${searchParams}`,
-        )
-
-        if (!res.ok) throw new Error()
-
-        const { items, count } =
-          (await res.json()) as ItemResponse
+        const { items, count }: ItemsResponse =
+          await fetchItems({ ...params })
 
         setItems(items)
         setCount(count)

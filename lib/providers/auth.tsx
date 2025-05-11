@@ -1,26 +1,30 @@
 'use client'
 
-import { useEffect } from 'react'
-import useAuthStore from '../stores/auth'
-import { loadUserCache } from '../cache/user'
+import { useEffect } from "react"
+import useAuthStore from "../stores/auth"
+
 
 export default function AuthProvider() {
-  // const { setUser } = useAuthStore()
+  useEffect(() => {
+    const unsubscribe = useAuthStore.subscribe(
+      (state) => state.profile,
+      (profile, prevProfile) => {
+        const signedIn = !prevProfile && !!profile
 
-  // useEffect(() => {
-  //   const unsubscribe = useAuthStore.subscribe(
-  //     (state) => state.user,
-  //     (user, prevUser) => {
-  //       const cachedUser = loadUserCache()
-  //       if (!cachedUser) return
+        const signedOut = !!prevProfile && !profile
 
-  //       setUser(cachedUser)
-  //     },
-  //     { fireImmediately: true },
-  //   )
+        if (signedIn) {
+          console.log('signed in');
+          
+        } else if (signedOut) {
+          console.log('signed out');
 
-  //   return () => unsubscribe()
-  // }, [])
+        }
+      }
+    )
+
+    return () => unsubscribe()
+  }, [])
 
   return null
 }
