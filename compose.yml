@@ -12,19 +12,19 @@ services:
     volumes:
       - marketplace-db-data:/var/lib/postgresql/data
 
-  # marketplace-cache-service:
-  #   container_name: marketplace-cache-container
-  #   restart: always
-  #   image: redis:latest
-  #   environment:
-  #     - REDIS_HOST=marketplace-cache-service
-  #     - REDIS_PORT=6379
-  #     - REDIS_PASSWORD=redispassword
-  #   ports:
-  #     - 6379:6379
-  #   command: [ '/bin/sh', '-c', 'redis-server --save 20 1 --loglevel warning --requirepass $$REDIS_PASSWORD' ]
-  #   volumes:
-  #     - marketplace-cache-data:/data
+  marketplace-cache-service:
+    container_name: marketplace-cache-container
+    restart: always
+    image: redis:latest
+    environment:
+      - REDIS_HOST=marketplace-cache-service
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=REDACTED
+    ports:
+      - 6379:6379
+    command: [ '/bin/sh', '-c', 'redis-server --save 20 1 --loglevel warning --requirepass $$REDIS_PASSWORD' ]
+    volumes:
+      - marketplace-cache-data:/data
 
   marketplace-server-service:
     depends_on:
@@ -34,7 +34,7 @@ services:
     restart: always
     build: ./marketplace-server
     ports:
-      - 127.0.0.1:8000:8000
+      - 8000:8000
     environment:
       - DB_HOST=marketplace-db-service
       - DB_PORT=5432
