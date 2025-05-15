@@ -9,6 +9,3 @@
 [submodule "marketplace-api"]
 	path = api
 	url = ../marketplace-api.git
-[submodule "api"]
-	path = api
-	url = ../marketplace-api.git
