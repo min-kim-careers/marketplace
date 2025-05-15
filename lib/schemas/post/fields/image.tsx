@@ -12,7 +12,10 @@ import { PostFormSchema } from '@/lib/schemas/post'
 import { Plus, Trash } from 'lucide-react'
 import Image from 'next/image'
 import { ChangeEvent } from 'react'
-import { UseFormReturn } from 'react-hook-form'
+import {
+  ControllerRenderProps,
+  UseFormReturn,
+} from 'react-hook-form'
 import { z } from 'zod'
 
 export default function ImageField({
@@ -48,6 +51,41 @@ export default function ImageField({
     form.setValue('image_urls', newImageUrls)
   }
 
+  const renderInputLabel = (
+    field: ControllerRenderProps<
+      z.infer<typeof PostFormSchema>,
+      'image_urls'
+    >,
+    index: number,
+  ) => (
+    <Label className='relative flex aspect-square w-[150px] cursor-pointer items-center justify-center rounded bg-gray-300 text-gray-400 shadow-sm'>
+      <Input
+        type='file'
+        accept='image/x'
+        onChange={(e) => handleFileChange(e, index)}
+        className='hidden'
+      />
+      {field.value?.[index] ? (
+        <div>
+          <Image
+            src={field.value[index]}
+            alt='preview-image'
+            layout='fill'
+            objectFit='contain'
+          />
+          <button
+            type='button'
+            onClick={() => handleDelete(index)}
+          >
+            <Trash className='absolute bottom-0 right-0 z-50 m-1 cursor-pointer invert' />
+          </button>
+        </div>
+      ) : (
+        <Plus className='flex h-full w-full flex-1' />
+      )}
+    </Label>
+  )
+
   return (
     <FormField
       control={form.control}
@@ -60,36 +98,7 @@ export default function ImageField({
               {field.value &&
                 field.value.map((_, index) => (
                   <div key={index}>
-                    <Label className='relative flex aspect-square w-[150px] cursor-pointer items-center justify-center rounded bg-gray-300 text-gray-400 shadow-sm'>
-                      <Input
-                        type='file'
-                        accept='image/x'
-                        onChange={(e) =>
-                          handleFileChange(e, index)
-                        }
-                        className='hidden'
-                      />
-                      {field.value?.[index] ? (
-                        <div>
-                          <Image
-                            src={field.value[index]}
-                            alt='preview-image'
-                            layout='fill'
-                            objectFit='contain'
-                          />
-                          <button
-                            type='button'
-                            onClick={() =>
-                              handleDelete(index)
-                            }
-                          >
-                            <Trash className='absolute bottom-0 right-0 z-50 m-1 cursor-pointer invert' />
-                          </button>
-                        </div>
-                      ) : (
-                        <Plus />
-                      )}
-                    </Label>
+                    {renderInputLabel(field, index)}
                   </div>
                 ))}
             </div>

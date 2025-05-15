@@ -1,6 +1,6 @@
 'use client'
 
-import { APP_TITLE } from '@/lib/constants/common'
+import { APP_TITLE } from '@/lib/constants'
 import { ROUTES } from '@/lib/constants/routes'
 import useAuthStore from '@/lib/stores/auth'
 import Link from 'next/link'

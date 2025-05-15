@@ -1,4 +1,4 @@
-import { APP_TITLE } from "@/lib/constants/common";
+import { APP_TITLE } from "@/lib/constants";
 
 export default function Footer() {
   return (

@@ -28,7 +28,7 @@ export default function SignupForm() {
       toast({
         description: `Signed up successfully.`,
       })
-    } catch (err) {
+    } catch (error) {
       toast({
         description: `Failed to sign up.`,
       })

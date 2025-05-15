@@ -9,8 +9,7 @@ import {
 import {
   signIn as serverSignIn,
   signOut as serverSignOut,
-} from '../api/auth'
-import { AuthResponseClient } from '../interfaces/auth'
+} from '../api/auth/service'
 
 interface AuthStore {
   profile: Profile | null
@@ -32,7 +31,7 @@ const useAuthStore = create(
           password: string,
         ) => {
           try {
-            const { profile }: AuthResponseClient =
+            const { profile } =
               await serverSignIn(email, password)
 
             set({ profile })

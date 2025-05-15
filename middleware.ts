@@ -1,13 +1,12 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { getUserId } from '@/lib/api/users/service'
+import { GetUserIdResponse } from '@/lib/api/users/responses'
 import {
   PROTECTED_ROUTES,
   PUBLIC_ROUTES,
   ROUTES,
 } from '@/lib/constants/routes'
-import { verifyUser } from '@/lib/api/users'
-import { cookies } from 'next/headers'
-import { ACCESS_TOKEN_KEY } from '@/lib/constants/keys'
+import type { NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
 
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname
@@ -18,21 +17,26 @@ export async function middleware(req: NextRequest) {
 
   if (isProtectedRoute) {
     try {
-      const cookieStore = await cookies()
-      if (!cookieStore.has(ACCESS_TOKEN_KEY))
-        throw new Error()
+      // console.log('checking user');
       
-      const { verified } = await verifyUser()
+      // const { userId }: getUserIdResponse =
+      //   await getUserId()
+      // if (!userId) throw new Error()
 
-      if (!verified) throw new Error()
+      // console.log('User verified:', userId)
+      return NextResponse.next()
     } catch (error) {
+      console.error('Error in middleware')
       return NextResponse.redirect(
         new URL(ROUTES.HOME, req.nextUrl),
       )
     }
   }
 
-  return NextResponse.next()
+  console.error('Invalid path')
+  return NextResponse.redirect(
+    new URL(ROUTES.HOME, req.nextUrl),
+  )
 }
 
 export const config = {

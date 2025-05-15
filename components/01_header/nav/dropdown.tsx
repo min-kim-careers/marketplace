@@ -33,7 +33,7 @@ export default function Dropdown() {
         description: `Signed out successfully.`,
       })
       router.replace(ROUTES.HOME)
-    } catch (err) {
+    } catch (error) {
       toast({
         description: `Failed to sign out `,
       })

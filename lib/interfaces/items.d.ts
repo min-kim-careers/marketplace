@@ -21,14 +21,9 @@ export interface MarketParams {
   sortOrder?: string | null
 }
 
-export interface ItemQuery {
+export interface ItemsQuery {
   page: number
   keyword?: string | null
   sortBy?: string | null
   sortOrder?: string | null
-}
-
-export interface ItemsResponse {
-  items: List[Item]
-  count: number
 }

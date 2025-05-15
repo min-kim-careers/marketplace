@@ -6,15 +6,15 @@ import { useEffect, useState } from 'react'
 
 import ItemCard from '@/components/common/item-card'
 import LoadingDots from '@/components/common/loading-dots'
+import { getItems } from '@/lib/api/items/service'
 import {
   MarketParams,
-  ItemsResponse,
 } from '@/lib/interfaces/items'
 import { useUIStore } from '@/lib/stores/ui'
 import { useSearchParams } from 'next/navigation'
 import { PAGINATION } from '../../../lib/constants/pagination'
 import { extractMarketParams } from '@/lib/utils/params'
-import { fetchItems } from '@/lib/api/items'
+import { GetItemsResponse } from '@/lib/api/items/responses'
 
 export default function Market({
   marketParams,
@@ -34,23 +34,25 @@ export default function Market({
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    const getItems = async () => {
+    const fetchItems = async () => {
       setLoading(true)
       try {
-        const { items, count }: ItemsResponse =
-          await fetchItems({ ...params })
+        const newParams = extractMarketParams(searchParams)
+        const { items, count }: GetItemsResponse =
+          await getItems({ ...newParams })
 
         setItems(items)
         setCount(count)
-      } catch (err) {
+        setParams(newParams)
+      } catch (error) {
         setMessage('Something went wrong...')
       } finally {
         setLoading(false)
       }
     }
 
-    getItems()
-  }, [])
+    fetchItems()
+  }, [searchParams])
 
   const renderLoading = () => (
     <div className='flex w-full flex-1 items-center justify-center'>
