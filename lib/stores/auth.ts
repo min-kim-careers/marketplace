@@ -9,7 +9,7 @@ import {
 import {
   signIn as serverSignIn,
   signOut as serverSignOut,
-} from '../api/auth/service'
+} from '../api/auth'
 
 interface AuthStore {
   profile: Profile | null

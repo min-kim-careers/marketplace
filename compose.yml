@@ -1,6 +1,6 @@
 services:
-  app-service:
-    container_name: app-container
+  web-service:
+    container_name: web-container
     restart: always
     build: .
     ports:

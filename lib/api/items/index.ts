@@ -1,37 +1,29 @@
-import {
-  attachCredentials,
-  handleAxiosError,
-} from '@/lib/api/_common/config'
+'use server'
+
+import { createApi } from '@/lib/api/_common/config'
+import { ApiResponse } from '@/lib/api/_common/responses'
+import { GetItemsResponse } from '@/lib/api/items/responses'
 import { ENDPOINTS } from '@/lib/constants/endpoints'
-import { env } from '@/lib/utils/config'
-import axios, {
-  AxiosError,
-  AxiosResponse,
-  InternalAxiosRequestConfig,
-} from 'axios'
+import { ItemsQuery } from '@/lib/interfaces/items'
 
-const itemsApi = axios.create({
-  baseURL: env.serverUrl + ENDPOINTS.ITEMS,
-})
+const itemsApi = createApi(ENDPOINTS.ITEMS)
 
-itemsApi.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    return attachCredentials(config)
-  },
-  (error: AxiosError) => {
-    handleAxiosError(error)
-    return Promise.reject(error)
-  },
-)
+export const getItems = async (
+  query: ItemsQuery,
+): Promise<GetItemsResponse> => {
+  console.log(itemsApi.defaults.baseURL)
 
-itemsApi.interceptors.response.use(
-  (response: AxiosResponse) => {
-    return response
-  },
-  async (error: AxiosError) => {
-    handleAxiosError(error)
-    return Promise.reject(error)
-  },
-)
+  return itemsApi
+    .get('', {
+      params: query,
+    })
+    .then((response) => response.data as GetItemsResponse)
+    .catch((error) => {
+      console.error('Server error')
+      throw new Error()
+    })
+}
 
-export default itemsApi
+export const insertItem = async () => {
+  return null
+}

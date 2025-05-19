@@ -1,37 +1,31 @@
+'use server'
+
+import { createApi } from '@/lib/api/_common/config'
 import {
-  attachCredentials,
-  handleAxiosError,
-} from '@/lib/api/_common/config'
-import { ENDPOINTS } from '@/lib/constants/endpoints'
-import axios, {
-  AxiosError,
-  AxiosResponse,
-  InternalAxiosRequestConfig,
-} from 'axios'
-import { env } from '@/lib/utils/config'
+  GetProfileResponse,
+  GetUserIdResponse,
+} from '@/lib/api/users/responses'
 
-const usersApi = axios.create({
-  baseURL: env.serverUrl + ENDPOINTS.USERS,
-})
+const usersApi = createApi('')
 
-usersApi.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    return attachCredentials(config)
-  },
-  (error: AxiosError) => {
-    handleAxiosError(error)
-    return Promise.reject(error)
-  },
-)
+export const getProfile =
+  async (): Promise<GetProfileResponse> => {
+    return await usersApi
+      .get('/profile')
+      .then((response) => response.data)
+      .catch((error) => {
+        console.error('Server error')
+        throw new Error()
+      })
+  }
 
-usersApi.interceptors.response.use(
-  (response: AxiosResponse) => {
-    return response
-  },
-  async (error: AxiosError) => {
-    handleAxiosError(error)
-    return Promise.reject(error)
-  },
-)
-
-export default usersApi
+export const getUserId =
+  async (): Promise<GetUserIdResponse> => {
+    return await usersApi
+      .get('/id')
+      .then((response) => response.data)
+      .catch((error) => {
+        console.error('Server error')
+        throw new Error()
+      })
+  }

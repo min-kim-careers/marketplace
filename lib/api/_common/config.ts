@@ -1,17 +1,17 @@
 import { ErrorResponse } from '@/lib/api/_common/errors'
-import { RefreshServerResponse as RefreshResponse } from '@/lib/api/auth/responses'
-import { ENDPOINTS } from '@/lib/constants/endpoints'
+import { ApiResponse } from '@/lib/api/_common/responses'
 import {
   ACCESS_TOKEN_KEY,
+  API_KEY_HEADER,
   REFRESH_TOKEN_KEY,
 } from '@/lib/constants/keys'
 import { env } from '@/lib/utils/config'
-import {
+import axios, {
   AxiosError,
+  AxiosResponse,
   InternalAxiosRequestConfig,
 } from 'axios'
 import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies'
-import { cookies } from 'next/headers'
 
 export const setAccessToken = (
   cookieStore: ReadonlyRequestCookies,
@@ -40,79 +40,120 @@ export const setRefreshToken = (
 }
 
 export const handleAxiosError = (error: AxiosError) => {
-  console.error(
-    JSON.stringify(
-      {
-        ...(error.response?.data as ErrorResponse),
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-      },
-      null,
-      2,
-    ),
-  )
-}
-
-const fetchRefresh = async (
-  refresh_token: string,
-): Promise<RefreshResponse> => {
-  try {
-    const res = await fetch(
-      env.serverUrl + ENDPOINTS.AUTH + '/refresh',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-token': env.apiToken,
+  const res = error.response
+  if (res) {
+    console.error(
+      JSON.stringify(
+        {
+          ...(error.response?.data as ErrorResponse),
+          status: error.response?.status,
+          statusText: error.response?.statusText,
         },
-        body: JSON.stringify({
-          refresh_token,
-        }),
-      },
+        null,
+        2,
+      ),
     )
-
-    if (!res.ok) {
-      const err: ErrorResponse = await res.json()
-      console.error('Error:', err.detail.errorType)
-      throw new Error()
-    }
-
-    const data = await res.json()
-
-    return data
-  } catch (error) {
-    console.error('Failed to refresh token')
-    throw new Error()
+  } else {
+    console.error('Api error')
   }
 }
+
+// const fetchRefresh = async (
+//   refresh_token: string,
+// ): Promise<RefreshResponse> => {
+//   try {
+//     const res = await fetch(
+//       env.serverUrl + ENDPOINTS.AUTH + '/refresh',
+//       {
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json',
+//           [API_KEY_HEADER]: env.apiKey,
+//         },
+//         body: JSON.stringify({
+//           refresh_token,
+//         }),
+//       },
+//     )
+
+//     if (!res.ok) {
+//       const err: ErrorResponse = await res.json()
+//       console.error('Error:', err.detail.errorType)
+//       throw new Error()
+//     }
+
+//     const data = await res.json()
+
+//     return data
+//   } catch (error) {
+//     console.error('Failed to refresh token')
+//     throw new Error()
+//   }
+// }
 
 export const attachCredentials = async (
   config: InternalAxiosRequestConfig,
 ) => {
-  config.headers['x-api-token'] = env.apiToken
+  config.headers[API_KEY_HEADER] = env.apiKey
 
-  try {
-    const cookieStore = await cookies()
-    let accessToken = cookieStore.get(
-      ACCESS_TOKEN_KEY,
-    )?.value
-    const refreshToken = cookieStore.get(
-      REFRESH_TOKEN_KEY,
-    )?.value
+  // try {
+  //   const cookieStore = await cookies()
+  //   let accessToken = cookieStore.get(
+  //     ACCESS_TOKEN_KEY,
+  //   )?.value
+  //   const refreshToken = cookieStore.get(
+  //     REFRESH_TOKEN_KEY,
+  //   )?.value
 
-    if (!accessToken && !!refreshToken) {
-      const res = await fetchRefresh(refreshToken)
-      setAccessToken(
-        cookieStore,
-        res.accessToken,
-        res.accessTokenExpires,
-      )
-    }
+  //   if (!accessToken && !!refreshToken) {
+  //     const res = await fetchRefresh(refreshToken)
+  //     setAccessToken(
+  //       cookieStore,
+  //       res.accessToken,
+  //       res.accessTokenExpires,
+  //     )
+  //   }
 
-    config.headers.Authorization = `Bearer ${accessToken}`
-  } catch (error) {
-    console.error('Failed to attach credentials')
-  }
+  //   config.headers.Authorization = `Bearer ${accessToken}`
+  // } catch (error) {
+  //   console.error('Failed to attach credentials')
+  // }
 
   return config
+}
+
+export const createApi = (endpoint: string) => {
+  const api = axios.create({
+    baseURL: env.serverUrl + endpoint,
+  })
+
+  api.interceptors.request.use(
+    (config: InternalAxiosRequestConfig) => {
+      return attachCredentials(config)
+    },
+    (error: AxiosError) => {
+      handleAxiosError(error)
+      return Promise.reject(error)
+    },
+  )
+
+  api.interceptors.response.use(
+    (response: AxiosResponse) => {
+      const data = response.data as ApiResponse
+
+      console.log('Message:', data.message);
+      
+      if (!data.success) throw new Error('Api response error')
+
+      response.data = data.data
+
+      return response
+    },
+    async (error: AxiosError) => {
+      handleAxiosError(error)
+      return Promise.reject(error)
+    },
+  )
+
+  return api
 }

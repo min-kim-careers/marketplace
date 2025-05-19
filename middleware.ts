@@ -1,4 +1,4 @@
-import { getUserId } from '@/lib/api/users/service'
+import { getUserId } from '@/lib/api/users'
 import { GetUserIdResponse } from '@/lib/api/users/responses'
 import {
   PROTECTED_ROUTES,

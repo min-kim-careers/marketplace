@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 
 import ItemCard from '@/components/common/item-card'
 import LoadingDots from '@/components/common/loading-dots'
-import { getItems } from '@/lib/api/items/service'
+import { getItems } from '@/lib/api/items'
 import {
   MarketParams,
 } from '@/lib/interfaces/items'
