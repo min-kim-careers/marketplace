@@ -1,15 +1,13 @@
-import { Profile } from '@/lib/interfaces/users'
+import { Profile } from '@/lib/interfaces/profiles'
 
 export interface SignInServerResponse {
-  profile: Profile
   accessToken: string
   accessTokenExpires: number
   refreshToken: string
-  refreshTokenExpires: number
 }
 
 export interface SignInResponse {
-  profile: Profile
+  success: boolean
 }
 
 export interface SignUpResponse {

@@ -1,5 +1,3 @@
-import { getUserId } from '@/lib/api/users'
-import { GetUserIdResponse } from '@/lib/api/users/responses'
 import {
   PROTECTED_ROUTES,
   PUBLIC_ROUTES,
@@ -17,13 +15,6 @@ export async function middleware(req: NextRequest) {
 
   if (isProtectedRoute) {
     try {
-      // console.log('checking user');
-      
-      // const { userId }: getUserIdResponse =
-      //   await getUserId()
-      // if (!userId) throw new Error()
-
-      // console.log('User verified:', userId)
       return NextResponse.next()
     } catch (error) {
       console.error('Error in middleware')
@@ -34,8 +25,8 @@ export async function middleware(req: NextRequest) {
   }
 
   console.error('Invalid path')
-  return NextResponse.redirect(
-    new URL(ROUTES.HOME, req.nextUrl),
+  return NextResponse.rewrite(
+    new URL(ROUTES.NOTFOUND, req.nextUrl),
   )
 }
 

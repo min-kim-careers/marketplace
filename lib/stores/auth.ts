@@ -1,6 +1,10 @@
 'use client'
 
-import { Profile } from '@/lib/interfaces/users'
+import {
+  SignInResponse,
+  SignOutResponse
+} from '@/lib/api/auth/responses'
+import { Profile } from '@/lib/interfaces/profiles'
 import { create } from 'zustand'
 import {
   persist,
@@ -8,8 +12,8 @@ import {
 } from 'zustand/middleware'
 import {
   signIn as serverSignIn,
-  signOut as serverSignOut,
-} from '../api/auth'
+  signOut as serverSignOut
+} from '../api/auth/service'
 
 interface AuthStore {
   profile: Profile | null
@@ -31,27 +35,26 @@ const useAuthStore = create(
           password: string,
         ) => {
           try {
-            const { profile } =
-              await serverSignIn(email, password)
-
-            set({ profile })
-
-            return true
+            const { success }: SignInResponse = await serverSignIn(
+              email,
+              password,
+            )
+            if (!success) throw new Error()
           } catch (error) {
             return false
           }
+          return true
         }
 
         const signOut = async () => {
           try {
-            const success = await serverSignOut()
+            const { success }: SignOutResponse = await serverSignOut()
             if (!success) throw new Error()
-
             set({ profile: null })
-            return true
           } catch (error) {
             return false
           }
+          return true
         }
 
         return {

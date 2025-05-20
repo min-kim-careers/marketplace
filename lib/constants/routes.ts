@@ -2,7 +2,8 @@ export const ROUTES = {
     HOME: '/',
     MARKET: '/market',
     POST: '/post',
-    PROFILE: '/profile'
+    PROFILE: '/profile',
+    NOTFOUND: '/404' ,
 }
 
 export const PROTECTED_ROUTES = [

@@ -1,87 +1,71 @@
-'use server'
+import { handleAxiosError } from "@/lib/api/_common/config"
+import { ApiResponse } from "@/lib/api/_common/responses"
+import { AUTH_KEY_HEADER } from "@/lib/constants/keys"
+import { env } from "@/lib/utils/env"
+import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from "axios"
 
-import { createApi, setAccessToken, setRefreshToken } from '@/lib/api/_common/config'
-import {
-  SignInResponse,
-  SignInServerResponse,
-  SignOutResponse,
-  SignUpResponse,
-} from '@/lib/api/auth/responses'
-import {
-  ACCESS_TOKEN_KEY,
-  REFRESH_TOKEN_KEY,
-} from '@/lib/constants/keys'
-import { cookies } from 'next/headers'
+const attachCredentials = async (
+  config: InternalAxiosRequestConfig,
+) => {
+  config.headers[AUTH_KEY_HEADER] = env.authKey
 
-const authApi = createApi('')
+  // try {
+  //   const cookieStore = await cookies()
+  //   let accessToken = cookieStore.get(
+  //     ACCESS_TOKEN_KEY,
+  //   )?.value
+  //   const refreshToken = cookieStore.get(
+  //     REFRESH_TOKEN_KEY,
+  //   )?.value
 
-export const signIn = async (
-  email: string,
-  password: string,
-): Promise<SignInResponse> => {
-  try {
-    const data = new FormData()
-    data.append('username', email)
-    data.append('password', password)
+  //   if (!accessToken && !!refreshToken) {
+  //     const res = await fetchRefresh(refreshToken)
+  //     setAccessToken(
+  //       cookieStore,
+  //       res.accessToken,
+  //       res.accessTokenExpires,
+  //     )
+  //   }
 
-    const cookieStore = await cookies()
+  //   config.headers.Authorization = `Bearer ${accessToken}`
+  // } catch (error) {
+  //   console.error('Failed to attach credentials')
+  // }
 
-    const serverRes: SignInServerResponse = (
-      await authApi.post('/sign-in', data)
-    ).data
-
-    setAccessToken(
-      cookieStore,
-      serverRes.accessToken,
-      serverRes.accessTokenExpires,
-    )
-
-    setRefreshToken(
-      cookieStore,
-      serverRes.refreshToken,
-      serverRes.refreshTokenExpires,
-    )
-
-
-    const clientRes: SignInResponse = {
-      profile: serverRes.profile,
-    }
-
-    return clientRes
-  } catch (error) {
-    console.error('Server error')
-    throw new Error()
-  }
+  return config
 }
 
-export const signUp = async (
-  email: string,
-  password: string,
-  handle: string,
-): Promise<SignUpResponse> => {
-  const data = { email, password, handle }
 
-  return await authApi
-    .post('/sign-up', data)
-    .then((response) => response.data)
-    .catch((error) => {
-      console.error('Server error')
-      throw new Error()
-    })
-}
+const authApi = axios.create({
+    baseURL: env.authUrl,
+  })
 
-export const signOut =
-  async (): Promise<SignOutResponse> => {
-    return await cookies()
-      .then((cookieStore) => {
-        cookieStore.delete(ACCESS_TOKEN_KEY)
-        cookieStore.delete(REFRESH_TOKEN_KEY)
+  authApi.interceptors.request.use(
+    (config: InternalAxiosRequestConfig) => {
+      return attachCredentials(config)
+    },
+    (error: AxiosError) => {
+      handleAxiosError(error)
+      return Promise.reject(error)
+    },
+  )
 
-        const res: SignOutResponse = { success: true }
-        return res
-      })
-      .catch((error) => {
-        console.error('Server error')
-        throw new Error()
-      })
-  }
+  authApi.interceptors.response.use(
+    (response: AxiosResponse) => {
+      const data = response.data as ApiResponse
+
+      console.log('Auth message:', data.message);
+      
+      if (!data.success) throw new Error('Api response error')
+
+      response.data = data.data
+
+      return response
+    },
+    async (error: AxiosError) => {
+      handleAxiosError(error)
+      return Promise.reject(error)
+    },
+  )
+
+export default authApi
