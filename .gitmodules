@@ -5,6 +5,7 @@
 [submodule "marketplace-api"]
 	path = api
 	url = ../marketplace-api.git
+
 [submodule "auth"]
 	path = auth
-	url = git@box:kodingbox/marketplace-auth.git
+	url = ../marketplace-auth.git
