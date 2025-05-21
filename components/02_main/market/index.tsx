@@ -1,117 +1,78 @@
 'use client'
 
-import Pagination from '@/components/02_main/market/pagination'
+import Pagination from '@/components/02_main/market/03_pagination'
 import { Item } from '@/lib/interfaces/items'
 import { useEffect, useState } from 'react'
 
 import ItemCard from '@/components/common/item-card'
 import LoadingDots from '@/components/common/loading-dots'
 import { getItems } from '@/lib/api/items/service'
-import {
-  MarketParams,
-} from '@/lib/interfaces/items'
-import { useUIStore } from '@/lib/stores/ui'
-import { useSearchParams } from 'next/navigation'
+import { MarketParams } from '@/lib/interfaces/items'
+import { useLayoutStore } from '@/lib/stores/layout'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { PAGINATION } from '../../../lib/constants/pagination'
-import { extractMarketParams } from '@/lib/utils/params'
+import {
+  extractParamsFromURL,
+  serialize,
+} from '@/lib/utils/params'
 import { GetItemsResponse } from '@/lib/api/items/responses'
+import Toolbar from '@/components/02_main/market/00_toolbar'
+import { useMarketStore } from '@/lib/stores/market'
+import ItemList from '@/components/02_main/market/02_item-list'
+import PaginationHeader from '@/components/02_main/market/01_pagination-header'
 
-export default function Market({
-  marketParams,
-}: {
-  marketParams: MarketParams
-}) {
-  const [params, setParams] =
-    useState<MarketParams>(marketParams)
-
+function useHydrateMarketParams() {
   const searchParams = useSearchParams()
-
-  const { columns } = useUIStore()
-
-  const [count, setCount] = useState<number>(0)
-  const [items, setItems] = useState<Item[]>([])
-  const [message, setMessage] = useState('')
-  const [loading, setLoading] = useState(false)
+  const setParams = useMarketStore((s) => s.setParams)
 
   useEffect(() => {
-    const fetchItems = async () => {
-      setLoading(true)
-      try {
-        const newParams = extractMarketParams(searchParams)
-        const { items, count }: GetItemsResponse =
-          await getItems({ ...newParams })
-
-        setItems(items)
-        setCount(count)
-        setParams(newParams)
-      } catch (error) {
-        setMessage('Something went wrong...')
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchItems()
+    const params: MarketParams =
+      extractParamsFromURL(searchParams)
+    setParams(params)
   }, [searchParams])
+}
 
-  const renderLoading = () => (
-    <div className='flex w-full flex-1 items-center justify-center'>
-      <LoadingDots />
+function useSyncUrlFromStore() {
+  const router = useRouter()
+  const { params } = useMarketStore()
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(serialize(params))
+    router.replace(`/market?${urlParams.toString()}`)
+  }, [
+    params.page,
+    params.keyword,
+    params.sortBy,
+    params.sortOrder,
+  ])
+}
+
+export default function Market({
+  serverItems,
+  serverCount,
+}: {
+  serverItems: Item[]
+  serverCount: number
+}) {
+  useHydrateMarketParams()
+  useSyncUrlFromStore()
+
+  const { setItems, setCount } = useMarketStore()
+
+  useEffect(() => {
+    setItems(serverItems)
+    setCount(serverCount)
+  }, [])
+
+  return (
+    <div className='flex w-full flex-1 flex-col gap-2'>
+      <Toolbar />
+
+      <PaginationHeader />
+
+      <ItemList />
+
+      <Pagination />
     </div>
   )
-
-  const renderNoResults = () => (
-    <div className='flex w-full flex-1 items-center justify-center'>
-      <p>{message}</p>
-    </div>
-  )
-
-  const renderItems = () => (
-    <div
-      className='grid w-full flex-1 items-start gap-2'
-      style={{
-        gridTemplateColumns: `repeat(${columns}, 1fr)`,
-      }}
-    >
-      {items.map((item: Item, i) => (
-        <ItemCard key={i} item={item} columns={columns} />
-      ))}
-      <style jsx>{`
-        @media (max-width: 640px) {
-          div.grid {
-            grid-template-columns: repeat(
-              1,
-              1fr
-            ) !important;
-          }
-        }
-      `}</style>
-    </div>
-  )
-
-  const renderContent = () => (
-    <>
-      <div className='flex w-full items-center justify-between px-2 text-sm'>
-        <span>{items.length} items</span>
-        <span>
-          <Pagination params={params} count={count} />
-        </span>
-        <span>
-          {`${(params.page - 1) * PAGINATION.LIMIT + 1} - ${PAGINATION.LIMIT * (params.page - 1) + items.length} of ${count}`}
-        </span>
-      </div>
-
-      {renderItems()}
-
-      <Pagination params={params} count={count} />
-    </>
-  )
-
-  if (loading) {
-    return renderLoading()
-  } else if (!items.length) {
-    return renderNoResults()
-  } else {
-    return renderContent()
-  }
 }

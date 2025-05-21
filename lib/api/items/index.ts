@@ -55,7 +55,7 @@ const itemsApi = axios.create({
     (response: AxiosResponse) => {
       const data = response.data as ApiResponse
 
-      console.log('Api message:', data.message);
+      if (data.message) console.log('Api message:', data.message);
       
       if (!data.success) throw new Error('Api response error')
 

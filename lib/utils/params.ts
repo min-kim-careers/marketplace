@@ -3,7 +3,7 @@ import { ReadonlyURLSearchParams } from 'next/navigation'
 
 const defaultPage = 1
 
-export const extractMarketParams = (
+export const extractParamsFromURL = (
   params: ReadonlyURLSearchParams | URLSearchParams,
 ): MarketParams => {
   return {

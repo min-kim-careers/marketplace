@@ -54,7 +54,7 @@ const authApi = axios.create({
     (response: AxiosResponse) => {
       const data = response.data as ApiResponse
 
-      console.log('Auth message:', data.message);
+      if (data.message) console.log('Auth message:', data.message);
       
       if (!data.success) throw new Error('Api response error')
 

@@ -1,11 +1,11 @@
 import { create } from 'zustand'
 
-type UIState = {
+type LayoutState = {
   columns: number
   setColumns: (columns: number) => void
 }
 
-export const useUIStore = create<UIState>(
+export const useLayoutStore = create<LayoutState>(
   (set) => ({
     columns: 1,
     setColumns: (columns: number) => set({ columns }),

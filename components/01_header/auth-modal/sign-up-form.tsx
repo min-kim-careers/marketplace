@@ -23,7 +23,7 @@ export default function SignupForm() {
 
   const onSubmit = async (
     formData: z.infer<typeof SignupFormSchema>,
-  ) => {
+  ): Promise<void> => {
     setLoadingMessage('Signing you up...')
     try {
       const { success }: SignUpResponse = await signUp(

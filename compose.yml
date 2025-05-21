@@ -3,8 +3,12 @@ services:
     container_name: web-container
     restart: always
     build: .
-    ports:
-      - 3000:3000
+    environment:
+      - API_URL=http://api-service:8080
+      - API_KEY=REDACTED
+
+      - AUTH_URL=http://auth-service:8000
+      - AUTH_KEY=b6c54fe621c6df75a54f0c245956519251adae29c2a0fa1c7f1cc03674f61ce5
     env_file:
       - .env
     volumes:

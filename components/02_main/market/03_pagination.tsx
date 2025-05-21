@@ -6,20 +6,17 @@ import {
   PaginationLast,
   PaginationLink,
 } from '@/components/shadcn/components/ui/pagination'
-import { ROUTES } from '@/lib/constants/routes'
-import { serialize } from '@/lib/utils/params'
-import { MarketParams } from '@/lib/interfaces/items'
-import { notFound } from 'next/navigation'
 import { PAGINATION } from '@/lib/constants/pagination'
+import { ROUTES } from '@/lib/constants/routes'
+import { useMarketStore } from '@/lib/stores/market'
+import { serialize } from '@/lib/utils/params'
+import { notFound, useSearchParams } from 'next/navigation'
 
-export default function Pagination({
-  params,
-  count,
-}: {
-  params: MarketParams
-  count: number
-}) {
-  const currentPage = params.page
+export default function Pagination() {
+  const searchParams = useSearchParams()
+  const { count } = useMarketStore()
+
+  const currentPage = Number(searchParams.get('page'))
   const lastPage = Math.ceil(count / PAGINATION.LIMIT)
 
   if (currentPage < 1 && lastPage < currentPage) {
@@ -47,7 +44,7 @@ export default function Pagination({
           disabled={currentPage === 1}
           href={{
             pathname: ROUTES.MARKET,
-            query: serialize({ ...params, page: 1 }),
+            query: serialize({ ...searchParams, page: 1 }),
           }}
         />
 
@@ -61,7 +58,7 @@ export default function Pagination({
                   href={{
                     pathname: ROUTES.MARKET,
                     query: serialize({
-                      ...params,
+                      ...searchParams,
                       page: page,
                     }),
                   }}
@@ -76,7 +73,10 @@ export default function Pagination({
           disabled={currentPage === lastPage}
           href={{
             pathname: ROUTES.MARKET,
-            query: serialize({ ...params, page: lastPage }),
+            query: serialize({
+              ...searchParams,
+              page: lastPage,
+            }),
           }}
         />
       </PaginationContent>

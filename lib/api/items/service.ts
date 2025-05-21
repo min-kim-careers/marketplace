@@ -7,8 +7,6 @@ import { ItemsQuery } from '@/lib/interfaces/items'
 export const getItems = async (
   query: ItemsQuery,
 ): Promise<GetItemsResponse> => {
-  console.log(itemsApi.defaults.baseURL)
-
   return itemsApi
     .get('', {
       params: query,
