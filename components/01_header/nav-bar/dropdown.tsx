@@ -14,7 +14,7 @@ import {
 import { ROUTES } from '@/lib/constants/routes'
 import useAuthStore from '@/lib/stores/auth'
 import Link from 'next/link'
-import Spinner from '../../common/spinner'
+import Spinner from '../../00_common/spinner'
 import { useOverlayStore } from '@/lib/stores/overlay'
 import { toast } from '@/components/shadcn/hooks/use-toast'
 import { useRouter } from 'next/navigation'

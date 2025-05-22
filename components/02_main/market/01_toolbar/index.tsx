@@ -1,6 +1,6 @@
-import ColumnToggle from '@/components/02_main/market/00_toolbar/column-toggle'
-import SearchInput from '@/components/02_main/market/00_toolbar/search-input'
-import SortOrderDropdown from '@/components/02_main/market/00_toolbar/sort-order-dropdown'
+import ColumnToggle from '@/components/02_main/market/01_toolbar/column-toggle'
+import SearchInput from '@/components/02_main/market/01_toolbar/search-input'
+import SortDropdown from '@/components/02_main/market/01_toolbar/sort-dropdown'
 import { Card } from '@/components/shadcn/components/ui/card'
 
 export default function Toolbar() {
@@ -15,7 +15,7 @@ export default function Toolbar() {
       </span>
 
       <span className='flex flex-1 justify-end'>
-        <SortOrderDropdown />
+        <SortDropdown />
       </span>
     </Card>
   )

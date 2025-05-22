@@ -1,78 +1,47 @@
 'use client'
 
-import Pagination from '@/components/02_main/market/03_pagination'
-import { Item } from '@/lib/interfaces/items'
-import { useEffect, useState } from 'react'
+import { Item, MarketParams } from '@/lib/interfaces/items'
+import { useEffect } from 'react'
 
-import ItemCard from '@/components/common/item-card'
-import LoadingDots from '@/components/common/loading-dots'
-import { getItems } from '@/lib/api/items/service'
-import { MarketParams } from '@/lib/interfaces/items'
-import { useLayoutStore } from '@/lib/stores/layout'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { PAGINATION } from '../../../lib/constants/pagination'
-import {
-  extractParamsFromURL,
-  serialize,
-} from '@/lib/utils/params'
-import { GetItemsResponse } from '@/lib/api/items/responses'
-import Toolbar from '@/components/02_main/market/00_toolbar'
+import Toolbar from '@/components/02_main/market/01_toolbar'
+import PaginationTop from '@/components/02_main/market/02_pagination-top'
+import ItemList from '@/components/02_main/market/03_item-list'
+import PaginationBottom from '@/components/02_main/market/04_pagination-bottom'
 import { useMarketStore } from '@/lib/stores/market'
-import ItemList from '@/components/02_main/market/02_item-list'
-import PaginationHeader from '@/components/02_main/market/01_pagination-header'
 
-function useHydrateMarketParams() {
-  const searchParams = useSearchParams()
-  const setParams = useMarketStore((s) => s.setParams)
-
-  useEffect(() => {
-    const params: MarketParams =
-      extractParamsFromURL(searchParams)
-    setParams(params)
-  }, [searchParams])
-}
-
-function useSyncUrlFromStore() {
-  const router = useRouter()
-  const { params } = useMarketStore()
-
-  useEffect(() => {
-    const urlParams = new URLSearchParams(serialize(params))
-    router.replace(`/market?${urlParams.toString()}`)
-  }, [
-    params.page,
-    params.keyword,
-    params.sortBy,
-    params.sortOrder,
-  ])
+interface MarketProps {
+  items: Item[]
+  count: number
+  params: MarketParams
 }
 
 export default function Market({
-  serverItems,
-  serverCount,
+  props,
 }: {
-  serverItems: Item[]
-  serverCount: number
+  props: MarketProps
 }) {
-  useHydrateMarketParams()
-  useSyncUrlFromStore()
-
-  const { setItems, setCount } = useMarketStore()
+  const { setItems, setCount, setParams, fetchSortTypes } =
+    useMarketStore()
 
   useEffect(() => {
-    setItems(serverItems)
-    setCount(serverCount)
+    fetchSortTypes()
   }, [])
+
+  useEffect(() => {
+    setItems(props.items)
+    setCount(props.count)
+    setParams(props.params)
+  }, [props])
 
   return (
     <div className='flex w-full flex-1 flex-col gap-2'>
       <Toolbar />
 
-      <PaginationHeader />
+      <PaginationTop />
 
       <ItemList />
 
-      <Pagination />
+      <PaginationBottom />
     </div>
   )
 }

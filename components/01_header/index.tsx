@@ -6,7 +6,7 @@ import useAuthStore from '@/lib/stores/auth'
 import Link from 'next/link'
 import { Button } from '../shadcn/components/ui/button'
 import AuthModal from './auth-modal'
-import Nav from './nav'
+import NavBar from './nav-bar'
 
 export default function Header() {
   const { profile } = useAuthStore()
@@ -21,7 +21,7 @@ export default function Header() {
       </Link>
       <span className='flex min-w-[10rem] items-center justify-center'>
         {profile ? (
-          <Nav />
+          <NavBar />
         ) : (
           <AuthModal>
             <Button>Sign In / Sign Up</Button>

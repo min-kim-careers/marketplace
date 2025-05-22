@@ -1,8 +1,8 @@
-import Pagination from '@/components/02_main/market/03_pagination'
+import Pagination from '@/components/02_main/market/00_common/pagination'
 import { PAGINATION } from '@/lib/constants/pagination'
 import { useMarketStore } from '@/lib/stores/market'
 
-export default function PaginationHeader() {
+export default function PaginationTop() {
   const { items, count, params } = useMarketStore()
 
   return (

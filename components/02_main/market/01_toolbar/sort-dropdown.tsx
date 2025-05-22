@@ -1,4 +1,3 @@
-import { Card } from '@/components/shadcn/components/ui/card'
 import {
   Select,
   SelectContent,
@@ -9,7 +8,7 @@ import {
 } from '@/components/shadcn/components/ui/select'
 import { useState } from 'react'
 
-export default function SortOrderDropdown() {
+export default function SortDropdown() {
   const SORT_MAP: Record<string, string> = {}
 
   const sortValues: string[] = Object.keys(SORT_MAP)
@@ -21,7 +20,7 @@ export default function SortOrderDropdown() {
   const handleSortValueChange = (value: string) => {
     setSelectedSort(value)
   }
-  
+
   return (
     <Select
       value={selectedSort}

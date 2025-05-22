@@ -46,8 +46,9 @@ const itemsApi = axios.create({
       return attachCredentials(config)
     },
     (error: AxiosError) => {
+      console.error('API Items Request Error');
       handleAxiosError(error)
-      return Promise.reject(error)
+      return Promise.reject()
     },
   )
 
@@ -55,17 +56,18 @@ const itemsApi = axios.create({
     (response: AxiosResponse) => {
       const data = response.data as ApiResponse
 
-      if (data.message) console.log('Api message:', data.message);
+      if (data.message) console.log('API Items Response Message:', data.message);
       
-      if (!data.success) throw new Error('Api response error')
+      if (!data.success) throw new Error()
 
       response.data = data.data
 
       return response
     },
     async (error: AxiosError) => {
+      console.error('API Items Response Error');
       handleAxiosError(error)
-      return Promise.reject(error)
+      return Promise.reject()
     },
   )
 

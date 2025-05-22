@@ -9,7 +9,7 @@ import {
 import { PAGINATION } from '@/lib/constants/pagination'
 import { ROUTES } from '@/lib/constants/routes'
 import { useMarketStore } from '@/lib/stores/market'
-import { serialize } from '@/lib/utils/params'
+import { serialize } from '@/lib/helpers/market'
 import { notFound, useSearchParams } from 'next/navigation'
 
 export default function Pagination() {

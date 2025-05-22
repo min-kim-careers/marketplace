@@ -1,6 +1,6 @@
 'use client'
 
-import LoadingOverlay from '@/components/common/loading-overlay'
+import LoadingOverlay from '@/components/00_common/loading-overlay'
 import { useOverlayStore } from '../stores/overlay'
 
 export default function OverlayProvider() {

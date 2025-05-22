@@ -1,4 +1,4 @@
-import ItemCard from '@/components/common/item-card'
+import ItemCard from '@/components/02_main/market/00_common/item-card'
 import { Item } from '@/lib/interfaces/items'
 import { useLayoutStore } from '@/lib/stores/layout'
 import { useMarketStore } from '@/lib/stores/market'

@@ -4,3 +4,7 @@ export interface GetItemsResponse {
   items: Item[]
   count: number
 }
+
+export interface GetSortOptionsResponse {
+  sortOptions: string[]
+}

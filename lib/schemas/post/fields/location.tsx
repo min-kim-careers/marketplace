@@ -1,7 +1,7 @@
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
-import Spinner from '@/components/common/spinner'
+import Spinner from '@/components/00_common/spinner'
 import { Button } from '@/components/shadcn/components/ui/button'
 import {
   Command,

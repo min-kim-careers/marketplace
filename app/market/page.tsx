@@ -1,14 +1,15 @@
 'use server'
 
 import Market from '@/components/02_main/market'
-import Toolbar from '@/components/02_main/market/00_toolbar'
 import { GetItemsResponse } from '@/lib/api/items/responses'
 import { getItems } from '@/lib/api/items/service'
 import { ROUTES } from '@/lib/constants/routes'
-import { MarketParams } from '@/lib/interfaces/items'
+import {
+  marketParamsToQuery,
+  marketToUrlParams,
+  serverUrlToMarketParams,
+} from '@/lib/helpers/market'
 import { redirect } from 'next/navigation'
-
-const defaultPage = 1
 
 export default async function Page({
   searchParams,
@@ -19,23 +20,25 @@ export default async function Page({
 }) {
   const params = await searchParams
 
-  const marketParams: MarketParams = {
-    page: Number(params.page),
-    keyword: params.keyword as string,
-    sortBy: params.sortBy as string,
-    sortOrder: params.sortOrder as string,
-  }
+  const marketParams = serverUrlToMarketParams(params)
 
-  if (!marketParams.page) redirect(`${ROUTES.MARKET}?page=1`)
+  if (!params.page)
+    redirect(
+      `${ROUTES.MARKET}?${marketToUrlParams(marketParams)}`,
+    )
 
-  const { items, count }: GetItemsResponse = await getItems(
-    { ...marketParams },
-  )
+  const query = marketParamsToQuery(marketParams)
+
+  const { items, count }: GetItemsResponse =
+    await getItems(query)
 
   return (
     <Market
-      serverItems={items}
-      serverCount={count}
+      props={{
+        items,
+        count,
+        params: marketParams,
+      }}
     />
   )
 }
