@@ -1,5 +1,5 @@
 export interface Item {
-  id: str
+  // id: str
   userHandle: str
   name: string
   description: string
@@ -23,6 +23,7 @@ export interface MarketParams {
 
 export interface ItemsQuery {
   page: number
+  limit?: number
   keyword?: string | null
   sortBy?: string | null
   sortOrder?: string | null

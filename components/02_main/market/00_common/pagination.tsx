@@ -13,26 +13,25 @@ import { serialize } from '@/lib/helpers/market'
 import { notFound, useSearchParams } from 'next/navigation'
 
 export default function Pagination() {
-  const searchParams = useSearchParams()
+  const { params } = useMarketStore()
   const { count } = useMarketStore()
 
-  const currentPage = Number(searchParams.get('page'))
   const lastPage = Math.ceil(count / PAGINATION.LIMIT)
 
-  if (currentPage < 1 && lastPage < currentPage) {
+  if (params.page < 1 && lastPage < params.page) {
     notFound()
   }
 
   const paginationArray = Array.from(
     { length: PAGINATION.SIZE },
     (_, index) => {
-      if (currentPage < 3) {
+      if (params.page < 3) {
         return index + 1
       } else {
-        if (currentPage + 3 > lastPage) {
+        if (params.page + 3 > lastPage) {
           return lastPage - 4 + index
         }
-        return currentPage - 2 + index
+        return params.page - 2 + index
       }
     },
   )
@@ -41,10 +40,10 @@ export default function Pagination() {
     <PaginationContainer>
       <PaginationContent>
         <PaginationFirst
-          disabled={currentPage === 1}
+          disabled={params.page === 1}
           href={{
             pathname: ROUTES.MARKET,
-            query: serialize({ ...searchParams, page: 1 }),
+            query: serialize({ ...params, page: 1 }),
           }}
         />
 
@@ -54,11 +53,11 @@ export default function Pagination() {
             page <= lastPage && (
               <PaginationItem key={index}>
                 <PaginationLink
-                  isActive={currentPage === page}
+                  isActive={params.page === page}
                   href={{
                     pathname: ROUTES.MARKET,
                     query: serialize({
-                      ...searchParams,
+                      ...params,
                       page: page,
                     }),
                   }}
@@ -70,11 +69,11 @@ export default function Pagination() {
         )}
 
         <PaginationLast
-          disabled={currentPage === lastPage}
+          disabled={params.page === lastPage}
           href={{
             pathname: ROUTES.MARKET,
             query: serialize({
-              ...searchParams,
+              ...params,
               page: lastPage,
             }),
           }}

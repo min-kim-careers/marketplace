@@ -33,12 +33,10 @@ export const setRefreshToken = (
 }
 
 export const handleAxiosError = (error: AxiosError) => {
-  const res = error.response
-  if (res) {
+  if (error.response) {
     console.error(
       JSON.stringify(
         {
-          ...(error.response?.data as ErrorResponse),
           status: error.response?.status,
           statusText: error.response?.statusText,
         },

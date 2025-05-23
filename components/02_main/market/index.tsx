@@ -20,12 +20,7 @@ export default function Market({
 }: {
   props: MarketProps
 }) {
-  const { setItems, setCount, setParams, fetchSortTypes } =
-    useMarketStore()
-
-  useEffect(() => {
-    fetchSortTypes()
-  }, [])
+  const { setItems, setCount, setParams } = useMarketStore()
 
   useEffect(() => {
     setItems(props.items)

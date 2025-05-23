@@ -1,3 +1,4 @@
+import { PAGINATION } from '@/lib/constants/pagination'
 import {
   ItemsQuery,
   MarketParams,
@@ -62,4 +63,5 @@ export const marketParamsToQuery = (
   keyword: marketParams.keyword,
   sortBy: marketParams.sortBy,
   sortOrder: marketParams.sortOrder,
+  limit: PAGINATION.LIMIT
 })

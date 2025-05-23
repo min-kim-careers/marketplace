@@ -1,4 +1,6 @@
 import ItemCard from '@/components/02_main/market/00_common/item-card'
+import ItemModal from '@/components/02_main/market/00_common/item-modal'
+import { Button } from '@/components/shadcn/components/ui/button'
 import { Item } from '@/lib/interfaces/items'
 import { useLayoutStore } from '@/lib/stores/layout'
 import { useMarketStore } from '@/lib/stores/market'
@@ -15,7 +17,11 @@ export default function ItemList() {
       }}
     >
       {items.map((item: Item, i) => (
-        <ItemCard key={i} item={item} columns={columns} />
+        <ItemModal key={i} item={item}>
+          <div className='cursor-pointer'>
+            <ItemCard item={item} columns={columns} />
+          </div>
+        </ItemModal>
       ))}
       <style jsx>{`
         @media (max-width: 640px) {

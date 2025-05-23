@@ -7,11 +7,11 @@ export default function PaginationTop() {
 
   return (
     <div className='flex w-full items-center justify-between px-2 text-sm'>
-      <span>{items.length} items</span>
-      <span>
+      <span className='flex-1'>{items.length} items</span>
+      <span className='flex-1'>
         <Pagination />
       </span>
-      <span>
+      <span className='flex flex-1 justify-end'>
         {`${(params.page - 1) * PAGINATION.LIMIT + 1} - ${PAGINATION.LIMIT * (params.page - 1) + items.length} of ${count}`}
       </span>
     </div>

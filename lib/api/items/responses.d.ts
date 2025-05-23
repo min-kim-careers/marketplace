@@ -6,5 +6,12 @@ export interface GetItemsResponse {
 }
 
 export interface GetSortOptionsResponse {
-  sortOptions: string[]
+  sortOptions: SortOption[]
+}
+
+export interface SortOption {
+  sortBy: string
+  sortOrder: string
+  label: string
+  isDefault: bool
 }

@@ -4,13 +4,13 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '../../shadcn/components/ui/accordion'
+} from '@/components/shadcn/components/ui/accordion'
 import {
   Dialog,
   DialogContent,
   DialogTitle,
   DialogTrigger,
-} from '../../shadcn/components/ui/dialog'
+} from '@/components/shadcn/components/ui/dialog'
 import SignInForm from './sign-in-form'
 import SignupForm from './sign-up-form'
 

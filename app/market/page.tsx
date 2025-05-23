@@ -18,11 +18,11 @@ export default async function Page({
     [key: string]: string | string[] | undefined
   }>
 }) {
-  const params = await searchParams
+  const urlParams = await searchParams
 
-  const marketParams = serverUrlToMarketParams(params)
+  const marketParams = serverUrlToMarketParams(urlParams)
 
-  if (!params.page)
+  if (!urlParams.page)
     redirect(
       `${ROUTES.MARKET}?${marketToUrlParams(marketParams)}`,
     )
@@ -33,12 +33,12 @@ export default async function Page({
     await getItems(query)
 
   return (
-    <Market
-      props={{
-        items,
-        count,
-        params: marketParams,
-      }}
-    />
+      <Market
+        props={{
+          items,
+          count,
+          params: marketParams,
+        }}
+      />
   )
 }

@@ -6,36 +6,81 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/shadcn/components/ui/select'
-import { useState } from 'react'
+import { SortOption } from '@/lib/api/items/responses'
+import { ROUTES } from '@/lib/constants/routes'
+import {
+  marketParamsToQuery,
+  marketToUrlParams,
+} from '@/lib/helpers/market'
+import { MarketParams } from '@/lib/interfaces/items'
+import { useMarketStore } from '@/lib/stores/market'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 export default function SortDropdown() {
-  const SORT_MAP: Record<string, string> = {}
+  const {
+    sortOptions,
+    fetchSortOptions,
+    params,
+    setParams,
+  } = useMarketStore()
+  useEffect(() => {
+    if (!sortOptions.length) void fetchSortOptions()
+  }, [])
 
-  const sortValues: string[] = Object.keys(SORT_MAP)
+  const [currentSortOption, setCurrentSortOption] =
+    useState<SortOption | null>(null)
+  useEffect(() => {
+    const defaultSortOption = sortOptions.find(
+      (s) => s.isDefault,
+    )
+    if (defaultSortOption)
+      setCurrentSortOption(defaultSortOption)
+  }, [sortOptions])
 
-  const [selectedSort, setSelectedSort] = useState(
-    sortValues[0],
-  )
-
-  const handleSortValueChange = (value: string) => {
-    setSelectedSort(value)
+  const router = useRouter()
+  const handleValueChange = (value: string) => {
+    const option = sortOptions.find(
+      (s) => s.label === value,
+    )
+    if (option) {
+      setCurrentSortOption(option)
+      const newParams: MarketParams = {
+        ...params,
+        sortBy: option.sortBy,
+        sortOrder: option.sortOrder,
+      }
+      const urlParams = marketToUrlParams(newParams)
+      router.replace(`${ROUTES.MARKET}?${urlParams}`)
+      setParams(newParams)
+    }
   }
+
+  if (!sortOptions.length || !currentSortOption)
+    return (
+      <Select>
+        <SelectTrigger className='w-[180px]' disabled>
+          <SelectValue />
+        </SelectTrigger>
+      </Select>
+    )
 
   return (
     <Select
-      value={selectedSort}
-      onValueChange={handleSortValueChange}
+      value={currentSortOption.label}
+      onValueChange={handleValueChange}
     >
       <SelectTrigger className='w-[180px]'>
-        <SelectValue>Sorted by {selectedSort}</SelectValue>
+        <span>{`Sorted by ${currentSortOption.label}`}</span>
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          {sortValues.map((s, i) => (
-            <SelectItem key={i} value={s}>
-              {s}
-            </SelectItem>
-          ))}
+          {sortOptions &&
+            sortOptions.map((s, i) => (
+              <SelectItem key={i} value={s.label}>
+                {s.label}
+              </SelectItem>
+            ))}
         </SelectGroup>
       </SelectContent>
     </Select>
