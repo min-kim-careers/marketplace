@@ -6,13 +6,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/shadcn/components/ui/select'
-import { SortOption } from '@/lib/api/items/responses'
 import { ROUTES } from '@/lib/constants/routes'
 import {
   marketParamsToQuery,
   marketToUrlParams,
 } from '@/lib/helpers/market'
-import { MarketParams } from '@/lib/interfaces/items'
+import { MarketParams, SortOption } from '@/lib/interfaces/items'
 import { useMarketStore } from '@/lib/stores/market'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'

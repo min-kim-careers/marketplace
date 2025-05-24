@@ -2,7 +2,7 @@
 
 import {
   SignInResponse,
-  SignOutResponse
+  SignOutResponse,
 } from '@/lib/api/auth/responses'
 import { Profile } from '@/lib/interfaces/profiles'
 import { create } from 'zustand'
@@ -12,7 +12,7 @@ import {
 } from 'zustand/middleware'
 import {
   signIn as serverSignIn,
-  signOut as serverSignOut
+  signOut as serverSignOut,
 } from '../api/auth/service'
 
 interface AuthStore {
@@ -35,11 +35,10 @@ const useAuthStore = create(
           password: string,
         ) => {
           try {
-            const { success }: SignInResponse = await serverSignIn(
-              email,
-              password,
-            )
+            const { success, profile }: SignInResponse =
+              await serverSignIn(email, password)
             if (!success) throw new Error()
+            set({ profile })
           } catch (error) {
             return false
           }
@@ -48,7 +47,8 @@ const useAuthStore = create(
 
         const signOut = async () => {
           try {
-            const { success }: SignOutResponse = await serverSignOut()
+            const { success }: SignOutResponse =
+              await serverSignOut()
             if (!success) throw new Error()
             set({ profile: null })
           } catch (error) {

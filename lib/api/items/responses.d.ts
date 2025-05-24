@@ -8,10 +8,3 @@ export interface GetItemsResponse {
 export interface GetSortOptionsResponse {
   sortOptions: SortOption[]
 }
-
-export interface SortOption {
-  sortBy: string
-  sortOrder: string
-  label: string
-  isDefault: bool
-}

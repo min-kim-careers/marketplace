@@ -28,3 +28,10 @@ export interface ItemsQuery {
   sortBy?: string | null
   sortOrder?: string | null
 }
+
+export interface SortOption {
+  sortBy: string
+  sortOrder: string
+  label: string
+  isDefault: bool
+}

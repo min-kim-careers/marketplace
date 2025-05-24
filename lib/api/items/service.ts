@@ -16,7 +16,7 @@ export const getItems = async (
     })
     .then((response) => response.data as GetItemsResponse)
     .catch(() => {
-      console.error('Server error')
+      console.error('Server Side Error')
       throw new Error()
     })
 }
@@ -30,7 +30,7 @@ export const getSortOptions =
           response.data as GetSortOptionsResponse,
       )
       .catch(() => {
-        console.error('Server error')
+        console.error('Server Side Error')
         throw new Error()
       })
   }

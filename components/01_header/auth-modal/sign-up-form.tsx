@@ -6,16 +6,16 @@ import { z } from 'zod'
 
 import { Button } from '@/components/shadcn/components/ui/button'
 import { Form } from '@/components/shadcn/components/ui/form'
+import { toast } from '@/components/shadcn/hooks/use-toast'
+import { SignUpResponse } from '@/lib/api/auth/responses'
+import { signUp } from '@/lib/api/auth/service'
+import { SignupFormSchema } from '@/lib/schemas/sign-up'
 import {
   EmailField,
   HandleField,
   PasswordField,
 } from '@/lib/schemas/sign-up/fields'
-import { SignupFormSchema } from '@/lib/schemas/sign-up'
-import { toast } from '@/components/shadcn/hooks/use-toast'
 import { useOverlayStore } from '@/lib/stores/overlay'
-import { SignUpResponse } from '@/lib/api/auth/responses'
-import { signUp } from '@/lib/api/auth/service'
 
 export default function SignupForm() {
   const { setOverlayMessage: setLoadingMessage } =
@@ -38,7 +38,10 @@ export default function SignupForm() {
       })
     } catch (error) {
       toast({
-        description: `Failed to sign up.`,
+        description: extractUserErrorMessage(
+          error,
+          'Something went wrong',
+        ),
       })
     } finally {
       setLoadingMessage(null)

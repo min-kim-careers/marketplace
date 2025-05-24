@@ -8,6 +8,7 @@ export interface SignInServerResponse {
 
 export interface SignInResponse {
   success: boolean
+  profile: Profile
 }
 
 export interface SignUpResponse {

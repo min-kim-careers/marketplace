@@ -39,8 +39,8 @@ export default function ItemModal({
               </span>
               <span>{item.name}</span>
             </DialogTitle>
-            <DialogDescription>
-              <div className='my-2'>
+            <DialogDescription className='gap-2 flex'>
+              <span>
                 Updated{' '}
                 {formatDistanceToNow(
                   item.updatedAt.toLocaleString(),
@@ -52,7 +52,7 @@ export default function ItemModal({
                     {item.userHandle}
                   </button>
                 </span>
-              </div>
+              </span>
               <button className='text-sm italic text-black/40'>
                 Report this user
               </button>

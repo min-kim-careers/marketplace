@@ -1,6 +1,9 @@
-import { SortOption } from '@/lib/api/items/responses'
 import { getSortOptions } from '@/lib/api/items/service'
-import { Item, MarketParams } from '@/lib/interfaces/items'
+import {
+  Item,
+  MarketParams,
+  SortOption,
+} from '@/lib/interfaces/items'
 import { create } from 'zustand'
 
 type MarketState = {
@@ -31,7 +34,8 @@ export const useMarketStore = create<MarketState>((set) => {
     sortOptions: [],
     fetchSortOptions: async () => {
       try {
-        const { sortOptions } = await getSortOptions()
+        const { sortOptions } =
+          await getSortOptions()
         set({ sortOptions })
       } catch (error) {
         console.error('Failed to fetch sort orders:', error)

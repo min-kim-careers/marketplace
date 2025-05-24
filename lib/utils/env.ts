@@ -2,7 +2,9 @@ interface Env {
   apiUrl: string
   authUrl: string
   apiKey: string
+  apiKeyHeader: string
   authKey: string
+  authKeyHeader: string
 }
 
 export const env: Env = {
@@ -10,6 +12,8 @@ export const env: Env = {
   authUrl: process.env.AUTH_URL!,
   apiKey: process.env.API_KEY!,
   authKey: process.env.AUTH_KEY!,
+  apiKeyHeader: process.env.API_KEY_HEADER!,
+  authKeyHeader: process.env.AUTH_KEY_HEADER!,
 }
 
 const validateEnv = (env: Env) => {

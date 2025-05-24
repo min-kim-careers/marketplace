@@ -1,9 +1,10 @@
 'use server'
 
+import { ErrorResponse } from '@/lib/api/_common/errors'
 import {
   setAccessToken,
   setRefreshToken,
-} from '@/lib/api/_common/config'
+} from '@/lib/api/auth'
 import authApi from '@/lib/api/auth'
 import {
   SignInResponse,
@@ -15,7 +16,20 @@ import {
   ACCESS_TOKEN_KEY,
   REFRESH_TOKEN_KEY,
 } from '@/lib/constants/keys'
+import { Profile } from '@/lib/interfaces/profiles'
 import { cookies } from 'next/headers'
+
+const setTokensOnSignIn = async (
+  authRes: SignInServerResponse,
+) => {
+  const cookieStore = await cookies()
+  setAccessToken(
+    cookieStore,
+    authRes.accessToken,
+    authRes.accessTokenExpires,
+  )
+  setRefreshToken(cookieStore, authRes.refreshToken)
+}
 
 export const signIn = async (
   email: string,
@@ -26,23 +40,29 @@ export const signIn = async (
     data.append('username', email)
     data.append('password', password)
 
-    const cookieStore = await cookies()
-
     const authRes: SignInServerResponse = (
       await authApi.post('/sign-in', data)
     ).data
 
-    setAccessToken(
-      cookieStore,
-      authRes.accessToken,
-      authRes.accessTokenExpires,
-    )
+    setTokensOnSignIn(authRes)
 
-    setRefreshToken(cookieStore, authRes.refreshToken)
+    const profile: Profile = {
+      handle: 'string',
+      email: 'string',
+      rating: 0,
+      ratingCount: 0,
+      suburb: 'string',
+      state: 'string',
+      avatarUrl: 'string',
+    }
+    if (!profile) {
+      console.error('Failed to fetch profile')
+      throw new Error()
+    }
 
-    return { success: true } as SignInResponse
+    return { success: true, profile } as SignInResponse
   } catch (_) {
-    console.error('Server error')
+    console.error('Server Side Error')
     throw new Error()
   }
 }
@@ -57,8 +77,11 @@ export const signUp = async (
   return await authApi
     .post('/sign-up', data)
     .then(() => ({ success: true }) as SignUpResponse)
-    .catch(() => {
-      console.error('Server error')
+    .catch((e: ErrorResponse) => {
+      console.error('Server Side Error')
+      if (e.detail.userSafe) {
+        throw new Error(e.detail.message)
+      }
       throw new Error()
     })
 }
@@ -73,7 +96,7 @@ export const signOut =
         return { success: true } as SignOutResponse
       })
       .catch(() => {
-        console.error('Server error')
+        console.error('Server Side Error')
         throw new Error()
       })
   }
