@@ -1,14 +1,4 @@
 services:
-  web-service:
-    extends:
-      file: ./web/compose.yml
-      service: web-service
-    ports:
-      - 3000:3000
-    networks:
-      - api-network
-      - auth-network
-
   api-db-service:
     extends:
       file: ./api/compose.yml
@@ -45,6 +35,16 @@ services:
     ports:
       - 8000:8000
     networks:
+      - auth-network
+
+  web-service:
+    extends:
+      file: ./web/compose.yml
+      service: web-service
+    ports:
+      - 3000:3000
+    networks:
+      - api-network
       - auth-network
 
 volumes:
