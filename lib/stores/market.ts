@@ -1,4 +1,4 @@
-import { getSortOptions } from '@/lib/api/items/service'
+import { clientGetSortOptions } from '@/_gateway/items/client/service'
 import {
   Item,
   MarketParams,
@@ -35,7 +35,7 @@ export const useMarketStore = create<MarketState>((set) => {
     fetchSortOptions: async () => {
       try {
         const { sortOptions } =
-          await getSortOptions()
+          await clientGetSortOptions()
         set({ sortOptions })
       } catch (error) {
         console.error('Failed to fetch sort orders:', error)

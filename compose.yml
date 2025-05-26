@@ -11,6 +11,10 @@ services:
       - AUTH_URL=http://auth-service:8000
       - AUTH_KEY=b6c54fe621c6df75a54f0c245956519251adae29c2a0fa1c7f1cc03674f61ce5
       - AUTH_KEY_HEADER=x-auth-key
+
+      - GATEWAY_URL=http://gateway-service:8000
+      - GATEWAY_KEY=b6c54fe621c6df75a54f0c245956519251adae29c2a0fa1c7f1cc03674f61ce5
+      - GATEWAY_KEY_HEADER=x-gateway-key
     env_file:
       - .env
     volumes:

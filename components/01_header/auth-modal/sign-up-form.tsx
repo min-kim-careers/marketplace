@@ -7,8 +7,8 @@ import { z } from 'zod'
 import { Button } from '@/components/shadcn/components/ui/button'
 import { Form } from '@/components/shadcn/components/ui/form'
 import { toast } from '@/components/shadcn/hooks/use-toast'
-import { SignUpResponse } from '@/lib/api/auth/responses'
-import { signUp } from '@/lib/api/auth/service'
+import { SignUpClientResponse } from '@/gateway/auth/responses/client'
+import { clientSignUp } from '@/_gateway/auth/client/service'
 import { SignupFormSchema } from '@/lib/schemas/sign-up'
 import {
   EmailField,
@@ -26,7 +26,7 @@ export default function SignupForm() {
   ): Promise<void> => {
     setLoadingMessage('Signing you up...')
     try {
-      const { success }: SignUpResponse = await signUp(
+      const { success }: SignUpClientResponse = await clientSignUp(
         formData.email,
         formData.password,
         formData.handle,
@@ -38,10 +38,7 @@ export default function SignupForm() {
       })
     } catch (error) {
       toast({
-        description: extractUserErrorMessage(
-          error,
-          'Something went wrong',
-        ),
+        description: (error as Error).message ?? 'Something went wrong',
       })
     } finally {
       setLoadingMessage(null)

@@ -1,4 +1,5 @@
-export interface ErrorResponse {
+
+export interface ServerErrorModel {
   detail: {
     message?: string
     userSafe?: boolean

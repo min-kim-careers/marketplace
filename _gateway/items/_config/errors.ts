@@ -1,12 +1,12 @@
-import { ErrorResponse } from '@/lib/api/_common/errors'
+import { ItemsServerError } from '../server/responses'
 import { AxiosError } from 'axios'
 
-export const handleAxiosError = (
+export const handleServerError = (
   error: AxiosError,
-): ErrorResponse | null => {
+): ItemsServerError | null => {
   try {
     if (error.response) {
-      const err = error.response.data as ErrorResponse
+      const err = error.response.data as ItemsServerError
       console.error(JSON.stringify(err, null, 2))
       return err
     }

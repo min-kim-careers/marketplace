@@ -1,19 +1,19 @@
 'use client'
 
 import {
-  SignInResponse,
-  SignOutResponse,
-} from '@/lib/api/auth/responses'
+  SignInClientResponse,
+  SignOutClientResponse,
+} from '@/_gateway/auth/client/responses'
+import {
+  clientSignIn,
+  clientSignOut as serverSignOut,
+} from '@/_gateway/auth/client/service'
 import { Profile } from '@/lib/interfaces/profiles'
 import { create } from 'zustand'
 import {
   persist,
   subscribeWithSelector,
 } from 'zustand/middleware'
-import {
-  signIn as serverSignIn,
-  signOut as serverSignOut,
-} from '../api/auth/service'
 
 interface AuthStore {
   profile: Profile | null
@@ -35,8 +35,13 @@ const useAuthStore = create(
           password: string,
         ) => {
           try {
-            const { success, profile }: SignInResponse =
-              await serverSignIn(email, password)
+            const {
+              success,
+              profile,
+            }: SignInClientResponse = await clientSignIn(
+              email,
+              password,
+            )
             if (!success) throw new Error()
             set({ profile })
           } catch (error) {
@@ -47,7 +52,7 @@ const useAuthStore = create(
 
         const signOut = async () => {
           try {
-            const { success }: SignOutResponse =
+            const { success }: SignOutClientResponse =
               await serverSignOut()
             if (!success) throw new Error()
             set({ profile: null })
