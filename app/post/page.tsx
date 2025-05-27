@@ -1,4 +1,4 @@
-import Post from '@/components/02_main/(protected)/post'
+import Post from "@/components/02_main/post";
 
 export default function Page() {
   return <Post />

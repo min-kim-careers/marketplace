@@ -1,4 +1,4 @@
-interface Env {
+interface EnvLoader {
   apiUrl: string
   authUrl: string
   apiKey: string
@@ -7,7 +7,7 @@ interface Env {
   authKeyHeader: string
 }
 
-export const env: Env = {
+export const envLoader: EnvLoader = {
   apiUrl: process.env.API_URL!,
   authUrl: process.env.AUTH_URL!,
   apiKey: process.env.API_KEY!,
@@ -16,7 +16,7 @@ export const env: Env = {
   authKeyHeader: process.env.AUTH_KEY_HEADER!,
 }
 
-const validateEnv = (env: Env) => {
+const validateEnv = (env: EnvLoader) => {
   const missing = Object.entries(env).filter(([_, v]) => !v)
   if (missing.length)
     throw new Error(
@@ -24,4 +24,4 @@ const validateEnv = (env: Env) => {
     )
 }
 
-validateEnv(env)
+validateEnv(envLoader)

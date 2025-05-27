@@ -1,3 +1,4 @@
+import { serverVerify } from '@/_gateway/auth/internal/transport'
 import {
   PROTECTED_ROUTES,
   PUBLIC_ROUTES,
@@ -15,16 +16,18 @@ export async function middleware(req: NextRequest) {
 
   if (isProtectedRoute) {
     try {
+      await serverVerify()
       return NextResponse.next()
     } catch (error) {
-      console.error('Error in middleware')
+      console.error(error)
+
       return NextResponse.redirect(
         new URL(ROUTES.HOME, req.nextUrl),
       )
     }
   }
 
-  console.error('Invalid path')
+  // console.error(`Unknown path: ${path}`)
   return NextResponse.rewrite(
     new URL(ROUTES.NOTFOUND, req.nextUrl),
   )

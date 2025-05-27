@@ -1,4 +1,4 @@
-import Profile from '@/components/02_main/(protected)/profile'
+import Profile from "@/components/02_main/profile";
 
 export default function Page() {
   return <Profile />

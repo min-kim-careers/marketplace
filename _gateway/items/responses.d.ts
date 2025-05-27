@@ -1,13 +1,13 @@
-import { ClientResponseModel } from '@/_gateway/_models/client/response'
+import { GatewayResponse } from '@/_gateway/_common/response'
 import { Item } from '@/lib/interfaces/items'
 
 export interface GetItemsClientResponse
-  extends ClientResponseModel {
+  extends GatewayResponse {
   items: Item[]
   count: number
 }
 
 export interface GetSortOptionsClientResponse
-  extends ClientResponseModel {
+  extends GatewayResponse {
   sortOptions: SortOption[]
 }

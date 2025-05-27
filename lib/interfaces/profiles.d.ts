@@ -1,6 +1,5 @@
 export interface Profile {
   handle: string
-  email: string
   rating: number
   ratingCount: number
   suburb: string

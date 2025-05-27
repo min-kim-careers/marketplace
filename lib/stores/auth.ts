@@ -3,11 +3,11 @@
 import {
   SignInClientResponse,
   SignOutClientResponse,
-} from '@/_gateway/auth/client/responses'
+} from '@/_gateway/auth/responses'
 import {
-  clientSignIn,
-  clientSignOut as serverSignOut,
-} from '@/_gateway/auth/client/service'
+  gatewaySignIn,
+  gatewaySignOut as serverSignOut,
+} from '@/_gateway/auth/service'
 import { Profile } from '@/lib/interfaces/profiles'
 import { create } from 'zustand'
 import {
@@ -38,7 +38,7 @@ const useAuthStore = create(
             const {
               success,
               profile,
-            }: SignInClientResponse = await clientSignIn(
+            }: SignInClientResponse = await gatewaySignIn(
               email,
               password,
             )

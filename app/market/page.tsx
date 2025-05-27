@@ -1,8 +1,8 @@
 'use server'
 
 import Market from '@/components/02_main/market'
-import { GetItemsClientResponse } from '@/_gateway/items/client/responses'
-import { clientGetItems } from '@/_gateway/items/client/service'
+import { GetItemsClientResponse } from '@/_gateway/items/responses'
+import { gatewayGetItems } from '@/_gateway/items/service'
 import { ROUTES } from '@/lib/constants/routes'
 import {
   marketParamsToQuery,
@@ -30,7 +30,7 @@ export default async function Page({
   const query = marketParamsToQuery(marketParams)
 
   const { items, count }: GetItemsClientResponse =
-    await clientGetItems(query)
+    await gatewayGetItems(query)
 
   return (
       <Market

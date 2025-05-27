@@ -1,13 +1,13 @@
-import { ClientResponseModel } from "@/_gateway/_models/client/response"
+import { GatewayResponse } from "@/_gateway/_common/response"
 import { Profile } from '@/lib/interfaces/profiles'
 
 export interface SignInClientResponse
-  extends ClientResponseModel {
+  extends GatewayResponse {
   profile?: Profile
 }
 
 export interface SignUpClientResponse
-  extends ClientResponseModel {}
+  extends GatewayResponse {}
 
 export interface SignOutClientResponse
-  extends ClientResponseModel {}
+  extends GatewayResponse {}

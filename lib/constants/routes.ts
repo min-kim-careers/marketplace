@@ -14,4 +14,5 @@ export const PROTECTED_ROUTES = [
 export const PUBLIC_ROUTES = [
     ROUTES.HOME,
     ROUTES.MARKET,
+    ROUTES.NOTFOUND
 ]

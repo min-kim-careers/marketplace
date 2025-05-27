@@ -1,16 +1,16 @@
 'use server'
 
 import {
-  GetItemsClientResponse,
-  GetSortOptionsClientResponse,
-} from '@/_gateway/items/client/responses'
-import {
   serverGetItems,
   serverGetSortOptions,
-} from '@/_gateway/items/server/service'
+} from '@/_gateway/items/internal/transport'
+import {
+  GetItemsClientResponse,
+  GetSortOptionsClientResponse,
+} from '@/_gateway/items/responses'
 import { ItemsQuery } from '@/lib/interfaces/items'
 
-export const clientGetItems = async (
+export const gatewayGetItems = async (
   query: ItemsQuery,
 ): Promise<GetItemsClientResponse> => {
   try {
@@ -22,7 +22,7 @@ export const clientGetItems = async (
       count: res.count,
     } as GetItemsClientResponse
   } catch (error) {
-    console.error('Items Get Items Error:', error)
+    console.error(error)
     return {
       success: false,
       items: [],
@@ -31,7 +31,7 @@ export const clientGetItems = async (
   }
 }
 
-export const clientGetSortOptions =
+export const gatewayGetSortOptions =
   async (): Promise<GetSortOptionsClientResponse> => {
     try {
       const res = await serverGetSortOptions()
@@ -41,6 +41,7 @@ export const clientGetSortOptions =
         sortOptions: res.sortOptions,
       } as GetSortOptionsClientResponse
     } catch (error) {
+      console.error(error)
       return {
         success: false,
         sortOptions: [],
