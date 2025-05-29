@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Delete profile from api-db
+docker exec -i api-db-container \
+  psql -U apidbuser -d apidb -c \
+  "DELETE FROM profiles;"
+
+# Delete refresh tokens
+docker exec -i auth-db-container \
+  psql -U authdbuser -d authdb -c \
+  "DELETE FROM refresh_tokens;"
+
+# Delete user from auth-db
+docker exec -i auth-db-container \
+  psql -U authdbuser -d authdb -c \
+  "DELETE FROM users;"
+
+echo "Cleanup completed"

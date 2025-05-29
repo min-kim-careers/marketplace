@@ -1,6 +1,11 @@
 #!/bin/bash
 
-EMAIL="test@test.com"
+EMAIL="$1"
+
+if [ !EMAIL ]; then
+  echo "Need one argument: email"
+  exit 1
+fi
 
 # Get the user ID from auth-db
 USER_ID=$(docker exec -i auth-db-container \
