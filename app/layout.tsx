@@ -3,7 +3,6 @@ import Header from '@/components/01_header'
 import Footer from '@/components/03_footer'
 import { Toaster } from '@/components/shadcn/components/ui/toaster'
 import { APP_TITLE } from '@/lib/constants'
-import AuthProvider from '@/lib/providers/auth'
 import OverlayProvider from '@/lib/providers/overlay'
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
@@ -34,7 +33,6 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AuthProvider />
         <OverlayProvider />
         <div className='flex min-h-screen flex-col p-2 font-[family-name:var(--font-geist-sans)]'>
           <Header />

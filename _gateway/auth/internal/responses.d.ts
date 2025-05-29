@@ -1,18 +1,15 @@
-import { User } from "./models"
+import { User } from './user'
 
-
-export interface SignInServerResponse {
+export interface SignInInternalResponse {
   user: User
   accessToken: string
-  accessTokenExpires: number
   refreshToken: string
 }
 
-export interface SignUpServerResponse {
+export interface SignUpInternalResponse {
   user: User
 }
 
-export interface RefreshServerResponse {
+export interface RefreshInternalResponse {
   accessToken: string
-  accessTokenExpires: number
 }

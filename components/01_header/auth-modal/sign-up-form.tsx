@@ -7,7 +7,7 @@ import { z } from 'zod'
 import { Button } from '@/components/shadcn/components/ui/button'
 import { Form } from '@/components/shadcn/components/ui/form'
 import { toast } from '@/components/shadcn/hooks/use-toast'
-import { gatewaySignUp } from '@/_gateway/auth/service'
+import { serviceSignUp } from '@/_gateway/auth/service'
 import { SignupFormSchema } from '@/lib/schemas/sign-up'
 import {
   EmailField,
@@ -15,7 +15,7 @@ import {
   PasswordField,
 } from '@/lib/schemas/sign-up/fields'
 import { useOverlayStore } from '@/lib/stores/overlay'
-import { SignUpClientResponse } from '@/_gateway/auth/responses'
+import { SignUpServiceResponse } from '@/_gateway/auth/responses'
 
 export default function SignupForm() {
   const { setOverlayMessage: setLoadingMessage } =
@@ -26,7 +26,7 @@ export default function SignupForm() {
   ): Promise<void> => {
     setLoadingMessage('Signing you up...')
     try {
-      const { success }: SignUpClientResponse = await gatewaySignUp(
+      const { success }: SignUpServiceResponse = await serviceSignUp(
         formData.email,
         formData.password,
         formData.handle,

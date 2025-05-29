@@ -1,9 +1,9 @@
 import { Profile } from '@/lib/interfaces/profiles'
 
-export interface UpsertProfileServerResponse {
+export interface UpsertProfileInternalResponse {
   profile: Profile
 }
 
-export interface GetProfileServerResponse {
+export interface GetProfileInternalResponse {
   profile: Profile
 }

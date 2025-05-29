@@ -1,13 +1,19 @@
-import { GatewayResponse } from "@/_gateway/_common/response"
+import { ServiceResponse } from '@/_gateway/_common/service.response'
 import { Profile } from '@/lib/interfaces/profiles'
 
-export interface SignInClientResponse
-  extends GatewayResponse {
+export interface SignInServiceResponse
+  extends ServiceResponse {
   profile?: Profile
 }
 
-export interface SignUpClientResponse
-  extends GatewayResponse {}
+export interface SignUpServiceResponse
+  extends ServiceResponse {}
 
-export interface SignOutClientResponse
-  extends GatewayResponse {}
+export interface SignOutServiceResponse
+  extends ServiceResponse {}
+
+export interface VerifyServiceResponse
+  extends ServiceResponse {}
+  
+export interface RefreshServiceResponse
+  extends ServiceResponse {}

@@ -1,4 +1,4 @@
-import { serverRefresh } from '@/_gateway/auth/internal/transport'
+import { AuthError } from '@/_gateway/auth/_config/error'
 import {
   AxiosError,
   InternalAxiosRequestConfig,
@@ -6,21 +6,28 @@ import {
 import { cookies } from 'next/headers'
 
 const ACCESS_TOKEN_KEY = 'access_token'
+const REFRESH_TOKEN_KEY = 'refresh_token'
+
+export const getAccessToken = async () => {
+  const cookieStore = await cookies()
+  return cookieStore.get(ACCESS_TOKEN_KEY)?.value
+}
 
 export const setAccessToken = async (
   accessToken: string,
-  accessTokenExpires: number,
 ) => {
   const cookieStore = await cookies()
   cookieStore.set(ACCESS_TOKEN_KEY, accessToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     path: '/',
-    maxAge: accessTokenExpires,
   })
 }
 
-const REFRESH_TOKEN_KEY = 'refresh_token'
+export const getRefreshToken = async () => {
+  const cookieStore = await cookies()
+  return cookieStore.get(REFRESH_TOKEN_KEY)?.value
+}
 
 export const setRefreshToken = async (
   refreshToken: string,
@@ -39,39 +46,28 @@ export const clearTokens = async () => {
   cookieStore.delete(REFRESH_TOKEN_KEY)
 }
 
-export const attachToken = async (
+export const attachAccessToken = async (
   config: InternalAxiosRequestConfig,
 ) => {
   try {
-    const cookieStore = await cookies()
-
-    let accessToken = cookieStore.get(
-      ACCESS_TOKEN_KEY,
-    )?.value
-    const refreshToken = cookieStore.get(
-      REFRESH_TOKEN_KEY,
-    )?.value
-
-    if (!accessToken && refreshToken) {
-      await serverRefresh()
-      accessToken = cookieStore.get(ACCESS_TOKEN_KEY)?.value
-    }
-
+    const accessToken = await getAccessToken()
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`
     }
   } catch (error) {
-    console.error('Token handling failed:', error)
+    console.error('Error attaching token:', error)
   }
 }
 
-export const throwServerError = (error: AxiosError) => {
-  const errData = error?.response?.data as any
-  if (errData) {
-    const message = errData?.detail?.message
-    console.error(message)
-
-    const userMessage = errData.detail.userMessage
-    throw new Error(userMessage)
+export const handleAuthError = (
+  error: any,
+): AuthError | null => {
+  if (error instanceof AxiosError) {
+    const errData = error?.response?.data as any
+    console.error(
+      JSON.stringify({ authError: errData }, null, 2),
+    )
+    if (errData.detail) return errData.detail as AuthError
   }
+  return null
 }

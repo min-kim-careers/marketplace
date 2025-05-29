@@ -1,10 +1,10 @@
 import { Item } from '@/lib/interfaces/items'
 
-export interface GetItemsServerResponse {
+export interface GetItemsInternalResponse {
   items: Item[]
   count: number
 }
 
-export interface GetSortOptionsServerResponse {
+export interface GetSortOptionsInternalResponse {
   sortOptions: SortOption[]
 }

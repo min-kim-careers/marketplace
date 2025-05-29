@@ -1,11 +1,7 @@
-import {
-  attachToken,
-  throwServerError,
-} from '@/_gateway/_common/_config/helpers'
-import { ServerResponse } from '@/_gateway/_common/server/response'
+import { attachAccessToken } from '@/_gateway/auth/_config/helpers'
+import { InternalResponse } from '@/_gateway/_common/internal.response'
 import { envLoader } from '@/lib/utils/env-loader'
 import axios, {
-  AxiosError,
   AxiosResponse,
   InternalAxiosRequestConfig,
 } from 'axios'
@@ -19,24 +15,18 @@ const create = () => {
     async (config: InternalAxiosRequestConfig) => {
       config.headers[envLoader.apiKeyHeader] =
         envLoader.apiKey
-      await attachToken(config)
+      await attachAccessToken(config)
       return config
     },
   )
 
   instance.interceptors.response.use(
-    (response: AxiosResponse<ServerResponse>) => {
+    (response: AxiosResponse<InternalResponse>) => {
       const { success, message, data } = response.data
       if (!success) throw new Error()
-      if (message) console.log('Response message:', message)
+      if (message) console.log(message)
       if (data) response.data = data
       return response
-    },
-
-    (error: AxiosError) => {
-      throwServerError(error)
-
-      throw new Error()
     },
   )
   return instance

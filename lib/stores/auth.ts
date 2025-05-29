@@ -1,12 +1,12 @@
 'use client'
 
 import {
-  SignInClientResponse,
-  SignOutClientResponse,
+  SignInServiceResponse,
+  SignOutServiceResponse,
 } from '@/_gateway/auth/responses'
 import {
-  gatewaySignIn,
-  gatewaySignOut as serverSignOut,
+  serviceSignIn,
+  serviceSignOut,
 } from '@/_gateway/auth/service'
 import { Profile } from '@/lib/interfaces/profiles'
 import { create } from 'zustand'
@@ -38,7 +38,7 @@ const useAuthStore = create(
             const {
               success,
               profile,
-            }: SignInClientResponse = await gatewaySignIn(
+            }: SignInServiceResponse = await serviceSignIn(
               email,
               password,
             )
@@ -52,8 +52,8 @@ const useAuthStore = create(
 
         const signOut = async () => {
           try {
-            const { success }: SignOutClientResponse =
-              await serverSignOut()
+            const { success }: SignOutServiceResponse =
+              await serviceSignOut()
             if (!success) throw new Error()
             set({ profile: null })
           } catch (error) {
