@@ -1,13 +1,5 @@
 'use client'
 
-import {
-  SignInServiceResponse,
-  SignOutServiceResponse,
-} from '@/_gateway/auth/responses'
-import {
-  serviceSignIn,
-  serviceSignOut,
-} from '@/_gateway/auth/service'
 import { Profile } from '@/lib/interfaces/profiles'
 import { create } from 'zustand'
 import {
@@ -19,7 +11,7 @@ interface AuthStore {
   profile: Profile | null
   setProfile: (profile: Profile | null) => void
 
-  signIn: (
+  signInWithGoogle: (
     email: string,
     password: string,
   ) => Promise<boolean>
@@ -30,20 +22,11 @@ const useAuthStore = create(
   subscribeWithSelector(
     persist<AuthStore>(
       (set) => {
-        const signIn = async (
+        const signInWithGoogle = async (
           email: string,
           password: string,
         ) => {
           try {
-            const {
-              success,
-              profile,
-            }: SignInServiceResponse = await serviceSignIn(
-              email,
-              password,
-            )
-            if (!success) throw new Error()
-            set({ profile })
           } catch (error) {
             return false
           }
@@ -52,10 +35,6 @@ const useAuthStore = create(
 
         const signOut = async () => {
           try {
-            const { success }: SignOutServiceResponse =
-              await serviceSignOut()
-            if (!success) throw new Error()
-            set({ profile: null })
           } catch (error) {
             return false
           }
@@ -69,7 +48,7 @@ const useAuthStore = create(
               profile,
             }),
 
-          signIn,
+          signInWithGoogle,
           signOut,
         }
       },

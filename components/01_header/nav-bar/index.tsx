@@ -16,7 +16,7 @@ export default function NavBar() {
       >
         <Button>Browse</Button>
       </Link>
-      <Link href={ROUTES.POST}>
+      <Link href={ROUTES.ITEM_POST}>
         <Button>Post Ad</Button>
       </Link>
       <Dropdown />

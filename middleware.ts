@@ -1,4 +1,3 @@
-import { serviceVerify } from '@/_gateway/auth/service'
 import {
   PROTECTED_ROUTES,
   PUBLIC_ROUTES,
@@ -8,6 +7,8 @@ import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
 export async function middleware(req: NextRequest) {
+  return NextResponse.next()
+
   const path = req.nextUrl.pathname
   const isProtectedRoute = PROTECTED_ROUTES.includes(path)
   const isPublicRoute = PUBLIC_ROUTES.includes(path)
@@ -15,7 +16,7 @@ export async function middleware(req: NextRequest) {
   if (isPublicRoute) return NextResponse.next()
 
   if (isProtectedRoute) {
-    const { success } = await serviceVerify()
+    const { success } = { success: true }
     if (!success) {
       return NextResponse.redirect(
         new URL(ROUTES.HOME, req.nextUrl),

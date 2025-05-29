@@ -59,7 +59,7 @@ export default function Dropdown() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href={ROUTES.PROFILE}>Profile</Link>
+          <Link href={ROUTES.PROFILE_UPDATE}>Profile</Link>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={handleSignOut}>
           Sign Out
