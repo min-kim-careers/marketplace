@@ -1,5 +1,4 @@
-import { attachAccessToken } from '@/_gateway/auth/_config/helpers'
-import { InternalResponse } from '@/_gateway/_common/internal.response'
+import { InternalResponse } from '@/_gateway/api/_config/response'
 import { envLoader } from '@/lib/utils/env-loader'
 import axios, {
   AxiosResponse,
@@ -15,7 +14,6 @@ const create = () => {
     async (config: InternalAxiosRequestConfig) => {
       config.headers[envLoader.apiKeyHeader] =
         envLoader.apiKey
-      await attachAccessToken(config)
       return config
     },
   )

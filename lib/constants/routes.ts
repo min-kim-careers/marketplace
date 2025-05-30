@@ -9,7 +9,8 @@ export const ROUTES = {
 
 export const PROTECTED_ROUTES = [
     ROUTES.ITEM_POST,
-    ROUTES.PROFILE_UPDATE
+    ROUTES.PROFILE_UPDATE,
+    ROUTES.PROFILE_COMPLETE
 ]
 
 export const PUBLIC_ROUTES = [

@@ -15,7 +15,7 @@ import {
 import { Form } from '@/components/shadcn/components/ui/form'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
 import { ROUTES } from '@/lib/constants/routes'
-import useAuthStore from '@/lib/stores/auth'
+import useProfileStore from '@/lib/stores/profile'
 import { useRouter } from 'next/navigation'
 import {
   CategoryField,
@@ -30,7 +30,7 @@ import ImagePreview from './image-preview'
 import { ItemPostFormSchema } from '@/components/02_main/protected/item/post/form'
 
 export default function ItemPost() {
-  const { profile } = useAuthStore()
+  const { profile } = useProfileStore()
   const { toast } = useToast()
   const router = useRouter()
 

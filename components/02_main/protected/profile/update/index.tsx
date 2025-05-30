@@ -11,10 +11,10 @@ import {
 } from '@/components/shadcn/components/ui/card'
 import { Input } from '@/components/shadcn/components/ui/input'
 import { Label } from '@/components/shadcn/components/ui/label'
-import useAuthStore from '@/lib/stores/auth'
+import useProfileStore from '@/lib/stores/profile'
 
 export default function ProfileUpdate() {
-  const { profile } = useAuthStore()
+  const { profile } = useProfileStore()
 
   return (
     <div className='flex flex-1 justify-center items-center'>

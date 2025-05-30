@@ -7,18 +7,25 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from '@/components/shadcn/components/ui/card'
 import { Form } from '@/components/shadcn/components/ui/form'
-import { Input } from '@/components/shadcn/components/ui/input'
-import { Label } from '@/components/shadcn/components/ui/label'
+import { useToast } from '@/components/shadcn/hooks/use-toast'
+import { firebaseCreateProfile } from '@/lib/firebase/service'
+import useFirebaseStore from '@/lib/firebase/store'
+import useProfileStore from '@/lib/stores/profile'
+import { useLoadingStore } from '@/lib/stores/loading'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 export default function ProfileComplete() {
+  const { user } = useFirebaseStore()
+  const { setProfile } = useProfileStore()
+  const { setMessage } = useLoadingStore()
+  const { toast } = useToast()
+
   const form = useForm<z.infer<typeof ProfileCompleteForm>>(
     {
       resolver: zodResolver(ProfileCompleteForm),
@@ -31,6 +38,26 @@ export default function ProfileComplete() {
   async function onSubmit(
     values: z.infer<typeof ProfileCompleteForm>,
   ) {
+    try {
+      setMessage('Creating a new profile...')
+      const handle = values.handle
+      const idToken = await user?.getIdToken()
+      if (!idToken) throw new Error()
+
+      const profile = await firebaseCreateProfile(
+        idToken,
+        handle,
+      )
+      if (!profile) throw new Error()
+
+      setProfile(profile)
+
+      toast({ description: `Welcome ${handle}!` })
+    } catch (error) {
+      toast({ description: `Something went wrong.` })
+    } finally {
+      setMessage(null)
+    }
   }
 
   return (

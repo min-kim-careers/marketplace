@@ -1,36 +1,13 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Key Configuration & Constants
 
-## Getting Started
+This section outlines critical configuration values that **must be treated with extreme care** as their loss or alteration can have severe consequences for application functionality and data integrity.
 
-First, run the development server:
+### Firebase UUIDv5 Namespace
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+**Purpose:** This UUID is the deterministic namespace used to generate unique user IDs (`userId`) in our backend database from Firebase Authentication UIDs. It ensures that a given Firebase UID always maps to the same `userId`.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**CRITICALITY:** **DO NOT LOSE OR ALTER THIS VALUE.** Losing this UUID will break the mapping for all existing users, rendering their backend profiles inaccessible via Firebase UIDs. Altering it will cause all existing Firebase UIDs to map to *new*, incorrect `userId`s.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Value:** `bac0a539-0cbb-42e9-9203-44367635d7a3`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Location:** This value is primarily sourced from the `USER_UUID_NAMESPACE` environment variable. Ensure it's correctly set in `.env` for development and in your hosting provider's environment variables for all deployed environments.

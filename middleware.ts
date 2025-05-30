@@ -3,31 +3,41 @@ import {
   PUBLIC_ROUTES,
   ROUTES,
 } from '@/lib/constants/routes'
+import {
+  firebaseGetProfileBySession,
+  firebaseGetProfileByUid,
+  firebaseGetVerifiedSession,
+} from '@/lib/firebase/service'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
 export async function middleware(req: NextRequest) {
   return NextResponse.next()
 
-  const path = req.nextUrl.pathname
-  const isProtectedRoute = PROTECTED_ROUTES.includes(path)
-  const isPublicRoute = PUBLIC_ROUTES.includes(path)
+  // const path = req.nextUrl.pathname
+  // const isProtectedRoute = PROTECTED_ROUTES.includes(path)
+  // const isPublicRoute = PUBLIC_ROUTES.includes(path)
 
-  if (isPublicRoute) return NextResponse.next()
+  // const session = await firebaseGetVerifiedSession()
+  // const isAuthenticated = !!session
+  // if (isAuthenticated) {
+  //   if (!session.)
+  //     return NextResponse.redirect(
+  //       new URL(ROUTES.PROFILE_COMPLETE, req.nextUrl),
+  //     )
+  // }
 
-  if (isProtectedRoute) {
-    const { success } = { success: true }
-    if (!success) {
-      return NextResponse.redirect(
-        new URL(ROUTES.HOME, req.nextUrl),
-      )
-    }
-    return NextResponse.next()
-  }
+  // if (isPublicRoute) return NextResponse.next()
 
-  return NextResponse.redirect(
-    new URL(ROUTES.HOME, req.nextUrl),
-  )
+  // if (isProtectedRoute) {
+  //   const { profile } = await firebaseGetProfileBySession()
+
+  //   return NextResponse.next()
+  // }
+
+  // return NextResponse.redirect(
+  //   new URL(ROUTES.HOME, req.nextUrl),
+  // )
 }
 
 export const config = {

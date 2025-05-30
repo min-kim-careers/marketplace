@@ -3,11 +3,11 @@
 import { Button } from '@/components/shadcn/components/ui/button'
 import { APP_TITLE } from '@/lib/constants'
 import { ROUTES } from '@/lib/constants/routes'
-import useAuthStore from '@/lib/stores/auth'
+import useProfileStore from '@/lib/stores/profile'
 import Link from 'next/link'
 
 export default function Landing() {
-  const { profile } = useAuthStore()
+  const { profile } = useProfileStore()
 
   return (
     <div className='flex w-full flex-1 items-center justify-center'>

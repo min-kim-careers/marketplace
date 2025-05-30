@@ -18,14 +18,12 @@ export const serviceGetItems = async (
     const res = await internalGetItems(query)
 
     return {
-      success: true,
       items: res.items,
       count: res.count,
     } as GetItemsServiceResponse
   } catch (error) {
     logError(error)
     return {
-      success: false,
       items: [],
       count: 0,
     } as GetItemsServiceResponse
@@ -38,13 +36,11 @@ export const serviceGetSortOptions =
       const res = await internalGetSortOptions()
 
       return {
-        success: true,
         sortOptions: res.sortOptions,
       } as GetSortOptionsServiceResponse
     } catch (error) {
       logError(error)
       return {
-        success: false,
         sortOptions: [],
       } as GetSortOptionsServiceResponse
     }
