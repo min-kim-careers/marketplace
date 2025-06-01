@@ -12,16 +12,16 @@ import {
 } from '@/components/shadcn/components/ui/card'
 import { Form } from '@/components/shadcn/components/ui/form'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
+import { useAuth } from '@/lib/firebase/context'
 import { firebaseCreateProfile } from '@/lib/firebase/service'
-import useFirebaseStore from '@/lib/firebase/store'
-import useProfileStore from '@/lib/stores/profile'
 import { useLoadingStore } from '@/lib/stores/loading'
+import useProfileStore from '@/lib/stores/profile'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 export default function ProfileComplete() {
-  const { user } = useFirebaseStore()
+  const { user } = useAuth()
   const { setProfile } = useProfileStore()
   const { setMessage } = useLoadingStore()
   const { toast } = useToast()
@@ -41,8 +41,7 @@ export default function ProfileComplete() {
     try {
       setMessage('Creating a new profile...')
       const handle = values.handle
-      const idToken = await user?.getIdToken()
-      if (!idToken) throw new Error()
+
 
       const profile = await firebaseCreateProfile(
         idToken,

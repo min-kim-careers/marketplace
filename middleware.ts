@@ -1,43 +1,31 @@
-import {
-  PROTECTED_ROUTES,
-  PUBLIC_ROUTES,
-  ROUTES,
-} from '@/lib/constants/routes'
-import {
-  firebaseGetProfileBySession,
-  firebaseGetProfileByUid,
-  firebaseGetVerifiedSession,
-} from '@/lib/firebase/service'
+import { envLoader } from '@/lib/utils/env-loader'
+import { authMiddleware } from 'next-firebase-auth-edge'
 import type { NextRequest } from 'next/server'
-import { NextResponse } from 'next/server'
+
+export const runtime = 'nodejs'
 
 export async function middleware(req: NextRequest) {
-  return NextResponse.next()
-
-  // const path = req.nextUrl.pathname
-  // const isProtectedRoute = PROTECTED_ROUTES.includes(path)
-  // const isPublicRoute = PUBLIC_ROUTES.includes(path)
-
-  // const session = await firebaseGetVerifiedSession()
-  // const isAuthenticated = !!session
-  // if (isAuthenticated) {
-  //   if (!session.)
-  //     return NextResponse.redirect(
-  //       new URL(ROUTES.PROFILE_COMPLETE, req.nextUrl),
-  //     )
-  // }
-
-  // if (isPublicRoute) return NextResponse.next()
-
-  // if (isProtectedRoute) {
-  //   const { profile } = await firebaseGetProfileBySession()
-
-  //   return NextResponse.next()
-  // }
-
-  // return NextResponse.redirect(
-  //   new URL(ROUTES.HOME, req.nextUrl),
-  // )
+  return authMiddleware(req, {
+    loginPath: '/api/login',
+    logoutPath: '/api/logout',
+    apiKey: 'REDACTED',
+    cookieName: 'session',
+    cookieSignatureKeys: [
+      '9irYZCncgbasIjAtERea+yEFmJHaPzksKxSv09XB/H8=',
+    ],
+    cookieSerializeOptions: {
+      path: '/',
+      httpOnly: true,
+      secure: false, // Set this to true on HTTPS environments
+      sameSite: 'lax' as const,
+      maxAge: 12 * 60 * 60 * 24, // Twelve days
+    },
+    serviceAccount: {
+      projectId: envLoader.firebaseAdminProjectId,
+      clientEmail: envLoader.firebaseAdminClientEmail,
+      privateKey: envLoader.firebaseAdminPrivateKey,
+    },
+  })
 }
 
 export const config = {

@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@/components/shadcn/components/ui/button'
-import { APP_TITLE } from '@/lib/constants'
+import { APP_TITLE } from '@/lib/constants/meta'
 import { ROUTES } from '@/lib/constants/routes'
 import useProfileStore from '@/lib/stores/profile'
 import Link from 'next/link'

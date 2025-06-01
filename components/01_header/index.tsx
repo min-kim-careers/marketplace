@@ -1,6 +1,6 @@
 'use client'
 
-import { APP_TITLE } from '@/lib/constants'
+import { APP_TITLE } from '@/lib/constants/meta'
 import { ROUTES } from '@/lib/constants/routes'
 import Link from 'next/link'
 import NavBar from './nav-bar'

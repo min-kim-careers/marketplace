@@ -1,29 +1,23 @@
 'use client'
 
-import { auth } from '@/lib/firebase/configs/client'
-import useFirebaseStore from '@/lib/firebase/store'
-import { onAuthStateChanged } from 'firebase/auth'
-import { useEffect } from 'react'
+import * as React from 'react'
+import { AuthContext, User } from '@/lib/firebase/context'
 
-export default function FirebaseProvider() {
-  const { setUser } = useFirebaseStore()
+export interface AuthProviderProps {
+  user: User | null
+  children: React.ReactNode
+}
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(
-      auth,
-      async (user) => {
-        if (user) {
-          console.log('User is signed in')
-          setUser(user)
-        } else {
-          console.log('User is signed out')
-          setUser(null)
-        }
-      },
-    )
-
-    return () => unsubscribe()
-  }, [])
-
-  return null
+export const AuthProvider: React.FunctionComponent<
+  AuthProviderProps
+> = ({ user, children }) => {
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  )
 }

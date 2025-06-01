@@ -17,7 +17,7 @@ import {
 export const serviceCreateProfile = async (
   userId: string,
   email: string,
-  handle: string,
+  handle?: string,
 ): Promise<CreateProfileServiceResponse> => {
   try {
     const res: UpsertProfileInternalResponse =

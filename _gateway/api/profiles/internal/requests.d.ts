@@ -1,4 +1,4 @@
 export interface UpsertProfileInternalPayload {
   email: string
-  handle: string
+  handle?: string
 }

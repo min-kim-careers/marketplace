@@ -5,8 +5,6 @@ import {
   provider,
 } from '@/lib/firebase/configs/client'
 import { handleFirebaseError } from '@/lib/firebase/helpers'
-import { firebaseGetProfileByToken } from '@/lib/firebase/service'
-import useFirebaseStore from '@/lib/firebase/store'
 import { serialize } from '@/lib/helpers/market'
 import { useLoadingStore } from '@/lib/stores/loading'
 import useProfileStore from '@/lib/stores/profile'
@@ -20,10 +18,11 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from '../../shadcn/components/ui/button'
 import Dropdown from './dropdown'
+import { useAuth } from '@/lib/firebase/context'
 
 export default function NavBar() {
+  const { user } = useAuth()
   const { profile, setProfile } = useProfileStore()
-  const { user } = useFirebaseStore()
   const { setMessage } = useLoadingStore()
   const { toast } = useToast()
   const router = useRouter()
@@ -36,16 +35,26 @@ export default function NavBar() {
 
       const idToken = await user.getIdToken()
 
-      const profile =
-        await firebaseGetProfileByToken(idToken)
+      const profile = await firebaseCreateProfile(idToken)
 
-      if (!profile) router.replace(ROUTES.PROFILE_COMPLETE)
+      if (!profile) {
+        await signOut(auth)
+        throw new Error()
+      }
+
+      await fetch('/api/login', {
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
+      })
 
       setProfile(profile)
 
       toast({
         description: `Welcome ${profile?.handle}!`,
       })
+
+      router.refresh()
     } catch (error) {
       if (error instanceof FirebaseError) {
         toast({
