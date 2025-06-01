@@ -3,8 +3,6 @@ import Header from '@/components/01_header'
 import Footer from '@/components/03_footer'
 import { Toaster } from '@/components/shadcn/components/ui/toaster'
 import { APP_TITLE } from '@/lib/constants/meta'
-import { getUserFromCookies } from '@/lib/firebase/configs/server'
-import { AuthProvider } from '@/lib/firebase/provider'
 import LoadingProvider from '@/lib/providers/loading'
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
@@ -31,14 +29,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const user = await getUserFromCookies()
-
   return (
     <html lang='en'>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AuthProvider user={user}>
           <LoadingProvider />
           <div className='flex min-h-screen flex-col p-2 font-[family-name:var(--font-geist-sans)]'>
             <Header />
@@ -48,7 +43,6 @@ export default async function RootLayout({
             <Footer />
           </div>
           <Toaster />
-        </AuthProvider>
       </body>
     </html>
   )

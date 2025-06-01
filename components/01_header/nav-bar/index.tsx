@@ -1,27 +1,14 @@
 import { useToast } from '@/components/shadcn/hooks/use-toast'
 import { ROUTES } from '@/lib/constants/routes'
-import {
-  auth,
-  provider,
-} from '@/lib/firebase/configs/client'
-import { handleFirebaseError } from '@/lib/firebase/helpers'
 import { serialize } from '@/lib/helpers/market'
 import { useLoadingStore } from '@/lib/stores/loading'
 import useProfileStore from '@/lib/stores/profile'
-import { FirebaseError } from 'firebase/app'
-import {
-  signInWithPopup,
-  signOut,
-  UserCredential,
-} from 'firebase/auth'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from '../../shadcn/components/ui/button'
 import Dropdown from './dropdown'
-import { useAuth } from '@/lib/firebase/context'
 
 export default function NavBar() {
-  const { user } = useAuth()
   const { profile, setProfile } = useProfileStore()
   const { setMessage } = useLoadingStore()
   const { toast } = useToast()
@@ -30,23 +17,6 @@ export default function NavBar() {
   const handleSignIn = async () => {
     try {
       setMessage('Signing you in')
-      const { user }: UserCredential =
-        await signInWithPopup(auth, provider)
-
-      const idToken = await user.getIdToken()
-
-      const profile = await firebaseCreateProfile(idToken)
-
-      if (!profile) {
-        await signOut(auth)
-        throw new Error()
-      }
-
-      await fetch('/api/login', {
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
-      })
 
       setProfile(profile)
 
@@ -56,15 +26,9 @@ export default function NavBar() {
 
       router.refresh()
     } catch (error) {
-      if (error instanceof FirebaseError) {
-        toast({
-          description: handleFirebaseError(error),
-        })
-      } else {
-        toast({
+      toast({
           description: 'Something went wrong.',
         })
-      }
     } finally {
       setMessage(null)
     }
@@ -73,7 +37,6 @@ export default function NavBar() {
   const handleSignOut = async () => {
     try {
       setMessage('Signing you out...')
-      await signOut(auth)
       toast({
         description: `See you again!`,
       })
@@ -88,7 +51,7 @@ export default function NavBar() {
     }
   }
 
-  if (!user)
+  if (!true)
     return (
       <Button onClick={handleSignIn}>
         Sign in with Google

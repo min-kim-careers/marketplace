@@ -3,11 +3,9 @@ interface EnvLoader {
   apiKey: string
   apiKeyHeader: string
 
-  firebaseAdminProjectId: string
-  firebaseAdminClientEmail: string
-  firebaseAdminPrivateKey: string
-
-  userUuidNamespace: string
+  authUrl: string
+  authKey: string
+  authKeyHeader: string
 }
 
 export const envLoader: EnvLoader = {
@@ -15,17 +13,9 @@ export const envLoader: EnvLoader = {
   apiKey: process.env.API_KEY!,
   apiKeyHeader: process.env.API_KEY_HEADER!,
 
-  firebaseAdminProjectId:
-    process.env.FIREBASE_ADMIN_PROJECT_ID!,
-  firebaseAdminClientEmail:
-    process.env.FIREBASE_ADMIN_CLIENT_EMAIL!,
-  firebaseAdminPrivateKey:
-    process.env.FIREBASE_ADMIN_PRIVATE_KEY!.replace(
-      /\\n/g,
-      '\n',
-    ),
-
-  userUuidNamespace: process.env.USER_UUID_NAMESPACE!,
+  authUrl: process.env.AUTH_URL!,
+  authKey: process.env.AUTH_KEY!,
+  authKeyHeader: process.env.AUTH_KEY_HEADER!,
 }
 
 const validateEnv = (env: EnvLoader) => {
