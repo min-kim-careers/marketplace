@@ -1,8 +1,11 @@
-[submodule "marketplace-app"]
+[submodule "app"]
 	path = web
 	url = ../marketplace-app.git
 
-[submodule "marketplace-api"]
+[submodule "api"]
 	path = api
 	url = ../marketplace-api.git
 
+[submodule "auth"]
+	path = auth
+	url = ../marketplace-auth.git
