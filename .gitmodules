@@ -1,6 +1,6 @@
-[submodule "app"]
+[submodule "web"]
 	path = web
-	url = ../marketplace-app.git
+	url = ../marketplace-web.git
 
 [submodule "api"]
 	path = api
