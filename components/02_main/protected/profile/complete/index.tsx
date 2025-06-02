@@ -39,6 +39,8 @@ export default function ProfileComplete() {
       setMessage('Creating a new profile...')
       const handle = values.handle
 
+      
+
       toast({ description: `Welcome ${handle}!` })
     } catch (error) {
       toast({ description: `Something went wrong.` })

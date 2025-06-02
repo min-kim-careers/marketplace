@@ -3,9 +3,11 @@ interface EnvLoader {
   apiKey: string
   apiKeyHeader: string
 
-  authUrl: string
-  authKey: string
-  authKeyHeader: string
+  firebaseUrl: string
+  firebaseKey: string
+  firebaseKeyHeader: string
+
+  UuidNamespace: string
 }
 
 export const envLoader: EnvLoader = {
@@ -13,9 +15,11 @@ export const envLoader: EnvLoader = {
   apiKey: process.env.API_KEY!,
   apiKeyHeader: process.env.API_KEY_HEADER!,
 
-  authUrl: process.env.AUTH_URL!,
-  authKey: process.env.AUTH_KEY!,
-  authKeyHeader: process.env.AUTH_KEY_HEADER!,
+  firebaseUrl: process.env.FIREBASE_URL!,
+  firebaseKey: process.env.FIREBASE_KEY!,
+  firebaseKeyHeader: process.env.FIREBASE_KEY_HEADER!,
+
+  UuidNamespace: process.env.UUID_NAMESPACE!,
 }
 
 const validateEnv = (env: EnvLoader) => {

@@ -2,47 +2,50 @@
 
 import { apiAxios } from '@/_gateway/api/_config/axios'
 import { PROFILES_ENDPOINTS } from '@/_gateway/api/_config/endpoints'
-import { UpsertProfileInternalPayload } from '@/_gateway/api/profiles/internal/requests'
-import {
-  GetProfileInternalResponse,
-  UpsertProfileInternalResponse,
-} from '@/_gateway/api/profiles/internal/responses'
+import { Profile } from '@/lib/interfaces/profiles'
+
+export interface InternalUpsertProfile {
+  profile: Profile
+}
 
 export const internalUpsertProfile = async (
   userId: string,
-  payload: UpsertProfileInternalPayload,
-): Promise<UpsertProfileInternalResponse> => {
+  email: string,
+  handle?: string,
+): Promise<InternalUpsertProfile> => {
   try {
     const response = await apiAxios.put(
       PROFILES_ENDPOINTS.PUT_PROFILE(userId),
-      payload,
+      { email, handle },
     )
 
-    const { profile }: UpsertProfileInternalResponse =
-      response.data
+    const { profile }: InternalUpsertProfile = response.data
 
     if (!profile) throw new Error('Profile missing')
 
-    return response.data as UpsertProfileInternalResponse
+    return response.data as InternalUpsertProfile
   } catch (error) {
     throw error
   }
 }
 
+export interface InternalGetProfile {
+  profile: Profile
+}
+
 export const internalGetProfile = async (
   userId: string,
-): Promise<GetProfileInternalResponse> => {
+): Promise<InternalGetProfile> => {
   try {
     const response = await apiAxios.get(
       PROFILES_ENDPOINTS.GET_PROFILE(userId),
     )
 
-    const { profile }: GetProfileInternalResponse =
-      response.data
+    const { profile }: InternalGetProfile = response.data
 
     if (!profile) throw new Error('Profile missing')
 
-    return response.data as GetProfileInternalResponse
+    return response.data as InternalGetProfile
   } catch (error) {
     throw error
   }

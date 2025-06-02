@@ -8,8 +8,7 @@ import {
 } from '@/components/shadcn/components/ui/select'
 import { ROUTES } from '@/lib/constants/routes'
 import {
-  marketParamsToQuery,
-  marketToUrlParams,
+  marketToUrlParams
 } from '@/lib/helpers/market'
 import { MarketParams, SortOption } from '@/lib/interfaces/items'
 import { useMarketStore } from '@/lib/stores/market'

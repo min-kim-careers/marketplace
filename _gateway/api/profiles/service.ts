@@ -2,51 +2,44 @@
 
 import { logError } from '@/_gateway/_common/helpers'
 import {
+  InternalGetProfile,
   internalGetProfile,
   internalUpsertProfile,
+  InternalUpsertProfile,
 } from '@/_gateway/api/profiles/internal'
-import {
-  GetProfileInternalResponse,
-  UpsertProfileInternalResponse,
-} from '@/_gateway/api/profiles/internal/responses'
-import {
-  CreateProfileServiceResponse,
-  GetProfileServiceResponse,
-} from '@/_gateway/api/profiles/responses'
+import { internalSetProfileCreated } from '@/_gateway/firebase/internal'
+import { Profile } from '@/lib/interfaces/profiles'
 
 export const serviceCreateProfile = async (
+  idToken: string,
   userId: string,
   email: string,
   handle?: string,
-): Promise<CreateProfileServiceResponse> => {
+) => {
   try {
-    const res: UpsertProfileInternalResponse =
-      await internalUpsertProfile(userId, {
-        email,
-        handle,
-      })
+    const { profile }: InternalUpsertProfile =
+      await internalUpsertProfile(userId, email, handle)
 
-    return {
-      profile: res.profile,
-    } as CreateProfileServiceResponse
+    const { decodedToken } =
+      await internalSetProfileCreated(idToken)
+
+    return { decodedToken, profile }
   } catch (error) {
     logError(error)
-    return { profile: null } as CreateProfileServiceResponse
+    throw new Error()
   }
 }
 
 export const serviceGetProfile = async (
   userId: string,
-): Promise<GetProfileServiceResponse> => {
+): Promise<Profile | null> => {
   try {
-    const res: GetProfileInternalResponse =
+    const { profile }: InternalGetProfile =
       await internalGetProfile(userId)
 
-    return {
-      profile: res.profile,
-    } as GetProfileServiceResponse
+    return profile
   } catch (error) {
     logError(error)
-    return { profile: null } as GetProfileServiceResponse
+    throw new Error()
   }
 }

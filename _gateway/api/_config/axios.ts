@@ -1,4 +1,4 @@
-import { InternalResponse } from '@/_gateway/api/_config/response'
+import { ApiInternalResponse } from '@/_gateway/api/_models/response'
 import { envLoader } from '@/lib/utils/env-loader'
 import axios, {
   AxiosResponse,
@@ -19,7 +19,7 @@ const create = () => {
   )
 
   instance.interceptors.response.use(
-    (response: AxiosResponse<InternalResponse>) => {
+    (response: AxiosResponse<ApiInternalResponse>) => {
       const { success, message, data } = response.data
       if (!success) throw new Error()
       if (message) console.log(message)

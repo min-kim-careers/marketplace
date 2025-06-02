@@ -30,6 +30,7 @@
     "cookies": "^0.9.1",
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.5.2",
+    "firebase": "^11.8.1",
     "fuse.js": "^7.1.0",
     "http-proxy": "^1.18.1",
     "lucide-react": "^0.471.0",
