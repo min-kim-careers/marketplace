@@ -6,6 +6,6 @@
 	path = api
 	url = ../marketplace-api.git
 
-[submodule "auth"]
-	path = auth
-	url = ../marketplace-auth.git
+[submodule "firebase"]
+	path = firebase
+	url = ../marketplace-firebase.git

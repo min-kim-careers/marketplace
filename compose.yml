@@ -1,4 +1,13 @@
 services:
+  firebase-service:
+    extends:
+      file: ./firebase/compose.yml
+      service: firebase-service
+    ports:
+      - 8000:8000
+    networks:
+      - firebase-network
+
   api-db-service:
     extends:
       file: ./api/compose.yml
@@ -26,9 +35,11 @@ services:
       - 3000:3000
     networks:
       - api-network
+      - firebase-network
 
 volumes:
   api-db-data:
 
 networks:
   api-network:
+  firebase-network:
