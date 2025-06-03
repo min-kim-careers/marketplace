@@ -10,7 +10,7 @@ import {
 import { internalSetProfileCreated } from '@/_gateway/firebase/internal'
 import { Profile } from '@/lib/interfaces/profiles'
 
-export const serviceCreateProfile = async (
+export const serviceUpsertProfile = async (
   idToken: string,
   userId: string,
   email: string,

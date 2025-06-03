@@ -1,43 +1,36 @@
-import { logError } from '@/_gateway/_common/helpers'
-import { serviceVerify } from '@/_gateway/firebase/service'
+import { HEADERS } from '@/lib/constants/headers'
 import {
-  PROTECTED_ROUTES,
-  PUBLIC_ROUTES,
+  isProtectedRoute,
+  isPublicRoute,
   ROUTES,
 } from '@/lib/constants/routes'
-import { NextResponse, type NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
 
-export async function middleware(req: NextRequest) {
+export function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname
-  const isProtectedRoute = PROTECTED_ROUTES.includes(path)
-  const isPublicRoute = PUBLIC_ROUTES.includes(path)
+  const session = req.cookies.get(HEADERS.SESSION)
 
-  const session = req.cookies.get('__session')
+  const headers = new Headers(req.headers)
+  headers.set(HEADERS.CURRENT_PATH, req.nextUrl.pathname)
 
-  let verified = false
-
-  if (session) {
-    const res = await serviceVerify(session.value)
-    if (!res.profileCreated)
-      return NextResponse.redirect(
-        new URL(ROUTES.PROFILE_COMPLETE, req.nextUrl),
-      )
-    verified = true
-  }
-
-  if (isPublicRoute) return NextResponse.next()
-
-  if (isProtectedRoute && verified) {
-    return NextResponse.next()
-  }
+  if (
+    isPublicRoute(path) ||
+    (session && isProtectedRoute(path))
+  )
+    return NextResponse.next({ headers })
 
   return NextResponse.redirect(
-    new URL(ROUTES.HOME, req.nextUrl),
+    new URL(ROUTES.NOTFOUND, req.nextUrl),
   )
 }
 
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image|.*\\.png$).*)',
+    // '/',
+    // '/market/:path',
+    // '/item/:path',
+    // '/profile/:path',
+    // '/404'
   ],
 }

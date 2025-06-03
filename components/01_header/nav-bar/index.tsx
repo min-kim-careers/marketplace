@@ -9,7 +9,10 @@ import { Button } from '../../shadcn/components/ui/button'
 import Dropdown from './dropdown'
 import { signInWithPopup, signOut } from 'firebase/auth'
 import { auth, provider } from '@/lib/firebase/config'
-import { serviceSignInWithGoogle } from '@/_gateway/firebase/service'
+import {
+  serviceSignInWithGoogle,
+  serviceSignOut,
+} from '@/_gateway/firebase/service'
 
 export default function NavBar() {
   const { profile, setProfile } = useProfileStore()
@@ -24,25 +27,9 @@ export default function NavBar() {
 
       const token = await cred.user.getIdToken()
 
-      const profile = await serviceSignInWithGoogle(token)
-      if (!profile) throw new Error()
-
-      toast({
-        description: `Welcome ${profile?.handle}!`,
-      })
-
-      if (!profile.handle)
-        router.replace(ROUTES.PROFILE_COMPLETE)
-
-      router.refresh()
-
-      setProfile(profile)
+      await serviceSignInWithGoogle(token)
     } catch (error) {
-      await signOut(auth)
-      setProfile(null)
-      toast({
-        description: 'Something went wrong.',
-      })
+      await handleSignOut()
     } finally {
       setMessage(null)
     }
@@ -51,11 +38,12 @@ export default function NavBar() {
   const handleSignOut = async () => {
     try {
       setMessage('Signing you out...')
+      await signOut(auth)
+      await serviceSignOut()
+
       toast({
         description: `See you again!`,
       })
-      setProfile(null)
-      router.replace(ROUTES.HOME)
     } catch (error) {
       toast({
         description: `Something went wrong.`,

@@ -23,7 +23,7 @@ export default function SortDropdown() {
     setParams,
   } = useMarketStore()
   useEffect(() => {
-    if (!sortOptions.length) void fetchSortOptions()
+    void fetchSortOptions()
   }, [])
 
   const [currentSortOption, setCurrentSortOption] =

@@ -23,7 +23,7 @@ import {
   PopoverTrigger,
 } from '@/components/shadcn/components/ui/popover'
 import { cn } from '@/components/shadcn/lib/utils'
-import { CATEGORIES } from '@/lib/constants/form'
+import { CATEGORIES } from '@/lib/constants/fields'
 import { ItemPostFormSchema } from '@/components/02_main/protected/item/post/form'
 import { Check, ChevronsUpDown } from 'lucide-react'
 

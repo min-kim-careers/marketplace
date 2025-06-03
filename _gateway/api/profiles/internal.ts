@@ -14,8 +14,8 @@ export const internalUpsertProfile = async (
   handle?: string,
 ): Promise<InternalUpsertProfile> => {
   try {
-    const response = await apiAxios.put(
-      PROFILES_ENDPOINTS.PUT_PROFILE(userId),
+    const response = await apiAxios.patch(
+      PROFILES_ENDPOINTS.PATCH_PROFILE(userId),
       { email, handle },
     )
 

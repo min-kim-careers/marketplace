@@ -4,7 +4,7 @@ import {
   CATEGORIES,
   CONDITIONS,
   MAX_DESCRIPTION_LENGTH,
-} from '@/lib/constants/form'
+} from '@/lib/constants/fields'
 
 
 export const ItemPostFormSchema = z.object({

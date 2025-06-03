@@ -25,7 +25,7 @@ import {
 import { cn } from '@/components/shadcn/lib/utils'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { ItemPostFormSchema } from '@/components/02_main/protected/item/post/form'
-import { CONDITIONS } from '@/lib/constants/form'
+import { CONDITIONS } from '@/lib/constants/fields'
 
 export default function ConditionField({
   form,

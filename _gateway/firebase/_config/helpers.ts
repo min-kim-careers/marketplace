@@ -1,3 +1,4 @@
+import { HEADERS } from '@/lib/constants/headers'
 import { envLoader } from '@/lib/utils/env-loader'
 import {
   InternalAxiosRequestConfig
@@ -5,11 +6,10 @@ import {
 import { cookies } from 'next/headers'
 import { v5 as uuidv5 } from 'uuid'
 
-const SESSION_KEY = '__session'
 
 export const getSessionCookie = async () => {
   const cookieStore = await cookies()
-  return cookieStore.get(SESSION_KEY)?.value
+  return cookieStore.get(HEADERS.SESSION)?.value
 }
 
 export const setSessionCookie = async (
@@ -17,17 +17,17 @@ export const setSessionCookie = async (
   expiresInSeconds: number,
 ) => {
   const cookieStore = await cookies()
-  cookieStore.set(SESSION_KEY, session, {
+  cookieStore.set(HEADERS.SESSION, session, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     path: '/',
-    expires: expiresInSeconds,
+    maxAge: expiresInSeconds,
   })
 }
 
 export const clearTokens = async () => {
   const cookieStore = await cookies()
-  cookieStore.delete(SESSION_KEY)
+  cookieStore.delete(HEADERS.SESSION)
 }
 
 export const attachCredentials = async (

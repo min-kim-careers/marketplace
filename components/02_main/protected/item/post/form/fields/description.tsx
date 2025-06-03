@@ -7,7 +7,7 @@ import {
   FormMessage,
 } from '@/components/shadcn/components/ui/form'
 import { Textarea } from '@/components/shadcn/components/ui/textarea'
-import { MAX_DESCRIPTION_LENGTH } from '@/lib/constants/form'
+import { MAX_DESCRIPTION_LENGTH } from '@/lib/constants/fields'
 import { ItemPostFormSchema } from '@/components/02_main/protected/item/post/form'
 import {
   ChangeEvent,

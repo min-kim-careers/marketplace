@@ -41,7 +41,7 @@ export const serviceGetSortOptions = async (): Promise<
   try {
     const res = await internalGetSortOptions()
 
-    return res.sortOptions
+    return res.sortOptions as SortOption[]
   } catch (error) {
     logError(error)
     return []

@@ -2,7 +2,7 @@ import { ApiInternalResponse } from '@/_gateway/api/_models/response'
 import { envLoader } from '@/lib/utils/env-loader'
 import axios, {
   AxiosResponse,
-  InternalAxiosRequestConfig
+  InternalAxiosRequestConfig,
 } from 'axios'
 
 const create = () => {
@@ -23,7 +23,11 @@ const create = () => {
       const { success, message, data } = response.data
       if (!success) throw new Error()
       if (message) console.log(message)
-      if (data) response.data = data
+
+      if (data) {
+        // console.log(JSON.stringify(data, null, 2))
+        response.data = data
+      }
       return response
     },
   )

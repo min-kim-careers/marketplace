@@ -3,6 +3,7 @@
 import { firebaseAxios } from '@/_gateway/firebase/_config/axios'
 import { FIREBASE_ENDPOINTS } from './_config/endpoints'
 import { DecodedToken } from '@/_gateway/firebase/_models/token'
+import { HEADERS } from '@/lib/constants/headers'
 
 export interface InternalGetSession {
   decodedToken: DecodedToken
@@ -47,10 +48,11 @@ export const internalVerify = async (
 ): Promise<InternalVerify> => {
   try {
     const response = await firebaseAxios.post(
-      FIREBASE_ENDPOINTS.VERIFY_TOKEN,
+      FIREBASE_ENDPOINTS.VERIFY_SESSION,
+      {},
       {
         headers: {
-          Cookie: `__session=${session}`,
+          Cookie: `${HEADERS.SESSION}=${session}`,
         },
       },
     )
