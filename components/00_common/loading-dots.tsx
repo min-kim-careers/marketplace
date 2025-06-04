@@ -13,19 +13,19 @@ export default function LoadingDots({
     >
       <div
         className={cn(
-          `h-3 w-3 animate-bounce rounded-full bg-white [animation-delay:-0.3s]`,
+          `h-3 w-3 animate-bounce rounded-full bg-black [animation-delay:-0.3s]`,
           className,
         )}
       />
       <div
         className={cn(
-          `h-3 w-3 animate-bounce rounded-full bg-white [animation-delay:-0.15s]`,
+          `h-3 w-3 animate-bounce rounded-full bg-black [animation-delay:-0.15s]`,
           className,
         )}
       />
       <div
         className={cn(
-          `h-3 w-3 animate-bounce rounded-full bg-white`,
+          `h-3 w-3 animate-bounce rounded-full bg-black`,
           className,
         )}
       />

@@ -11,17 +11,13 @@ import {
   CardTitle,
 } from '@/components/shadcn/components/ui/card'
 import { Form } from '@/components/shadcn/components/ui/form'
-import { useToast } from '@/components/shadcn/hooks/use-toast'
-import { useLoadingStore } from '@/lib/stores/loading'
-import useProfileStore from '@/lib/stores/profile'
+import { useCreateProfile } from '@/lib/hooks/use-create-profile'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 export default function ProfileComplete() {
-  const { setProfile } = useProfileStore()
-  const { setMessage } = useLoadingStore()
-  const { toast } = useToast()
+  const { handleCreateProfile } = useCreateProfile()
 
   const form = useForm<z.infer<typeof ProfileCompleteForm>>(
     {
@@ -35,18 +31,8 @@ export default function ProfileComplete() {
   async function onSubmit(
     values: z.infer<typeof ProfileCompleteForm>,
   ) {
-    try {
-      setMessage('Creating a new profile...')
-      const handle = values.handle
-
-      
-
-      toast({ description: `Welcome ${handle}!` })
-    } catch (error) {
-      toast({ description: `Something went wrong.` })
-    } finally {
-      setMessage(null)
-    }
+    if (!values.handle) return
+    await handleCreateProfile(values.handle)
   }
 
   return (

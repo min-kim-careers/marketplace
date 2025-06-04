@@ -15,13 +15,11 @@ import { ROUTES } from '@/lib/constants/routes'
 import useProfileStore from '@/lib/stores/profile'
 import Link from 'next/link'
 import Spinner from '../../00_common/spinner'
+import { useSignOut } from '@/lib/hooks/use-sign-out'
 
-export default function Dropdown({
-  handleSignOut,
-}: {
-  handleSignOut: () => void
-}) {
+export default function Dropdown({}: {}) {
   const { profile } = useProfileStore()
+  const { handleSignOut } = useSignOut()
 
   return (
     <DropdownMenu>

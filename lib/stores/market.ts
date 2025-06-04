@@ -34,12 +34,7 @@ export const useMarketStore = create<MarketState>((set) => {
     sortOptions: [] as SortOption[],
     fetchSortOptions: async () => {
       try {
-        console.log('fetchSortOptions called')
-
         const sortOptions = await serviceGetSortOptions()
-
-        console.log(sortOptions)
-
         set({ sortOptions })
       } catch (_) {
         set({ sortOptions: [] })

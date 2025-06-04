@@ -1,57 +1,16 @@
-import { useToast } from '@/components/shadcn/hooks/use-toast'
 import { ROUTES } from '@/lib/constants/routes'
 import { serialize } from '@/lib/helpers/market'
-import { useLoadingStore } from '@/lib/stores/loading'
 import useProfileStore from '@/lib/stores/profile'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { Button } from '../../shadcn/components/ui/button'
 import Dropdown from './dropdown'
-import { signInWithPopup, signOut } from 'firebase/auth'
-import { auth, provider } from '@/lib/firebase/config'
-import {
-  serviceSignInWithGoogle,
-  serviceSignOut,
-} from '@/_gateway/firebase/service'
+import { useSignIn } from '@/lib/hooks/use-sign-in'
+import { useSignOut } from '@/lib/hooks/use-sign-out'
 
 export default function NavBar() {
-  const { profile, setProfile } = useProfileStore()
-  const { setMessage } = useLoadingStore()
-  const { toast } = useToast()
-  const router = useRouter()
-
-  const handleSignIn = async () => {
-    try {
-      setMessage('Signing you in')
-      const cred = await signInWithPopup(auth, provider)
-
-      const token = await cred.user.getIdToken()
-
-      await serviceSignInWithGoogle(token)
-    } catch (error) {
-      await handleSignOut()
-    } finally {
-      setMessage(null)
-    }
-  }
-
-  const handleSignOut = async () => {
-    try {
-      setMessage('Signing you out...')
-      await signOut(auth)
-      await serviceSignOut()
-
-      toast({
-        description: `See you again!`,
-      })
-    } catch (error) {
-      toast({
-        description: `Something went wrong.`,
-      })
-    } finally {
-      setMessage(null)
-    }
-  }
+  const { profile } = useProfileStore()
+  const { handleSignIn } = useSignIn()
+  const { handleSignOut } = useSignOut()
 
   if (!profile)
     return (
@@ -77,7 +36,7 @@ export default function NavBar() {
       <Link href={ROUTES.ITEM_POST}>
         <Button>Post Ad</Button>
       </Link>
-      <Dropdown handleSignOut={handleSignOut} />
+      <Dropdown />
     </span>
   )
 }

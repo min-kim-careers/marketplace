@@ -1,32 +1,43 @@
+import { getSessionCookie, hasSessionCookie } from '@/_gateway/firebase/_config/helpers'
+import { serviceVerify } from '@/_gateway/firebase/service'
 import { HEADERS } from '@/lib/constants/headers'
 import {
+  isFallbackRoute,
   isProtectedRoute,
-  isPublicRoute,
   ROUTES,
 } from '@/lib/constants/routes'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname
-  const session = req.cookies.get(HEADERS.SESSION)
+  if (!isFallbackRoute(path)) {
+    const session = req.cookies.get(HEADERS.SESSION)?.value
+    if (session) {
+      const { decodedToken } = await serviceVerify(session)
+      if (!decodedToken) return NextResponse.error()
 
-  const headers = new Headers(req.headers)
-  headers.set(HEADERS.CURRENT_PATH, req.nextUrl.pathname)
+      if (
+        !decodedToken.claims.profile_created &&
+        path !== ROUTES.PROFILE_COMPLETE
+      )
+        return NextResponse.redirect(
+          new URL(ROUTES.PROFILE_COMPLETE, req.nextUrl),
+        )
+    } else {
+      if (isProtectedRoute(path)) return NextResponse.redirect(
+          new URL(ROUTES.HOME, req.nextUrl),
+        )
+    }
+  }
 
-  if (
-    isPublicRoute(path) ||
-    (session && isProtectedRoute(path))
-  )
-    return NextResponse.next({ headers })
-
-  return NextResponse.redirect(
-    new URL(ROUTES.NOTFOUND, req.nextUrl),
-  )
+  return NextResponse.next()
 }
 
 export const config = {
   matcher: [
+    '/((?!_next|favicon.ico|robots.txt).*)',
+
     // '/',
     // '/market/:path',
     // '/item/:path',

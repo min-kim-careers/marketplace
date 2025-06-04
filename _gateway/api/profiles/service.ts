@@ -7,6 +7,7 @@ import {
   internalUpsertProfile,
   InternalUpsertProfile,
 } from '@/_gateway/api/profiles/internal'
+import { uidToUuid } from '@/_gateway/firebase/_config/helpers'
 import { internalSetProfileCreated } from '@/_gateway/firebase/internal'
 import { Profile } from '@/lib/interfaces/profiles'
 
@@ -17,8 +18,10 @@ export const serviceUpsertProfile = async (
   handle?: string,
 ) => {
   try {
+    const uid = uidToUuid(userId)
+
     const { profile }: InternalUpsertProfile =
-      await internalUpsertProfile(userId, email, handle)
+      await internalUpsertProfile(uid, email, handle)
 
     const { decodedToken } =
       await internalSetProfileCreated(idToken)
