@@ -1,27 +1,34 @@
 import { logError } from '@/_gateway/_common/helpers'
 import { HEADERS } from '@/lib/constants/headers'
 import { envLoader } from '@/lib/utils/env-loader'
-import { InternalAxiosRequestConfig } from 'axios'
 import { cookies } from 'next/headers'
 import { v5 as uuidv5 } from 'uuid'
 
-export const hasSessionCookie =
-  async (): Promise<boolean> => {
+export const hasSessionCookie = async () => {
+  try {
     const cookieStore = await cookies()
     return cookieStore.has(HEADERS.SESSION)
+  } catch (error) {
+    throw error
   }
-
-export const getSessionCookie = async (): Promise<
-  string | null
-> => {
-  const cookieStore = await cookies()
-  return cookieStore.get(HEADERS.SESSION)?.value ?? null
 }
+
+export const getSessionCookie =
+  async (): Promise<string> => {
+    try {
+      const cookieStore = await cookies()
+      const session = cookieStore.get(HEADERS.SESSION)
+      if (!session) throw new Error('Session not found')
+      return session.value
+    } catch (error) {
+      throw error
+    }
+  }
 
 export const setSessionCookie = async (
   session: string,
   expiresInSeconds: number,
-): Promise<boolean> => {
+) => {
   try {
     const cookieStore = await cookies()
     cookieStore.set(HEADERS.SESSION, session, {
@@ -30,37 +37,44 @@ export const setSessionCookie = async (
       path: '/',
       maxAge: expiresInSeconds,
     })
-    return true
   } catch (error) {
-    logError(error)
-    return false
+    throw error
   }
 }
 
-export const clearTokens = async (): Promise<boolean> => {
+export const clearSessionCookie = async () => {
   try {
     const cookieStore = await cookies()
     cookieStore.delete(HEADERS.SESSION)
-    return true
   } catch (error) {
-    logError(error)
-    return false
-  }
-}
-
-export const attachCredentials = async (
-  config: InternalAxiosRequestConfig,
-) => {
-  try {
-    const session = await getSessionCookie()
-    if (session) {
-      config.headers.Authorization = `Bearer ${session}`
-    }
-  } catch (error) {
-    console.error('Error attaching token:', error)
+    throw error
   }
 }
 
 export const uidToUuid = (uid: string) => {
-  return uuidv5(uid, envLoader.UuidNamespace)
+  try {
+    return uuidv5(uid, envLoader.UuidNamespace)
+  } catch (error) {
+    throw error
+  }
+}
+
+export const generateHandle = async (base: string) => {
+  try {
+    const encoder = new TextEncoder()
+    const data = encoder.encode(base)
+    const hashBuffer = await crypto.subtle.digest(
+      'SHA-256',
+      data,
+    )
+    const hashArray = Array.from(new Uint8Array(hashBuffer))
+    const hashHex = hashArray
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('')
+    const hash = hashHex.slice(0, 10)
+
+    return `user-${hash}`
+  } catch (error) {
+    throw error
+  }
 }

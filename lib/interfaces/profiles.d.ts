@@ -3,7 +3,6 @@ export interface Profile {
   handle: string
   rating: number
   ratingCount: number
-  suburb: string
-  state: string
+  postcode: string
   avatarUrl: string
 }

@@ -1,26 +1,21 @@
-import { AxiosError } from 'axios'
+import { getSessionCookie, uidToUuid } from "@/_gateway/firebase/_config/helpers"
+import { serviceVerifySession } from "@/_gateway/firebase/service"
 
 export const logError = (error: any) => {
-  console.error(error);
-  
-  // if (error instanceof AxiosError) {
-  //   console.error(
-  //     JSON.stringify(error.response?.data.detail, null, 2),
-  //   )
-  // } else if (error instanceof Error) {
-  //   console.error(
-  //     JSON.stringify(
-  //       {
-  //         error: {
-  //           message: error.message,
-  //           cause: error.cause,
-  //         } as Error,
-  //       },
-  //       null,
-  //       2,
-  //     ),
-  //   )
-  // } else {
-  //   console.error(error)
-  // }
+  console.error(error)
+}
+
+export const getCurrentUserId = async (): Promise<string | null> => {
+  try {
+    const session = await getSessionCookie()
+    if (!session) return null
+
+    const { decodedToken } = await serviceVerifySession(session)
+
+    const userId = uidToUuid(decodedToken.uid)
+
+    return userId
+  } catch (error) {
+    throw error
+  }
 }

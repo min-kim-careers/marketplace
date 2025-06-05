@@ -1,17 +1,18 @@
-import { serviceSignInWithGoogle } from '@/_gateway/firebase/service'
+import {
+  serviceSignInWithGoogle,
+  serviceSignOut,
+} from '@/_gateway/firebase/service'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
 import { auth, provider } from '@/lib/firebase/config'
-import { useSignOut } from '@/lib/hooks/use-sign-out'
 import { useLoadingStore } from '@/lib/stores/loading'
 import useProfileStore from '@/lib/stores/profile'
-import { signInWithPopup } from 'firebase/auth'
+import { signInWithPopup, signOut } from 'firebase/auth'
 import { useRouter } from 'next/navigation'
 
 export const useSignIn = () => {
   const { setProfile } = useProfileStore()
   const { setMessage } = useLoadingStore()
   const { toast } = useToast()
-  const { handleSignOut } = useSignOut()
   const router = useRouter()
 
   const handleSignIn = async () => {
@@ -23,20 +24,16 @@ export const useSignIn = () => {
 
       const { profile } =
         await serviceSignInWithGoogle(token)
-      if (profile) {
-        setProfile(profile)
-        toast({
-          description: `Welcome back ${profile.handle}!`,
-        })
-      } else {
-        toast({
-          description: `Welcome!`,
-        })
-      }
+      if (profile) setProfile(profile)
+
+      toast({
+        description: `Signed in as ${profile.handle}.`
+      })
 
       router.refresh()
     } catch (error) {
-      await handleSignOut()
+      await signOut(auth)
+      await serviceSignOut()
     } finally {
       setMessage(null)
     }

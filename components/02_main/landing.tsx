@@ -16,7 +16,7 @@ export default function Landing() {
           Welcome to the {APP_TITLE}!
         </h1>
         {profile ? (
-          <p>Welcome, {profile.handle}!</p>
+          profile.handle && <p>{`Hi, ${profile.handle}!`}</p>
         ) : (
           <p>You are not logged in</p>
         )}

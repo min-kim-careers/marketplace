@@ -16,6 +16,7 @@ import useProfileStore from '@/lib/stores/profile'
 import Link from 'next/link'
 import Spinner from '../../00_common/spinner'
 import { useSignOut } from '@/lib/hooks/use-sign-out'
+import { CircleUserIcon } from 'lucide-react'
 
 export default function Dropdown({}: {}) {
   const { profile } = useProfileStore()
@@ -25,9 +26,9 @@ export default function Dropdown({}: {}) {
     <DropdownMenu>
       <DropdownMenuTrigger>
         <Avatar>
-          <AvatarImage src='https://github.com/shadcn.png' />
+          <AvatarImage src={profile?.avatarUrl} />
           <AvatarFallback>
-            {profile ? profile.handle : <Spinner />}
+            {profile ? <CircleUserIcon className='h-full w-full'/> : <Spinner />}
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>

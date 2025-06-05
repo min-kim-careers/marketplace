@@ -8,8 +8,7 @@ export interface Item {
   createdAt: Date
   updatedAt: Date
   expiresAt: Date
-  suburb: string
-  state: string
+  postcode: string
   condition: string
   imageUrls: string[]
 }

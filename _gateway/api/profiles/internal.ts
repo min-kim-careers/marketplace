@@ -2,7 +2,9 @@
 
 import { apiAxios } from '@/_gateway/api/_config/axios'
 import { PROFILES_ENDPOINTS } from '@/_gateway/api/_config/endpoints'
+import { UpsertProfileRequest } from '@/_gateway/_common/_models/upsert-profile.request'
 import { Profile } from '@/lib/interfaces/profiles'
+import { AxiosError } from 'axios'
 
 export interface InternalUpsertProfile {
   profile: Profile
@@ -10,13 +12,12 @@ export interface InternalUpsertProfile {
 
 export const internalUpsertProfile = async (
   userId: string,
-  email: string,
-  handle?: string,
+  request: UpsertProfileRequest,
 ): Promise<InternalUpsertProfile> => {
   try {
     const response = await apiAxios.patch(
       PROFILES_ENDPOINTS.PATCH_PROFILE(userId),
-      { email, handle },
+      request,
     )
 
     const { profile }: InternalUpsertProfile = response.data
@@ -30,7 +31,7 @@ export const internalUpsertProfile = async (
 }
 
 export interface InternalGetProfile {
-  profile: Profile
+  profile: Profile | null
 }
 
 export const internalGetProfile = async (
@@ -46,6 +47,27 @@ export const internalGetProfile = async (
     if (!profile) throw new Error('Profile missing')
 
     return response.data as InternalGetProfile
+  } catch (error) {
+    if (error instanceof AxiosError && error.status === 404)
+      return { profile: null }
+
+    throw error
+  }
+}
+
+export interface InternalGetHandleExists {
+  exists: boolean
+}
+
+export const internalGetHandleExists = async (
+  handle: string,
+) => {
+  try {
+    const response = await apiAxios.get(
+      PROFILES_ENDPOINTS.GET_HANDLE_EXISTS(handle),
+    )
+
+    return response.data as InternalGetHandleExists
   } catch (error) {
     throw error
   }

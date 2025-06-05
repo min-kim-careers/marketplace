@@ -8,4 +8,6 @@ export const PROFILES_ENDPOINTS = {
     `/api/profiles/${userId}`,
   PATCH_PROFILE: (userId: string) =>
     `/api/profiles/${userId}`,
+  GET_HANDLE_EXISTS: (handle: string) =>
+    `/api/profiles/exists/${handle}`,
 }

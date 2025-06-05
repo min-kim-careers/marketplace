@@ -1,18 +1,21 @@
 'use server'
 
-import { serviceGetProfile } from '@/_gateway/api/profiles/service'
 import {
-  clearTokens,
-  getSessionCookie,
+  internalGetProfile,
+  internalUpsertProfile,
+} from '@/_gateway/api/profiles/internal'
+import {
+  clearSessionCookie,
+  generateHandle,
   setSessionCookie,
   uidToUuid,
 } from '@/_gateway/firebase/_config/helpers'
-import { DecodedToken } from '@/_gateway/firebase/_models/token'
+import { DecodedToken } from '@/_gateway/firebase/_models/decoded-token'
 import {
   internalGetSession,
   InternalGetSession,
-  internalVerify,
-  InternalVerify,
+  internalVerifySession,
+  InternalVerifySession,
 } from '@/_gateway/firebase/internal'
 import { Profile } from '@/lib/interfaces/profiles'
 import { logError } from '../_common/helpers'
@@ -33,51 +36,57 @@ export const serviceSignInWithGoogle = async (
       await internalGetSession(idToken)
 
     const userId = uidToUuid(decodedToken.uid)
-    const profile = await serviceGetProfile(userId)
-    if (!profile) throw new Error('Profile missing')
+
+    const { profile: existingProfile } =
+      await internalGetProfile(userId)
+
+    if (existingProfile) {
+      await setSessionCookie(
+        sessionCookie,
+        expiresInSeconds,
+      )
+      return { profile: existingProfile }
+    }
+
+    const handle = await generateHandle(decodedToken.uid)
+
+    const { profile: newProfile } =
+      await internalUpsertProfile(userId, {
+        handle,
+        email: decodedToken.email,
+        avatarUrl: decodedToken.picture,
+      })
 
     await setSessionCookie(sessionCookie, expiresInSeconds)
+    return { profile: newProfile }
+  } catch (error) {
+    logError(error)
+    await clearSessionCookie()
+    throw new Error()
+  }
+}
 
-    return { profile }
+export interface ServiceVerify {
+  decodedToken: DecodedToken
+}
+
+export const serviceVerifySession = async (
+  session: string,
+): Promise<ServiceVerify> => {
+  try {
+    const { decodedToken }: InternalVerifySession =
+      await internalVerifySession(session)
+
+    return { decodedToken } as ServiceVerify
   } catch (error) {
     logError(error)
     throw new Error()
   }
 }
 
-export interface ServiceVerify {
-  decodedToken: DecodedToken | null
-}
-
-export const serviceVerify = async (
-  session: string,
-): Promise<ServiceVerify> => {
-  try {
-    const { decodedToken }: InternalVerify =
-      await internalVerify(session)
-
-    return { decodedToken } as ServiceVerify
-
-    // return {
-    //   decodedToken: {
-    //     uid: 'rXR4AMqRIcgyvVnLjXbShNjfaMS2',
-    //     picture:
-    //       'https://lh3.googleusercontent.com/a/ACg8ocJVq6R_VPqzjgbv4go2Gm7o9isHXUZ6K4GexJ2JzPF3TDoYvQ=s96-c',
-    //     email: 'user1@example.com',
-    //     claims: {
-    //       profile_created: false,
-    //     },
-    //   },
-    // }
-  } catch (error) {
-    logError(error)
-    return { decodedToken: null }
-  }
-}
-
 export const serviceSignOut = async (): Promise<void> => {
   try {
-    await clearTokens()
+    await clearSessionCookie()
   } catch (error) {
     logError(error)
     throw new Error()

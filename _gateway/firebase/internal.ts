@@ -2,7 +2,7 @@
 
 import { firebaseAxios } from '@/_gateway/firebase/_config/axios'
 import { FIREBASE_ENDPOINTS } from './_config/endpoints'
-import { DecodedToken } from '@/_gateway/firebase/_models/token'
+import { DecodedToken } from '@/_gateway/firebase/_models/decoded-token'
 import { HEADERS } from '@/lib/constants/headers'
 
 export interface InternalGetSession {
@@ -38,14 +38,13 @@ export const internalGetSession = async (
   }
 }
 
-export interface InternalVerify {
+export interface InternalVerifySession {
   decodedToken: DecodedToken
-  profileCreated: boolean
 }
 
-export const internalVerify = async (
+export const internalVerifySession = async (
   session: string,
-): Promise<InternalVerify> => {
+): Promise<InternalVerifySession> => {
   try {
     const response = await firebaseAxios.post(
       FIREBASE_ENDPOINTS.VERIFY_SESSION,
@@ -57,32 +56,7 @@ export const internalVerify = async (
       },
     )
 
-    const { decodedToken }: InternalVerify = response.data
-
-    if (!decodedToken)
-      throw new Error('Missing decoded token')
-
-    return response.data
-  } catch (error) {
-    throw error
-  }
-}
-
-export interface InternalSetProfileCreated {
-  decodedToken: DecodedToken
-}
-
-export const internalSetProfileCreated = async (
-  idToken: string,
-): Promise<InternalSetProfileCreated> => {
-  try {
-    const response = await firebaseAxios.patch(
-      FIREBASE_ENDPOINTS.SET_PROFILE_CREATED,
-      { idToken },
-    )
-
-    const { decodedToken }: InternalSetProfileCreated =
-      response.data
+    const { decodedToken }: InternalVerifySession = response.data
 
     if (!decodedToken)
       throw new Error('Missing decoded token')

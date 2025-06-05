@@ -1,4 +1,4 @@
-import { ApiInternalResponse } from '@/_gateway/api/_models/response'
+import { ApiInternalResponse } from '@/_gateway/api/_models/api-internal.response'
 import { envLoader } from '@/lib/utils/env-loader'
 import axios, {
   AxiosResponse,
