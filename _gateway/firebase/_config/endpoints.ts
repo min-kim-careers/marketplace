@@ -1,5 +1,5 @@
 export const FIREBASE_ENDPOINTS = {
-  GET_SESSION: '/get-session',
-  SET_PROFILE_CREATED: '/set-profile-created',
-  VERIFY_SESSION: '/verify-session',
+  GET_SESSION: '/firebase/get-session',
+  SET_PROFILE_CREATED: '/firebase/set-profile-created',
+  VERIFY_SESSION: '/firebase/verify-session',
 }

@@ -7,14 +7,14 @@ import { signOut } from 'firebase/auth'
 import { useRouter } from 'next/navigation'
 
 export const useSignOut = () => {
-  const { setMessage } = useLoadingStore()
+  const { setLoading } = useLoadingStore()
   const { setProfile } = useProfileStore()
   const { toast } = useToast()
   const router = useRouter()
 
   const handleSignOut = async () => {
     try {
-      setMessage('Signing you out...')
+      setLoading('Signing you out...')
 
       await signOut(auth)
       await serviceSignOut()
@@ -30,7 +30,7 @@ export const useSignOut = () => {
         description: `Something went wrong.`,
       })
     } finally {
-      setMessage(null)
+      setLoading(null)
     }
   }
 

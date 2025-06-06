@@ -1,31 +1,45 @@
 'use client'
 
-import { serviceCheckHandleExists } from '@/_gateway/api/profiles/service'
+import { HandleField } from '@/components/02_main/protected/profile/update/form/fields'
+import { ProfileUpdateForm } from '@/components/02_main/protected/profile/update/form'
 import { Button } from '@/components/shadcn/components/ui/button'
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/shadcn/components/ui/card'
-import { Input } from '@/components/shadcn/components/ui/input'
-import { Label } from '@/components/shadcn/components/ui/label'
-import useProfileStore from '@/lib/stores/profile'
-import { CheckCheck } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { Form } from '@/components/shadcn/components/ui/form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { useUpdateProfile } from '@/lib/hooks/use-update-profile'
+import { useToast } from '@/components/shadcn/hooks/use-toast'
 
 export default function ProfileUpdate() {
-  const { profile } = useProfileStore()
   const [handleConfirmed, setHandleConfirmed] =
     useState(false)
-  const [handle, setHandle] = useState('')
+  const { handleUpdateProfile } = useUpdateProfile()
+  const { toast } = useToast()
 
-  const handleHandleConfirmButton = async () => {
-    const handleExists =
-      await serviceCheckHandleExists(handle)
-    setHandleConfirmed(!handleExists)
+  const form = useForm<z.infer<typeof ProfileUpdateForm>>({
+    resolver: zodResolver(ProfileUpdateForm),
+    defaultValues: {
+      handle: '',
+    },
+  })
+
+  async function onSubmit(
+    values: z.infer<typeof ProfileUpdateForm>,
+  ) {
+    await handleUpdateProfile({ handle: values.handle })
+
+    toast({
+      description:
+        'Your profile was updated successfully!',
+    })
   }
 
   return (
@@ -38,53 +52,25 @@ export default function ProfileUpdate() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
-            <div className='my-2 grid w-full items-center gap-6'>
-              <div className='flex flex-col space-y-1.5'>
-                <Label htmlFor='handle'>Handle</Label>
-                <div className='flex space-x-2'>
-                  <Input
-                    id='handle'
-                    placeholder={profile?.handle}
-                    onChange={(e) =>
-                      setHandle(e.target.value)
-                    }
-                  />
-                  <Button
-                    onClick={handleHandleConfirmButton}
-                    disabled={handleConfirmed || !handle}
-                  >
-                    {handleConfirmed ? (
-                      <CheckCheck />
-                    ) : (
-                      <span>Confirm</span>
-                    )}
-                  </Button>
-                </div>
-              </div>
-              <div className='flex flex-col space-y-1.5'>
-                <Label htmlFor='postcode'>Location</Label>
-                <Input
-                  id='postcode'
-                  placeholder={'Enter your location'}
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <div className='flex flex-col gap-4'>
+                <HandleField
+                  confirmed={handleConfirmed}
+                  setConfirmed={setHandleConfirmed}
+                  form={form}
                 />
               </div>
-              {/* <div className='flex flex-col space-y-1.5'>
-                <Label htmlFor='password'>Password</Label>
-                <Input
-                  id='password'
-                  type='password'
-                  placeholder='Your new password'
-                />
-              </div> */}
-            </div>
-          </form>
+              <Button
+                type='submit'
+                disabled={!handleConfirmed}
+                className='mt-4 w-full'
+              >
+                Update Profile
+              </Button>
+            </form>
+          </Form>
         </CardContent>
-        <CardFooter className='flex justify-end'>
-          <Button disabled={!handleConfirmed}>
-            Update
-          </Button>
-        </CardFooter>
       </Card>
     </div>
   )

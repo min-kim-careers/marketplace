@@ -13,17 +13,17 @@ export const hasSessionCookie = async () => {
   }
 }
 
-export const getSessionCookie =
-  async (): Promise<string> => {
-    try {
-      const cookieStore = await cookies()
-      const session = cookieStore.get(HEADERS.SESSION)
-      if (!session) throw new Error('Session not found')
-      return session.value
-    } catch (error) {
-      throw error
-    }
+export const getSessionCookie = async (): Promise<
+  string | null
+> => {
+  try {
+    const cookieStore = await cookies()
+    const session = cookieStore.get(HEADERS.SESSION)?.value
+    return session ?? null
+  } catch (error) {
+    throw error
   }
+}
 
 export const setSessionCookie = async (
   session: string,
@@ -73,7 +73,7 @@ export const generateHandle = async (base: string) => {
       .join('')
     const hash = hashHex.slice(0, 10)
 
-    return `user-${hash}`
+    return 'user' + hash
   } catch (error) {
     throw error
   }

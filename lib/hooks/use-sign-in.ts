@@ -11,13 +11,13 @@ import { useRouter } from 'next/navigation'
 
 export const useSignIn = () => {
   const { setProfile } = useProfileStore()
-  const { setMessage } = useLoadingStore()
+  const { setLoading } = useLoadingStore()
   const { toast } = useToast()
   const router = useRouter()
 
   const handleSignIn = async () => {
     try {
-      setMessage('Signing you in')
+      setLoading('Signing you in')
       const cred = await signInWithPopup(auth, provider)
 
       const token = await cred.user.getIdToken()
@@ -35,7 +35,7 @@ export const useSignIn = () => {
       await signOut(auth)
       await serviceSignOut()
     } finally {
-      setMessage(null)
+      setLoading(null)
     }
   }
 

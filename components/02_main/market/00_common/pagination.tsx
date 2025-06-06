@@ -9,7 +9,7 @@ import {
 import { PAGINATION } from '@/lib/constants/pagination'
 import { ROUTES } from '@/lib/constants/routes'
 import { useMarketStore } from '@/lib/stores/market'
-import { serialize } from '@/lib/helpers/market'
+import { serialize } from '@/lib/common/market'
 import { notFound, useSearchParams } from 'next/navigation'
 
 export default function Pagination() {
@@ -40,7 +40,7 @@ export default function Pagination() {
     <PaginationContainer>
       <PaginationContent>
         <PaginationFirst
-          disabled={params.page === 1}
+          disabled={params.page === 1 || !count}
           href={{
             pathname: ROUTES.MARKET,
             query: serialize({ ...params, page: 1 }),
@@ -69,7 +69,7 @@ export default function Pagination() {
         )}
 
         <PaginationLast
-          disabled={params.page === lastPage}
+          disabled={params.page === lastPage || !count}
           href={{
             pathname: ROUTES.MARKET,
             query: serialize({

@@ -10,7 +10,7 @@ import {
   marketParamsToQuery,
   marketToUrlParams,
   serverUrlToMarketParams,
-} from '@/lib/helpers/market'
+} from '@/lib/common/market'
 import { redirect } from 'next/navigation'
 
 export default async function Page({

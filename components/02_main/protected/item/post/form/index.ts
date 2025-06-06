@@ -1,4 +1,4 @@
-import { checkLocationExists } from '@/lib/utils/fuse/locations'
+import { locationExistsByPostcode } from '@/lib/utils/fuse/locations'
 import { z } from 'zod'
 import {
   CATEGORIES,
@@ -47,7 +47,7 @@ export const ItemPostFormSchema = z.object({
 
   location: z
     .string({ message: 'Location is required' })
-    .refine((val) => checkLocationExists(val), {
+    .refine((postcode) => locationExistsByPostcode(postcode), {
       message: 'Invalid location',
     }),
 

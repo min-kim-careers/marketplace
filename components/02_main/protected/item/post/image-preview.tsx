@@ -40,8 +40,6 @@ export default function ImagePreview({
     setCurrent(1)
   }, [watchField])
 
-  if (!count) return <CircleSlash2 size={48} className='text-gray-300'/>
-
   return (
     <Carousel
       setApi={setApi}

@@ -25,9 +25,10 @@ import {
 } from '@/components/shadcn/components/ui/popover'
 import { cn } from '@/components/shadcn/lib/utils'
 import { ItemPostFormSchema } from '@/components/02_main/protected/item/post/form'
-import { searchLocations } from '@/lib/utils/fuse/locations'
+import { getLocationList } from '@/lib/utils/fuse/locations'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { useState } from 'react'
+import { Location } from '@/lib/utils/fuse/location'
 
 export default function LocationField({
   form,
@@ -40,25 +41,20 @@ export default function LocationField({
 
   const [loading, setLoading] = useState(false)
   const [query, setQuery] = useState('')
-  const [locations, setLocations] = useState<string[]>([])
+  const [locations, setLocations] = useState<Location[]>([])
+  const [currentLabel, setCurrentLabel] = useState(placeholder)
 
-  // const handleSearch = async (
-  //   e: KeyboardEvent<HTMLInputElement>,
-  // ) => {
-  //   if (e.key === 'Enter') {
-  //     setLoading(true)
-  //     const res = await searchLocations(query)
-  //     setLocations(res)
-  //     setLoading(false)
-  //   }
-  // }
-
-  const handleChange = async (search: string) => {
-    setQuery(search)
-    setLoading(true)
-    const res = await searchLocations(search)
-    setLocations(res)
-    setLoading(false)
+  const handleChange = async (value: string) => {
+    try {
+      setQuery(value)
+      setLoading(true)
+      const res = await getLocationList(value)
+      setLocations(res)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -76,10 +72,10 @@ export default function LocationField({
                   role='combobox'
                   className={cn(
                     'justify-between',
-                    !field.value && 'text-muted-foreground',
+                    !currentLabel && 'text-muted-foreground',
                   )}
                 >
-                  {field.value || placeholder}
+                  {currentLabel || placeholder}
                   <ChevronsUpDown className='opacity-50' />
                 </Button>
               </FormControl>
@@ -91,7 +87,6 @@ export default function LocationField({
                   className='h-9'
                   value={query}
                   onValueChange={handleChange}
-                  // onKeyDown={handleSearch}
                 />
                 <CommandList>
                   <CommandEmpty>
@@ -103,19 +98,21 @@ export default function LocationField({
                     ) : (
                       locations.map((location, i) => (
                         <CommandItem
-                          value={location}
+                          value={location.label}
                           key={i}
-                          onSelect={(value) => {
-                            form.setValue(name, value, {
+                          onSelect={(_) => {
+                            form.setValue(name, location.postcode, {
                               shouldValidate: true,
                             })
+                            setCurrentLabel(location.label)
                           }}
                         >
-                          {location}
+                          {location.label}
                           <Check
                             className={cn(
                               'ml-auto',
-                              location === field.value
+                              location.label ===
+                                currentLabel
                                 ? 'opacity-100'
                                 : 'opacity-0',
                             )}

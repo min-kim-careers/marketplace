@@ -72,6 +72,7 @@ export default function ImageField({
             alt='preview-image'
             layout='fill'
             objectFit='contain'
+            className='rounded'
           />
           <button
             type='button'
@@ -81,7 +82,7 @@ export default function ImageField({
           </button>
         </div>
       ) : (
-        <Plus className='flex h-full w-full flex-1' />
+        <Plus className='flex h-1/2 w-1/2 flex-1' />
       )}
     </Label>
   )

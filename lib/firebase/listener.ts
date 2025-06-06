@@ -1,5 +1,6 @@
 'use client'
 
+import { serviceRefreshSession } from '@/_gateway/firebase/service'
 import { auth } from '@/lib/firebase/config'
 import { Profile } from '@/lib/interfaces/profiles'
 import useProfileStore from '@/lib/stores/profile'
@@ -10,17 +11,31 @@ export default function FirebaseAuthListener() {
   const { profile, setProfile } = useProfileStore()
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      const hasSignedIn = !!user
-      const hasSignedOut = !user
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      async (user) => {
+        const hasSignedIn = !!user
+        const hasSignedOut = !user
 
-      if (hasSignedIn) {
-      }
+        if (hasSignedIn) {
+          console.log('signed in')
 
-      if (hasSignedOut) {
-        if (profile) setProfile(null)
-      }
-    })
+          try {
+            const idToken = await user.getIdToken(true)
+            if (idToken)
+              await serviceRefreshSession(idToken)
+          } catch (error) {
+            console.log(error)
+          }
+        }
+
+        if (hasSignedOut) {
+          console.log('signed out')
+
+          if (profile) setProfile(null)
+        }
+      },
+    )
 
     return () => unsubscribe()
   }, [])

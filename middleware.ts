@@ -17,7 +17,7 @@ import { NextResponse } from 'next/server'
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname
 
-  if (isFallbackRoute(path)) {
+  if (isFallbackRoute(path) || req.method !== 'GET') {
     return NextResponse.next()
   }
 
@@ -59,6 +59,7 @@ export async function middleware(req: NextRequest) {
     }
   }
 
+  console.log('Unknown path');
   return NextResponse.redirect(
     new URL(ROUTES.NOTFOUND, req.nextUrl),
   )

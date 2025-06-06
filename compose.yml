@@ -4,11 +4,11 @@ services:
     restart: always
     build: .
     environment:
-      - API_URL=http://api-service:8080/api
+      - API_URL=http://api-service:8080
       - API_KEY=REDACTED
       - API_KEY_HEADER=REDACTED
 
-      - FIREBASE_URL=http://firebase-service:8000/firebase
+      - FIREBASE_URL=http://firebase-service:8000
       - FIREBASE_KEY=b6c54fe621c6df75a54f0c245956519251adae29c2a0fa1c7f1cc03674f61ce5
       - FIREBASE_KEY_HEADER=x-firebase-key
 

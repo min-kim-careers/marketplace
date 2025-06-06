@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const ProfileCompleteForm = z.object({
+export const ProfileUpdateForm = z.object({
   handle: z
     .string()
     .min(3, {

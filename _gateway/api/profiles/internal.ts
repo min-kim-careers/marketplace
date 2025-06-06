@@ -5,6 +5,7 @@ import { PROFILES_ENDPOINTS } from '@/_gateway/api/_config/endpoints'
 import { UpsertProfileRequest } from '@/_gateway/_common/_models/upsert-profile.request'
 import { Profile } from '@/lib/interfaces/profiles'
 import { AxiosError } from 'axios'
+import { cleanParam, cleanPayload } from '@/lib/common'
 
 export interface InternalUpsertProfile {
   profile: Profile
@@ -17,7 +18,7 @@ export const internalUpsertProfile = async (
   try {
     const response = await apiAxios.patch(
       PROFILES_ENDPOINTS.PATCH_PROFILE(userId),
-      request,
+      cleanPayload(request),
     )
 
     const { profile }: InternalUpsertProfile = response.data
@@ -39,7 +40,7 @@ export const internalGetProfile = async (
 ): Promise<InternalGetProfile> => {
   try {
     const response = await apiAxios.get(
-      PROFILES_ENDPOINTS.GET_PROFILE(userId),
+      PROFILES_ENDPOINTS.GET_PROFILE(cleanParam(userId)),
     )
 
     const { profile }: InternalGetProfile = response.data
@@ -64,7 +65,9 @@ export const internalGetHandleExists = async (
 ) => {
   try {
     const response = await apiAxios.get(
-      PROFILES_ENDPOINTS.GET_HANDLE_EXISTS(handle),
+      PROFILES_ENDPOINTS.GET_HANDLE_EXISTS(
+        cleanParam(handle),
+      ),
     )
 
     return response.data as InternalGetHandleExists

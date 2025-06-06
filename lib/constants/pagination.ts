@@ -1,4 +1,4 @@
-export interface Pagination {
+interface Pagination {
   LIMIT: number
   SIZE: number
 }

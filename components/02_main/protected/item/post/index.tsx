@@ -55,14 +55,14 @@ export default function ItemPost() {
     router.push(ROUTES.MARKET)
     toast({
       description:
-        'Your item has been posted successfully!',
+        'Your item has been successfully posted!',
     })
   }
 
   return (
     <Card className='flex w-full flex-col md:min-w-3xl md:flex-row'>
       <div className='flex-1'>
-        <CardHeader>
+        <CardHeader className='pb-4'>
           <CardTitle className='text-2xl'>
             Post Your Ad
           </CardTitle>
@@ -75,7 +75,6 @@ export default function ItemPost() {
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <div className='flex flex-col gap-4'>
                 <ImageField form={form} />
-
                 <NameField form={form} />
                 <PriceField form={form} />
                 <DescriptionField form={form} />

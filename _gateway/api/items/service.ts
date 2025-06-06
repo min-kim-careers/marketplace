@@ -20,11 +20,11 @@ export const serviceGetItems = async (
   query: ItemsQuery,
 ): Promise<ServiceGetItems> => {
   try {
-    const res = await internalGetItems(query)
+    const { items, count } = await internalGetItems(query)
 
     return {
-      items: res.items,
-      count: res.count,
+      items,
+      count,
     } as ServiceGetItems
   } catch (error) {
     logError(error)
@@ -39,9 +39,9 @@ export const serviceGetSortOptions = async (): Promise<
   SortOption[]
 > => {
   try {
-    const res = await internalGetSortOptions()
+    const { sortOptions } = await internalGetSortOptions()
 
-    return res.sortOptions as SortOption[]
+    return sortOptions as SortOption[]
   } catch (error) {
     logError(error)
     return []

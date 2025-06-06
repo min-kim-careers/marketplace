@@ -2,14 +2,20 @@ import { create } from 'zustand'
 
 type LoadingState = {
   message: string | null
-  setMessage: (message: string | null) => void
+  isOpaque: boolean
+  setLoading: (
+    message: string | null,
+    isOpaque?: boolean,
+  ) => void
 }
 
 export const useLoadingStore = create<LoadingState>(
   (set) => ({
     message: null,
-    setMessage: (message: string | null) => {
-      set({ message: message })
-    },
+    isOpaque: false,
+    setLoading: (
+      message: string | null,
+      isOpaque: boolean = false,
+    ) => set({ message, isOpaque }),
   }),
 )

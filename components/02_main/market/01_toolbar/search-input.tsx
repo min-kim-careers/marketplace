@@ -3,7 +3,7 @@ import { Input } from '@/components/shadcn/components/ui/input'
 import { ROUTES } from '@/lib/constants/routes'
 import {
   marketToUrlParams
-} from '@/lib/helpers/market'
+} from '@/lib/common/market'
 import { useMarketStore } from '@/lib/stores/market'
 import { Search } from 'lucide-react'
 import { useRouter } from 'next/navigation'

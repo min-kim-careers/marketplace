@@ -39,6 +39,7 @@ export default function PriceField({
           <FormControl>
             <Input
               type={type}
+              min={0}
               placeholder={placeholder}
               onKeyDown={handleKeyDown}
               {...field}
