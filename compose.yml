@@ -4,7 +4,7 @@ services:
       file: ./firebase/compose.yml
       service: firebase-service
     ports:
-      - 8000:8000
+      - 8001:8001
     networks:
       - firebase-network
 
@@ -23,7 +23,7 @@ services:
       api-db-service:
         condition: service_healthy
     ports:
-      - 8080:8080
+      - 8000:8000
     networks:
       - api-network
 

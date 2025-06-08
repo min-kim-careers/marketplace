@@ -2,10 +2,6 @@
 	path = web
 	url = ../marketplace-web.git
 
-[submodule "api"]
-	path = api
-	url = ../marketplace-api.git
-
 [submodule "firebase"]
 	path = firebase
 	url = ../marketplace-firebase.git
