@@ -5,3 +5,11 @@
 [submodule "firebase"]
 	path = firebase
 	url = ../marketplace-firebase.git
+
+[submodule "chat"]
+	path = chat
+	url = ../chat-server.git
+
+[submodule "api"]
+	path = api
+	url = ../marketplace-api.git
