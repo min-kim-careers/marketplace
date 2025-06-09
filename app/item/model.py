@@ -2,7 +2,6 @@ from typing import TYPE_CHECKING, List, Optional
 from datetime import datetime, timezone
 from sqlmodel import (
     ARRAY,
-    JSON,
     Column,
     DateTime,
     SQLModel,
@@ -13,10 +12,10 @@ from sqlmodel import (
 from uuid import UUID
 
 if TYPE_CHECKING:
-    from app.models.profile import Profile
+    from app.profile.model import ProfileDB
 
 
-class Item(SQLModel, table=True):
+class ItemDB(SQLModel, table=True):
     __tablename__ = "items"  # type: ignore
 
     id: int = Field(default=None, primary_key=True)
@@ -44,4 +43,7 @@ class Item(SQLModel, table=True):
     )
 
     profile_id: UUID = Field(foreign_key="profiles.id", nullable=False)
-    profile: "Profile" = Relationship(back_populates="items")
+    profile: "ProfileDB" = Relationship(
+        back_populates="items",
+        sa_relationship_kwargs={"lazy": "selectin"},
+    )

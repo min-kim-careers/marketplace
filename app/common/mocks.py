@@ -1,17 +1,16 @@
-from uuid import uuid4
-from datetime import datetime, timezone, timedelta
+from uuid import UUID, uuid4
 from faker import Faker
 from sqlmodel import select
 from app.common.database import get_session
-from app.models.item import Item
-from app.models.profile import Profile
+from app.item.model import ItemDB
+from app.profile.model import ProfileDB
 import random
 
-fake = Faker()
+fake = Faker('en_AU')
 
 
-def create_mock_profile() -> Profile:
-    return Profile(
+def create_mock_profile() -> ProfileDB:
+    return ProfileDB(
         id=uuid4(),
         email=fake.unique.email(),
         handle=fake.unique.user_name(),
@@ -23,8 +22,8 @@ def create_mock_profile() -> Profile:
     )
 
 
-def create_mock_item(profile_id) -> Item:
-    return Item(
+def create_mock_item(profile_id: UUID) -> ItemDB:
+    return ItemDB(
         id=random.randint(1, 10000),
         name=fake.word().capitalize(),
         description=fake.text(max_nb_chars=200),
@@ -39,10 +38,10 @@ def create_mock_item(profile_id) -> Item:
 
 async def seed_db():
     async for session in get_session():
-        res = await session.execute(select(Profile))
+        res = await session.execute(select(ProfileDB))
         if res.first():
             print("Database already seeded.")
-            return
+            return None
 
         mock_profiles = [create_mock_profile() for _ in range(3)]
         session.add_all(mock_profiles)

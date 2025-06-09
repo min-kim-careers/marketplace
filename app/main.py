@@ -7,8 +7,8 @@ from app.common.database import init_db
 from app.common.mocks import seed_db
 from app.common.security import verify_service_key
 
-from app.routers.items import items_router
-from app.routers.profiles import profiles_router
+from app.item.router import items_router
+from app.profile.router import profiles_router
 
 
 @asynccontextmanager
