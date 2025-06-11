@@ -4,7 +4,7 @@ services:
       file: ./firebase/compose.yml
       service: firebase-service
     ports:
-      - 8001:8001
+      - 8001:8000
     networks:
       - firebase-network
 
@@ -26,6 +26,7 @@ services:
       - 8000:8000
     networks:
       - api-network
+      - firebase-network
 
   web-service:
     extends:
