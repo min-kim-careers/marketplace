@@ -1,20 +1,23 @@
 from datetime import datetime
 from typing import List, Optional
 
-from app.common.schemas.response import ApiResponse
+from app.common.schemas.response import ResponseBase
+from app.item.enums import ItemCategory, ItemCondition, ItemSortBy, ItemSortOrder
 from app.item.model import ItemDB
 
 
-class ItemOut(ApiResponse):
+class ItemOut(ResponseBase):
     name: str
     description: str
     price: float
-    category: str
+    category: ItemCategory
+    condition: ItemCondition
+    postcode: str
+
     created_at: datetime
     updated_at: datetime
     expires_at: Optional[datetime] = None
-    postcode: str
-    condition: str
+
     image_urls: List[str]
 
     profile_handle: Optional[str] = None
@@ -27,3 +30,9 @@ class ItemOut(ApiResponse):
                 "profile_handle": item.profile.handle,
             }
         )
+
+class ItemSortOption(ResponseBase):
+    sort_by: ItemSortBy
+    sort_order: ItemSortOrder
+    label: str
+    is_default: bool = False

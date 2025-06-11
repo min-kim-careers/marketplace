@@ -1,7 +1,8 @@
 from uuid import UUID, uuid4
 from faker import Faker
-from sqlmodel import select
+from sqlalchemy import select
 from app.common.database import get_session
+from app.item.enums import ItemCategory, ItemCondition
 from app.item.model import ItemDB
 from app.profile.model import ProfileDB
 import random
@@ -24,12 +25,11 @@ def create_mock_profile() -> ProfileDB:
 
 def create_mock_item(profile_id: UUID) -> ItemDB:
     return ItemDB(
-        id=random.randint(1, 10000),
-        name=fake.word().capitalize(),
+        name=fake.name().capitalize(),
         description=fake.text(max_nb_chars=200),
         price=round(random.uniform(10, 1000), 2),
-        category=fake.word(),
-        condition=random.choice(["new", "used", "refurbished"]),
+        category=random.choice(list(ItemCategory)),
+        condition=random.choice(list(ItemCondition)),
         postcode=fake.postcode(),
         image_urls=[fake.image_url() for _ in range(random.randint(1, 5))],
         profile_id=profile_id,
@@ -41,14 +41,14 @@ async def seed_db():
         res = await session.execute(select(ProfileDB))
         if res.first():
             print("Database already seeded.")
-            return None
+            return
 
-        mock_profiles = [create_mock_profile() for _ in range(3)]
+        mock_profiles = [create_mock_profile() for _ in range(5)]
         session.add_all(mock_profiles)
         await session.commit()
 
         for profile in mock_profiles:
-            items = [create_mock_item(profile.id) for _ in range(2)]
+            items = [create_mock_item(profile.id) for _ in range(3)]
             session.add_all(items)
 
         await session.commit()

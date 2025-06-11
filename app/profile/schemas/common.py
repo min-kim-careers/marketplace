@@ -1,8 +1,8 @@
 from typing import Optional
-from app.common.schemas.response import ApiResponse
+from app.common.schemas.response import ResponseBase
 
 
-class ProfileOut(ApiResponse):
+class ProfileOut(ResponseBase):
   email: str
   handle: str
   rating: float
