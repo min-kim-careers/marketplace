@@ -1,11 +1,7 @@
 import { locationExistsByPostcode } from '@/lib/utils/fuse/locations'
 import { z } from 'zod'
-import {
-  CATEGORIES,
-  CONDITIONS,
-  MAX_DESCRIPTION_LENGTH,
-} from '@/lib/constants/fields'
-
+import { ITEM_CONDITION_LABELS } from '@/lib/constants/item-condition-labels'
+import { ITEM_CATEGORY_LABELS } from '@/lib/constants/item-category-labels'
 
 export const ItemPostFormSchema = z.object({
   name: z
@@ -25,36 +21,43 @@ export const ItemPostFormSchema = z.object({
       message:
         'Description must be at least 10 characters long',
     })
-    .max(MAX_DESCRIPTION_LENGTH, {
-      message: `Description must be at most ${MAX_DESCRIPTION_LENGTH} characters long`,
+    .max(255, {
+      message: `Description must be at most 255 characters long`,
     }),
 
-  price: z
-    .number()
-    .min(0, { message: 'Price must be a positive number' }),
+  price: z.number({ coerce: true }).min(0),
 
   category: z.enum(
-    Object.keys(CATEGORIES) as [string, ...string[]],
+    Object.keys(ITEM_CATEGORY_LABELS) as [
+      string,
+      ...string[],
+    ],
     {
       message: 'Category is required',
     },
   ),
 
   condition: z.enum(
-    Object.keys(CONDITIONS) as [string, ...string[]],
+    Object.keys(ITEM_CONDITION_LABELS) as [
+      string,
+      ...string[],
+    ],
     { message: 'Condition is required' },
   ),
 
   location: z
-    .string({ message: 'Location is required' })
-    .refine((postcode) => locationExistsByPostcode(postcode), {
-      message: 'Invalid location',
-    }),
+    .string()
+    .nonempty({ message: 'Location is required' })
+    .refine(
+      (postcode) => locationExistsByPostcode(postcode),
+      {
+        message: 'Invalid location',
+      },
+    ),
 
-  expires_in: z.number(),
+  // expiresIn: z.number(),
 
-  image_urls: z
-    .array(z.string().url())
-    .max(3)
-    .optional()
+  imageUrls: z
+    .array(z.string())
+    .max(3),
 })

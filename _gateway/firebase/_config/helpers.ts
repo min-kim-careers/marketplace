@@ -1,13 +1,24 @@
-import { logError } from '@/_gateway/_common/helpers'
-import { HEADERS } from '@/lib/constants/headers'
+'use server'
+
+import { FirebaseErrorResponse } from '@/_gateway/firebase/_interfaces/firebase-error.response'
+import { REQUEST_HEADERS } from '@/lib/constants/request-headers'
 import { envLoader } from '@/lib/utils/env-loader'
+import { AxiosError } from 'axios'
 import { cookies } from 'next/headers'
 import { v5 as uuidv5 } from 'uuid'
+
+export const logFirebaseError = async (error: any) => {
+  if (error instanceof AxiosError) {
+    const firebaseError = error.response
+      ?.data as FirebaseErrorResponse
+    if (firebaseError) console.log(firebaseError)
+  }
+}
 
 export const hasSessionCookie = async () => {
   try {
     const cookieStore = await cookies()
-    return cookieStore.has(HEADERS.SESSION)
+    return cookieStore.has(REQUEST_HEADERS.SESSION)
   } catch (error) {
     throw error
   }
@@ -18,7 +29,7 @@ export const getSessionCookie = async (): Promise<
 > => {
   try {
     const cookieStore = await cookies()
-    const session = cookieStore.get(HEADERS.SESSION)?.value
+    const session = cookieStore.get(REQUEST_HEADERS.SESSION)?.value
     return session ?? null
   } catch (error) {
     throw error
@@ -31,7 +42,7 @@ export const setSessionCookie = async (
 ) => {
   try {
     const cookieStore = await cookies()
-    cookieStore.set(HEADERS.SESSION, session, {
+    cookieStore.set(REQUEST_HEADERS.SESSION, session, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       path: '/',
@@ -45,13 +56,13 @@ export const setSessionCookie = async (
 export const clearSessionCookie = async () => {
   try {
     const cookieStore = await cookies()
-    cookieStore.delete(HEADERS.SESSION)
+    cookieStore.delete(REQUEST_HEADERS.SESSION)
   } catch (error) {
     throw error
   }
 }
 
-export const uidToUuid = (uid: string) => {
+export const createUserId = async (uid: string) => {
   try {
     return uuidv5(uid, envLoader.UuidNamespace)
   } catch (error) {
@@ -59,7 +70,7 @@ export const uidToUuid = (uid: string) => {
   }
 }
 
-export const generateHandle = async (base: string) => {
+export const createHandle = async (base: string) => {
   try {
     const encoder = new TextEncoder()
     const data = encoder.encode(base)

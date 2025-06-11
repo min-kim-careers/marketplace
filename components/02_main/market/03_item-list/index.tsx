@@ -1,8 +1,8 @@
 import ItemCard from '@/components/02_main/market/00_common/item-card'
 import ItemModal from '@/components/02_main/market/00_common/item-modal'
-import { Item } from '@/lib/interfaces/items'
-import { useLayoutStore } from '@/lib/stores/layout'
-import { useMarketStore } from '@/lib/stores/market'
+import { Item } from '@/lib/interfaces/item'
+import  useLayoutStore  from '@/lib/stores/layout'
+import useMarketStore  from '@/lib/stores/market'
 
 export default function ItemList() {
   const { columns } = useLayoutStore()

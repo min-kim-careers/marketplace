@@ -23,7 +23,8 @@ import {
   PopoverTrigger,
 } from '@/components/shadcn/components/ui/popover'
 import { cn } from '@/components/shadcn/lib/utils'
-import { CATEGORIES } from '@/lib/constants/fields'
+import { ITEM_CATEGORY_LABELS } from "@/lib/constants/item-category-labels"
+import { ItemCategory } from "@/lib/enums/item-category"
 import { ItemPostFormSchema } from '@/components/02_main/protected/item/post/form'
 import { Check, ChevronsUpDown } from 'lucide-react'
 
@@ -34,7 +35,7 @@ export default function CategoryField({
 }) {
   const name = 'category'
   const label = 'Category'
-  const lookup = CATEGORIES
+  const lookup = ITEM_CATEGORY_LABELS
   const placeholder = 'Select an item category'
 
   const handleSearch = (value: string, search: string) =>
@@ -58,7 +59,7 @@ export default function CategoryField({
                     !field.value && 'text-muted-foreground',
                   )}
                 >
-                  {lookup[field.value] ?? placeholder}
+                  {lookup[field.value as ItemCategory] ?? placeholder}
                   <ChevronsUpDown className='opacity-50' />
                 </Button>
               </FormControl>
@@ -84,7 +85,7 @@ export default function CategoryField({
                           })
                         }}
                       >
-                        {lookup[key]}
+                        {lookup[key as ItemCategory]}
                         <Check
                           className={cn(
                             'ml-auto',

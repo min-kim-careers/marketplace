@@ -1,3 +1,3 @@
-export const META = {
+export const METADATA = {
   APP_TITLE: 'Marketplace',
 }

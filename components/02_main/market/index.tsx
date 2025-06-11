@@ -1,13 +1,14 @@
 'use client'
 
-import { Item, MarketParams } from '@/lib/interfaces/items'
+import { Item } from '@/lib/interfaces/item'
+import { MarketParams } from "@/lib/interfaces/market-params"
 import { useEffect } from 'react'
 
 import Toolbar from '@/components/02_main/market/01_toolbar'
 import PaginationTop from '@/components/02_main/market/02_pagination-top'
 import ItemList from '@/components/02_main/market/03_item-list'
 import PaginationBottom from '@/components/02_main/market/04_pagination-bottom'
-import { useMarketStore } from '@/lib/stores/market'
+import useMarketStore  from '@/lib/stores/market'
 
 interface MarketProps {
   items: Item[]

@@ -1,10 +1,10 @@
-import { logError } from '@/_gateway/_common/helpers'
-import { DecodedToken } from '@/_gateway/firebase/_models/decoded-token'
+import { logApiError } from '@/_gateway/api/_config/helpers'
+import { DecodedToken } from '@/_gateway/firebase/_interfaces/decoded-token'
 import {
   serviceSignOut,
   serviceVerifySession,
 } from '@/_gateway/firebase/service'
-import { HEADERS } from '@/lib/constants/headers'
+import { REQUEST_HEADERS } from '@/lib/constants/request-headers'
 import {
   isFallbackRoute,
   isProtectedRoute,
@@ -21,15 +21,15 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next()
   }
 
-  const session = req.cookies.get(HEADERS.SESSION)?.value
+  const session = req.cookies.get(REQUEST_HEADERS.SESSION)?.value
   let verifiedToken: DecodedToken | null = null
 
   if (session) {
     try {
-      const { decodedToken } = await serviceVerifySession(session)
+      const decodedToken = await serviceVerifySession(session)
       verifiedToken = decodedToken
     } catch (error) {
-      logError(error)
+      logApiError(error)
       await serviceSignOut()
       return NextResponse.error()
     }

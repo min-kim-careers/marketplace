@@ -1,8 +1,4 @@
-import { PAGINATION } from '@/lib/constants/pagination'
-import {
-  ItemsQuery,
-  MarketParams,
-} from '@/lib/interfaces/items'
+import { MarketParams } from "../interfaces/market-params"
 import { ReadonlyURLSearchParams } from 'next/navigation'
 
 const DEFAULT_PAGE = 1
@@ -55,13 +51,3 @@ export const areMarketParamsEqual = (
   a.keyword === b.keyword &&
   a.sortBy === b.sortBy &&
   a.sortOrder === b.sortOrder
-
-export const marketParamsToQuery = (
-  marketParams: MarketParams,
-): ItemsQuery => ({
-  page: marketParams.page,
-  keyword: marketParams.keyword,
-  sortBy: marketParams.sortBy,
-  sortOrder: marketParams.sortOrder,
-  limit: PAGINATION.LIMIT
-})

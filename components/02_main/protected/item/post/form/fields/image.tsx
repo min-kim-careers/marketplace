@@ -23,7 +23,7 @@ export default function ImageField({
 }: {
   form: UseFormReturn<z.infer<typeof ItemPostFormSchema>>
 }) {
-  const name = 'image_urls'
+  const name = 'imageUrls'
   const label = 'Images'
   const { toast } = useToast()
 
@@ -34,9 +34,9 @@ export default function ImageField({
     const file = e.target.files?.[0] || null
     if (file) {
       const imageUrl = URL.createObjectURL(file)
-      const newImageUrls = [...form.getValues().image_urls!]
+      const newImageUrls = [...form.getValues().imageUrls!]
       newImageUrls[index] = imageUrl
-      form.setValue('image_urls', newImageUrls)
+      form.setValue(name, newImageUrls)
     } else {
       toast({
         description:
@@ -46,15 +46,15 @@ export default function ImageField({
   }
 
   const handleDelete = (index: number) => {
-    const newImageUrls = [...form.getValues().image_urls!]
+    const newImageUrls = [...form.getValues().imageUrls!]
     newImageUrls[index] = ''
-    form.setValue('image_urls', newImageUrls)
+    form.setValue(name, newImageUrls)
   }
 
   const renderInputLabel = (
     field: ControllerRenderProps<
       z.infer<typeof ItemPostFormSchema>,
-      'image_urls'
+      typeof name
     >,
     index: number,
   ) => (

@@ -51,7 +51,7 @@ export default function LocationField({
       const res = await getLocationList(value)
       setLocations(res)
     } catch (error) {
-      console.error(error)
+      console.error('Location field error')
     } finally {
       setLoading(false)
     }

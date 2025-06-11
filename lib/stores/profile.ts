@@ -1,6 +1,6 @@
 'use client'
 
-import { Profile } from '@/lib/interfaces/profiles'
+import { Profile } from '@/lib/interfaces/profile'
 import { create } from 'zustand'
 import {
   persist,

@@ -7,27 +7,22 @@ import {
   SelectValue,
 } from '@/components/shadcn/components/ui/select'
 import { ROUTES } from '@/lib/constants/routes'
-import {
-  marketToUrlParams
-} from '@/lib/common/market'
-import { MarketParams, SortOption } from '@/lib/interfaces/items'
-import { useMarketStore } from '@/lib/stores/market'
+import { marketToUrlParams } from '@/lib/common/market-helpers'
+import { ItemSortOption } from "@/lib/interfaces/item-sort-options"
+import { MarketParams } from "@/lib/interfaces/market-params"
+import useMarketStore from '@/lib/stores/market'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { ITEM_SORT_OPTIONS } from '@/lib/constants/item-sort-options'
 
 export default function SortDropdown() {
-  const {
-    sortOptions,
-    fetchSortOptions,
-    params,
-    setParams,
-  } = useMarketStore()
-  useEffect(() => {
-    void fetchSortOptions()
-  }, [])
-
+  const sortOptions = ITEM_SORT_OPTIONS
+  
+  const { params, setParams } = useMarketStore()
   const [currentSortOption, setCurrentSortOption] =
-    useState<SortOption | null>(null)
+    useState<ItemSortOption | null>(null)
+  const router = useRouter()
+
   useEffect(() => {
     const defaultSortOption = sortOptions.find(
       (s) => s.isDefault,
@@ -36,7 +31,6 @@ export default function SortDropdown() {
       setCurrentSortOption(defaultSortOption)
   }, [sortOptions])
 
-  const router = useRouter()
   const handleValueChange = (value: string) => {
     const option = sortOptions.find(
       (s) => s.label === value,

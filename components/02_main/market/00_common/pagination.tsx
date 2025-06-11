@@ -6,24 +6,24 @@ import {
   PaginationLast,
   PaginationLink,
 } from '@/components/shadcn/components/ui/pagination'
-import { PAGINATION } from '@/lib/constants/pagination'
+import { ITEM_PAGINATION } from '@/lib/constants/item-pagination'
 import { ROUTES } from '@/lib/constants/routes'
-import { useMarketStore } from '@/lib/stores/market'
-import { serialize } from '@/lib/common/market'
+import useMarketStore  from '@/lib/stores/market'
+import { serialize } from '@/lib/common/market-helpers'
 import { notFound, useSearchParams } from 'next/navigation'
 
 export default function Pagination() {
   const { params } = useMarketStore()
   const { count } = useMarketStore()
 
-  const lastPage = Math.ceil(count / PAGINATION.LIMIT)
+  const lastPage = Math.ceil(count / ITEM_PAGINATION.LIMIT)
 
   if (params.page < 1 && lastPage < params.page) {
     notFound()
   }
 
   const paginationArray = Array.from(
-    { length: PAGINATION.SIZE },
+    { length: ITEM_PAGINATION.SIZE },
     (_, index) => {
       if (params.page < 3) {
         return index + 1

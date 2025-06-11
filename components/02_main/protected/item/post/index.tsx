@@ -28,9 +28,9 @@ import {
 } from '@/components/02_main/protected/item/post/form/fields'
 import ImagePreview from './image-preview'
 import { ItemPostFormSchema } from '@/components/02_main/protected/item/post/form'
+import { serviceCreateItem } from '@/_gateway/api/item/service'
 
 export default function ItemPost() {
-  const { profile } = useProfileStore()
   const { toast } = useToast()
   const router = useRouter()
 
@@ -43,20 +43,39 @@ export default function ItemPost() {
       category: '',
       location: '',
       condition: '',
-      expires_in: 0,
-      image_urls: Array.from({ length: 3 }, () => ''),
+      imageUrls: Array.from({ length: 3 }, () => ''),
+      // expiresIn: 0,
     },
   })
 
   async function onSubmit(
     values: z.infer<typeof ItemPostFormSchema>,
   ) {
+    try {
+      const newItem = {
+        ...values,
+        postcode: values.location,
+      }
+      console.log(newItem)
 
-    router.push(ROUTES.MARKET)
-    toast({
-      description:
-        'Your item has been successfully posted!',
-    })
+      const item = await serviceCreateItem({
+        ...values,
+        postcode: values.location,
+      })
+
+      if (!item) throw new Error('Failed to create item')
+
+      // router.push(ROUTES.MARKET)
+      toast({
+        description:
+          'Your item has been successfully posted!',
+      })
+    } catch (error) {
+      toast({
+        description:
+          'Something went wrong',
+      })
+    }
   }
 
   return (

@@ -4,7 +4,7 @@ services:
     restart: always
     build: .
     environment:
-      - API_URL=http://api-service:8080
+      - API_URL=http://api-service:8000
       - API_KEY=REDACTED
       - API_KEY_HEADER=REDACTED
 

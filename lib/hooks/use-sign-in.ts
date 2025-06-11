@@ -6,11 +6,11 @@ import { useToast } from '@/components/shadcn/hooks/use-toast'
 import { auth, provider } from '@/lib/firebase/config'
 import { useLoadingStore } from '@/lib/stores/loading'
 import useProfileStore from '@/lib/stores/profile'
-import { signInWithPopup, signOut } from 'firebase/auth'
+import { signInWithPopup } from 'firebase/auth'
 import { useRouter } from 'next/navigation'
 
 export const useSignIn = () => {
-  const { setProfile } = useProfileStore()
+  const { profile, setProfile } = useProfileStore()
   const { setLoading } = useLoadingStore()
   const { toast } = useToast()
   const router = useRouter()
@@ -22,20 +22,24 @@ export const useSignIn = () => {
 
       const token = await cred.user.getIdToken()
 
-      const { profile } =
+      const newProfile =
         await serviceSignInWithGoogle(token)
-      if (profile) setProfile(profile)
-
-      toast({
-        description: `Signed in as ${profile.handle}.`
-      })
+      if (newProfile) setProfile(newProfile)
 
       router.refresh()
     } catch (error) {
-      await signOut(auth)
+      await auth.signOut()
       await serviceSignOut()
+      setProfile(null)
+      toast({
+        description: `Something went wrong.`,
+      })
     } finally {
       setLoading(null)
+      if (profile)
+        toast({
+          description: `Signed in as ${profile.handle}.`,
+        })
     }
   }
 

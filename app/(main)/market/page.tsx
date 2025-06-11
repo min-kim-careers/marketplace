@@ -1,16 +1,12 @@
 'use server'
 
+import { serviceGetItems } from '@/_gateway/api/item/service'
 import Market from '@/components/02_main/market'
 import {
-  ServiceGetItems,
-  serviceGetItems,
-} from '@/_gateway/api/items/service'
-import { ROUTES } from '@/lib/constants/routes'
-import {
-  marketParamsToQuery,
   marketToUrlParams,
   serverUrlToMarketParams,
-} from '@/lib/common/market'
+} from '@/lib/common/market-helpers'
+import { ROUTES } from '@/lib/constants/routes'
 import { redirect } from 'next/navigation'
 
 export default async function Page({
@@ -29,10 +25,8 @@ export default async function Page({
       `${ROUTES.MARKET}?${marketToUrlParams(marketParams)}`,
     )
 
-  const query = marketParamsToQuery(marketParams)
-
-  const { items, count }: ServiceGetItems =
-    await serviceGetItems(query)
+  const { items, count } =
+    await serviceGetItems(marketParams)
 
   return (
     <Market

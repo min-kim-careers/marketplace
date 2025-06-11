@@ -3,24 +3,22 @@
 import {
   internalGetProfile,
   internalUpsertProfile,
-} from '@/_gateway/api/profiles/internal'
+} from '@/_gateway/api/profile/internal'
 import {
   clearSessionCookie,
-  generateHandle,
+  createHandle,
   getSessionCookie,
   setSessionCookie,
-  uidToUuid,
+  createUserId,
 } from '@/_gateway/firebase/_config/helpers'
-import { DecodedToken } from '@/_gateway/firebase/_models/decoded-token'
+import { DecodedToken } from '@/_gateway/firebase/_interfaces/decoded-token'
 import {
   internalGetSession,
-  InternalGetSession,
   internalVerifySession,
-  InternalVerifySession,
 } from '@/_gateway/firebase/internal'
-import { Profile } from '@/lib/interfaces/profiles'
-import { logError } from '../_common/helpers'
-import { cleanPayload } from '@/lib/common'
+import { Profile } from '@/lib/interfaces/profile'
+import { logFirebaseError } from '@/_gateway/firebase/_config/helpers'
+import { cleanPayload } from '@/lib/common/utils'
 
 export interface ServiceSignInWithGoogle {
   profile: Profile
@@ -28,16 +26,15 @@ export interface ServiceSignInWithGoogle {
 
 export const serviceSignInWithGoogle = async (
   idToken: string,
-): Promise<ServiceSignInWithGoogle> => {
+): Promise<Profile> => {
   try {
     const {
       decodedToken,
       sessionCookie,
       expiresInSeconds,
-    }: InternalGetSession =
-      await internalGetSession(idToken)
+    } = await internalGetSession(idToken)
 
-    const userId = uidToUuid(decodedToken.uid)
+    const userId = await createUserId(decodedToken.uid)
 
     const { profile: existingProfile } =
       await internalGetProfile(userId)
@@ -47,41 +44,40 @@ export const serviceSignInWithGoogle = async (
         sessionCookie,
         expiresInSeconds,
       )
-      return { profile: existingProfile }
+      return existingProfile
     }
 
-    const handle = await generateHandle(decodedToken.uid)
+    const handle = await createHandle(decodedToken.uid)
 
     const { profile: newProfile } =
-      await internalUpsertProfile(userId, cleanPayload({
-        handle,
-        email: decodedToken.email,
-        avatarUrl: decodedToken.picture,
-      }))
+      await internalUpsertProfile(
+        userId,
+        cleanPayload({
+          handle,
+          email: decodedToken.email,
+          avatarUrl: decodedToken.picture,
+        }),
+      )
 
     await setSessionCookie(sessionCookie, expiresInSeconds)
-    return { profile: newProfile }
+    return newProfile
   } catch (error) {
-    logError(error)
+    logFirebaseError(error)
     await clearSessionCookie()
     throw new Error()
   }
 }
 
-export interface ServiceVerifySession {
-  decodedToken: DecodedToken
-}
-
 export const serviceVerifySession = async (
   session: string,
-): Promise<ServiceVerifySession> => {
+): Promise<DecodedToken> => {
   try {
-    const { decodedToken }: InternalVerifySession =
+    const { decodedToken } =
       await internalVerifySession(session)
 
-    return { decodedToken } as ServiceVerifySession
+    return decodedToken
   } catch (error) {
-    logError(error)
+    logFirebaseError(error)
     throw new Error()
   }
 }
@@ -92,7 +88,9 @@ export const serviceRefreshSession = async (
   try {
     const session = await getSessionCookie()
     if (session) {
-      console.log('Session already exists. Aborting refresh.');
+      console.log(
+        'Session already exists. Aborting refresh.',
+      )
       return
     }
 
@@ -100,12 +98,11 @@ export const serviceRefreshSession = async (
       // decodedToken,
       sessionCookie,
       expiresInSeconds,
-    }: InternalGetSession =
-      await internalGetSession(idToken)
+    } = await internalGetSession(idToken)
 
     await setSessionCookie(sessionCookie, expiresInSeconds)
   } catch (error) {
-    logError(error)
+    logFirebaseError(error)
     throw new Error()
   }
 }
@@ -114,7 +111,7 @@ export const serviceSignOut = async (): Promise<void> => {
   try {
     await clearSessionCookie()
   } catch (error) {
-    logError(error)
+    logFirebaseError(error)
     throw new Error()
   }
 }

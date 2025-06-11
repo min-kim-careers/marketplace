@@ -1,11 +1,11 @@
 import '@/app/globals.css'
 import { Toaster } from '@/components/shadcn/components/ui/toaster'
-import { META } from '@/lib/constants/meta'
+import { METADATA } from '@/lib/constants/metadata'
 import FirebaseAuthListener from '@/lib/firebase/listener'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: META.APP_TITLE,
+  title: METADATA.APP_TITLE,
 }
 
 export default function RootLayout({

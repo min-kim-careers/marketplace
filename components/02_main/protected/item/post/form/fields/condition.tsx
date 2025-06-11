@@ -25,7 +25,8 @@ import {
 import { cn } from '@/components/shadcn/lib/utils'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { ItemPostFormSchema } from '@/components/02_main/protected/item/post/form'
-import { CONDITIONS } from '@/lib/constants/fields'
+import { ITEM_CONDITION_LABELS } from "@/lib/constants/item-condition-labels"
+import { ItemCondition } from "@/lib/enums/item-condition"
 
 export default function ConditionField({
   form,
@@ -34,7 +35,7 @@ export default function ConditionField({
 }) {
   const name = 'condition'
   const label = 'Condition'
-  const lookup = CONDITIONS
+  const lookup = ITEM_CONDITION_LABELS
   const placeholder =
     'Choose the condition, e.g., New or Used'
 
@@ -59,7 +60,8 @@ export default function ConditionField({
                     !field.value && 'text-muted-foreground',
                   )}
                 >
-                  {lookup[field.value] ?? placeholder}
+                  {lookup[field.value as ItemCondition] ??
+                    placeholder}
                   <ChevronsUpDown className='opacity-50' />
                 </Button>
               </FormControl>
@@ -80,10 +82,12 @@ export default function ConditionField({
                         value={key}
                         key={key}
                         onSelect={(value) => {
-                          form.setValue(name, value, {shouldValidate: true})
+                          form.setValue(name, value, {
+                            shouldValidate: true,
+                          })
                         }}
                       >
-                        {lookup[key]}
+                        {lookup[key as ItemCondition]}
                         <Check
                           className={cn(
                             'ml-auto',

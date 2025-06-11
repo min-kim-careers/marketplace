@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { serviceCheckHandleExists } from '@/_gateway/api/profiles/service'
+import { serviceCheckHandleExists } from '@/_gateway/api/profile/service'
 import Spinner from '@/components/00_common/spinner'
 import { ProfileUpdateForm } from '@/components/02_main/protected/profile/update/form'
 import { Button } from '@/components/shadcn/components/ui/button'
@@ -25,9 +25,9 @@ import {
 } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
-const DefaultButton = () => <>Confirm</>
-const UnconfirmedButton = () => <X />
-const ConfirmedButton = () => <CheckCheck />
+const DefaultButtonNode = () => <>Confirm</>
+const HandleTakenButtonNode = () => <X />
+const ConfirmedButtonNode = () => <CheckCheck />
 
 export default function HandleField({
   confirmed,
@@ -48,7 +48,7 @@ export default function HandleField({
 
   const [input, setInput] = useState('')
   const [buttonNode, setButtonNode] = useState<ReactNode>(
-    <DefaultButton />,
+    <DefaultButtonNode />,
   )
   const handleSchema = ProfileUpdateForm.pick({
     handle: true,
@@ -65,7 +65,7 @@ export default function HandleField({
   ) => {
     e.preventDefault()
     if (confirmed) setConfirmed(false)
-    setButtonNode(<DefaultButton />)
+    setButtonNode(<DefaultButtonNode />)
 
     const newInput = e.target.value.trim()
     setInput(newInput)
@@ -97,17 +97,21 @@ export default function HandleField({
         await serviceCheckHandleExists(input)
 
       if (handleExists) {
-        setButtonNode(<UnconfirmedButton />)
+        setButtonNode(<HandleTakenButtonNode />)
         setConfirmed(false)
-        toast({ description: 'Handle taken :(' })
+        setError(name, {
+          message: 'Handle already taken :(',
+        })
       } else {
-        setButtonNode(<ConfirmedButton />)
+        setButtonNode(<ConfirmedButtonNode />)
         setConfirmed(true)
-        toast({ description: 'Handle available :)' })
+        toast({
+          description: 'Handle is available :)'
+        })
       }
     } catch (error) {
-      console.error(error)
-      setButtonNode(<DefaultButton />)
+      console.error('Error confirming handle')
+      setButtonNode(<DefaultButtonNode />)
       setConfirmed(false)
     }
   }

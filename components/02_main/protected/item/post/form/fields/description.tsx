@@ -1,3 +1,4 @@
+import { ItemPostFormSchema } from '@/components/02_main/protected/item/post/form'
 import {
   FormControl,
   FormDescription,
@@ -7,16 +8,11 @@ import {
   FormMessage,
 } from '@/components/shadcn/components/ui/form'
 import { Textarea } from '@/components/shadcn/components/ui/textarea'
-import { MAX_DESCRIPTION_LENGTH } from '@/lib/constants/fields'
-import { ItemPostFormSchema } from '@/components/02_main/protected/item/post/form'
 import {
-  ChangeEvent,
-  ClipboardEvent,
-  useState,
+  useState
 } from 'react'
 import {
-  ControllerRenderProps,
-  UseFormReturn,
+  UseFormReturn
 } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -30,32 +26,7 @@ export default function DescriptionField({
   const placeholder = 'Provide details about the item'
 
   const [charCount, setCharCount] = useState(0)
-  const charLimit = MAX_DESCRIPTION_LENGTH
-
-  const handleChange = (
-    e: ChangeEvent<HTMLTextAreaElement>,
-    field: ControllerRenderProps<
-      z.infer<typeof ItemPostFormSchema>
-    >,
-  ) => {
-    const { value } = e.target
-
-    if (value.length <= charLimit) {
-      setCharCount(value.length)
-      field.onChange(e)
-    }
-  }
-
-  const handlePaste = (
-    e: ClipboardEvent<HTMLTextAreaElement>,
-  ) => {
-    if (
-      charCount + e.clipboardData.getData.length >=
-      charLimit
-    ) {
-      e.preventDefault()
-    }
-  }
+  const charLimit = 255
 
   return (
     <FormField
@@ -69,8 +40,11 @@ export default function DescriptionField({
               placeholder={placeholder}
               className='h-[150px]'
               {...field}
-              onChange={(e) => handleChange(e, field)}
-              onPaste={handlePaste}
+              onChange={(e) => {
+                field.onChange(e)
+                setCharCount(e.target.value.length)
+              }}
+              maxLength={charLimit}
             />
           </FormControl>
           <FormDescription className='flex justify-end'>

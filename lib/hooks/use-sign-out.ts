@@ -3,7 +3,6 @@ import { useToast } from '@/components/shadcn/hooks/use-toast'
 import { auth } from '@/lib/firebase/config'
 import { useLoadingStore } from '@/lib/stores/loading'
 import useProfileStore from '@/lib/stores/profile'
-import { signOut } from 'firebase/auth'
 import { useRouter } from 'next/navigation'
 
 export const useSignOut = () => {
@@ -16,7 +15,7 @@ export const useSignOut = () => {
     try {
       setLoading('Signing you out...')
 
-      await signOut(auth)
+      await auth.signOut()
       await serviceSignOut()
       setProfile(null)
 

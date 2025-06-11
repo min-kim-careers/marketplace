@@ -6,7 +6,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/shadcn/components/ui/card'
-import { Item } from '@/lib/interfaces/items'
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from '@/components/shadcn/components/ui/carousel'
+import { Item } from '@/lib/interfaces/item'
+import { formatDistanceToNow } from 'date-fns'
+import Image from 'next/image'
 
 export default function ItemCard({
   item,
@@ -28,8 +35,17 @@ export default function ItemCard({
             {item.name}
           </CardTitle>
           <CardDescription className='line-clamp-1'>
-            <div className='flex justify-between'>
-              <p>User: {item.userHandle}</p>
+            <div className='flex gap-1'>
+              {formatDistanceToNow(
+                item.createdAt.toLocaleString(),
+                { addSuffix: true },
+              )}{' '}
+              by{' '}
+              <span className='space-x-2'>
+                <button className='font-semibold'>
+                  {item.profileHandle}
+                </button>
+              </span>
             </div>
           </CardDescription>
         </CardHeader>
@@ -42,7 +58,24 @@ export default function ItemCard({
       </div>
       {columns === 1 && (
         <div className='m-2 flex min-h-full flex-[0.5] items-center justify-center rounded shadow'>
-          <p className='text-gray-400 italic'>No image</p>
+          <Carousel>
+            <CarouselContent>
+              {item.imageUrls.map((url, index) => (
+                <CarouselItem
+                  key={index}
+                  className='flex aspect-square justify-center'
+                >
+                  <img
+                    src={url}
+                    alt='preview-image'
+                    className='object-fill rounded'
+                    // layout='fill'
+                    // objectFit='contain'
+                  />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
         </div>
       )}
     </Card>

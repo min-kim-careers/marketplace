@@ -1,9 +1,9 @@
-import { serviceGetSortOptions } from '@/_gateway/api/items/service'
+// import { serviceGetSortOptions } from '@/_gateway/api/items/service'
 import {
   Item,
-  MarketParams,
-  SortOption,
-} from '@/lib/interfaces/items'
+  // ItemSortOption,
+} from '@/lib/interfaces/item'
+import { MarketParams } from "../interfaces/market-params"
 import { create } from 'zustand'
 
 type MarketState = {
@@ -16,11 +16,11 @@ type MarketState = {
   params: MarketParams
   setParams: (params: MarketParams) => void
 
-  sortOptions: SortOption[]
-  fetchSortOptions: () => void
+  // sortOptions: ItemSortOption[]
+  // fetchSortOptions: () => void
 }
 
-export const useMarketStore = create<MarketState>((set) => {
+const useMarketStore = create<MarketState>((set) => {
   return {
     items: [],
     setItems: (items: Item[]) => set({ items }),
@@ -31,14 +31,16 @@ export const useMarketStore = create<MarketState>((set) => {
     params: { page: 1 },
     setParams: (params: MarketParams) => set({ params }),
 
-    sortOptions: [] as SortOption[],
-    fetchSortOptions: async () => {
-      try {
-        const sortOptions = await serviceGetSortOptions()
-        set({ sortOptions })
-      } catch (_) {
-        set({ sortOptions: [] })
-      }
-    },
+    // sortOptions: [] as ItemSortOption[],
+    // fetchSortOptions: async () => {
+    //   try {
+    //     const sortOptions = await serviceGetSortOptions()
+    //     set({ sortOptions })
+    //   } catch (_) {
+    //     set({ sortOptions: [] })
+    //   }
+    // },
   }
 })
+
+export default useMarketStore

@@ -22,7 +22,7 @@ export default function ImagePreview({
   const [current, setCurrent] = useState(0)
   const [count, setCount] = useState(0)
 
-  const watchField = form.watch('image_urls')
+  const watchField = form.watch('imageUrls')
 
   useEffect(() => {
     if (!api) {
@@ -46,7 +46,7 @@ export default function ImagePreview({
       className='relative m-0 flex-1'
     >
       <CarouselContent className='m-0'>
-        {form.getValues().image_urls!.map(
+        {form.getValues().imageUrls!.map(
           (url, index) =>
             url && (
               <CarouselItem

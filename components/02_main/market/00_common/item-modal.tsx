@@ -15,7 +15,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/shadcn/components/ui/dialog'
-import { Item } from '@/lib/interfaces/items'
+import { Item } from '@/lib/interfaces/item'
 import { ReactNode } from 'react'
 import { formatDistanceToNow } from 'date-fns'
 import { Button } from '@/components/shadcn/components/ui/button'
@@ -49,7 +49,7 @@ export default function ItemModal({
                 by{' '}
                 <span className='space-x-2'>
                   <button className='font-semibold'>
-                    {item.userHandle}
+                    {item.profileHandle}
                   </button>
                 </span>
               </span>
@@ -75,7 +75,7 @@ export default function ItemModal({
           <span className='font-semibold'>
             Offered at ${Math.round(item.price)}
           </span>
-          <Button>Chat with {item.userHandle}</Button>
+          <Button>Chat with {item.profileHandle}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

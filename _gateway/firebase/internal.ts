@@ -1,19 +1,17 @@
 'use server'
 
 import { firebaseAxios } from '@/_gateway/firebase/_config/axios'
-import { FIREBASE_ENDPOINTS } from './_config/endpoints'
-import { DecodedToken } from '@/_gateway/firebase/_models/decoded-token'
-import { HEADERS } from '@/lib/constants/headers'
-
-export interface InternalGetSession {
-  decodedToken: DecodedToken
-  sessionCookie: string
-  expiresInSeconds: number
-}
+import { FIREBASE_ENDPOINTS } from './endpoints'
+import { DecodedToken } from '@/_gateway/firebase/_interfaces/decoded-token'
+import { getCookieHeader } from '@/_gateway/_common/helpers'
 
 export const internalGetSession = async (
   idToken: string,
-): Promise<InternalGetSession> => {
+): Promise<{
+  decodedToken: DecodedToken
+  sessionCookie: string
+  expiresInSeconds: number
+}> => {
   try {
     const response = await firebaseAxios.post(
       FIREBASE_ENDPOINTS.GET_SESSION,
@@ -23,7 +21,7 @@ export const internalGetSession = async (
       decodedToken,
       sessionCookie,
       expiresInSeconds,
-    }: InternalGetSession = response.data
+    } = response.data
 
     if (!decodedToken)
       throw new Error('Missing decoded token')
@@ -38,25 +36,19 @@ export const internalGetSession = async (
   }
 }
 
-export interface InternalVerifySession {
-  decodedToken: DecodedToken
-}
-
 export const internalVerifySession = async (
   session: string,
-): Promise<InternalVerifySession> => {
+): Promise<{
+  decodedToken: DecodedToken
+}> => {
   try {
     const response = await firebaseAxios.post(
       FIREBASE_ENDPOINTS.VERIFY_SESSION,
       {},
-      {
-        headers: {
-          Cookie: `${HEADERS.SESSION}=${session}`,
-        },
-      },
+      await getCookieHeader(session),
     )
 
-    const { decodedToken }: InternalVerifySession = response.data
+    const { decodedToken } = response.data
 
     if (!decodedToken)
       throw new Error('Missing decoded token')
