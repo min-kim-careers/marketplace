@@ -6,60 +6,80 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.common.database import get_session
 from app.common.schemas.error import ErrorResponse
 from app.profile import service
-from app.profile.schemas.requests import ProfileIn
-from app.profile.schemas.responses import (
-    CheckHandleExistsResponse,
-    UpsertProfileResponse,
-    GetProfileResponse,
-    ProfileResponse,
-)
-from rich import print
+from app.profile.schemas.requests import ProfileInRequest
+from app.profile.schemas.responses import ProfileResponse
 
 profiles_router = APIRouter()
 
 
-@profiles_router.get("/{user_id}", response_model=ProfileResponse[GetProfileResponse])
+@profiles_router.get("/{user_id}", response_model=ProfileResponse)
 async def get_profile(
     user_id: UUID,
     session: AsyncSession = Depends(get_session),
-) -> ProfileResponse[GetProfileResponse]:
-    data = await service.get_profile(session, user_id)
-    if not data:
+) -> ProfileResponse:
+    profile = await service.get_profile(session, user_id)
+    if not profile:
         raise ErrorResponse(status_code=404, message="Profile not found")
 
-    return ProfileResponse[GetProfileResponse](
+    data = dict(
+        profile=profile,
+    )
+
+    return ProfileResponse(
         success=True,
         data=data,
     )
 
 
-@profiles_router.put(
-    "/{user_id}", response_model=ProfileResponse[UpsertProfileResponse]
-)
+@profiles_router.put("/{user_id}", response_model=ProfileResponse)
 async def upsert_profile(
     user_id: UUID,
-    profile_in: ProfileIn,
+    profile_in: ProfileInRequest,
     session: AsyncSession = Depends(get_session),
-) -> ProfileResponse[UpsertProfileResponse]:
-    data = await service.upsert_profile(session, user_id, profile_in)
-    if not data:
+) -> ProfileResponse:
+    profile = await service.upsert_profile(session, user_id, profile_in)
+    if not profile:
         raise ErrorResponse(status_code=404, message="Profile upsert error")
 
-    return ProfileResponse[UpsertProfileResponse](
+    data = dict(
+        profile=profile,
+    )
+
+    return ProfileResponse(
         success=True,
         data=data,
     )
 
 
-@profiles_router.get(
-    "/exists/{handle}", response_model=ProfileResponse[CheckHandleExistsResponse]
-)
+@profiles_router.get("/exists/{handle}", response_model=ProfileResponse)
 async def check_handle_exists(
-    handle: str, session: AsyncSession = Depends(get_session)
-) -> ProfileResponse[CheckHandleExistsResponse]:
-    data = await service.profile_handle_exists(session, handle)
+    handle: str,
+    session: AsyncSession = Depends(get_session),
+) -> ProfileResponse:
+    exists = await service.profile_handle_exists(session, handle)
 
-    return ProfileResponse[CheckHandleExistsResponse](
+    data = dict(
+        exists=exists,
+    )
+
+    return ProfileResponse(
+        success=True,
+        data=data,
+    )
+
+
+@profiles_router.get("/{user_id}/extra", response_model=ProfileResponse)
+async def get_profile_extra(
+    user_id: UUID,
+    session: AsyncSession = Depends(get_session),
+) -> ProfileResponse:
+    extra = await service.get_profile_extra(session, user_id)
+
+    data = dict(
+        extra=extra,
+    )
+
+    return ProfileResponse(
         success=True,
         data=data,
     )

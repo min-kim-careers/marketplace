@@ -31,7 +31,7 @@ def create_mock_item(profile_id: UUID) -> ItemDB:
         category=random.choice(list(ItemCategory)),
         condition=random.choice(list(ItemCondition)),
         postcode=fake.postcode(),
-        image_urls=[fake.image_url() for _ in range(random.randint(1, 5))],
+        image_urls=[fake.image_url() for _ in range(random.randint(0, 3))],
         profile_id=profile_id,
     )
 

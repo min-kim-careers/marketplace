@@ -1,8 +1,6 @@
-from typing import List, Optional
-from uuid import UUID
+from typing import Optional
 
 from pydantic import field_validator
-
 
 from app.common.schemas.request import RequestBase
 from app.item.enums import ItemSortBy, ItemSortOrder

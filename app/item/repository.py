@@ -8,7 +8,7 @@ from sqlalchemy.orm import selectinload
 from app.common.utils import get_one_by
 from app.item.enums import ItemSortOrder
 from app.item.model import ItemDB
-from app.item.protected.schemas.requests import ItemCreate, ItemUpdate
+from app.item.protected.schemas.requests import ItemCreateRequest, ItemUpdateRequest
 from app.item.public.schemas.requests import GetItemsRequest
 
 
@@ -67,7 +67,7 @@ async def get_item_by_id(session: AsyncSession, item_id: int) -> ItemDB | None:
 
 
 async def create_item(
-    session: AsyncSession, profile_id: UUID, item_in: ItemCreate
+    session: AsyncSession, profile_id: UUID, item_in: ItemCreateRequest
 ) -> ItemDB | None:
     try:
         item_db = ItemDB(
@@ -86,7 +86,7 @@ async def create_item(
 
 
 async def update_item(
-    session: AsyncSession, item_db: ItemDB, item_in: ItemUpdate
+    session: AsyncSession, item_db: ItemDB, item_in: ItemUpdateRequest
 ) -> ItemDB | None:
     try:
         for field, value in item_in.model_dump(exclude_unset=True).items():

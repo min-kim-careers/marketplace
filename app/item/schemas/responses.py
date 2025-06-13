@@ -2,6 +2,7 @@ from typing import Generic, Optional, TypeVar
 
 from app.common.schemas.response import ResponseBase
 
+
 T = TypeVar("T")
 
 

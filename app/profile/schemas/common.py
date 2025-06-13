@@ -1,6 +1,11 @@
 from typing import Optional
+
 from app.common.schemas.response import ResponseBase
 
+DEFAULT_IMAGE_LIMIT = 3
+
+class ProfileExtra(ResponseBase):
+  image_limit: Optional[int] = DEFAULT_IMAGE_LIMIT
 
 class ProfileOut(ResponseBase):
   email: str
@@ -9,3 +14,4 @@ class ProfileOut(ResponseBase):
   rating_count: int
   postcode: Optional[str] = None
   avatar_url: Optional[str] = None
+  # extra: Optional[ProfileExtra] = None
