@@ -19,6 +19,15 @@ import { Item } from '@/lib/interfaces/item'
 import { ReactNode } from 'react'
 import { formatDistanceToNow } from 'date-fns'
 import { Button } from '@/components/shadcn/components/ui/button'
+import ItemImagePreview from '@/components/02_main/market/00_common/item-image-preview'
+import { ITEM_CONDITION_LABELS } from '@/lib/constants/item-condition-labels'
+import { ItemCondition } from '@/lib/enums/item-condition'
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@/components/shadcn/components/ui/avatar'
+import { CircleUserIcon } from 'lucide-react'
 
 export default function ItemModal({
   children,
@@ -27,27 +36,31 @@ export default function ItemModal({
   children: ReactNode
   item: Item
 }) {
+  const updatedAt = () =>
+    formatDistanceToNow(item.updatedAt.toLocaleString(), {
+      addSuffix: true,
+    })
+
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent>
+      <DialogContent className='max-h-[90vh] min-h-[80vh] overflow-auto'>
         <DialogHeader className='flex-row justify-between'>
           <span className='flex flex-col justify-around'>
             <DialogTitle className='space-x-2'>
               <span className='italic opacity-50'>
-                {item.condition}
+                {
+                  ITEM_CONDITION_LABELS[
+                    item.condition as ItemCondition
+                  ]
+                }
               </span>
               <span>{item.name}</span>
             </DialogTitle>
-            <DialogDescription className='gap-2 flex'>
+            <DialogDescription className='flex gap-2'>
               <span>
-                Updated{' '}
-                {formatDistanceToNow(
-                  item.updatedAt.toLocaleString(),
-                  { addSuffix: true },
-                )}{' '}
-                by{' '}
-                <span className='space-x-2'>
+                <span>{`Updated ${updatedAt()} by `}</span>
+                <span>
                   <button className='font-semibold'>
                     {item.profileHandle}
                   </button>
@@ -59,15 +72,19 @@ export default function ItemModal({
             </DialogDescription>
           </span>
           <span className='mr-6 flex flex-1 items-center justify-end'>
-            <button className='flex h-14 w-14 items-center justify-center rounded-full border-[1px] border-gray-200 bg-gray-100 text-black/50'>
-              P
-            </button>
+            <Avatar>
+              <AvatarImage src={''} />
+              <AvatarFallback>
+                <CircleUserIcon className='h-full w-full' />
+              </AvatarFallback>
+            </Avatar>
           </span>
         </DialogHeader>
-        <div className='flex min-h-[50vh] flex-col gap-4'>
-          <div className=''>{item.description}</div>
-          <div className='flex flex-1 items-center justify-center rounded-lg border-[1px] border-gray-200 bg-gray-100 italic text-black/50'>
-            No Image
+
+        <div className='flex flex-1 flex-col'>
+          <div className='flex-1'>{item.description}</div>
+          <div className='relative flex-1 rounded shadow'>
+            {item.imageUrls.length ? <ItemImagePreview imageUrls={item.imageUrls} /> : <p>None</p>}
           </div>
         </div>
 

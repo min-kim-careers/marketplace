@@ -7,8 +7,10 @@ import {
   internalHandleExists,
   internalGetProfile,
   internalUpsertProfile,
+  internalGetProfileExtra,
 } from '@/_gateway/api/profile/internal'
 import { Profile } from '@/lib/interfaces/profile'
+import { ProfileExtra } from '@/_gateway/api/profile/_interfaces/profile-extra.response'
 
 export const serviceUpdateCurrentProfile = async (
   newProfile: UpsertProfileRequest,
@@ -58,3 +60,20 @@ export const serviceCheckHandleExists = async (
     throw new Error('Failed to check if handle exists')
   }
 }
+
+export const serviceGetAllowedImages =
+  async (): Promise<number> => {
+    try {
+      const userId = await getCurrentUserId()
+      if (!userId)
+        throw new Error('Error fetching profile extra')
+
+      const { extra } =
+        await internalGetProfileExtra(userId)
+
+      return (extra as ProfileExtra).imageLimit
+    } catch (error) {
+      logApiError(error)
+      throw new Error('Failed to get allowed images')
+    }
+  }

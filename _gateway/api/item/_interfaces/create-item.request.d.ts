@@ -5,5 +5,5 @@ export interface CreateItemRequest {
     category: string
     condition: string
     postcode: string
-    imageUrls?: string[]
+    images: File[]
 }

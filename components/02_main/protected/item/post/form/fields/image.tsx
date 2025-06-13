@@ -1,3 +1,5 @@
+import Spinner from '@/components/00_common/spinner'
+import { ItemPostFormSchema } from '@/components/02_main/protected/item/post/form'
 import {
   FormControl,
   FormField,
@@ -8,67 +10,82 @@ import {
 import { Input } from '@/components/shadcn/components/ui/input'
 import { Label } from '@/components/shadcn/components/ui/label'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
-import { ItemPostFormSchema } from '@/components/02_main/protected/item/post/form'
+import { compressFile } from '@/lib/common/utils'
 import { Plus, Trash } from 'lucide-react'
 import Image from 'next/image'
-import { ChangeEvent } from 'react'
-import {
-  ControllerRenderProps,
-  UseFormReturn,
-} from 'react-hook-form'
+import { ChangeEvent, useEffect, useState } from 'react'
+import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
-export default function ImageField({
+const ImageInput = ({
   form,
+  index,
 }: {
   form: UseFormReturn<z.infer<typeof ItemPostFormSchema>>
-}) {
-  const name = 'imageUrls'
-  const label = 'Images'
+  index: number
+}) => {
+  const name = 'images'
+
   const { toast } = useToast()
 
-  const handleFileChange = (
+  const watcher = form.watch(name)
+
+  const [imageUrl, setImageUrl] = useState<string | null>(
+    null,
+  )
+  const [loading, setLoading] = useState(false)
+
+  const handleFileChange = async (
     e: ChangeEvent<HTMLInputElement>,
-    index: number,
   ) => {
-    const file = e.target.files?.[0] || null
-    if (file) {
-      const imageUrl = URL.createObjectURL(file)
-      const newImageUrls = [...form.getValues().imageUrls!]
-      newImageUrls[index] = imageUrl
-      form.setValue(name, newImageUrls)
-    } else {
+    try {
+      setLoading(true)
+      const img = e.target.files?.[0] || null
+      if (!img) throw new Error()
+
+      const compressed = await compressFile(img)
+      console.log(compressed)
+
+      const newImages = [...watcher]
+      newImages[index] = compressed
+      form.setValue(name, newImages, {
+        shouldValidate: true,
+      })
+      setImageUrl(URL.createObjectURL(compressed))
+    } catch (error) {
       toast({
         description:
           'Failed to load image. Please try again.',
       })
+    } finally {
+      setLoading(false)
     }
   }
 
   const handleDelete = (index: number) => {
-    const newImageUrls = [...form.getValues().imageUrls!]
-    newImageUrls[index] = ''
-    form.setValue(name, newImageUrls)
+    if (imageUrl) {
+      const newImages = [...watcher]
+      newImages[index] = null
+      form.setValue(name, newImages, {
+        shouldValidate: true,
+      })
+      URL.revokeObjectURL(imageUrl)
+      setImageUrl(null)
+    }
   }
 
-  const renderInputLabel = (
-    field: ControllerRenderProps<
-      z.infer<typeof ItemPostFormSchema>,
-      typeof name
-    >,
-    index: number,
-  ) => (
+  return (
     <Label className='relative flex aspect-square w-[150px] cursor-pointer items-center justify-center rounded bg-gray-300 text-gray-400 shadow-sm'>
       <Input
         type='file'
         accept='image/x'
-        onChange={(e) => handleFileChange(e, index)}
+        onChange={(e) => handleFileChange(e)}
         className='hidden'
       />
-      {field.value?.[index] ? (
+      {imageUrl ? (
         <div>
           <Image
-            src={field.value[index]}
+            src={imageUrl}
             alt='preview-image'
             layout='fill'
             objectFit='contain'
@@ -78,30 +95,40 @@ export default function ImageField({
             type='button'
             onClick={() => handleDelete(index)}
           >
-            <Trash className='absolute bottom-0 right-0 z-50 m-1 cursor-pointer invert' />
+            <Trash className='absolute bottom-0 right-0 z-50 m-1 cursor-pointer fill-gray-100 hover:scale-110 active:scale-90' />
           </button>
         </div>
+      ) : loading ? (
+        <Spinner />
       ) : (
-        <Plus className='flex h-1/2 w-1/2 flex-1' />
+        <Plus className='flex h-1/4 w-1/4 flex-1' />
       )}
     </Label>
   )
+}
+
+export default function ImageField({
+  form,
+}: {
+  form: UseFormReturn<z.infer<typeof ItemPostFormSchema>>
+}) {
+  const name = 'images'
+  const label = 'Images'
 
   return (
     <FormField
       control={form.control}
       name={name}
-      render={({ field }) => (
+      render={() => (
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
             <div className='flex gap-2'>
-              {field.value &&
-                field.value.map((_, index) => (
-                  <div key={index}>
-                    {renderInputLabel(field, index)}
-                  </div>
-                ))}
+              {form.watch(name).map((_, index) => (
+                <div key={index}>
+                  <ImageInput form={form} index={index} />
+                </div>
+              ))}
             </div>
           </FormControl>
           <FormMessage />

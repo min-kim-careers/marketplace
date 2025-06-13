@@ -4,6 +4,18 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
+import { serviceCreateItem } from '@/_gateway/api/item/service'
+import ItemImagePreview from '@/components/02_main/market/00_common/item-image-preview'
+import { ItemPostFormSchema } from '@/components/02_main/protected/item/post/form'
+import {
+  CategoryField,
+  ConditionField,
+  DescriptionField,
+  ImageField,
+  LocationField,
+  NameField,
+  PriceField,
+} from '@/components/02_main/protected/item/post/form/fields'
 import { Button } from '@/components/shadcn/components/ui/button'
 import {
   Card,
@@ -15,22 +27,13 @@ import {
 import { Form } from '@/components/shadcn/components/ui/form'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
 import { ROUTES } from '@/lib/constants/routes'
-import useProfileStore from '@/lib/stores/profile'
 import { useRouter } from 'next/navigation'
-import {
-  CategoryField,
-  ConditionField,
-  DescriptionField,
-  ImageField,
-  LocationField,
-  NameField,
-  PriceField,
-} from '@/components/02_main/protected/item/post/form/fields'
-import ImagePreview from './image-preview'
-import { ItemPostFormSchema } from '@/components/02_main/protected/item/post/form'
-import { serviceCreateItem } from '@/_gateway/api/item/service'
 
-export default function ItemPost() {
+export default function ItemPost({
+  imageLimit,
+}: {
+  imageLimit: number
+}) {
   const { toast } = useToast()
   const router = useRouter()
 
@@ -43,37 +46,37 @@ export default function ItemPost() {
       category: '',
       location: '',
       condition: '',
-      imageUrls: Array.from({ length: 3 }, () => ''),
-      // expiresIn: 0,
+      images: Array.from(
+        { length: imageLimit },
+        () => null,
+      ),
     },
   })
+
+  const imagesWatcher = form.watch('images')
 
   async function onSubmit(
     values: z.infer<typeof ItemPostFormSchema>,
   ) {
     try {
-      const newItem = {
-        ...values,
-        postcode: values.location,
-      }
-      console.log(newItem)
-
       const item = await serviceCreateItem({
         ...values,
         postcode: values.location,
+        images: values.images.filter(
+          (img) => img instanceof File,
+        ),
       })
 
       if (!item) throw new Error('Failed to create item')
 
-      // router.push(ROUTES.MARKET)
       toast({
         description:
           'Your item has been successfully posted!',
       })
+      router.push(ROUTES.MARKET)
     } catch (error) {
       toast({
-        description:
-          'Something went wrong',
+        description: 'Something went wrong',
       })
     }
   }
@@ -113,7 +116,11 @@ export default function ItemPost() {
         </CardContent>
       </div>
       <div className='flex flex-1 items-center justify-center bg-muted'>
-        <ImagePreview form={form} />
+        <ItemImagePreview
+          imageUrls={imagesWatcher
+            .filter((img) => img !== null)
+            .map((img) => URL.createObjectURL(img))}
+        />
       </div>
     </Card>
   )

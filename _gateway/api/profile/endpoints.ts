@@ -5,4 +5,6 @@ export const PROFILE_ENDPOINTS = {
     `/api/profiles/${userId}`,
   CHECK_HANDLE_EXISTS: (handle: string) =>
     `/api/profiles/exists/${handle}`,
+  GET_PROFILE_EXTRA: (userId: string) =>
+    `/api/profiles/${userId}/extra`,
 }

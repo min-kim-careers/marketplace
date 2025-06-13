@@ -5,5 +5,5 @@ export interface UpdateItemRequest {
     category?: string
     condition?: string
     postcode?: string
-    imageUrls?: string[]
+    images?: File[]
 }

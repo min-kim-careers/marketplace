@@ -55,9 +55,21 @@ export const ItemPostFormSchema = z.object({
       },
     ),
 
-  // expiresIn: z.number(),
-
-  imageUrls: z
-    .array(z.string())
-    .max(3),
+  images: z.array(
+    z
+      .instanceof(File)
+      .nullable()
+      .refine(
+        (file) =>
+          !file ||
+          file.type === 'image/jpeg' ||
+          file.type === 'image/png',
+        {
+          message: 'Only JPEG or PNG allowed',
+        },
+      )
+      .refine((file) => !file || file.size < 2 * 1024 * 1024, {
+        message: 'Max file size is 2MB',
+      }),
+  ),
 })

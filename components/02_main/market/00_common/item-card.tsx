@@ -6,11 +6,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/shadcn/components/ui/card'
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from '@/components/shadcn/components/ui/carousel'
 import { Item } from '@/lib/interfaces/item'
 import { formatDistanceToNow } from 'date-fns'
 import Image from 'next/image'
@@ -22,9 +17,38 @@ export default function ItemCard({
   item: Item
   columns: number
 }) {
+  const createdAt = () =>
+    formatDistanceToNow(item.createdAt.toLocaleString(), {
+      addSuffix: true,
+    })
+
+  const renderCardImage = () => {
+    if (!item.imageUrls[0])
+      return (
+        <p className='m-2 flex w-full items-center justify-center rounded bg-gray-100 italic text-gray-400 shadow'>
+          No images
+        </p>
+      )
+
+    return (
+      <div className='relative m-2 flex flex-1 rounded bg-gray-100 p-2 shadow'>
+        <Image
+          alt='preview'
+          src={item.imageUrls[0]}
+          layout='fill'
+          objectFit='contain'
+          className='rounded'
+        />
+        {item.imageUrls.length > 1 && <p className='absolute bottom-0 right-0 z-10 m-2 flex justify-end rounded bg-white px-1 py-[0.5] shadow'>
+          +{item.imageUrls.length-1}
+        </p>}
+      </div>
+    )
+  }
+
   return (
     <Card
-      className='flex min-w-full flex-row justify-between'
+      className='flex h-60 w-full flex-row justify-between'
       style={{
         minHeight: columns === 1 ? '12rem' : '15rem',
       }}
@@ -36,12 +60,8 @@ export default function ItemCard({
           </CardTitle>
           <CardDescription className='line-clamp-1'>
             <div className='flex gap-1'>
-              {formatDistanceToNow(
-                item.createdAt.toLocaleString(),
-                { addSuffix: true },
-              )}{' '}
-              by{' '}
-              <span className='space-x-2'>
+              <span>{`${createdAt()} by `}</span>
+              <span>
                 <button className='font-semibold'>
                   {item.profileHandle}
                 </button>
@@ -52,30 +72,14 @@ export default function ItemCard({
         <CardContent className='line-clamp-3 flex-[2]'>
           <p>{item.description}</p>
         </CardContent>
+
         <CardFooter className='line-clamp-1 flex-1'>
           ${item.price}
         </CardFooter>
       </div>
       {columns === 1 && (
-        <div className='m-2 flex min-h-full flex-[0.5] items-center justify-center rounded shadow'>
-          <Carousel>
-            <CarouselContent>
-              {item.imageUrls.map((url, index) => (
-                <CarouselItem
-                  key={index}
-                  className='flex aspect-square justify-center'
-                >
-                  <img
-                    src={url}
-                    alt='preview-image'
-                    className='object-fill rounded'
-                    // layout='fill'
-                    // objectFit='contain'
-                  />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-          </Carousel>
+        <div className='flex flex-[0.5]'>
+          {renderCardImage()}
         </div>
       )}
     </Card>

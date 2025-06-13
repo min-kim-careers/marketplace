@@ -9,6 +9,7 @@ import {
 } from '@/lib/common/utils'
 import { Profile } from '@/lib/interfaces/profile'
 import { AxiosError } from 'axios'
+import { ProfileExtra } from '@/_gateway/api/profile/_interfaces/profile-extra.response'
 
 export const internalGetProfile = async (
   userId: string,
@@ -63,6 +64,20 @@ export const internalHandleExists = async (
       PROFILE_ENDPOINTS.CHECK_HANDLE_EXISTS(
         cleanParam(handle),
       ),
+    )
+
+    return response.data
+  } catch (error) {
+    throw error
+  }
+}
+
+export const internalGetProfileExtra = async (
+  userId: string,
+): Promise<{ extra: ProfileExtra }> => {
+  try {
+    const response = await apiAxios.get(
+      PROFILE_ENDPOINTS.GET_PROFILE_EXTRA(userId),
     )
 
     return response.data

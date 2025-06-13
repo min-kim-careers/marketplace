@@ -1,18 +1,18 @@
 'use client'
 
-import { METADATA } from '@/lib/constants/metadata'
+import { APP_DATA } from '@/lib/constants/app-data'
 import { ROUTES } from '@/lib/constants/routes'
 import Link from 'next/link'
 import NavBar from './nav-bar'
 
 export default function Header() {
   return (
-    <div className='flex w-full items-start justify-between pb-2'>
+    <div className='flex w-full items-start justify-between'>
       <Link
         href={ROUTES.HOME}
         className='text-2xl font-bold'
       >
-        {METADATA.APP_TITLE}
+        {APP_DATA.TITLE}
       </Link>
       <span className='flex min-w-[10rem] items-center justify-end'>
         <NavBar />
