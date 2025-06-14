@@ -7,9 +7,9 @@ import axios, {
   InternalAxiosRequestConfig,
 } from 'axios'
 
-const create = async () => {
+export const createApiAxios = async (endpoint: string) => {
   const instance = axios.create({
-    baseURL: envLoader.apiUrl,
+    baseURL: envLoader.apiUrl + endpoint,
   })
 
   instance.interceptors.request.use(
@@ -33,4 +33,3 @@ const create = async () => {
   return instance
 }
 
-export const apiAxios = await create()

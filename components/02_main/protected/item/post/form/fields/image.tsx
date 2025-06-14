@@ -63,19 +63,26 @@ const ImageInput = ({
   }
 
   const handleDelete = (index: number) => {
-    if (imageUrl) {
-      const newImages = [...watcher]
-      newImages[index] = null
-      form.setValue(name, newImages, {
-        shouldValidate: true,
+    try {
+      if (imageUrl) {
+        const newImages = [...watcher]
+        newImages[index] = null
+        form.setValue(name, newImages, {
+          shouldValidate: true,
+        })
+        URL.revokeObjectURL(imageUrl)
+        setImageUrl(null)
+      }
+    } catch (error) {
+      toast({
+        description:
+          'Something went wrong.',
       })
-      URL.revokeObjectURL(imageUrl)
-      setImageUrl(null)
     }
   }
 
   return (
-    <Label className='relative flex aspect-square w-[150px] cursor-pointer items-center justify-center rounded bg-gray-300 text-gray-400 shadow-sm'>
+    <Label className='relative flex aspect-square max-w-[150px] cursor-pointer items-center justify-center rounded bg-gray-300 text-gray-400 shadow-sm'>
       <Input
         type='file'
         accept='image/x'
@@ -123,9 +130,9 @@ export default function ImageField({
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <div className='flex gap-2'>
+            <div className='grid grid-cols-3 gap-2'>
               {form.watch(name).map((_, index) => (
-                <div key={index}>
+                <div key={index} className='w-full'>
                   <ImageInput form={form} index={index} />
                 </div>
               ))}

@@ -44,7 +44,7 @@ export default function ItemModal({
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className='max-h-[90vh] min-h-[80vh] overflow-auto'>
+      <DialogContent className='max-h-[90vh] overflow-auto'>
         <DialogHeader className='flex-row justify-between'>
           <span className='flex flex-col justify-around'>
             <DialogTitle className='space-x-2'>
@@ -71,7 +71,7 @@ export default function ItemModal({
               </button>
             </DialogDescription>
           </span>
-          <span className='mr-6 flex flex-1 items-center justify-end'>
+          <span className='flex flex-1 items-center justify-end'>
             <Avatar>
               <AvatarImage src={''} />
               <AvatarFallback>
@@ -81,10 +81,11 @@ export default function ItemModal({
           </span>
         </DialogHeader>
 
-        <div className='flex flex-1 flex-col'>
+        <div className='flex flex-1 flex-col gap-4'>
           <div className='flex-1'>{item.description}</div>
+
           <div className='relative flex-1 rounded shadow'>
-            {item.imageUrls.length ? <ItemImagePreview imageUrls={item.imageUrls} /> : <p>None</p>}
+            <ItemImagePreview imageUrls={item.imageUrls} />
           </div>
         </div>
 

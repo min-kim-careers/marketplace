@@ -1,8 +1,8 @@
 'use server'
 
 import {
-  internalGetProfile,
-  internalUpsertProfile,
+  _getProfile,
+  _upsertProfile,
 } from '@/_gateway/api/profile/internal'
 import {
   clearSessionCookie,
@@ -11,20 +11,16 @@ import {
   setSessionCookie,
   createUserId,
 } from '@/_gateway/firebase/_config/helpers'
-import { DecodedToken } from '@/_gateway/firebase/_interfaces/decoded-token'
+import { DecodedToken } from "./internal"
 import {
-  internalGetSession,
-  internalVerifySession,
+  _getSession,
+  _verifySession,
 } from '@/_gateway/firebase/internal'
 import { Profile } from '@/lib/interfaces/profile'
 import { logFirebaseError } from '@/_gateway/firebase/_config/helpers'
 import { cleanPayload } from '@/lib/common/utils'
 
-export interface ServiceSignInWithGoogle {
-  profile: Profile
-}
-
-export const serviceSignInWithGoogle = async (
+export const signInWithGoogle = async (
   idToken: string,
 ): Promise<Profile> => {
   try {
@@ -32,12 +28,12 @@ export const serviceSignInWithGoogle = async (
       decodedToken,
       sessionCookie,
       expiresInSeconds,
-    } = await internalGetSession(idToken)
+    } = await _getSession(idToken)
 
     const userId = await createUserId(decodedToken.uid)
 
     const { profile: existingProfile } =
-      await internalGetProfile(userId)
+      await _getProfile(userId)
 
     if (existingProfile) {
       await setSessionCookie(
@@ -49,15 +45,14 @@ export const serviceSignInWithGoogle = async (
 
     const handle = await createHandle(decodedToken.uid)
 
-    const { profile: newProfile } =
-      await internalUpsertProfile(
-        userId,
-        cleanPayload({
-          handle,
-          email: decodedToken.email,
-          avatarUrl: decodedToken.picture,
-        }),
-      )
+    const { profile: newProfile } = await _upsertProfile(
+      userId,
+      cleanPayload({
+        handle,
+        email: decodedToken.email,
+        avatarUrl: decodedToken.picture,
+      }),
+    )
 
     await setSessionCookie(sessionCookie, expiresInSeconds)
     return newProfile
@@ -68,7 +63,7 @@ export const serviceSignInWithGoogle = async (
   }
 }
 
-export const serviceVerifySession = async (
+export const verifySession = async (
   session: string,
 ): Promise<DecodedToken> => {
   try {
@@ -79,8 +74,7 @@ export const serviceVerifySession = async (
         'https://lh3.googleusercontent.com/a/ACg8ocJVq6R_VPqzjgbv4go2Gm7o9isHXUZ6K4GexJ2JzPF3TDoYvQ=s96-c',
     }
 
-    const { decodedToken } =
-      await internalVerifySession(session)
+    const { decodedToken } = await _verifySession(session)
 
     return decodedToken
   } catch (error) {
@@ -89,9 +83,7 @@ export const serviceVerifySession = async (
   }
 }
 
-export const serviceRefreshSession = async (
-  idToken: string,
-) => {
+export const refreshSession = async (idToken: string) => {
   try {
     const session = await getSessionCookie()
     if (session) {
@@ -105,7 +97,7 @@ export const serviceRefreshSession = async (
       // decodedToken,
       sessionCookie,
       expiresInSeconds,
-    } = await internalGetSession(idToken)
+    } = await _getSession(idToken)
 
     await setSessionCookie(sessionCookie, expiresInSeconds)
   } catch (error) {
@@ -114,7 +106,7 @@ export const serviceRefreshSession = async (
   }
 }
 
-export const serviceSignOut = async (): Promise<void> => {
+export const signOut = async (): Promise<void> => {
   try {
     await clearSessionCookie()
   } catch (error) {

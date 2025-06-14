@@ -1,6 +1,6 @@
 'use server'
 
-import { serviceGetItems } from '@/_gateway/api/item/service'
+import { getItems } from '@/_gateway/api/item/service'
 import Market from '@/components/02_main/market'
 import {
   marketToUrlParams,
@@ -26,7 +26,7 @@ export default async function Page({
     )
 
   const { items, count } =
-    await serviceGetItems(marketParams)
+    await getItems(marketParams)
 
   return (
     <Market

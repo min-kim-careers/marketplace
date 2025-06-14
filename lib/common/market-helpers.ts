@@ -1,4 +1,5 @@
-import { MarketParams } from "../interfaces/market-params"
+import { DEFAULT_SORT_OPTION } from '@/lib/constants/item-sort-options'
+import { MarketParams } from '../interfaces/market-params'
 import { ReadonlyURLSearchParams } from 'next/navigation'
 
 const DEFAULT_PAGE = 1
@@ -23,8 +24,12 @@ export const serverUrlToMarketParams = (params: {
   return {
     page: Number(params.page) || DEFAULT_PAGE,
     keyword: params.keyword as string,
-    sortBy: params.sortBy as string,
-    sortOrder: params.sortOrder as string,
+    sortBy:
+      (params.sortBy as string) ||
+      DEFAULT_SORT_OPTION.sortBy,
+    sortOrder:
+      (params.sortOrder as string) ||
+      DEFAULT_SORT_OPTION.sortOrder,
   }
 }
 

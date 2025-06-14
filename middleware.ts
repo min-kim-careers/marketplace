@@ -1,8 +1,8 @@
 import { logApiError } from '@/_gateway/api/_config/helpers'
-import { DecodedToken } from '@/_gateway/firebase/_interfaces/decoded-token'
+import { DecodedToken } from "./_gateway/firebase/internal"
 import {
-  serviceSignOut,
-  serviceVerifySession,
+  signOut,
+  verifySession,
 } from '@/_gateway/firebase/service'
 import { REQUEST_HEADERS } from '@/lib/constants/request-headers'
 import {
@@ -26,11 +26,11 @@ export async function middleware(req: NextRequest) {
 
   if (session) {
     try {
-      const decodedToken = await serviceVerifySession(session)
+      const decodedToken = await verifySession(session)
       verifiedToken = decodedToken
     } catch (error) {
       logApiError(error)
-      await serviceSignOut()
+      await signOut()
       return NextResponse.error()
     }
   }

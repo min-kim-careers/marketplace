@@ -4,7 +4,11 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-import { serviceCreateItem } from '@/_gateway/api/item/service'
+import {
+  createItem,
+  deleteItem,
+  uploadImages,
+} from '@/_gateway/api/item/service'
 import ItemImagePreview from '@/components/02_main/market/00_common/item-image-preview'
 import { ItemPostFormSchema } from '@/components/02_main/protected/item/post/form'
 import {
@@ -59,21 +63,34 @@ export default function ItemPost({
     values: z.infer<typeof ItemPostFormSchema>,
   ) {
     try {
-      const item = await serviceCreateItem({
+      const request = {
         ...values,
         postcode: values.location,
-        images: values.images.filter(
-          (img) => img instanceof File,
-        ),
-      })
+      }
 
+      const item = await createItem(request)
       if (!item) throw new Error('Failed to create item')
+
+      const images = values.images.filter(
+        (img) => img instanceof File,
+      )
+
+      const itemWithImages = await uploadImages(
+        item.id,
+        images,
+      )
+      if (!itemWithImages) {
+        await deleteItem(item.id)
+        throw new Error('Failed to upload item images')
+      }
+
+      console.log(itemWithImages)
 
       toast({
         description:
           'Your item has been successfully posted!',
       })
-      router.push(ROUTES.MARKET)
+      // router.push(ROUTES.MARKET)
     } catch (error) {
       toast({
         description: 'Something went wrong',

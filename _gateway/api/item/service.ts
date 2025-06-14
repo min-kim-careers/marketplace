@@ -1,32 +1,40 @@
 'use server'
 
-import { getCurrentUserId } from '@/_gateway/_common/helpers'
+import { getSessionUserId } from '@/_gateway/_common/helpers'
 import { logApiError } from '@/_gateway/api/_config/helpers'
-import { CreateItemRequest } from '@/_gateway/api/item/_interfaces/create-item.request'
-import { UpdateItemRequest } from '@/_gateway/api/item/_interfaces/update-item.request'
 import {
-  internalCreateItem,
-  internalGetItems,
-  internalUpdateItem,
+  _deleteItem,
+  _uploadItems,
+  CreateItemRequest,
+  GetItemsRequest,
+} from './internal'
+import { UpdateItemRequest } from './internal'
+import {
+  _createItem,
+  _getItems,
+  _updateItem,
 } from '@/_gateway/api/item/internal'
 import { ITEM_PAGINATION } from '@/lib/constants/item-pagination'
 import { Item } from '@/lib/interfaces/item'
 import { MarketParams } from '@/lib/interfaces/market-params'
 
-export const serviceGetItems = async (
+export const getItems = async (
   marketParams: MarketParams,
 ): Promise<{
   items: Item[]
   count: number
 }> => {
   try {
-    const { items, count } = await internalGetItems({
+    const request = {
       page: marketParams.page,
       keyword: marketParams.keyword,
       sortBy: marketParams.sortBy,
       sortOrder: marketParams.sortOrder,
       limit: ITEM_PAGINATION.LIMIT,
-    })
+      excludeUser: await getSessionUserId(),
+    } satisfies GetItemsRequest
+
+    const { items, count } = await _getItems(request)
 
     return {
       items,
@@ -41,17 +49,14 @@ export const serviceGetItems = async (
   }
 }
 
-export const serviceCreateItem = async (
+export const createItem = async (
   request: CreateItemRequest,
 ): Promise<Item | null> => {
   try {
-    const userId = await getCurrentUserId()
+    const userId = await getSessionUserId()
     if (!userId) throw new Error('Error creating item')
 
-    const { item } = await internalCreateItem(
-      userId,
-      request,
-    )
+    const { item } = await _createItem(userId, request)
 
     return item
   } catch (error) {
@@ -60,15 +65,12 @@ export const serviceCreateItem = async (
   }
 }
 
-export const serviceUpdateItem = async (
+export const updateItem = async (
   itemId: number,
   request: UpdateItemRequest,
 ): Promise<Item | null> => {
   try {
-    const { item } = await internalUpdateItem(
-      itemId,
-      request,
-    )
+    const { item } = await _updateItem(itemId, request)
 
     return item
   } catch (error) {
@@ -76,3 +78,32 @@ export const serviceUpdateItem = async (
     return null
   }
 }
+
+export const uploadImages = async (
+  itemId: number,
+  images: File[],
+): Promise<Item | null> => {
+  try {
+    const { item } = await _uploadItems(itemId, images)
+
+    return item
+  } catch (error) {
+    logApiError(error)
+    return null
+  }
+}
+
+export const deleteItem = async (
+  itemId: number,
+): Promise<boolean> => {
+  try {
+    const { deleted } = await _deleteItem(itemId)
+
+    return deleted
+  } catch (error) {
+    logApiError(error)
+    return false
+  }
+}
+
+

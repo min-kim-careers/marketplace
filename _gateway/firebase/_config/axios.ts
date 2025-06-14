@@ -7,9 +7,11 @@ import axios, {
   InternalAxiosRequestConfig,
 } from 'axios'
 
-const create = () => {
+export const createFirebaseAxios = async (
+  endpoint: string,
+) => {
   const instance = axios.create({
-    baseURL: envLoader.firebaseUrl,
+    baseURL: envLoader.firebaseUrl + endpoint,
   })
 
   instance.interceptors.request.use(
@@ -31,5 +33,3 @@ const create = () => {
   )
   return instance
 }
-
-export const firebaseAxios = create()

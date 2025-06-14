@@ -19,6 +19,14 @@ const nextConfig: NextConfig = {
       }
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: '/images/:path*',
+        destination: 'http://api-service:8000/images/:path*',
+      },
+    ];
+  },
 }
 
 export default nextConfig

@@ -5,55 +5,56 @@ import { ItemSortOption } from '@/lib/interfaces/item-sort-options'
 export const ITEM_SORT_OPTIONS: ItemSortOption[] = [
   {
     sortBy: ItemSortBy.CreatedAt,
-    sortOrder: ItemSortOrder.Asc,
+    sortOrder: ItemSortOrder.Desc,
     label: 'Newest first',
     isDefault: true,
   },
   {
     sortBy: ItemSortBy.CreatedAt,
-    sortOrder: ItemSortOrder.Desc,
+    sortOrder: ItemSortOrder.Asc,
     label: 'Oldest first',
   },
   {
     sortBy: ItemSortBy.UpdatedAt,
-    sortOrder: ItemSortOrder.Asc,
+    sortOrder: ItemSortOrder.Desc,
     label: 'Recently updated',
   },
   {
     sortBy: ItemSortBy.UpdatedAt,
-    sortOrder: ItemSortOrder.Desc,
+    sortOrder: ItemSortOrder.Asc,
     label: 'Least recently updated',
   },
   {
     sortBy: ItemSortBy.Price,
-    sortOrder: ItemSortOrder.Asc,
+    sortOrder: ItemSortOrder.Desc,
     label: 'Lowest price',
   },
   {
     sortBy: ItemSortBy.Price,
-    sortOrder: ItemSortOrder.Desc,
+    sortOrder: ItemSortOrder.Asc,
     label: 'Highest price',
   },
   {
     sortBy: ItemSortBy.Name,
-    sortOrder: ItemSortOrder.Asc,
+    sortOrder: ItemSortOrder.Desc,
     label: 'Name A-Z',
   },
   {
     sortBy: ItemSortBy.Name,
-    sortOrder: ItemSortOrder.Desc,
+    sortOrder: ItemSortOrder.Asc,
     label: 'Name Z-A',
   },
 ]
 
-const validateItemSortOptions = () => {
-  if (
-    ITEM_SORT_OPTIONS.filter((i) => i.isDefault).length !==
-    1
+const getDefaultSortOption = (): ItemSortOption => {
+  const defaultSortOption = ITEM_SORT_OPTIONS.filter(
+    (i) => i.isDefault,
   )
+  if (defaultSortOption.length !== 1)
     console.warn(
       'There must be exactly one default sort option',
     )
+  return defaultSortOption[0]
 }
 
-validateItemSortOptions()
+export const DEFAULT_SORT_OPTION = getDefaultSortOption()

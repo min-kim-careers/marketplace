@@ -28,7 +28,11 @@ export default function Dropdown({}: {}) {
         <Avatar>
           <AvatarImage src={profile?.avatarUrl} />
           <AvatarFallback>
-            {profile ? <CircleUserIcon className='h-full w-full'/> : <Spinner />}
+            {profile ? (
+              <CircleUserIcon className='h-full w-full' />
+            ) : (
+              <Spinner />
+            )}
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
@@ -36,10 +40,17 @@ export default function Dropdown({}: {}) {
         <DropdownMenuLabel>
           {profile ? profile.handle : <Spinner />}
         </DropdownMenuLabel>
+
         <DropdownMenuSeparator />
+
         <DropdownMenuItem asChild>
           <Link href={ROUTES.PROFILE_UPDATE}>Profile</Link>
         </DropdownMenuItem>
+
+        <DropdownMenuItem asChild>
+          <Link href={ROUTES.PROFILE_LISTINGS}>Listings</Link>
+        </DropdownMenuItem>
+
         <DropdownMenuItem onClick={handleSignOut}>
           Sign Out
         </DropdownMenuItem>

@@ -8,10 +8,12 @@ import {
 import Image from 'next/image'
 
 export default function ItemImagePreview({
-  imageUrls
+  imageUrls,
 }: {
   imageUrls: string[]
 }) {
+  if (!imageUrls.length) return null
+
   return (
     <Carousel className='flex-1'>
       <CarouselContent className='m-0'>

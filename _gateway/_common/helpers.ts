@@ -4,7 +4,7 @@ import {
   getSessionCookie,
   createUserId,
 } from '@/_gateway/firebase/_config/helpers'
-import { serviceVerifySession } from '@/_gateway/firebase/service'
+import { verifySession } from '@/_gateway/firebase/service'
 import { REQUEST_HEADERS } from '@/lib/constants/request-headers'
 import { cookies } from 'next/headers'
 
@@ -34,15 +34,15 @@ export const attachCookieHeader = async () => {
   }
 }
 
-export const getCurrentUserId = async (): Promise<
+export const getSessionUserId = async (): Promise<
   string | null
 > => {
   try {
     const session = await getSessionCookie()
-    if (!session) throw new Error('No session found')
+    if (!session) return null
 
     const decodedToken =
-      await serviceVerifySession(session)
+      await verifySession(session)
 
     const userId = createUserId(decodedToken.uid)
 

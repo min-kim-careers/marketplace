@@ -1,26 +1,28 @@
 'use server'
 
 import { logApiError } from '@/_gateway/api/_config/helpers'
-import { UpsertProfileRequest } from '@/_gateway/api/profile/_interfaces/upsert-profile.request'
-import { getCurrentUserId } from '@/_gateway/_common/helpers'
+import { UpsertProfileRequest } from './internal'
+import { getSessionUserId } from '@/_gateway/_common/helpers'
 import {
-  internalHandleExists,
-  internalGetProfile,
-  internalUpsertProfile,
-  internalGetProfileExtra,
+  _handleExists,
+  _getProfile,
+  _upsertProfile,
+  _getProfileExtra,
 } from '@/_gateway/api/profile/internal'
 import { Profile } from '@/lib/interfaces/profile'
-import { ProfileExtra } from '@/_gateway/api/profile/_interfaces/profile-extra.response'
+import { ProfileExtra } from './internal'
+import { _getListings } from './internal'
+import { Item } from '@/lib/interfaces/item'
 
-export const serviceUpdateCurrentProfile = async (
+export const updateCurrentProfile = async (
   newProfile: UpsertProfileRequest,
 ): Promise<Profile | null> => {
   try {
-    const userId = await getCurrentUserId()
+    const userId = await getSessionUserId()
     if (!userId)
       throw new Error('Error updating current profile')
 
-    const { profile } = await internalUpsertProfile(
+    const { profile } = await _upsertProfile(
       userId,
       newProfile,
     )
@@ -32,14 +34,14 @@ export const serviceUpdateCurrentProfile = async (
   }
 }
 
-export const serviceGetCurrentProfile =
+export const getCurrentProfile =
   async (): Promise<Profile | null> => {
     try {
-      const userId = await getCurrentUserId()
+      const userId = await getSessionUserId()
       if (!userId)
         throw new Error('Error fetching current profile')
 
-      const { profile } = await internalGetProfile(userId)
+      const { profile } = await _getProfile(userId)
 
       return profile
     } catch (error) {
@@ -48,11 +50,11 @@ export const serviceGetCurrentProfile =
     }
   }
 
-export const serviceCheckHandleExists = async (
+export const checkHandleExists = async (
   handle: string,
 ): Promise<boolean> => {
   try {
-    const { exists } = await internalHandleExists(handle)
+    const { exists } = await _handleExists(handle)
 
     return exists
   } catch (error) {
@@ -61,19 +63,31 @@ export const serviceCheckHandleExists = async (
   }
 }
 
-export const serviceGetAllowedImages =
-  async (): Promise<number> => {
-    try {
-      const userId = await getCurrentUserId()
-      if (!userId)
-        throw new Error('Error fetching profile extra')
+export const getImageLimit = async (): Promise<number> => {
+  try {
+    const userId = await getSessionUserId()
+    if (!userId)
+      throw new Error('Error fetching profile extra')
 
-      const { extra } =
-        await internalGetProfileExtra(userId)
+    const { extra } = await _getProfileExtra(userId)
 
-      return (extra as ProfileExtra).imageLimit
-    } catch (error) {
-      logApiError(error)
-      throw new Error('Failed to get allowed images')
-    }
+    return (extra as ProfileExtra).imageLimit
+  } catch (error) {
+    logApiError(error)
+    throw new Error('Failed to get allowed images')
   }
+}
+
+export const getListings = async (): Promise<Item[]> => {
+  try {
+    const userId = await getSessionUserId()
+    if (!userId) throw new Error('Error getting listings')
+
+    const { items } = await _getListings(userId)
+
+    return items
+  } catch (error) {
+    logApiError(error)
+    return []
+  }
+}

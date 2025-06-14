@@ -3,15 +3,17 @@ export const ROUTES = {
   MARKET: '/market',
   NOTFOUND: '/404',
 
-  ITEM_POST: '/item/post',
+  POST: '/post',
   PROFILE_UPDATE: '/profile/update',
   PROFILE_COMPLETE: '/profile/complete',
+  PROFILE_LISTINGS: '/profile/listings',
 }
 
 const PROTECTED_ROUTES = [
-  ROUTES.ITEM_POST,
+  ROUTES.POST,
   ROUTES.PROFILE_UPDATE,
   ROUTES.PROFILE_COMPLETE,
+  ROUTES.PROFILE_LISTINGS,
 ]
 
 const PUBLIC_ROUTES = [
@@ -19,6 +21,21 @@ const PUBLIC_ROUTES = [
   ROUTES.MARKET,
   ROUTES.NOTFOUND,
 ]
+
+const validateRoutes = () => {
+  const allRoutes = [...PROTECTED_ROUTES, ...PUBLIC_ROUTES]
+  const routesValues = Object.values(ROUTES)
+  allRoutes.forEach((route) => {
+    if (!routesValues.includes(route)) {
+      throw new Error(`Invalid route: ${route}`)
+    }
+  })
+  if (allRoutes.length !== routesValues.length) {
+    throw new Error(`Invalid number of routes`)
+  }
+}
+
+validateRoutes()
 
 const FALLBACK_ROUTES = [ROUTES.NOTFOUND]
 

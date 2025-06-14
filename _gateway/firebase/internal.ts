@@ -1,11 +1,18 @@
 'use server'
 
-import { firebaseAxios } from '@/_gateway/firebase/_config/axios'
-import { FIREBASE_ENDPOINTS } from './endpoints'
-import { DecodedToken } from '@/_gateway/firebase/_interfaces/decoded-token'
+import { createFirebaseAxios } from '@/_gateway/firebase/_config/axios'
+import { FIREBASE_ENDPOINTS } from './_config/endpoints'
 import { getCookieHeader } from '@/_gateway/_common/helpers'
 
-export const internalGetSession = async (
+const firebaseAxios = await createFirebaseAxios('/firebase')
+
+export interface DecodedToken {
+  uid: string
+  email: string
+  picture: string
+}
+
+export const _getSession = async (
   idToken: string,
 ): Promise<{
   decodedToken: DecodedToken
@@ -36,7 +43,7 @@ export const internalGetSession = async (
   }
 }
 
-export const internalVerifySession = async (
+export const _verifySession = async (
   session: string,
 ): Promise<{
   decodedToken: DecodedToken

@@ -23,12 +23,7 @@ export default function ItemCard({
     })
 
   const renderCardImage = () => {
-    if (!item.imageUrls[0])
-      return (
-        <p className='m-2 flex w-full items-center justify-center rounded bg-gray-100 italic text-gray-400 shadow'>
-          No images
-        </p>
-      )
+    if (!item.imageUrls[0]) return null
 
     return (
       <div className='relative m-2 flex flex-1 rounded bg-gray-100 p-2 shadow'>
@@ -39,9 +34,11 @@ export default function ItemCard({
           objectFit='contain'
           className='rounded'
         />
-        {item.imageUrls.length > 1 && <p className='absolute bottom-0 right-0 z-10 m-2 flex justify-end rounded bg-white px-1 py-[0.5] shadow'>
-          +{item.imageUrls.length-1}
-        </p>}
+        {item.imageUrls.length > 1 && (
+          <p className='absolute bottom-0 right-0 z-10 m-2 flex justify-end rounded bg-white px-1 py-[0.5] shadow'>
+            +{item.imageUrls.length - 1}
+          </p>
+        )}
       </div>
     )
   }

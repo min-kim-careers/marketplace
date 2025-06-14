@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { serviceCheckHandleExists } from '@/_gateway/api/profile/service'
+import { checkHandleExists } from '@/_gateway/api/profile/service'
 import Spinner from '@/components/00_common/spinner'
 import { ProfileUpdateForm } from '@/components/02_main/protected/profile/update/form'
 import { Button } from '@/components/shadcn/components/ui/button'
@@ -94,7 +94,7 @@ export default function HandleField({
     try {
       setButtonNode(<Spinner />)
       const handleExists =
-        await serviceCheckHandleExists(input)
+        await checkHandleExists(input)
 
       if (handleExists) {
         setButtonNode(<HandleTakenButtonNode />)
