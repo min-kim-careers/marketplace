@@ -33,3 +33,5 @@ Thumbs.db
 /config/
 
 .env
+
+/images

@@ -63,6 +63,7 @@ services:
       - .env
     volumes:
       - ./app:/code/app
+      - ./images:/code/images
 
 volumes:
   api-db-data:

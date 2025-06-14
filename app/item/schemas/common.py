@@ -8,6 +8,7 @@ from app.item.model import ItemDB
 
 
 class ItemOut(ResponseBase):
+    id: int
     name: str
     description: str
     price: float

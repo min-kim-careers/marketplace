@@ -83,3 +83,19 @@ async def get_profile_extra(
         success=True,
         data=data,
     )
+
+@profiles_router.get("/{user_id}/listings", response_model=ProfileResponse)
+async def get_profile_listings(
+    user_id: UUID,
+    session: AsyncSession = Depends(get_session),
+) -> ProfileResponse:
+    items = await service.get_profile_listings(session, user_id)
+
+    data = dict(
+        items=items,
+    )
+
+    return ProfileResponse(
+        success=True,
+        data=data,
+    )

@@ -23,13 +23,9 @@ async def get_profile_by_handle(session: AsyncSession, handle: str) -> ProfileDB
 async def create_profile(
     session: AsyncSession, user_id: UUID, profile_in: ProfileInRequest
 ) -> ProfileDB | None:
-    extra = ProfileExtra(image_limit=DEFAULT_IMAGE_LIMIT)
-
     try:
         profile_db = ProfileDB(
-            user_id=user_id,
-            extra=extra.model_dump(exclude_unset=True),
-            **profile_in.model_dump(exclude_unset=True)
+            user_id=user_id, **profile_in.model_dump(exclude_unset=True)
         )
 
         session.add(profile_db)
@@ -58,12 +54,12 @@ async def update_profile(
         return None
 
 
-async def get_user_items(
+async def get_profile_items(
     session: AsyncSession,
     user_id: UUID,
 ) -> List[ItemDB]:
     try:
-        stmt = select(ProfileDB).filter_by(user_id=user_id).options(selectinload(ProfileDB.items))  # type: ignore
+        stmt = select(ProfileDB).where(ProfileDB.user_id == user_id).options(selectinload(ProfileDB.items))  # type: ignore
         result = await session.execute(stmt)
         profile = result.scalar_one_or_none()
         if profile:

@@ -5,6 +5,8 @@ from uuid import UUID, uuid4
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Column, DateTime, Field, Relationship, SQLModel
 
+from app.profile.schemas.common import ProfileExtra
+
 if TYPE_CHECKING:
     from app.item.model import ItemDB
 
@@ -34,7 +36,7 @@ class ProfileDB(SQLModel, table=True):
         sa_column=Column(DateTime(timezone=True), nullable=False),
     )
 
-    extra: dict = Field(default_factory=dict, sa_column=Column(JSONB))
+    extra: dict = Field(default_factory=ProfileExtra, sa_column=Column(JSONB))
 
     # Relationship
     items: List["ItemDB"] = Relationship(

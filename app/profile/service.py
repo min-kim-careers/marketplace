@@ -49,15 +49,15 @@ async def profile_handle_exists(session: AsyncSession, handle: str) -> bool:
     return exists
 
 
-async def get_user_items(
+async def get_profile_listings(
     session: AsyncSession,
     user_id: UUID,
 ) -> List[ItemOut] | None:
-    items_db = await repository.get_user_items(session, user_id)
+    items_db = await repository.get_profile_items(session, user_id)
     if not items_db:
         return None
 
-    items_out = [ItemOut.from_db(item) for item in items_db]
+    items_out = [ItemOut.model_validate(item.model_dump()) for item in items_db]
 
     return items_out
 
@@ -75,3 +75,4 @@ async def get_profile_extra(
         return None
 
     return extra
+

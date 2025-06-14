@@ -1,22 +1,30 @@
 from typing import List, Optional, Sequence
 from uuid import UUID
 
-from sqlalchemy import String, asc, cast, desc, func, or_, select
+from sqlalchemy import String, asc, cast, desc, func, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.common.utils import get_one_by
 from app.item.enums import ItemSortOrder
 from app.item.model import ItemDB
-from app.item.protected.schemas.requests import ItemCreateRequest, ItemUpdateRequest
-from app.item.public.schemas.requests import GetItemsRequest
+from app.item.schemas.requests import (
+    GetItemsRequest,
+    ItemCreateRequest,
+    ItemUpdateRequest,
+)
+from app.profile.model import ProfileDB
 
 
 async def get_items_paginated(
-    session: AsyncSession, query: GetItemsRequest
+    session: AsyncSession,
+    query: GetItemsRequest,
 ) -> Sequence[ItemDB]:
     try:
         stmt = select(ItemDB).options(selectinload(ItemDB.profile))  # type: ignore
+
+        if query.exclude_user:
+            stmt = stmt.join(ItemDB.profile).where(ProfileDB.user_id != query.exclude_user)  # type: ignore
 
         if query.keyword:
             conditions = [
@@ -41,11 +49,12 @@ async def get_items_paginated(
         return []
 
 
-async def get_items_count(
-    session: AsyncSession, query: GetItemsRequest
-) -> int:
+async def get_items_count(session: AsyncSession, query: GetItemsRequest) -> int:
     try:
-        stmt = select(func.count()).select_from(ItemDB)
+        stmt = select(func.count()).select_from(ItemDB) # type: ignore
+
+        if query.exclude_user:
+            stmt = stmt.join(ItemDB.profile).where(ProfileDB.user_id != query.exclude_user)  # type: ignore
 
         if query.keyword:
             conditions = [
@@ -85,6 +94,17 @@ async def create_item(
         return None
 
 
+async def delete_item(session: AsyncSession, item_db: ItemDB) -> bool:
+    try:
+        await session.delete(item_db)
+        await session.commit()
+        return True
+    except Exception as e:
+        await session.rollback()
+        print(e)
+        return False
+
+
 async def update_item(
     session: AsyncSession, item_db: ItemDB, item_in: ItemUpdateRequest
 ) -> ItemDB | None:
@@ -92,6 +112,22 @@ async def update_item(
         for field, value in item_in.model_dump(exclude_unset=True).items():
             setattr(item_db, field, value)
 
+        await session.commit()
+        await session.refresh(item_db)
+        return item_db
+    except Exception as e:
+        await session.rollback()
+        print(e)
+        return None
+
+
+async def update_image_urls(
+    session: AsyncSession,
+    item_db: ItemDB,
+    image_urls: List[str],
+) -> ItemDB | None:
+    try:
+        setattr(item_db, "image_urls", image_urls)
         await session.commit()
         await session.refresh(item_db)
         return item_db
