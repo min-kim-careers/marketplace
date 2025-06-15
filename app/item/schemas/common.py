@@ -12,17 +12,16 @@ class ItemOut(ResponseBase):
     name: str
     description: str
     price: float
+    brand: Optional[str] = None
     category: ItemCategory
     condition: ItemCondition
     postcode: str
-
     created_at: datetime
     updated_at: datetime
     expires_at: Optional[datetime] = None
-
     image_urls: List[str]
 
-    profile_handle: Optional[str] = None
+    profile_handle: str
 
     @classmethod
     def from_db(cls, item: ItemDB) -> "ItemOut":
@@ -32,6 +31,20 @@ class ItemOut(ResponseBase):
                 "profile_handle": item.profile.handle,
             }
         )
+    
+class ItemListing(ResponseBase):
+    id: int
+    name: str
+    description: str
+    price: float
+    brand: Optional[str] = None
+    category: ItemCategory
+    condition: ItemCondition
+    postcode: str
+    created_at: datetime
+    updated_at: datetime
+    expires_at: Optional[datetime] = None
+    image_urls: List[str]
 
 
 class ItemSortOption(ResponseBase):

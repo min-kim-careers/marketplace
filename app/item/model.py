@@ -22,8 +22,9 @@ class ItemDB(SQLModel, table=True):
     name: str = Field(nullable=False)
     description: str = Field(nullable=False)
     price: float = Field(nullable=False)
-    category: ItemCategory = Field(sa_column=Column(SqlEnum(ItemCategory)))
-    condition: ItemCondition = Field(sa_column=Column(SqlEnum(ItemCondition)))
+    brand: str = Field(default=None, nullable=True)
+    category: ItemCategory = Field(nullable=False)
+    condition: ItemCondition = Field(nullable=False)
     postcode: str = Field(nullable=False)
 
     created_at: datetime = Field(

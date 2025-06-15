@@ -1,3 +1,4 @@
+import asyncio
 from uuid import UUID, uuid4
 from faker import Faker
 from sqlalchemy import select
@@ -7,7 +8,7 @@ from app.item.model import ItemDB
 from app.profile.model import ProfileDB
 import random
 
-fake = Faker('en_AU')
+fake = Faker()
 
 
 def create_mock_profile() -> ProfileDB:
@@ -28,6 +29,7 @@ def create_mock_item(profile_id: UUID) -> ItemDB:
         name=fake.name().capitalize(),
         description=fake.text(max_nb_chars=200),
         price=round(random.uniform(10, 1000), 2),
+        brand=fake.company(),
         category=random.choice(list(ItemCategory)),
         condition=random.choice(list(ItemCondition)),
         postcode=fake.postcode(),
@@ -53,3 +55,15 @@ async def seed_db():
 
         await session.commit()
         print("Seeding complete.")
+
+
+async def seed_user_items(profile_id: UUID, count):
+    async for session in get_session():
+        items = [create_mock_item(profile_id) for _ in range(count)]
+        session.add_all(items)
+        await session.commit()
+        print("User items seeded.")
+
+
+if __name__ == "__main__":
+    asyncio.run(seed_user_items(UUID("a85eb67f-70c7-4c03-bb22-d7ec2af009d2"), 10))

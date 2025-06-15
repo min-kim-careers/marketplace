@@ -89,10 +89,10 @@ async def get_profile_listings(
     user_id: UUID,
     session: AsyncSession = Depends(get_session),
 ) -> ProfileResponse:
-    items = await service.get_profile_listings(session, user_id)
+    listings = await service.get_profile_listings(session, user_id)
 
     data = dict(
-        items=items,
+        listings=listings,
     )
 
     return ProfileResponse(
