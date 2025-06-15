@@ -24,6 +24,7 @@ import {
   useState,
 } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { logError } from '@/lib/utils/log'
 
 const DefaultButtonNode = () => <>Confirm</>
 const HandleTakenButtonNode = () => <X />
@@ -110,7 +111,7 @@ export default function HandleField({
         })
       }
     } catch (error) {
-      console.error('Error confirming handle')
+      logError('Error confirming handle')
       setButtonNode(<DefaultButtonNode />)
       setConfirmed(false)
     }

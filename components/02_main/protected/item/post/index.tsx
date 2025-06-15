@@ -84,13 +84,11 @@ export default function ItemPost({
         throw new Error('Failed to upload item images')
       }
 
-      console.log(itemWithImages)
-
       toast({
         description:
           'Your item has been successfully posted!',
       })
-      // router.push(ROUTES.MARKET)
+      router.push(ROUTES.MARKET)
     } catch (error) {
       toast({
         description: 'Something went wrong',
@@ -113,7 +111,8 @@ export default function ItemPost({
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <div className='flex flex-col gap-4'>
-                <ImageField form={form} />
+                {!!imageLimit && <ImageField form={form} />}
+                
                 <NameField form={form} />
                 <PriceField form={form} />
                 <DescriptionField form={form} />

@@ -22,3 +22,13 @@ export const compressFile = async (file: File) => {
 
   return new File([blob], blob.name, { type: blob.type })
 }
+
+export const formatPrice = (price: string) => {
+  const amount = parseFloat(price)
+  const formatted = new Intl.NumberFormat('en-AU', {
+    style: 'currency',
+    currency: 'AUD',
+  }).format(amount)
+
+  return formatted
+}

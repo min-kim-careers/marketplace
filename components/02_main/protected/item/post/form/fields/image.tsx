@@ -44,8 +44,6 @@ const ImageInput = ({
       if (!img) throw new Error()
 
       const compressed = await compressFile(img)
-      console.log(compressed)
-
       const newImages = [...watcher]
       newImages[index] = compressed
       form.setValue(name, newImages, {

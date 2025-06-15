@@ -9,6 +9,7 @@ import { Profile } from '@/lib/interfaces/profile'
 import { AxiosError } from 'axios'
 import { PROFILE_ENDPOINTS } from '../_config/endpoints'
 import { createApiAxios } from '@/_gateway/api/_config/axios'
+import { ItemListing } from '@/lib/interfaces/item-listing'
 
 const apiProfileAxios = await createApiAxios('/api/profiles')
 
@@ -102,7 +103,7 @@ export const _getProfileExtra = async (
 
 export const _getListings = async (
   userId: string,
-): Promise<{ items: Item[] }> => {
+): Promise<{ listings: ItemListing[] }> => {
   try {
     const response = await apiProfileAxios.get(
       PROFILE_ENDPOINTS.GET_LISTINGS(userId),

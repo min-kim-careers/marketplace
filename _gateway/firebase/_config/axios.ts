@@ -1,6 +1,6 @@
 'use server'
 
-import { FirebaseInternalResponse } from '@/_gateway/firebase/_interfaces/firebase-internal.response'
+import { FirebaseInternalResponse } from '@/_gateway/firebase/_config/interfaces'
 import { envLoader } from '@/lib/utils/env-loader'
 import axios, {
   AxiosResponse,

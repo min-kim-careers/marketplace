@@ -6,6 +6,7 @@ import {
 } from '@/_gateway/firebase/_config/helpers'
 import { verifySession } from '@/_gateway/firebase/service'
 import { REQUEST_HEADERS } from '@/lib/constants/request-headers'
+import { logError } from '@/lib/utils/log'
 import { cookies } from 'next/headers'
 
 export const getCookieHeader = async (session: string) => {
@@ -48,7 +49,7 @@ export const getSessionUserId = async (): Promise<
 
     return userId
   } catch (error) {
-    console.error(error)
+    logError(error)
     throw new Error('Error fetching current user ID')
   }
 }

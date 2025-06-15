@@ -1,8 +1,9 @@
 'use server'
 
-import { FirebaseErrorResponse } from '@/_gateway/firebase/_interfaces/firebase-error.response'
+import { FirebaseErrorResponse } from "./interfaces"
 import { REQUEST_HEADERS } from '@/lib/constants/request-headers'
 import { envLoader } from '@/lib/utils/env-loader'
+import { logError } from '@/lib/utils/log'
 import { AxiosError } from 'axios'
 import { cookies } from 'next/headers'
 import { v5 as uuidv5 } from 'uuid'
@@ -11,7 +12,7 @@ export const logFirebaseError = async (error: any) => {
   if (error instanceof AxiosError) {
     const firebaseError = error.response
       ?.data as FirebaseErrorResponse
-    if (firebaseError) console.log(firebaseError)
+    if (firebaseError) logError(firebaseError)
   }
 }
 

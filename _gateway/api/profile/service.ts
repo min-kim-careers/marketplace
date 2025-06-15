@@ -13,6 +13,7 @@ import { Profile } from '@/lib/interfaces/profile'
 import { ProfileExtra } from './internal'
 import { _getListings } from './internal'
 import { Item } from '@/lib/interfaces/item'
+import { ItemListing } from '@/lib/interfaces/item-listing'
 
 export const updateCurrentProfile = async (
   newProfile: UpsertProfileRequest,
@@ -63,7 +64,7 @@ export const checkHandleExists = async (
   }
 }
 
-export const getImageLimit = async (): Promise<number> => {
+export const getProfileExtra = async (): Promise<ProfileExtra> => {
   try {
     const userId = await getSessionUserId()
     if (!userId)
@@ -71,21 +72,21 @@ export const getImageLimit = async (): Promise<number> => {
 
     const { extra } = await _getProfileExtra(userId)
 
-    return (extra as ProfileExtra).imageLimit
+    return (extra as ProfileExtra)
   } catch (error) {
     logApiError(error)
-    throw new Error('Failed to get allowed images')
+    throw new Error('Failed to get profile extra')
   }
 }
 
-export const getListings = async (): Promise<Item[]> => {
+export const getListings = async (): Promise<ItemListing[]> => {
   try {
     const userId = await getSessionUserId()
     if (!userId) throw new Error('Error getting listings')
 
-    const { items } = await _getListings(userId)
+    const { listings } = await _getListings(userId)
 
-    return items
+    return listings
   } catch (error) {
     logApiError(error)
     return []

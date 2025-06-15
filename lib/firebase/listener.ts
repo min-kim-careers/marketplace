@@ -4,6 +4,7 @@ import { refreshSession } from '@/_gateway/firebase/service'
 import { auth } from '@/lib/firebase/config'
 import { useSignOut } from '@/lib/hooks/use-sign-out'
 import useProfileStore from '@/lib/stores/profile'
+import { logInfo } from '@/lib/utils/log'
 import { onAuthStateChanged } from 'firebase/auth'
 import { useEffect } from 'react'
 
@@ -19,7 +20,7 @@ export default function FirebaseAuthListener() {
         const hasSignedOut = !user
 
         if (hasSignedIn) {
-          console.log('signed in')
+          logInfo('signed in')
 
           // try {
           //   const idToken = await user.getIdToken(true)
@@ -28,11 +29,10 @@ export default function FirebaseAuthListener() {
           // } catch (_) {
           //   await handleSignOut()
           // }
-
         }
 
         if (hasSignedOut) {
-          console.log('signed out')
+          logInfo('signed out')
 
           if (profile) setProfile(null)
         }

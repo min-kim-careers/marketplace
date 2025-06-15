@@ -1,6 +1,6 @@
 'use server'
 
-import { ApiInternalResponse } from '@/_gateway/api/_interfaces/api-internal.response'
+import { ApiInternalResponse } from '@/_gateway/api/_config/interfaces'
 import { envLoader } from '@/lib/utils/env-loader'
 import axios, {
   AxiosResponse,

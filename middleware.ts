@@ -59,7 +59,6 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  console.log('Unknown path');
   return NextResponse.redirect(
     new URL(ROUTES.NOTFOUND, req.nextUrl),
   )

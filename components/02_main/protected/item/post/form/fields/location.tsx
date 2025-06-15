@@ -29,6 +29,7 @@ import { getLocationList } from '@/lib/utils/fuse/locations'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { useState } from 'react'
 import { Location } from '@/lib/utils/fuse/location'
+import { logError } from '@/lib/utils/log'
 
 export default function LocationField({
   form,
@@ -51,7 +52,7 @@ export default function LocationField({
       const res = await getLocationList(value)
       setLocations(res)
     } catch (error) {
-      console.error('Location field error')
+      logError('Location field error')
     } finally {
       setLoading(false)
     }
