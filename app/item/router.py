@@ -7,7 +7,7 @@ from app.common.database import get_session
 from app.common.schemas.error import ErrorResponse
 from app.item import service
 from app.item.schemas.requests import ItemCreateRequest, ItemUpdateRequest
-from app.item.schemas.requests import GetItemsRequest
+from app.item.schemas.requests import ItemsRequest
 from app.item.schemas.responses import ItemResponse
 
 items_router = APIRouter()
@@ -15,7 +15,7 @@ items_router = APIRouter()
 
 @items_router.get("", response_model=ItemResponse)
 async def get_items(
-    query: GetItemsRequest = Depends(),
+    query: ItemsRequest = Depends(),
     session: AsyncSession = Depends(get_session),
 ) -> ItemResponse:
     res = await service.get_paginated_items_with_count(session, query)

@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.item import repository
 from app.item.schemas.requests import ItemCreateRequest, ItemUpdateRequest
-from app.item.schemas.requests import GetItemsRequest
+from app.item.schemas.requests import ItemsRequest
 from app.item.schemas.common import ItemOut
 from app.profile.repository import get_profile_by_user
 from app.storage.image import store_images
@@ -14,7 +14,7 @@ from app.storage.image import store_images
 
 async def get_paginated_items_with_count(
     session: AsyncSession,
-    query: GetItemsRequest,
+    query: ItemsRequest,
 ) -> Tuple[List[ItemOut], int] | None:
     items_db = await repository.get_items_paginated(session, query)
     if not items_db:

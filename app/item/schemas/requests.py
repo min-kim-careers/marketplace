@@ -1,20 +1,25 @@
 from typing import List, Optional
 from uuid import UUID
 
-from pydantic import field_validator
+from pydantic import field_validator, model_validator
 
 from app.common.schemas.request import RequestBase
-from app.item.enums import (ItemCategory, ItemCondition, ItemSortBy,
-                            ItemSortOrder)
-from app.profile.schemas.common import DEFAULT_IMAGE_LIMIT
+from app.item.enums import (
+    ItemCategory,
+    ItemCondition,
+    ItemQueryMode,
+    ItemSortBy,
+    ItemSortOrder,
+)
 
-DEFAULT_SORT_BY = ItemSortBy.created_at
 DEFAULT_PAGINATION_PAGE = 1
 DEFAULT_PAGINATION_LIMIT = 9
+
 DEFAULT_SORT_ORDER = ItemSortOrder.asc
+DEFAULT_SORT_BY = ItemSortBy.created_at
 
 
-class GetItemsRequest(RequestBase):
+class ItemsRequest(RequestBase):
     keyword: Optional[str] = None
 
     sort_order: Optional[ItemSortOrder] = DEFAULT_SORT_ORDER
@@ -23,7 +28,8 @@ class GetItemsRequest(RequestBase):
     page: int = DEFAULT_PAGINATION_PAGE
     limit: int = DEFAULT_PAGINATION_LIMIT
 
-    exclude_user: Optional[UUID] = None
+    mode: ItemQueryMode = ItemQueryMode.ALL
+    user_id: Optional[UUID] = None
 
     @property
     def offset(self) -> int:
@@ -33,6 +39,15 @@ class GetItemsRequest(RequestBase):
     @classmethod
     def normalise_keyword(cls, v: str):
         return v.lower() if v else v
+
+    @model_validator(mode="after")
+    def validate_mode(cls, values):
+        if (
+            values.mode in [ItemQueryMode.EXCLUDE_USER, ItemQueryMode.ONLY_USER]
+            and not values.user_id
+        ):
+            raise ValueError("user_id is required when mode is ONLY_USER or EXCLUDE_USER")
+        return values
 
 
 class ItemUpdateRequest(RequestBase):

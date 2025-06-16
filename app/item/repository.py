@@ -1,38 +1,45 @@
-from typing import List, Optional, Sequence
+from typing import Any, List, Optional, Sequence, Tuple
 from uuid import UUID
 
-from sqlalchemy import String, asc, cast, desc, func, or_, select, update
+from sqlalchemy import Select, String, asc, cast, desc, func, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.common.utils import get_one_by
-from app.item.enums import ItemSortOrder
+from app.item.enums import ItemQueryMode, ItemSortOrder
 from app.item.model import ItemDB
 from app.item.schemas.requests import (
-    GetItemsRequest,
+    ItemsRequest,
     ItemCreateRequest,
     ItemUpdateRequest,
 )
 from app.profile.model import ProfileDB
 
 
+def base_query(stmt: Select, query: ItemsRequest):
+    if query.mode == ItemQueryMode.EXCLUDE_USER:
+        stmt = stmt.join(ItemDB.profile).where(ProfileDB.user_id != query.user_id)  # type: ignore
+    elif query.mode == ItemQueryMode.ONLY_USER:
+        stmt = stmt.join(ItemDB.profile).where(ProfileDB.user_id == query.user_id)  # type: ignore
+
+    if query.keyword:
+        conditions = [
+            func.lower(ItemDB.name).ilike(f"%{query.keyword}%"),
+            func.lower(ItemDB.description).ilike(f"%{query.keyword}%"),
+            func.lower(cast(ItemDB.category, String)).ilike(f"%{query.keyword}%"),
+        ]
+        stmt = stmt.where(or_(*conditions))
+    return stmt
+
+
 async def get_items_paginated(
     session: AsyncSession,
-    query: GetItemsRequest,
+    query: ItemsRequest,
 ) -> Sequence[ItemDB]:
     try:
         stmt = select(ItemDB).options(selectinload(ItemDB.profile))  # type: ignore
 
-        if query.exclude_user:
-            stmt = stmt.join(ItemDB.profile).where(ProfileDB.user_id != query.exclude_user)  # type: ignore
-
-        if query.keyword:
-            conditions = [
-                func.lower(ItemDB.name).ilike(f"%{query.keyword}%"),
-                func.lower(ItemDB.description).ilike(f"%{query.keyword}%"),
-                func.lower(cast(ItemDB.category, String)).ilike(f"%{query.keyword}%"),
-            ]
-            stmt = stmt.where(or_(*conditions))
+        stmt = base_query(stmt, query)
 
         if query.sort_by:
             sort_column = getattr(ItemDB, query.sort_by.name)
@@ -49,20 +56,11 @@ async def get_items_paginated(
         return []
 
 
-async def get_items_count(session: AsyncSession, query: GetItemsRequest) -> int:
+async def get_items_count(session: AsyncSession, query: ItemsRequest) -> int:
     try:
-        stmt = select(func.count()).select_from(ItemDB) # type: ignore
+        stmt = select(func.count()).select_from(ItemDB)  # type: ignore
 
-        if query.exclude_user:
-            stmt = stmt.join(ItemDB.profile).where(ProfileDB.user_id != query.exclude_user)  # type: ignore
-
-        if query.keyword:
-            conditions = [
-                func.lower(ItemDB.name).ilike(f"%{query.keyword}%"),
-                func.lower(ItemDB.description).ilike(f"%{query.keyword}%"),
-                func.lower(cast(ItemDB.category, String)).ilike(f"%{query.keyword}%"),
-            ]
-            stmt = stmt.where(or_(*conditions))
+        stmt = base_query(stmt, query)
 
         result = await session.execute(stmt)
         return result.scalar_one()

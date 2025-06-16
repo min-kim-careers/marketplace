@@ -33,3 +33,8 @@ class ItemSortBy(str, Enum):
     updated_at = "updated_at"
     price = "price"
     name_ = "name"
+
+class ItemQueryMode(str, Enum):
+    ALL = 'all'
+    ONLY_USER = 'only_user'
+    EXCLUDE_USER = 'exclude_user'
