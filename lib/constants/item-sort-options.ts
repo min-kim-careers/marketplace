@@ -46,7 +46,7 @@ export const ITEM_SORT_OPTIONS: ItemSortOption[] = [
   },
 ]
 
-const getDefaultSortOption = (): ItemSortOption => {
+const getDefaultItemSortOption = (): ItemSortOption => {
   const defaultSortOption = ITEM_SORT_OPTIONS.filter(
     (i) => i.isDefault,
   )
@@ -57,4 +57,4 @@ const getDefaultSortOption = (): ItemSortOption => {
   return defaultSortOption[0]
 }
 
-export const DEFAULT_SORT_OPTION = getDefaultSortOption()
+export const DEFAULT_ITEM_SORT_OPTION = getDefaultItemSortOption()

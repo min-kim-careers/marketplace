@@ -2,7 +2,6 @@
 
 import { createApiAxios } from '@/_gateway/api/_config/axios'
 import { ITEM_ENDPOINTS } from '../_config/endpoints'
-import { cleanPayload } from '@/lib/common/utils'
 import { Item } from '@/lib/interfaces/item'
 
 const apiItemAxios = await createApiAxios('/api/items')
@@ -13,7 +12,8 @@ export interface GetItemsRequest {
   keyword?: string | null
   sortBy?: string | null
   sortOrder?: string | null
-  excludeUser?: string | null
+  mode?: string | null
+  userId?: string | null
 }
 
 export const _getItems = async (
@@ -26,9 +26,7 @@ export const _getItems = async (
     const response = await apiItemAxios.get(
       ITEM_ENDPOINTS.GET_ITEMS,
       {
-        params: {
-          ...cleanPayload(request),
-        },
+        params: request,
       },
     )
 
@@ -54,7 +52,7 @@ export const _createItem = async (
   try {
     const response = await apiItemAxios.post(
       ITEM_ENDPOINTS.CREATE_ITEM(userId),
-      cleanPayload(request),
+      request,
     )
 
     const { item } = response.data
@@ -83,7 +81,7 @@ export const _updateItem = async (
   try {
     const response = await apiItemAxios.patch(
       ITEM_ENDPOINTS.UPDATE_ITEM(itemId),
-      cleanPayload(request),
+      request,
     )
 
     const { item } = response.data

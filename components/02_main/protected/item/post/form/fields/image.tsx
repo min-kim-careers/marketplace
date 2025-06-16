@@ -10,7 +10,7 @@ import {
 import { Input } from '@/components/shadcn/components/ui/input'
 import { Label } from '@/components/shadcn/components/ui/label'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
-import { compressFile } from '@/lib/common/utils'
+import { compressFile } from '@/lib/common/helpers'
 import { Plus, Trash } from 'lucide-react'
 import Image from 'next/image'
 import { ChangeEvent, useEffect, useState } from 'react'

@@ -3,7 +3,7 @@ import {
   Item,
   // ItemSortOption,
 } from '@/lib/interfaces/item'
-import { MarketParams } from "../interfaces/market-params"
+import { MarketParams } from '../interfaces/market-params'
 import { create } from 'zustand'
 
 type MarketState = {
@@ -15,9 +15,6 @@ type MarketState = {
 
   params: MarketParams
   setParams: (params: MarketParams) => void
-
-  // sortOptions: ItemSortOption[]
-  // fetchSortOptions: () => void
 }
 
 const useMarketStore = create<MarketState>((set) => {
@@ -30,16 +27,6 @@ const useMarketStore = create<MarketState>((set) => {
 
     params: { page: 1 },
     setParams: (params: MarketParams) => set({ params }),
-
-    // sortOptions: [] as ItemSortOption[],
-    // fetchSortOptions: async () => {
-    //   try {
-    //     const sortOptions = await serviceGetSortOptions()
-    //     set({ sortOptions })
-    //   } catch (_) {
-    //     set({ sortOptions: [] })
-    //   }
-    // },
   }
 })
 

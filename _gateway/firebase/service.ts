@@ -7,18 +7,17 @@ import {
 import {
   clearSessionCookie,
   createHandle,
-  getSessionCookie,
-  setSessionCookie,
   createUserId,
+  getSessionCookie,
+  logFirebaseError,
+  setSessionCookie,
 } from '@/_gateway/firebase/_config/helpers'
-import { DecodedToken } from "./internal"
 import {
   _getSession,
   _verifySession,
 } from '@/_gateway/firebase/internal'
 import { Profile } from '@/lib/interfaces/profile'
-import { logFirebaseError } from '@/_gateway/firebase/_config/helpers'
-import { cleanPayload } from '@/lib/common/utils'
+import { DecodedToken } from './internal'
 
 export const signInWithGoogle = async (
   idToken: string,
@@ -47,11 +46,11 @@ export const signInWithGoogle = async (
 
     const { profile: newProfile } = await _upsertProfile(
       userId,
-      cleanPayload({
+      {
         handle,
         email: decodedToken.email,
         avatarUrl: decodedToken.picture,
-      }),
+      },
     )
 
     await setSessionCookie(sessionCookie, expiresInSeconds)

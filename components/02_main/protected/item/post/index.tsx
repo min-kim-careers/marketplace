@@ -30,7 +30,7 @@ import {
 } from '@/components/shadcn/components/ui/card'
 import { Form } from '@/components/shadcn/components/ui/form'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
-import { ROUTES } from '@/lib/constants/routes'
+import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { useRouter } from 'next/navigation'
 
 export default function ItemPost({
@@ -88,7 +88,7 @@ export default function ItemPost({
         description:
           'Your item has been successfully posted!',
       })
-      router.push(ROUTES.MARKET)
+      router.push(APP_ROUTES.MARKET)
     } catch (error) {
       toast({
         description: 'Something went wrong',

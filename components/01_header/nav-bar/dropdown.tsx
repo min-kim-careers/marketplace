@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/shadcn/components/ui/dropdown-menu'
-import { ROUTES } from '@/lib/constants/routes'
+import { APP_ROUTES } from '@/lib/constants/app-routes'
 import useProfileStore from '@/lib/stores/profile'
 import Link from 'next/link'
 import Spinner from '../../00_common/spinner'
@@ -44,11 +44,11 @@ export default function Dropdown({}: {}) {
         <DropdownMenuSeparator />
 
         <DropdownMenuItem asChild>
-          <Link href={ROUTES.PROFILE_UPDATE}>Profile</Link>
+          <Link href={APP_ROUTES.PROFILE_UPDATE}>Profile</Link>
         </DropdownMenuItem>
 
         <DropdownMenuItem asChild>
-          <Link href={ROUTES.PROFILE_LISTINGS}>Listings</Link>
+          <Link href={APP_ROUTES.PROFILE_LISTINGS}>Listings</Link>
         </DropdownMenuItem>
 
         <DropdownMenuItem onClick={handleSignOut}>

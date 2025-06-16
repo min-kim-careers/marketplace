@@ -6,8 +6,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/shadcn/components/ui/select'
-import { ROUTES } from '@/lib/constants/routes'
-import { marketToUrlParams } from '@/lib/common/market-helpers'
+import { APP_ROUTES } from '@/lib/constants/app-routes'
+import { toUrlParams } from '@/lib/common/helpers'
 import { ItemSortOption } from "@/lib/interfaces/item-sort-options"
 import { MarketParams } from "@/lib/interfaces/market-params"
 import useMarketStore from '@/lib/stores/market'
@@ -42,8 +42,8 @@ export default function SortDropdown() {
         sortBy: option.sortBy,
         sortOrder: option.sortOrder,
       }
-      const urlParams = marketToUrlParams(newParams)
-      router.replace(`${ROUTES.MARKET}?${urlParams}`)
+      const urlParams = toUrlParams(newParams)
+      router.replace(`${APP_ROUTES.MARKET}?${urlParams}`)
       setParams(newParams)
     }
   }

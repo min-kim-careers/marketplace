@@ -1,9 +1,7 @@
 import { Button } from '@/components/shadcn/components/ui/button'
 import { Input } from '@/components/shadcn/components/ui/input'
-import { ROUTES } from '@/lib/constants/routes'
-import {
-  marketToUrlParams
-} from '@/lib/common/market-helpers'
+import { APP_ROUTES } from '@/lib/constants/app-routes'
+import { toUrlParams } from '@/lib/common/helpers'
 import useMarketStore  from '@/lib/stores/market'
 import { Search } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -19,13 +17,13 @@ export default function SearchInput() {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
     const keyword = formData.get('keyword') as string
-    const urlParams = marketToUrlParams(params)
+    const urlParams = toUrlParams(params)
     if (!!keyword) {
       urlParams.set('keyword', keyword)
     } else {
       urlParams.delete('keyword')
     }
-    router.replace(`${ROUTES.MARKET}?${urlParams}`)
+    router.replace(`${APP_ROUTES.MARKET}?${urlParams}`)
   }
 
   return (

@@ -1,24 +1,20 @@
 'use server'
 
-import {
-  cleanParam,
-  cleanPayload,
-} from '@/lib/common/utils'
-import { Item } from '@/lib/interfaces/item'
 import { Profile } from '@/lib/interfaces/profile'
 import { AxiosError } from 'axios'
 import { PROFILE_ENDPOINTS } from '../_config/endpoints'
 import { createApiAxios } from '@/_gateway/api/_config/axios'
 import { ItemListing } from '@/lib/interfaces/item-listing'
 
-const apiProfileAxios = await createApiAxios('/api/profiles')
+const apiProfileAxios =
+  await createApiAxios('/api/profiles')
 
 export const _getProfile = async (
   userId: string,
 ): Promise<{ profile: Profile | null }> => {
   try {
     const response = await apiProfileAxios.get(
-      PROFILE_ENDPOINTS.GET_PROFILE(cleanParam(userId)),
+      PROFILE_ENDPOINTS.GET_PROFILE(userId),
     )
 
     const { profile } = response.data
@@ -52,7 +48,7 @@ export const _upsertProfile = async (
   try {
     const response = await apiProfileAxios.put(
       PROFILE_ENDPOINTS.UPSERT_PROFILE(userId),
-      cleanPayload(request),
+      request,
     )
 
     const { profile } = response.data
@@ -72,9 +68,7 @@ export const _handleExists = async (
 }> => {
   try {
     const response = await apiProfileAxios.get(
-      PROFILE_ENDPOINTS.CHECK_HANDLE_EXISTS(
-        cleanParam(handle),
-      ),
+      PROFILE_ENDPOINTS.CHECK_HANDLE_EXISTS(handle),
     )
 
     return response.data

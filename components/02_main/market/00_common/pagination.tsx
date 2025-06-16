@@ -6,24 +6,24 @@ import {
   PaginationLast,
   PaginationLink,
 } from '@/components/shadcn/components/ui/pagination'
-import { ITEM_PAGINATION } from '@/lib/constants/item-pagination'
-import { ROUTES } from '@/lib/constants/routes'
-import useMarketStore  from '@/lib/stores/market'
-import { serialize } from '@/lib/common/market-helpers'
-import { notFound, useSearchParams } from 'next/navigation'
+import {
+  toUrlParams
+} from '@/lib/common/helpers'
+import { APP_ROUTES } from '@/lib/constants/app-routes'
+import { DEFAULT_ITEM_PAGINATION } from '@/lib/constants/item-pagination'
+import useMarketStore from '@/lib/stores/market'
+import { notFound } from 'next/navigation'
 
 export default function Pagination() {
   const { params } = useMarketStore()
   const { count } = useMarketStore()
 
-  const lastPage = Math.ceil(count / ITEM_PAGINATION.LIMIT)
+  const lastPage = Math.ceil(count / DEFAULT_ITEM_PAGINATION.LIMIT)
 
-  if (params.page < 1 && lastPage < params.page) {
-    notFound()
-  }
+  if (params.page < 1 && lastPage < params.page) notFound()
 
   const paginationArray = Array.from(
-    { length: ITEM_PAGINATION.SIZE },
+    { length: DEFAULT_ITEM_PAGINATION.SIZE },
     (_, index) => {
       if (params.page < 3) {
         return index + 1
@@ -41,10 +41,7 @@ export default function Pagination() {
       <PaginationContent>
         <PaginationFirst
           disabled={params.page === 1 || !count}
-          href={{
-            pathname: ROUTES.MARKET,
-            query: serialize({ ...params, page: 1 }),
-          }}
+          href={`${APP_ROUTES.MARKET}?${toUrlParams({ ...params, page: 1 })}`}
         />
 
         {paginationArray.map(
@@ -54,13 +51,12 @@ export default function Pagination() {
               <PaginationItem key={index}>
                 <PaginationLink
                   isActive={params.page === page}
-                  href={{
-                    pathname: ROUTES.MARKET,
-                    query: serialize({
+                  href={`${APP_ROUTES.MARKET}?${toUrlParams(
+                    {
                       ...params,
                       page: page,
-                    }),
-                  }}
+                    },
+                  )}`}
                 >
                   {page}
                 </PaginationLink>
@@ -70,13 +66,10 @@ export default function Pagination() {
 
         <PaginationLast
           disabled={params.page === lastPage || !count}
-          href={{
-            pathname: ROUTES.MARKET,
-            query: serialize({
-              ...params,
-              page: lastPage,
-            }),
-          }}
+          href={`${APP_ROUTES.MARKET}?${toUrlParams({
+            ...params,
+            page: lastPage,
+          })}`}
         />
       </PaginationContent>
     </PaginationContainer>

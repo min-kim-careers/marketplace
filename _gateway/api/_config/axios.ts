@@ -32,4 +32,3 @@ export const createApiAxios = async (endpoint: string) => {
   )
   return instance
 }
-

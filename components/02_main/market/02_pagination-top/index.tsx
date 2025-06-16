@@ -1,5 +1,5 @@
 import Pagination from '@/components/02_main/market/00_common/pagination'
-import { ITEM_PAGINATION } from '@/lib/constants/item-pagination'
+import { DEFAULT_ITEM_PAGINATION } from '@/lib/constants/item-pagination'
 import useMarketStore  from '@/lib/stores/market'
 
 export default function PaginationTop() {
@@ -12,7 +12,7 @@ export default function PaginationTop() {
         <Pagination />
       </span>
       <span className='flex flex-1 justify-end'>
-        {`${(params.page - 1) * ITEM_PAGINATION.LIMIT + 1} - ${ITEM_PAGINATION.LIMIT * (params.page - 1) + items.length} of ${count}`}
+        {`${(params.page - 1) * DEFAULT_ITEM_PAGINATION.LIMIT + 1} - ${DEFAULT_ITEM_PAGINATION.LIMIT * (params.page - 1) + items.length} of ${count}`}
       </span>
     </div>
   )

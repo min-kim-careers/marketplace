@@ -9,8 +9,8 @@ import {
   isFallbackRoute,
   isProtectedRoute,
   isPublicRoute,
-  ROUTES,
-} from '@/lib/constants/routes'
+  APP_ROUTES,
+} from '@/lib/constants/app-routes'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
@@ -50,7 +50,7 @@ export async function middleware(req: NextRequest) {
   if (!isAuthenticated) {
     if (isProtectedRoute(path)) {
       return NextResponse.redirect(
-        new URL(ROUTES.HOME, req.nextUrl),
+        new URL(APP_ROUTES.HOME, req.nextUrl),
       )
     }
 
@@ -60,7 +60,7 @@ export async function middleware(req: NextRequest) {
   }
 
   return NextResponse.redirect(
-    new URL(ROUTES.NOTFOUND, req.nextUrl),
+    new URL(APP_ROUTES.NOTFOUND, req.nextUrl),
   )
 }
 

@@ -1,13 +1,13 @@
 import { Button } from '@/components/shadcn/components/ui/button'
-import { ROUTES } from '@/lib/constants/routes'
+import { APP_ROUTES } from '@/lib/constants/app-routes'
 import Link from 'next/link'
 
 export default function NotFound() {
   return (
-    <div className='flex min-w-full flex-1 flex-col items-center justify-center gap-6 p-4'>
+    <div className='flex w-full h-screen flex-1 flex-col items-center justify-center gap-6 p-4'>
       <h2 className='text-lg font-semibold'>Page not found!</h2>
       <Button>
-        <Link href={ROUTES.HOME}>Return Home</Link>
+        <Link href={APP_ROUTES.HOME}>Return Home</Link>
       </Button>
     </div>
   )

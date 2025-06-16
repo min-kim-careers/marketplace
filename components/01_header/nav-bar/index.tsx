@@ -1,11 +1,13 @@
-import { ROUTES } from '@/lib/constants/routes'
-import { serialize } from '@/lib/common/market-helpers'
+import {
+  toUrlParams
+} from '@/lib/common/helpers'
+import { APP_ROUTES } from '@/lib/constants/app-routes'
+import { useSignIn } from '@/lib/hooks/use-sign-in'
+import { useSignOut } from '@/lib/hooks/use-sign-out'
 import useProfileStore from '@/lib/stores/profile'
 import Link from 'next/link'
 import { Button } from '../../shadcn/components/ui/button'
 import Dropdown from './dropdown'
-import { useSignIn } from '@/lib/hooks/use-sign-in'
-import { useSignOut } from '@/lib/hooks/use-sign-out'
 
 export default function NavBar() {
   const { profile } = useProfileStore()
@@ -25,15 +27,12 @@ export default function NavBar() {
   return (
     <span className='flex items-center justify-between gap-4'>
       <Link
-        href={{
-          pathname: ROUTES.MARKET,
-          query: serialize({ page: 1 }),
-        }}
+        href={`${APP_ROUTES.MARKET}?${toUrlParams({ page: 1 })}`}
         passHref
       >
         <Button>Browse</Button>
       </Link>
-      <Link href={ROUTES.POST}>
+      <Link href={APP_ROUTES.POST}>
         <Button>Post Ad</Button>
       </Link>
       <Dropdown />

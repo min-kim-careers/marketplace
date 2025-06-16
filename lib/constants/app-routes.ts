@@ -1,4 +1,4 @@
-export const ROUTES = {
+export const APP_ROUTES = {
   HOME: '/',
   MARKET: '/market',
   NOTFOUND: '/404',
@@ -10,21 +10,21 @@ export const ROUTES = {
 }
 
 const PROTECTED_ROUTES = [
-  ROUTES.POST,
-  ROUTES.PROFILE_UPDATE,
-  ROUTES.PROFILE_COMPLETE,
-  ROUTES.PROFILE_LISTINGS,
+  APP_ROUTES.POST,
+  APP_ROUTES.PROFILE_UPDATE,
+  APP_ROUTES.PROFILE_COMPLETE,
+  APP_ROUTES.PROFILE_LISTINGS,
 ]
 
 const PUBLIC_ROUTES = [
-  ROUTES.HOME,
-  ROUTES.MARKET,
-  ROUTES.NOTFOUND,
+  APP_ROUTES.HOME,
+  APP_ROUTES.MARKET,
+  APP_ROUTES.NOTFOUND,
 ]
 
 const validateRoutes = () => {
   const allRoutes = [...PROTECTED_ROUTES, ...PUBLIC_ROUTES]
-  const routesValues = Object.values(ROUTES)
+  const routesValues = Object.values(APP_ROUTES)
   allRoutes.forEach((route) => {
     if (!routesValues.includes(route)) {
       throw new Error(`Invalid route: ${route}`)
@@ -37,7 +37,7 @@ const validateRoutes = () => {
 
 validateRoutes()
 
-const FALLBACK_ROUTES = [ROUTES.NOTFOUND]
+const FALLBACK_ROUTES = [APP_ROUTES.NOTFOUND]
 
 export const isProtectedRoute = (path: string) =>
   PROTECTED_ROUTES.includes(path)

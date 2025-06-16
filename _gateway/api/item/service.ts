@@ -14,9 +14,21 @@ import {
   _getItems,
   _updateItem,
 } from '@/_gateway/api/item/internal'
-import { ITEM_PAGINATION } from '@/lib/constants/item-pagination'
+import { DEFAULT_ITEM_PAGINATION } from '@/lib/constants/item-pagination'
 import { Item } from '@/lib/interfaces/item'
 import { MarketParams } from '@/lib/interfaces/market-params'
+import { ItemQueryMode } from '@/_gateway/api/_config/item-query.enum'
+import { ListingsParams } from '@/lib/interfaces/listings-params'
+
+const baseRequest = (
+  params: MarketParams | ListingsParams,
+) => ({
+  page: params.page,
+  keyword: params.keyword,
+  sortBy: params.sortBy,
+  sortOrder: params.sortOrder,
+  limit: DEFAULT_ITEM_PAGINATION.LIMIT,
+})
 
 export const getItems = async (
   marketParams: MarketParams,
@@ -25,14 +37,47 @@ export const getItems = async (
   count: number
 }> => {
   try {
-    const request = {
-      page: marketParams.page,
-      keyword: marketParams.keyword,
-      sortBy: marketParams.sortBy,
-      sortOrder: marketParams.sortOrder,
-      limit: ITEM_PAGINATION.LIMIT,
-      excludeUser: await getSessionUserId(),
-    } satisfies GetItemsRequest
+    const userId = await getSessionUserId()
+
+    const request: GetItemsRequest = {
+      ...baseRequest(marketParams),
+      userId,
+      mode: userId
+        ? ItemQueryMode.EXCLUDE_USER
+        : ItemQueryMode.ALL,
+    }
+
+    const { items, count } = await _getItems(request)
+
+    return {
+      items,
+      count,
+    }
+  } catch (error) {
+    logApiError(error)
+    return {
+      items: [],
+      count: 0,
+    }
+  }
+}
+
+export const getUserItems = async (
+  listingsParams: ListingsParams,
+): Promise<{
+  items: Item[]
+  count: number
+}> => {
+  try {
+    const userId = await getSessionUserId()
+    if (!userId)
+      throw new Error('Error fetching user items')
+
+    const request: GetItemsRequest = {
+      ...baseRequest(listingsParams),
+      userId,
+      mode: ItemQueryMode.ONLY_USER,
+    }
 
     const { items, count } = await _getItems(request)
 
@@ -105,5 +150,3 @@ export const deleteItem = async (
     return false
   }
 }
-
-

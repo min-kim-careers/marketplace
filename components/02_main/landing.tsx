@@ -1,8 +1,9 @@
 'use client'
 
 import { Button } from '@/components/shadcn/components/ui/button'
+import { toUrlParams } from '@/lib/common/helpers'
 import { APP_DATA } from '@/lib/constants/app-data'
-import { ROUTES } from '@/lib/constants/routes'
+import { APP_ROUTES } from '@/lib/constants/app-routes'
 import useProfileStore from '@/lib/stores/profile'
 import Link from 'next/link'
 
@@ -19,7 +20,10 @@ export default function Landing() {
           <p>{`Hi there, ${profile.handle}!`}</p>
         )}
 
-        <Link href={`${ROUTES.MARKET}?page=1`} passHref>
+        <Link
+          href={`${APP_ROUTES.MARKET}?${toUrlParams({ page: 1 })}`}
+          passHref
+        >
           <Button>Browse the market</Button>
         </Link>
       </div>
