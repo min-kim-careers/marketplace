@@ -3,9 +3,8 @@ from uuid import UUID
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.common.database import get_session
+from app.db.session import get_session
 from app.common.schemas.error import ErrorResponse
-from app.item.schemas.requests import ItemsRequest
 from app.profile import service
 from app.profile.schemas.requests import ProfileInRequest
 from app.profile.schemas.responses import ProfileResponse
@@ -86,20 +85,3 @@ async def get_profile_extra(
     )
 
 
-@profiles_router.get("/{user_id}/items", response_model=ProfileResponse)
-async def get_user_items(
-    user_id: UUID,
-    query: ItemsRequest = Depends(),
-    session: AsyncSession = Depends(get_session),
-) -> ProfileResponse:
-    items, count = await service.get_user_items(session, query, user_id)
-
-    data = dict(
-        items=items,
-        count=count,
-    )
-
-    return ProfileResponse(
-        success=True,
-        data=data,
-    )

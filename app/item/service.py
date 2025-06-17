@@ -1,88 +1,192 @@
-from typing import List, Optional, Tuple
+from typing import Any, List, Optional, Sequence, Tuple
 from uuid import UUID
 
-from fastapi import UploadFile
+from sqlalchemy import Select, String, asc, cast, desc, func, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
-from app.item import repository
-from app.item.schemas.requests import ItemCreateRequest, ItemUpdateRequest
-from app.item.schemas.requests import ItemsRequest
-from app.item.schemas.common import ItemOut
-from app.profile.repository import get_profile_by_user
-from app.storage.image import store_images
+from app.common.utils import get_one_by
+from app.item.enums import ItemSortOrder
+from app.db.models.item import ItemDB
+from app.item.schemas.requests import (
+    ItemsRequest,
+    ItemCreateRequest,
+    ItemUpdateRequest,
+)
+from app.db.models.profile import ProfileDB
 
 
-async def get_paginated_items_with_count(
+def base_query(stmt: Select, query: ItemsRequest, user_id: Optional[UUID] = None):
+    if user_id:
+        stmt = stmt.join(ItemDB.profile).where(ProfileDB.user_id != user_id)  # type: ignore
+
+    if query.keyword:
+        conditions = [
+            func.lower(ItemDB.name).ilike(f"%{query.keyword}%"),
+            func.lower(ItemDB.description).ilike(f"%{query.keyword}%"),
+            func.lower(cast(ItemDB.category, String)).ilike(f"%{query.keyword}%"),
+        ]
+        stmt = stmt.where(or_(*conditions))
+    return stmt
+
+
+async def get_items(
     session: AsyncSession,
     query: ItemsRequest,
-) -> Tuple[List[ItemOut], int]:
-    items_db = await repository.get_items(session, query)
-    if not items_db:
-        return [], 0
+) -> Sequence[ItemDB]:
+    try:
+        stmt = select(ItemDB).options(selectinload(ItemDB.profile))  # type: ignore
 
-    count = await repository.get_items_count(session, query)
+        stmt = base_query(stmt, query)
 
-    items_out = [ItemOut.from_db(item) for item in items_db]
+        if query.sort_by:
+            sort_column = getattr(ItemDB, query.sort_by.name)
+            if query.sort_order == ItemSortOrder.asc:
+                stmt = stmt.order_by(asc(sort_column))
+            else:
+                stmt = stmt.order_by(desc(sort_column))
 
-    return items_out, count
+        stmt = stmt.offset(query.offset).limit(query.limit)
+        result = await session.execute(stmt)
+        return result.scalars().all()
+    except Exception as e:
+        print(e)
+        return []
+
+
+async def get_items_count(session: AsyncSession, query: ItemsRequest) -> int:
+    try:
+        stmt = select(func.count()).select_from(ItemDB)  # type: ignore
+
+        stmt = base_query(stmt, query)
+
+        result = await session.execute(stmt)
+        return result.scalar_one()
+    except Exception as e:
+        print(e)
+        return 0
+
+
+async def get_user_items(
+    session: AsyncSession,
+    query: ItemsRequest,
+    user_id: UUID,
+) -> Sequence[ItemDB]:
+    try:
+        stmt = select(ItemDB).options(selectinload(ItemDB.profile))  # type: ignore
+
+        stmt = base_query(stmt, query)
+
+        stmt = stmt.join(ItemDB.profile).where(ProfileDB.user_id == user_id)  # type: ignore
+
+        if query.sort_by:
+            sort_column = getattr(ItemDB, query.sort_by.name)
+            if query.sort_order == ItemSortOrder.asc:
+                stmt = stmt.order_by(asc(sort_column))
+            else:
+                stmt = stmt.order_by(desc(sort_column))
+
+        stmt = stmt.offset(query.offset).limit(query.limit)
+        result = await session.execute(stmt)
+        return result.scalars().all()
+    except Exception as e:
+        print(e)
+        return []
+
+
+async def get_user_items_count(
+    session: AsyncSession,
+    query: ItemsRequest,
+    user_id: UUID,
+) -> int:
+    try:
+        stmt = select(func.count()).select_from(ItemDB)  # type: ignore
+
+        stmt = base_query(stmt, query)
+
+        stmt = stmt.join(ItemDB.profile).where(ProfileDB.user_id == user_id)  # type: ignore
+
+        result = await session.execute(stmt)
+        return result.scalar_one()
+    except Exception as e:
+        print(e)
+        return 0
+
+
+async def get_item_by_id(session: AsyncSession, item_id: int) -> ItemDB | None:
+    return await get_one_by(session, ItemDB, id=item_id)
+
+
+async def get_item_by_id_and_profile(
+    session: AsyncSession, profile_id: UUID, item_id: int
+) -> ItemDB | None:
+    return await get_one_by(
+        session,
+        ItemDB,
+        profile_id=profile_id,
+        id=item_id,
+    )
 
 
 async def create_item(
-    session: AsyncSession,
-    user_id: UUID,
-    item_in: ItemCreateRequest,
-) -> ItemOut | None:
-    profile_db = await get_profile_by_user(session, user_id)
-    if not profile_db:
-        print("No profile found")
+    session: AsyncSession, user_id: UUID, item_in: ItemCreateRequest
+) -> ItemDB | None:
+    try:
+        item_db = ItemDB(
+            **item_in.model_dump(),
+            user_id=user_id,
+        )
+
+        session.add(item_db)
+        await session.commit()
+        await session.refresh(item_db)
+        return item_db
+    except Exception as e:
+        await session.rollback()
+        print(e)
         return None
 
-    item_db = await repository.create_item(session, profile_db.id, item_in)
-    if not item_db:
-        return None
 
-    return ItemOut.from_db(item_db)
-
-
-async def delete_item(
-    session: AsyncSession,
-    item_id: int,
-) -> bool:
-    item_db = await repository.get_item_by_id(session, item_id)
-    if not item_db:
+async def delete_item(session: AsyncSession, item_db: ItemDB) -> bool:
+    try:
+        await session.delete(item_db)
+        await session.commit()
+        return True
+    except Exception as e:
+        await session.rollback()
+        print(e)
         return False
-
-    return await repository.delete_item(session, item_db)
 
 
 async def update_item(
     session: AsyncSession,
-    item_id: int,
+    item_db: ItemDB,
     item_in: ItemUpdateRequest,
-) -> ItemOut | None:
-    item_db = await repository.get_item_by_id(session, item_id)
-    if item_db:
-        item_db = await repository.update_item(session, item_db, item_in)
+) -> ItemDB | None:
+    try:
+        for field, value in item_in.model_dump(exclude_unset=True).items():
+            setattr(item_db, field, value)
 
-    if not item_db:
+        await session.commit()
+        await session.refresh(item_db)
+        return item_db
+    except Exception as e:
+        await session.rollback()
+        print(e)
         return None
 
-    return ItemOut.from_db(item_db)
 
-
-async def upload_images(
-    session: AsyncSession, item_id: int, images: List[UploadFile]
-) -> ItemOut | None:
-    item_db = await repository.get_item_by_id(session, item_id)
-    if not item_db:
+async def update_image_urls(
+    session: AsyncSession,
+    item_db: ItemDB,
+    image_urls: List[str],
+) -> ItemDB | None:
+    try:
+        setattr(item_db, "image_urls", image_urls)
+        await session.commit()
+        await session.refresh(item_db)
+        return item_db
+    except Exception as e:
+        await session.rollback()
+        print(e)
         return None
-
-    image_urls = await store_images(images)
-    if not len(image_urls):
-        return None
-
-    item_db = await repository.update_image_urls(session, item_db, image_urls)
-    if not item_db:
-        return None
-
-    return ItemOut.from_db(item_db)

@@ -12,6 +12,5 @@ class ProfileInRequest(RequestBase):
     rating_count: Optional[int] = None
     postcode: Optional[str] = None
     avatar_url: Optional[str] = None
-    # extra: Optional[dict] = None
 
     

@@ -2,10 +2,10 @@ import asyncio
 from uuid import UUID, uuid4
 from faker import Faker
 from sqlalchemy import select
-from app.common.database import get_session
+from app.db.session import get_session
 from app.item.enums import ItemCategory, ItemCondition
-from app.item.model import ItemDB
-from app.profile.model import ProfileDB
+from app.db.models.item import ItemDB
+from app.db.models.profile import ProfileDB
 import random
 
 fake = Faker()
@@ -24,7 +24,7 @@ def create_mock_profile() -> ProfileDB:
     )
 
 
-def create_mock_item(profile_id: UUID) -> ItemDB:
+def create_mock_item(profile_id: UUID, user_id: UUID) -> ItemDB:
     return ItemDB(
         name=fake.name().capitalize(),
         description=fake.text(max_nb_chars=200),
@@ -35,6 +35,7 @@ def create_mock_item(profile_id: UUID) -> ItemDB:
         postcode=fake.postcode(),
         image_urls=[fake.image_url() for _ in range(random.randint(0, 3))],
         profile_id=profile_id,
+        user_id=user_id,
     )
 
 
@@ -50,20 +51,29 @@ async def seed_db():
         await session.commit()
 
         for profile in mock_profiles:
-            items = [create_mock_item(profile.id) for _ in range(3)]
+            items = [create_mock_item(profile.id, profile.user_id) for _ in range(3)]
             session.add_all(items)
 
         await session.commit()
         print("Seeding complete.")
 
 
-async def seed_user_items(profile_id: UUID, count):
+async def seed_user_items(profile_id: UUID, user_id: UUID, count):
     async for session in get_session():
-        items = [create_mock_item(profile_id) for _ in range(count)]
+        items = [
+            create_mock_item(profile_id=profile_id, user_id=user_id)
+            for _ in range(count)
+        ]
         session.add_all(items)
         await session.commit()
         print("User items seeded.")
 
 
 if __name__ == "__main__":
-    asyncio.run(seed_user_items(UUID("d7454f10-c925-4632-96b1-f94254f45f93"), 10))
+    asyncio.run(
+        seed_user_items(
+            UUID("d7454f10-c925-4632-96b1-f94254f45f93"),
+            UUID("d7454f10-c925-4632-96b1-f94254f45f93"),
+            10,
+        )
+    )

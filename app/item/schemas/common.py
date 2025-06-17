@@ -4,7 +4,7 @@ from typing import List, Optional
 from app.common.schemas.response import ResponseBase
 from app.item.enums import (ItemCategory, ItemCondition, ItemSortBy,
                             ItemSortOrder, ItemStatus)
-from app.item.model import ItemDB
+from app.db.models.item import ItemDB
 
 
 class ItemOut(ResponseBase):

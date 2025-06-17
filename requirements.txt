@@ -3,7 +3,4 @@ pydantic
 pydantic-settings
 sqlalchemy[asyncio]
 asyncpg
-sqlmodel
 faker
-alembic
-psycopg2-binary

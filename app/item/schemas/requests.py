@@ -27,8 +27,6 @@ class ItemsRequest(RequestBase):
     page: int = DEFAULT_PAGINATION_PAGE
     limit: int = DEFAULT_PAGINATION_LIMIT
 
-    exclude_user: Optional[UUID] = None
-
     @property
     def offset(self) -> int:
         return (self.page - 1) * self.limit
