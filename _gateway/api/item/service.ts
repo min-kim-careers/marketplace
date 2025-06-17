@@ -3,13 +3,6 @@
 import { getSessionUserId } from '@/_gateway/_common/helpers'
 import { logApiError } from '@/_gateway/api/_config/helpers'
 import {
-  _deleteItem,
-  _uploadItems,
-  CreateItemRequest,
-  GetItemsRequest,
-} from './internal'
-import { UpdateItemRequest } from './internal'
-import {
   _createItem,
   _getItems,
   _updateItem,
@@ -17,18 +10,14 @@ import {
 import { DEFAULT_ITEM_PAGINATION } from '@/lib/constants/item-pagination'
 import { Item } from '@/lib/interfaces/item'
 import { MarketParams } from '@/lib/interfaces/market-params'
-import { ItemQueryMode } from '@/_gateway/api/_config/item-query.enum'
-import { ListingsParams } from '@/lib/interfaces/listings-params'
+import {
+  _deleteItem,
+  _uploadItems,
+} from './internal'
+import { UpdateItemRequest } from './interfaces'
+import { CreateItemRequest } from './interfaces'
+import { GetItemsRequest } from './interfaces'
 
-const baseRequest = (
-  params: MarketParams | ListingsParams,
-) => ({
-  page: params.page,
-  keyword: params.keyword,
-  sortBy: params.sortBy,
-  sortOrder: params.sortOrder,
-  limit: DEFAULT_ITEM_PAGINATION.LIMIT,
-})
 
 export const getItems = async (
   marketParams: MarketParams,
@@ -40,43 +29,12 @@ export const getItems = async (
     const userId = await getSessionUserId()
 
     const request: GetItemsRequest = {
-      ...baseRequest(marketParams),
-      userId,
-      mode: userId
-        ? ItemQueryMode.EXCLUDE_USER
-        : ItemQueryMode.ALL,
-    }
-
-    const { items, count } = await _getItems(request)
-
-    return {
-      items,
-      count,
-    }
-  } catch (error) {
-    logApiError(error)
-    return {
-      items: [],
-      count: 0,
-    }
-  }
-}
-
-export const getUserItems = async (
-  listingsParams: ListingsParams,
-): Promise<{
-  items: Item[]
-  count: number
-}> => {
-  try {
-    const userId = await getSessionUserId()
-    if (!userId)
-      throw new Error('Error fetching user items')
-
-    const request: GetItemsRequest = {
-      ...baseRequest(listingsParams),
-      userId,
-      mode: ItemQueryMode.ONLY_USER,
+      page: marketParams.page,
+      keyword: marketParams.keyword,
+      sortBy: marketParams.sortBy,
+      sortOrder: marketParams.sortOrder,
+      limit: DEFAULT_ITEM_PAGINATION.LIMIT,
+      excludeUser: userId ?? undefined,
     }
 
     const { items, count } = await _getItems(request)

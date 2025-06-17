@@ -17,7 +17,7 @@ export default function ItemList() {
 
   return (
     <div
-      className='grid w-full flex-1 items-start gap-2'
+      className='grid w-full items-start gap-2'
       style={{
         gridTemplateColumns: `repeat(${columns}, 1fr)`,
       }}

@@ -1,19 +1,23 @@
 'use server'
 
-import { logApiError } from '@/_gateway/api/_config/helpers'
-import { UpsertProfileRequest } from './internal'
 import { getSessionUserId } from '@/_gateway/_common/helpers'
+import { logApiError } from '@/_gateway/api/_config/helpers'
+import { GetItemsRequest } from '../item/interfaces'
+import { _getUserItems } from './internal'
 import {
-  _handleExists,
   _getProfile,
-  _upsertProfile,
   _getProfileExtra,
+  _handleExists,
+  _upsertProfile,
 } from '@/_gateway/api/profile/internal'
-import { Profile } from '@/lib/interfaces/profile'
-import { ProfileExtra } from './internal'
-import { _getListings } from './internal'
+import { DEFAULT_ITEM_PAGINATION } from '@/lib/constants/item-pagination'
 import { Item } from '@/lib/interfaces/item'
 import { ItemListing } from '@/lib/interfaces/item-listing'
+import { ListingsParams } from '@/lib/interfaces/listings-params'
+import { Profile } from '@/lib/interfaces/profile'
+import { _getListings } from './internal'
+import { ProfileExtra } from './interfaces'
+import { UpsertProfileRequest } from './interfaces'
 
 export const updateCurrentProfile = async (
   newProfile: UpsertProfileRequest,
@@ -64,22 +68,25 @@ export const checkHandleExists = async (
   }
 }
 
-export const getProfileExtra = async (): Promise<ProfileExtra> => {
-  try {
-    const userId = await getSessionUserId()
-    if (!userId)
-      throw new Error('Error fetching profile extra')
+export const getProfileExtra =
+  async (): Promise<ProfileExtra | null> => {
+    try {
+      const userId = await getSessionUserId()
+      if (!userId)
+        throw new Error('Error fetching profile extra')
 
-    const { extra } = await _getProfileExtra(userId)
+      const { extra } = await _getProfileExtra(userId)
 
-    return (extra as ProfileExtra)
-  } catch (error) {
-    logApiError(error)
-    throw new Error('Failed to get profile extra')
+      return extra as ProfileExtra
+    } catch (error) {
+      logApiError(error)
+      return null
+    }
   }
-}
 
-export const getListings = async (): Promise<ItemListing[]> => {
+export const getListings = async (): Promise<
+  ItemListing[]
+> => {
   try {
     const userId = await getSessionUserId()
     if (!userId) throw new Error('Error getting listings')
@@ -90,5 +97,42 @@ export const getListings = async (): Promise<ItemListing[]> => {
   } catch (error) {
     logApiError(error)
     return []
+  }
+}
+
+export const getUserItems = async (
+  listingsParams: ListingsParams,
+): Promise<{
+  items: Item[]
+  count: number
+}> => {
+  try {
+    const userId = await getSessionUserId()
+    if (!userId)
+      throw new Error('Error fetching user items')
+
+    const request: GetItemsRequest = {
+      page: listingsParams.page,
+      keyword: listingsParams.keyword,
+      sortBy: listingsParams.sortBy,
+      sortOrder: listingsParams.sortOrder,
+      limit: DEFAULT_ITEM_PAGINATION.LIMIT,
+    }
+
+    const { items, count } = await _getUserItems(
+      request,
+      userId,
+    )
+
+    return {
+      items,
+      count,
+    }
+  } catch (error) {
+    logApiError(error)
+    return {
+      items: [],
+      count: 0,
+    }
   }
 }

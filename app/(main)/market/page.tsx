@@ -3,50 +3,43 @@
 import { getItems } from '@/_gateway/api/item/service'
 import Market from '@/components/02_main/market'
 import { toUrlParams } from '@/lib/common/helpers'
-import { APP_ROUTES } from '@/lib/constants/app-routes'
+import {
+  APP_ROUTES
+} from '@/lib/constants/app-routes'
 import { DEFAULT_ITEM_PAGINATION } from '@/lib/constants/item-pagination'
+import { DEFAULT_ITEM_SORT_OPTION } from '@/lib/constants/item-sort-options'
 import { ItemSortBy } from '@/lib/enums/item-sort-by'
 import { ItemSortOrder } from '@/lib/enums/item-sort-order'
 import { MarketParams } from '@/lib/interfaces/market-params'
 import { redirect } from 'next/navigation'
+import { z } from 'zod'
 
-const parseUrlParams = async (urlParams: {
-  [key: string]: string | string[] | undefined
-}): Promise<MarketParams | null> => {
-  const marketParams: MarketParams = {
-    page: DEFAULT_ITEM_PAGINATION.PAGE,
-  }
-
-  if (urlParams.page && Number(urlParams.page) > 0) {
-    marketParams.page = Number(urlParams.page)
-  } else {
-    return null
-  }
-
-  if (urlParams.keyword) {
-    marketParams.keyword = urlParams.keyword as string
-  }
-
-  if (
-    urlParams.sortBy &&
-    Object.values(ItemSortBy).includes(
-      urlParams.sortBy as ItemSortBy,
-    )
-  ) {
-    marketParams.sortBy = urlParams.sortBy as string
-  }
-
-  if (
-    urlParams.sortBy &&
-    Object.values(ItemSortOrder).includes(
-      urlParams.sortOrder as ItemSortOrder,
-    )
-  ) {
-    marketParams.sortOrder = urlParams.sortOrder as string
-  }
-
-  return marketParams
+const defaultMarketParams: MarketParams = {
+  page: DEFAULT_ITEM_PAGINATION.PAGE,
+  sortBy: DEFAULT_ITEM_SORT_OPTION.sortBy,
+  sortOrder: DEFAULT_ITEM_SORT_OPTION.sortOrder,
 }
+
+const MarketParamsSchema = z
+  .object({
+    page: z.coerce.number().positive(),
+    sortBy: z
+      .string()
+      .refine((val) =>
+        Object.values(ItemSortBy).includes(
+          val as ItemSortBy,
+        ),
+      ),
+    sortOrder: z
+      .string()
+      .refine((val) =>
+        Object.values(ItemSortOrder).includes(
+          val as ItemSortOrder,
+        ),
+      ),
+    keyword: z.string().trim().optional(),
+  })
+  .strict()
 
 export default async function Page({
   searchParams,
@@ -57,12 +50,15 @@ export default async function Page({
 }) {
   const urlParams = await searchParams
 
-  const marketParams = await parseUrlParams(urlParams)
+  const result = MarketParamsSchema.safeParse(urlParams)
 
-  if (!marketParams)
+  if (!result.success) {
     redirect(
-      `${APP_ROUTES.MARKET}?${toUrlParams({ page: 1 })}`,
+      `${APP_ROUTES.MARKET.url}?${toUrlParams(defaultMarketParams)}`,
     )
+  }
+
+  const marketParams: MarketParams = result.data
 
   const { items, count } = await getItems(marketParams)
 

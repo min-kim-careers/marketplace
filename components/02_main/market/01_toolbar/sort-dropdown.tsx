@@ -8,8 +8,8 @@ import {
 } from '@/components/shadcn/components/ui/select'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { toUrlParams } from '@/lib/common/helpers'
-import { ItemSortOption } from "@/lib/interfaces/item-sort-options"
-import { MarketParams } from "@/lib/interfaces/market-params"
+import { ItemSortOption } from '@/lib/interfaces/item-sort-options'
+import { MarketParams } from '@/lib/interfaces/market-params'
 import useMarketStore from '@/lib/stores/market'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -17,10 +17,12 @@ import { ITEM_SORT_OPTIONS } from '@/lib/constants/item-sort-options'
 
 export default function SortDropdown() {
   const sortOptions = ITEM_SORT_OPTIONS
-  
+
   const { params, setParams } = useMarketStore()
+
   const [currentSortOption, setCurrentSortOption] =
     useState<ItemSortOption | null>(null)
+
   const router = useRouter()
 
   useEffect(() => {
@@ -43,7 +45,7 @@ export default function SortDropdown() {
         sortOrder: option.sortOrder,
       }
       const urlParams = toUrlParams(newParams)
-      router.replace(`${APP_ROUTES.MARKET}?${urlParams}`)
+      router.replace(`${APP_ROUTES.MARKET.url}?${urlParams}`)
       setParams(newParams)
     }
   }

@@ -5,6 +5,7 @@ export const PROFILE_ENDPOINTS = {
     `/exists/${handle}`,
   GET_PROFILE_EXTRA: (userId: string) => `/${userId}/extra`,
   GET_LISTINGS: (userId: string) => `/${userId}/listings`,
+  GET_USER_ITEMS: (userId: string) => `/${userId}/items`,
 }
 
 export const ITEM_ENDPOINTS = {

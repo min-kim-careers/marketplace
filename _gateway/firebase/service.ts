@@ -17,7 +17,7 @@ import {
   _verifySession,
 } from '@/_gateway/firebase/internal'
 import { Profile } from '@/lib/interfaces/profile'
-import { DecodedToken } from './internal'
+import { DecodedToken } from './interfaces'
 
 export const signInWithGoogle = async (
   idToken: string,

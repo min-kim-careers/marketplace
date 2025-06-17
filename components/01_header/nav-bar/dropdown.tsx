@@ -44,11 +44,11 @@ export default function Dropdown({}: {}) {
         <DropdownMenuSeparator />
 
         <DropdownMenuItem asChild>
-          <Link href={APP_ROUTES.PROFILE_UPDATE}>Profile</Link>
+          <Link href={APP_ROUTES.PROFILE_UPDATE.url}>Profile</Link>
         </DropdownMenuItem>
 
         <DropdownMenuItem asChild>
-          <Link href={APP_ROUTES.PROFILE_LISTINGS}>Listings</Link>
+          <Link href={APP_ROUTES.PROFILE_LISTINGS.url}>Listings</Link>
         </DropdownMenuItem>
 
         <DropdownMenuItem onClick={handleSignOut}>

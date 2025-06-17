@@ -3,18 +3,14 @@
 import { createApiAxios } from '@/_gateway/api/_config/axios'
 import { ITEM_ENDPOINTS } from '../_config/endpoints'
 import { Item } from '@/lib/interfaces/item'
+import {
+  CreateItemRequest,
+  GetItemsRequest,
+  UpdateItemRequest,
+} from '@/_gateway/api/item/interfaces'
 
-const apiItemAxios = await createApiAxios('/api/items')
-
-export interface GetItemsRequest {
-  page: number
-  limit?: number
-  keyword?: string | null
-  sortBy?: string | null
-  sortOrder?: string | null
-  mode?: string | null
-  userId?: string | null
-}
+export const apiItemAxios =
+  await createApiAxios('/api/items')
 
 export const _getItems = async (
   request: GetItemsRequest,
@@ -36,15 +32,6 @@ export const _getItems = async (
   }
 }
 
-export interface CreateItemRequest {
-  name: string
-  description: string
-  price: number
-  category: string
-  condition: string
-  postcode: string
-}
-
 export const _createItem = async (
   userId: string,
   request: CreateItemRequest,
@@ -63,15 +50,6 @@ export const _createItem = async (
   } catch (error) {
     throw error
   }
-}
-
-export interface UpdateItemRequest {
-  name?: string
-  description?: string
-  price?: number
-  category?: string
-  condition?: string
-  postcode?: string
 }
 
 export const _updateItem = async (

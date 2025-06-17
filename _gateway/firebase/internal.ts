@@ -3,14 +3,9 @@
 import { createFirebaseAxios } from '@/_gateway/firebase/_config/axios'
 import { FIREBASE_ENDPOINTS } from './_config/endpoints'
 import { getCookieHeader } from '@/_gateway/_common/helpers'
+import { DecodedToken } from '@/_gateway/firebase/interfaces'
 
 const firebaseAxios = await createFirebaseAxios('/firebase')
-
-export interface DecodedToken {
-  uid: string
-  email: string
-  picture: string
-}
 
 export const _getSession = async (
   idToken: string,

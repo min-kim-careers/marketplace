@@ -27,12 +27,12 @@ export default function NavBar() {
   return (
     <span className='flex items-center justify-between gap-4'>
       <Link
-        href={`${APP_ROUTES.MARKET}?${toUrlParams({ page: 1 })}`}
+        href={`${APP_ROUTES.MARKET.url}`}
         passHref
       >
         <Button>Browse</Button>
       </Link>
-      <Link href={APP_ROUTES.POST}>
+      <Link href={APP_ROUTES.POST.url}>
         <Button>Post Ad</Button>
       </Link>
       <Dropdown />

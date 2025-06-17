@@ -1,7 +1,7 @@
 'use server'
 
 import { FirebaseErrorResponse } from "./interfaces"
-import { REQUEST_HEADERS } from '@/lib/constants/request-headers'
+import { APP_DATA } from "@/lib/constants/app-data"
 import { envLoader } from '@/lib/utils/env-loader'
 import { logError } from '@/lib/utils/log'
 import { AxiosError } from 'axios'
@@ -19,7 +19,7 @@ export const logFirebaseError = async (error: any) => {
 export const hasSessionCookie = async () => {
   try {
     const cookieStore = await cookies()
-    return cookieStore.has(REQUEST_HEADERS.SESSION)
+    return cookieStore.has(APP_DATA.SESSION_HEADER)
   } catch (error) {
     throw error
   }
@@ -30,7 +30,7 @@ export const getSessionCookie = async (): Promise<
 > => {
   try {
     const cookieStore = await cookies()
-    const session = cookieStore.get(REQUEST_HEADERS.SESSION)?.value
+    const session = cookieStore.get(APP_DATA.SESSION_HEADER)?.value
     return session ?? null
   } catch (error) {
     throw error
@@ -43,7 +43,7 @@ export const setSessionCookie = async (
 ) => {
   try {
     const cookieStore = await cookies()
-    cookieStore.set(REQUEST_HEADERS.SESSION, session, {
+    cookieStore.set(APP_DATA.SESSION_HEADER, session, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       path: '/',
@@ -57,7 +57,7 @@ export const setSessionCookie = async (
 export const clearSessionCookie = async () => {
   try {
     const cookieStore = await cookies()
-    cookieStore.delete(REQUEST_HEADERS.SESSION)
+    cookieStore.delete(APP_DATA.SESSION_HEADER)
   } catch (error) {
     throw error
   }

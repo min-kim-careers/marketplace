@@ -5,14 +5,14 @@ import {
   createUserId,
 } from '@/_gateway/firebase/_config/helpers'
 import { verifySession } from '@/_gateway/firebase/service'
-import { REQUEST_HEADERS } from '@/lib/constants/request-headers'
+import { APP_DATA } from "@/lib/constants/app-data"
 import { logError } from '@/lib/utils/log'
 import { cookies } from 'next/headers'
 
 export const getCookieHeader = async (session: string) => {
   return {
     headers: {
-      Cookie: `${REQUEST_HEADERS.SESSION}=${session}`,
+      Cookie: `${APP_DATA.SESSION_HEADER}=${session}`,
     },
   }
 }
@@ -21,13 +21,13 @@ export const attachCookieHeader = async () => {
   try {
     const cookieStore = await cookies()
     const session = cookieStore.get(
-      REQUEST_HEADERS.SESSION,
+      APP_DATA.SESSION_HEADER,
     )?.value
     if (!session) throw Error('No session to attach')
 
     return {
       headers: {
-        Cookie: `${REQUEST_HEADERS.SESSION}=${session}`,
+        Cookie: `${APP_DATA.SESSION_HEADER}=${session}`,
       },
     }
   } catch (error) {

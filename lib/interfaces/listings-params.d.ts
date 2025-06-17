@@ -1,6 +1,6 @@
 export interface ListingsParams {
   page: number
-  sortBy: string
-  sortOrder: string
+  sortBy?: string
+  sortOrder?: string
   keyword?: string
 }

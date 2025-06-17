@@ -1,10 +1,8 @@
-// import { serviceGetSortOptions } from '@/_gateway/api/items/service'
 import {
   Item,
-  // ItemSortOption,
 } from '@/lib/interfaces/item'
-import { MarketParams } from '../interfaces/market-params'
 import { create } from 'zustand'
+import { MarketParams } from '../interfaces/market-params'
 
 type MarketState = {
   items: Item[]

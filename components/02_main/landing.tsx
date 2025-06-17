@@ -21,7 +21,7 @@ export default function Landing() {
         )}
 
         <Link
-          href={`${APP_ROUTES.MARKET}?${toUrlParams({ page: 1 })}`}
+          href={`${APP_ROUTES.MARKET.url}`}
           passHref
         >
           <Button>Browse the market</Button>

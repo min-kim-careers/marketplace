@@ -6,19 +6,18 @@ import {
   PaginationLast,
   PaginationLink,
 } from '@/components/shadcn/components/ui/pagination'
-import {
-  toUrlParams
-} from '@/lib/common/helpers'
+import { toUrlParams } from '@/lib/common/helpers'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { DEFAULT_ITEM_PAGINATION } from '@/lib/constants/item-pagination'
 import useMarketStore from '@/lib/stores/market'
 import { notFound } from 'next/navigation'
 
 export default function Pagination() {
-  const { params } = useMarketStore()
-  const { count } = useMarketStore()
+  const { params, count } = useMarketStore()
 
-  const lastPage = Math.ceil(count / DEFAULT_ITEM_PAGINATION.LIMIT)
+  const lastPage = Math.ceil(
+    count / DEFAULT_ITEM_PAGINATION.LIMIT,
+  )
 
   if (params.page < 1 && lastPage < params.page) notFound()
 
@@ -41,7 +40,7 @@ export default function Pagination() {
       <PaginationContent>
         <PaginationFirst
           disabled={params.page === 1 || !count}
-          href={`${APP_ROUTES.MARKET}?${toUrlParams({ ...params, page: 1 })}`}
+          href={`${APP_ROUTES.MARKET.url}?${toUrlParams({ ...params, page: 1 })}`}
         />
 
         {paginationArray.map(
@@ -51,7 +50,7 @@ export default function Pagination() {
               <PaginationItem key={index}>
                 <PaginationLink
                   isActive={params.page === page}
-                  href={`${APP_ROUTES.MARKET}?${toUrlParams(
+                  href={`${APP_ROUTES.MARKET.url}?${toUrlParams(
                     {
                       ...params,
                       page: page,
@@ -66,7 +65,7 @@ export default function Pagination() {
 
         <PaginationLast
           disabled={params.page === lastPage || !count}
-          href={`${APP_ROUTES.MARKET}?${toUrlParams({
+          href={`${APP_ROUTES.MARKET.url}?${toUrlParams({
             ...params,
             page: lastPage,
           })}`}

@@ -1,7 +1,5 @@
-// import { serviceGetSortOptions } from '@/_gateway/api/items/service'
 import {
   Item,
-  // ItemSortOption,
 } from '@/lib/interfaces/item'
 import { ListingsParams } from '../interfaces/listings-params'
 import { create } from 'zustand'
@@ -17,7 +15,7 @@ type ListingStore = {
   setParams: (params: ListingsParams) => void
 }
 
-const useListingStore = create<ListingStore>((set) => {
+const useListingsStore = create<ListingStore>((set) => {
   return {
     items: [],
     setItems: (items: Item[]) => set({ items }),
@@ -30,4 +28,4 @@ const useListingStore = create<ListingStore>((set) => {
   }
 })
 
-export default useListingStore
+export default useListingsStore

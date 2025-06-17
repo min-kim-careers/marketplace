@@ -1,10 +1,16 @@
 'use server'
 
+import { createApiAxios } from '@/_gateway/api/_config/axios'
+import { GetItemsRequest } from '../item/interfaces'
+import { Item } from '@/lib/interfaces/item'
+import { ItemListing } from '@/lib/interfaces/item-listing'
 import { Profile } from '@/lib/interfaces/profile'
 import { AxiosError } from 'axios'
 import { PROFILE_ENDPOINTS } from '../_config/endpoints'
-import { createApiAxios } from '@/_gateway/api/_config/axios'
-import { ItemListing } from '@/lib/interfaces/item-listing'
+import {
+  ProfileExtra,
+  UpsertProfileRequest,
+} from '@/_gateway/api/profile/interfaces'
 
 const apiProfileAxios =
   await createApiAxios('/api/profiles')
@@ -28,15 +34,6 @@ export const _getProfile = async (
 
     throw error
   }
-}
-
-export interface UpsertProfileRequest {
-  email?: string
-  handle?: string
-  rating?: number
-  ratingCount?: number
-  postcode?: string
-  avatarUrl?: string
 }
 
 export const _upsertProfile = async (
@@ -77,10 +74,6 @@ export const _handleExists = async (
   }
 }
 
-export interface ProfileExtra {
-  imageLimit: number
-}
-
 export const _getProfileExtra = async (
   userId: string,
 ): Promise<{ extra: ProfileExtra }> => {
@@ -101,6 +94,27 @@ export const _getListings = async (
   try {
     const response = await apiProfileAxios.get(
       PROFILE_ENDPOINTS.GET_LISTINGS(userId),
+    )
+
+    return response.data
+  } catch (error) {
+    throw error
+  }
+}
+
+export const _getUserItems = async (
+  request: GetItemsRequest,
+  userId: string,
+): Promise<{
+  items: Item[]
+  count: number
+}> => {
+  try {
+    const response = await apiProfileAxios.get(
+      PROFILE_ENDPOINTS.GET_USER_ITEMS(userId),
+      {
+        params: request,
+      },
     )
 
     return response.data

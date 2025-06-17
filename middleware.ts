@@ -1,10 +1,10 @@
 import { logApiError } from '@/_gateway/api/_config/helpers'
-import { DecodedToken } from "./_gateway/firebase/internal"
+import { DecodedToken } from './_gateway/firebase/interfaces'
 import {
   signOut,
   verifySession,
 } from '@/_gateway/firebase/service'
-import { REQUEST_HEADERS } from '@/lib/constants/request-headers'
+import { APP_DATA } from "./lib/constants/app-data"
 import {
   isFallbackRoute,
   isProtectedRoute,
@@ -21,7 +21,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next()
   }
 
-  const session = req.cookies.get(REQUEST_HEADERS.SESSION)?.value
+  const session = req.cookies.get(APP_DATA.SESSION_HEADER)?.value
   let verifiedToken: DecodedToken | null = null
 
   if (session) {
@@ -50,7 +50,7 @@ export async function middleware(req: NextRequest) {
   if (!isAuthenticated) {
     if (isProtectedRoute(path)) {
       return NextResponse.redirect(
-        new URL(APP_ROUTES.HOME, req.nextUrl),
+        new URL(APP_ROUTES.HOME.url, req.nextUrl),
       )
     }
 
@@ -60,7 +60,7 @@ export async function middleware(req: NextRequest) {
   }
 
   return NextResponse.redirect(
-    new URL(APP_ROUTES.NOTFOUND, req.nextUrl),
+    new URL(APP_ROUTES.NOTFOUND.url, req.nextUrl),
   )
 }
 
