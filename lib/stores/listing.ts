@@ -3,6 +3,7 @@ import {
 } from '@/lib/interfaces/item'
 import { ListingsParams } from '../interfaces/listings-params'
 import { create } from 'zustand'
+import { DEFAULT_LISTINGS_PARAMS } from '../constants/listings-params'
 
 type ListingStore = {
   items: Item[]
@@ -23,7 +24,7 @@ const useListingsStore = create<ListingStore>((set) => {
     count: 0,
     setCount: (count: number) => set({ count }),
 
-    params: { page: 1 },
+    params: DEFAULT_LISTINGS_PARAMS,
     setParams: (params: ListingsParams) => set({ params }),
   }
 })

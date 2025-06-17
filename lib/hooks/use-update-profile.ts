@@ -1,4 +1,4 @@
-import { UpsertProfileRequest } from '@/_gateway/api/profile/interfaces'
+import { UpsertProfileRequest } from "@/_gateway/api/profile/service"
 import { updateCurrentProfile } from '@/_gateway/api/profile/service'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
 import { useLoadingStore } from '@/lib/stores/loading'

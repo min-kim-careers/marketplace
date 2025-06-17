@@ -2,35 +2,31 @@
 
 import { getSessionUserId } from '@/_gateway/_common/helpers'
 import { logApiError } from '@/_gateway/api/_config/helpers'
-import { GetItemsRequest } from '../item/interfaces'
-import { _getUserItems } from './internal'
-import {
-  _getProfile,
-  _getProfileExtra,
-  _handleExists,
-  _upsertProfile,
-} from '@/_gateway/api/profile/internal'
-import { DEFAULT_ITEM_PAGINATION } from '@/lib/constants/item-pagination'
-import { Item } from '@/lib/interfaces/item'
-import { ItemListing } from '@/lib/interfaces/item-listing'
-import { ListingsParams } from '@/lib/interfaces/listings-params'
+import { PROFILE_ENDPOINTS } from '@/_gateway/api/profile/endpoints'
+import { ProfileExtra } from '@/_gateway/api/profile/interfaces'
 import { Profile } from '@/lib/interfaces/profile'
-import { _getListings } from './internal'
-import { ProfileExtra } from './interfaces'
-import { UpsertProfileRequest } from './interfaces'
+
+interface UpsertProfileRequest {
+  email?: string
+  handle?: string
+  rating?: number
+  ratingCount?: number
+  postcode?: string
+  avatarUrl?: string
+}
 
 export const updateCurrentProfile = async (
   newProfile: UpsertProfileRequest,
 ): Promise<Profile | null> => {
   try {
     const userId = await getSessionUserId()
-    if (!userId)
-      throw new Error('Error updating current profile')
+    if (!userId) throw new Error()
 
-    const { profile } = await _upsertProfile(
-      userId,
-      newProfile,
-    )
+    const { profile } =
+      await PROFILE_ENDPOINTS.UPSERT_PROFILE(
+        userId,
+        newProfile,
+      )
 
     return profile
   } catch (error) {
@@ -43,10 +39,10 @@ export const getCurrentProfile =
   async (): Promise<Profile | null> => {
     try {
       const userId = await getSessionUserId()
-      if (!userId)
-        throw new Error('Error fetching current profile')
+      if (!userId) throw new Error()
 
-      const { profile } = await _getProfile(userId)
+      const { profile } =
+        await PROFILE_ENDPOINTS.GET_PROFILE(userId)
 
       return profile
     } catch (error) {
@@ -55,16 +51,17 @@ export const getCurrentProfile =
     }
   }
 
-export const checkHandleExists = async (
+export const handleExists = async (
   handle: string,
 ): Promise<boolean> => {
   try {
-    const { exists } = await _handleExists(handle)
+    const { exists } =
+      await PROFILE_ENDPOINTS.HANDLE_EXISTS(handle)
 
     return exists
   } catch (error) {
     logApiError(error)
-    throw new Error('Failed to check if handle exists')
+    throw new Error('Error checking if handle exists')
   }
 }
 
@@ -72,10 +69,10 @@ export const getProfileExtra =
   async (): Promise<ProfileExtra | null> => {
     try {
       const userId = await getSessionUserId()
-      if (!userId)
-        throw new Error('Error fetching profile extra')
+      if (!userId) throw new Error()
 
-      const { extra } = await _getProfileExtra(userId)
+      const { extra } =
+        await PROFILE_ENDPOINTS.GET_PROFILE_EXTRA(userId)
 
       return extra as ProfileExtra
     } catch (error) {
@@ -83,56 +80,3 @@ export const getProfileExtra =
       return null
     }
   }
-
-export const getListings = async (): Promise<
-  ItemListing[]
-> => {
-  try {
-    const userId = await getSessionUserId()
-    if (!userId) throw new Error('Error getting listings')
-
-    const { listings } = await _getListings(userId)
-
-    return listings
-  } catch (error) {
-    logApiError(error)
-    return []
-  }
-}
-
-export const getUserItems = async (
-  listingsParams: ListingsParams,
-): Promise<{
-  items: Item[]
-  count: number
-}> => {
-  try {
-    const userId = await getSessionUserId()
-    if (!userId)
-      throw new Error('Error fetching user items')
-
-    const request: GetItemsRequest = {
-      page: listingsParams.page,
-      keyword: listingsParams.keyword,
-      sortBy: listingsParams.sortBy,
-      sortOrder: listingsParams.sortOrder,
-      limit: DEFAULT_ITEM_PAGINATION.LIMIT,
-    }
-
-    const { items, count } = await _getUserItems(
-      request,
-      userId,
-    )
-
-    return {
-      items,
-      count,
-    }
-  } catch (error) {
-    logApiError(error)
-    return {
-      items: [],
-      count: 0,
-    }
-  }
-}

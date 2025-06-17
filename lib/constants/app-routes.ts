@@ -3,11 +3,12 @@ interface AppRoute {
   label: string
 }
 
-export const APP_ROUTES: Record<string, AppRoute> = {
+export const APP_ROUTES = {
   HOME: { url: '/', label: 'Home' },
   MARKET: { url: '/market', label: 'Market' },
   NOTFOUND: { url: '/404', label: 'Not Found' },
-  POST: { url: '/post', label: 'Post' },
+  ITEM_POST: { url: '/item/post', label: 'Post' },
+  ITEM_EDIT: { url: '/item/edit', label: 'Edit' },
   PROFILE_UPDATE: {
     url: '/profile/update',
     label: 'Update Profile',
@@ -23,7 +24,8 @@ export const APP_ROUTES: Record<string, AppRoute> = {
 }
 
 const PROTECTED_ROUTES = [
-  APP_ROUTES.POST.url,
+  APP_ROUTES.ITEM_POST.url,
+  APP_ROUTES.ITEM_EDIT.url,
   APP_ROUTES.PROFILE_UPDATE.url,
   APP_ROUTES.PROFILE_COMPLETE.url,
   APP_ROUTES.PROFILE_LISTINGS.url,

@@ -2,22 +2,18 @@
 
 import { getSessionUserId } from '@/_gateway/_common/helpers'
 import { logApiError } from '@/_gateway/api/_config/helpers'
-import {
-  _createItem,
-  _getItems,
-  _updateItem,
-} from '@/_gateway/api/item/internal'
 import { DEFAULT_ITEM_PAGINATION } from '@/lib/constants/item-pagination'
 import { Item } from '@/lib/interfaces/item'
 import { MarketParams } from '@/lib/interfaces/market-params'
-import {
-  _deleteItem,
-  _uploadItems,
-} from './internal'
-import { UpdateItemRequest } from './interfaces'
-import { CreateItemRequest } from './interfaces'
-import { GetItemsRequest } from './interfaces'
+import { ITEM_ENDPOINTS } from '@/_gateway/api/item/endpoints'
 
+export interface GetItemsRequest {
+  page: number
+  limit?: number
+  keyword?: string
+  sortBy?: string
+  sortOrder?: string
+}
 
 export const getItems = async (
   marketParams: MarketParams,
@@ -26,18 +22,26 @@ export const getItems = async (
   count: number
 }> => {
   try {
-    const userId = await getSessionUserId()
-
     const request: GetItemsRequest = {
       page: marketParams.page,
       keyword: marketParams.keyword,
       sortBy: marketParams.sortBy,
       sortOrder: marketParams.sortOrder,
       limit: DEFAULT_ITEM_PAGINATION.LIMIT,
-      excludeUser: userId ?? undefined,
     }
 
-    const { items, count } = await _getItems(request)
+    const userId = await getSessionUserId()
+    let res
+    if (userId) {
+      res = await ITEM_ENDPOINTS.GET_USER_ITEMS(
+        userId,
+        request,
+      )
+    } else {
+      res = await ITEM_ENDPOINTS.GET_ITEMS(request)
+    }
+
+    const { items, count } = res
 
     return {
       items,
@@ -52,14 +56,26 @@ export const getItems = async (
   }
 }
 
+export interface CreateItemRequest {
+  name: string
+  description: string
+  price: number
+  category: string
+  condition: string
+  postcode: string
+}
+
 export const createItem = async (
   request: CreateItemRequest,
 ): Promise<Item | null> => {
   try {
     const userId = await getSessionUserId()
-    if (!userId) throw new Error('Error creating item')
+    if (!userId) throw new Error()
 
-    const { item } = await _createItem(userId, request)
+    const { item } = await ITEM_ENDPOINTS.CREATE_USER_ITEM(
+      userId,
+      request,
+    )
 
     return item
   } catch (error) {
@@ -68,12 +84,29 @@ export const createItem = async (
   }
 }
 
+export interface UpdateItemRequest {
+  name?: string
+  description?: string
+  price?: number
+  category?: string
+  condition?: string
+  status?: string
+  postcode?: string
+}
+
 export const updateItem = async (
   itemId: number,
   request: UpdateItemRequest,
 ): Promise<Item | null> => {
   try {
-    const { item } = await _updateItem(itemId, request)
+    const userId = await getSessionUserId()
+    if (!userId) throw new Error()
+
+    const { item } = await ITEM_ENDPOINTS.UPDATE_USER_ITEM(
+      userId,
+      itemId,
+      request,
+    )
 
     return item
   } catch (error) {
@@ -87,7 +120,20 @@ export const uploadImages = async (
   images: File[],
 ): Promise<Item | null> => {
   try {
-    const { item } = await _uploadItems(itemId, images)
+    const userId = await getSessionUserId()
+    if (!userId) throw new Error()
+
+    const formData = new FormData()
+    images.forEach((image) =>
+      formData.append('images', image),
+    )
+
+    const { item } =
+      await ITEM_ENDPOINTS.UPLOAD_USER_ITEM_IMAGES(
+        userId,
+        itemId,
+        formData,
+      )
 
     return item
   } catch (error) {
@@ -100,7 +146,11 @@ export const deleteItem = async (
   itemId: number,
 ): Promise<boolean> => {
   try {
-    const { deleted } = await _deleteItem(itemId)
+    const userId = await getSessionUserId()
+    if (!userId) throw new Error()
+
+    const { deleted } =
+      await ITEM_ENDPOINTS.DELETE_USER_ITEM(userId, itemId)
 
     return deleted
   } catch (error) {

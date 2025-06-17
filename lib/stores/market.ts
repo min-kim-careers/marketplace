@@ -1,8 +1,7 @@
-import {
-  Item,
-} from '@/lib/interfaces/item'
+import { Item } from '@/lib/interfaces/item'
 import { create } from 'zustand'
 import { MarketParams } from '../interfaces/market-params'
+import { DEFAULT_MARKET_PARAMS } from '@/lib/constants/market-params'
 
 type MarketState = {
   items: Item[]
@@ -23,7 +22,7 @@ const useMarketStore = create<MarketState>((set) => {
     count: 0,
     setCount: (count: number) => set({ count }),
 
-    params: { page: 1 },
+    params: DEFAULT_MARKET_PARAMS,
     setParams: (params: MarketParams) => set({ params }),
   }
 })

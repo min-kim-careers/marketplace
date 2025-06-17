@@ -4,19 +4,12 @@ import { getUserItems } from '@/_gateway/api/profile/service'
 import ProfileListings from '@/components/02_main/profile-listings'
 import { toUrlParams } from '@/lib/common/helpers'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
-import { DEFAULT_ITEM_PAGINATION } from '@/lib/constants/item-pagination'
-import { DEFAULT_ITEM_SORT_OPTION } from '@/lib/constants/item-sort-options'
+import { DEFAULT_LISTINGS_PARAMS } from '@/lib/constants/listings-params'
 import { ItemSortBy } from '@/lib/enums/item-sort-by'
 import { ItemSortOrder } from '@/lib/enums/item-sort-order'
 import { ListingsParams } from '@/lib/interfaces/listings-params'
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
-
-const defaultListingsParams: ListingsParams = {
-  page: DEFAULT_ITEM_PAGINATION.PAGE,
-  sortBy: DEFAULT_ITEM_SORT_OPTION.sortBy,
-  sortOrder: DEFAULT_ITEM_SORT_OPTION.sortOrder,
-}
 
 const ListingsParamsSchema = z
   .object({
@@ -52,7 +45,7 @@ export default async function Page({
 
   if (!result.success) {
     redirect(
-      `${APP_ROUTES.PROFILE_LISTINGS.url}?${toUrlParams(defaultListingsParams)}`,
+      `${APP_ROUTES.PROFILE_LISTINGS.url}?${toUrlParams(DEFAULT_LISTINGS_PARAMS)}`,
     )
   }
 

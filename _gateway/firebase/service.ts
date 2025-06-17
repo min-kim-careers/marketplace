@@ -1,10 +1,6 @@
 'use server'
 
 import {
-  _getProfile,
-  _upsertProfile,
-} from '@/_gateway/api/profile/internal'
-import {
   clearSessionCookie,
   createHandle,
   createUserId,
@@ -12,12 +8,10 @@ import {
   logFirebaseError,
   setSessionCookie,
 } from '@/_gateway/firebase/_config/helpers'
-import {
-  _getSession,
-  _verifySession,
-} from '@/_gateway/firebase/internal'
 import { Profile } from '@/lib/interfaces/profile'
 import { DecodedToken } from './interfaces'
+import { FIREBASE_ENDPOINTS } from '@/_gateway/firebase/endpoints'
+import { PROFILE_ENDPOINTS } from '@/_gateway/api/profile/endpoints'
 
 export const signInWithGoogle = async (
   idToken: string,
@@ -27,12 +21,12 @@ export const signInWithGoogle = async (
       decodedToken,
       sessionCookie,
       expiresInSeconds,
-    } = await _getSession(idToken)
+    } = await FIREBASE_ENDPOINTS.GET_SESSION(idToken)
 
     const userId = await createUserId(decodedToken.uid)
 
     const { profile: existingProfile } =
-      await _getProfile(userId)
+      await PROFILE_ENDPOINTS.GET_PROFILE(userId)
 
     if (existingProfile) {
       await setSessionCookie(
@@ -44,14 +38,12 @@ export const signInWithGoogle = async (
 
     const handle = await createHandle(decodedToken.uid)
 
-    const { profile: newProfile } = await _upsertProfile(
-      userId,
-      {
+    const { profile: newProfile } =
+      await PROFILE_ENDPOINTS.UPSERT_PROFILE(userId, {
         handle,
         email: decodedToken.email,
         avatarUrl: decodedToken.picture,
-      },
-    )
+      })
 
     await setSessionCookie(sessionCookie, expiresInSeconds)
     return newProfile
@@ -73,7 +65,8 @@ export const verifySession = async (
         'https://lh3.googleusercontent.com/a/ACg8ocJVq6R_VPqzjgbv4go2Gm7o9isHXUZ6K4GexJ2JzPF3TDoYvQ=s96-c',
     }
 
-    const { decodedToken } = await _verifySession(session)
+    const { decodedToken } =
+      await FIREBASE_ENDPOINTS.VERIFY_SESSION(session)
 
     return decodedToken
   } catch (error) {
@@ -96,7 +89,7 @@ export const refreshSession = async (idToken: string) => {
       // decodedToken,
       sessionCookie,
       expiresInSeconds,
-    } = await _getSession(idToken)
+    } = await FIREBASE_ENDPOINTS.GET_SESSION(idToken)
 
     await setSessionCookie(sessionCookie, expiresInSeconds)
   } catch (error) {
