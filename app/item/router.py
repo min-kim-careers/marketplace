@@ -18,11 +18,7 @@ async def get_items(
     query: ItemsRequest = Depends(),
     session: AsyncSession = Depends(get_session),
 ) -> ItemResponse:
-    res = await service.get_paginated_items_with_count(session, query)
-    if not res:
-        raise ErrorResponse(status_code=404, message="Items not found")
-
-    items, count = res
+    items, count = await service.get_paginated_items_with_count(session, query)
 
     data = dict(
         items=items,

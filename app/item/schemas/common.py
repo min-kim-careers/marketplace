@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from app.common.schemas.response import ResponseBase
 from app.item.enums import (ItemCategory, ItemCondition, ItemSortBy,
-                            ItemSortOrder)
+                            ItemSortOrder, ItemStatus)
 from app.item.model import ItemDB
 
 
@@ -15,6 +15,7 @@ class ItemOut(ResponseBase):
     brand: Optional[str] = None
     category: ItemCategory
     condition: ItemCondition
+    status: ItemStatus
     postcode: str
     created_at: datetime
     updated_at: datetime
@@ -40,6 +41,7 @@ class ItemListing(ResponseBase):
     brand: Optional[str] = None
     category: ItemCategory
     condition: ItemCondition
+    status: ItemStatus
     postcode: str
     created_at: datetime
     updated_at: datetime

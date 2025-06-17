@@ -34,7 +34,9 @@ class ItemSortBy(str, Enum):
     price = "price"
     name_ = "name"
 
-class ItemQueryMode(str, Enum):
-    ALL = 'all'
-    ONLY_USER = 'only_user'
-    EXCLUDE_USER = 'exclude_user'
+
+class ItemStatus(str, Enum):
+    available = "available"
+    pending = "pending"
+    sold = "sold"
+    expired = "expired"

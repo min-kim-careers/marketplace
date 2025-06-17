@@ -66,4 +66,4 @@ async def seed_user_items(profile_id: UUID, count):
 
 
 if __name__ == "__main__":
-    asyncio.run(seed_user_items(UUID("a85eb67f-70c7-4c03-bb22-d7ec2af009d2"), 10))
+    asyncio.run(seed_user_items(UUID("d7454f10-c925-4632-96b1-f94254f45f93"), 10))

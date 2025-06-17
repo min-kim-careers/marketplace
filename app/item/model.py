@@ -6,7 +6,7 @@ from sqlmodel import ARRAY, Column, DateTime
 from sqlmodel import Enum as SqlEnum
 from sqlmodel import Field, Relationship, SQLModel, String
 
-from app.item.enums import ItemCategory, ItemCondition
+from app.item.enums import ItemCategory, ItemCondition, ItemStatus
 
 if TYPE_CHECKING:
     from app.profile.model import ProfileDB
@@ -36,6 +36,8 @@ class ItemDB(SQLModel, table=True):
         sa_column=Column(DateTime(timezone=True), nullable=False),
     )
     expires_at: Optional[datetime] = Field(default=None, nullable=True)
+
+    status: ItemStatus = Field(default=ItemStatus.available, nullable=False)
 
     image_urls: List[str] = Field(
         default_factory=list,

@@ -7,7 +7,6 @@ from app.common.schemas.request import RequestBase
 from app.item.enums import (
     ItemCategory,
     ItemCondition,
-    ItemQueryMode,
     ItemSortBy,
     ItemSortOrder,
 )
@@ -28,8 +27,7 @@ class ItemsRequest(RequestBase):
     page: int = DEFAULT_PAGINATION_PAGE
     limit: int = DEFAULT_PAGINATION_LIMIT
 
-    mode: ItemQueryMode = ItemQueryMode.ALL
-    user_id: Optional[UUID] = None
+    exclude_user: Optional[UUID] = None
 
     @property
     def offset(self) -> int:
@@ -39,15 +37,6 @@ class ItemsRequest(RequestBase):
     @classmethod
     def normalise_keyword(cls, v: str):
         return v.lower() if v else v
-
-    @model_validator(mode="after")
-    def validate_mode(cls, values):
-        if (
-            values.mode in [ItemQueryMode.EXCLUDE_USER, ItemQueryMode.ONLY_USER]
-            and not values.user_id
-        ):
-            raise ValueError("user_id is required when mode is ONLY_USER or EXCLUDE_USER")
-        return values
 
 
 class ItemUpdateRequest(RequestBase):

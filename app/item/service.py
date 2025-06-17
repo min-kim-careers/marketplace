@@ -15,10 +15,10 @@ from app.storage.image import store_images
 async def get_paginated_items_with_count(
     session: AsyncSession,
     query: ItemsRequest,
-) -> Tuple[List[ItemOut], int] | None:
-    items_db = await repository.get_items_paginated(session, query)
+) -> Tuple[List[ItemOut], int]:
+    items_db = await repository.get_items(session, query)
     if not items_db:
-        return None
+        return [], 0
 
     count = await repository.get_items_count(session, query)
 

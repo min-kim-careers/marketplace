@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.common.utils import get_one_by
-from app.item.enums import ItemQueryMode, ItemSortOrder
+from app.item.enums import ItemSortOrder
 from app.item.model import ItemDB
 from app.item.schemas.requests import (
     ItemsRequest,
@@ -17,10 +17,8 @@ from app.profile.model import ProfileDB
 
 
 def base_query(stmt: Select, query: ItemsRequest):
-    if query.mode == ItemQueryMode.EXCLUDE_USER:
-        stmt = stmt.join(ItemDB.profile).where(ProfileDB.user_id != query.user_id)  # type: ignore
-    elif query.mode == ItemQueryMode.ONLY_USER:
-        stmt = stmt.join(ItemDB.profile).where(ProfileDB.user_id == query.user_id)  # type: ignore
+    if query.exclude_user:
+        stmt = stmt.join(ItemDB.profile).where(ProfileDB.user_id != query.exclude_user)  # type: ignore
 
     if query.keyword:
         conditions = [
@@ -32,7 +30,7 @@ def base_query(stmt: Select, query: ItemsRequest):
     return stmt
 
 
-async def get_items_paginated(
+async def get_items(
     session: AsyncSession,
     query: ItemsRequest,
 ) -> Sequence[ItemDB]:
@@ -61,6 +59,52 @@ async def get_items_count(session: AsyncSession, query: ItemsRequest) -> int:
         stmt = select(func.count()).select_from(ItemDB)  # type: ignore
 
         stmt = base_query(stmt, query)
+
+        result = await session.execute(stmt)
+        return result.scalar_one()
+    except Exception as e:
+        print(e)
+        return 0
+
+
+async def get_user_items(
+    session: AsyncSession,
+    query: ItemsRequest,
+    user_id: UUID,
+) -> Sequence[ItemDB]:
+    try:
+        stmt = select(ItemDB).options(selectinload(ItemDB.profile))  # type: ignore
+
+        stmt = base_query(stmt, query)
+
+        stmt = stmt.join(ItemDB.profile).where(ProfileDB.user_id == user_id)  # type: ignore
+
+        if query.sort_by:
+            sort_column = getattr(ItemDB, query.sort_by.name)
+            if query.sort_order == ItemSortOrder.asc:
+                stmt = stmt.order_by(asc(sort_column))
+            else:
+                stmt = stmt.order_by(desc(sort_column))
+
+        stmt = stmt.offset(query.offset).limit(query.limit)
+        result = await session.execute(stmt)
+        return result.scalars().all()
+    except Exception as e:
+        print(e)
+        return []
+
+
+async def get_user_items_count(
+    session: AsyncSession,
+    query: ItemsRequest,
+    user_id: UUID,
+) -> int:
+    try:
+        stmt = select(func.count()).select_from(ItemDB)  # type: ignore
+
+        stmt = base_query(stmt, query)
+
+        stmt = stmt.join(ItemDB.profile).where(ProfileDB.user_id == user_id)  # type: ignore
 
         result = await session.execute(stmt)
         return result.scalar_one()
