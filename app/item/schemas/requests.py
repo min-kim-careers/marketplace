@@ -1,7 +1,7 @@
 from typing import List, Optional
 from uuid import UUID
 
-from pydantic import field_validator, model_validator
+from pydantic import Field, field_validator, model_validator
 
 from app.common.schemas.request import RequestBase
 from app.item.enums import (
@@ -27,6 +27,8 @@ class ItemsRequest(RequestBase):
     page: int = DEFAULT_PAGINATION_PAGE
     limit: int = DEFAULT_PAGINATION_LIMIT
 
+    exclude_user: Optional[UUID] = None
+
     @property
     def offset(self) -> int:
         return (self.page - 1) * self.limit
@@ -43,7 +45,7 @@ class ItemUpdateRequest(RequestBase):
     price: Optional[float] = None
     category: Optional[ItemCategory] = None
     condition: Optional[ItemCondition] = None
-    postcode: Optional[str] = None
+    postcode: Optional[str] = Field(default=None, min_length=4, max_length=4)
 
 
 class ItemCreateRequest(RequestBase):
@@ -52,4 +54,4 @@ class ItemCreateRequest(RequestBase):
     price: float
     category: ItemCategory
     condition: ItemCondition
-    postcode: str
+    postcode: str = Field(..., min_length=4, max_length=4)

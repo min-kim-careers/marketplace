@@ -1,17 +1,20 @@
 from datetime import datetime, timezone
 from typing import Optional
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from sqlalchemy import String, DateTime, ForeignKey, Enum, ARRAY
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from app.db.base import Base
 from app.item.enums import ItemCategory, ItemCondition, ItemStatus
+from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 
 
 class ItemDB(Base):
     __tablename__ = "items"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[UUID] = mapped_column(
+        PG_UUID(as_uuid=True), primary_key=True, default=uuid4
+    )
 
     profile_id: Mapped[UUID] = mapped_column(ForeignKey("profiles.id"), nullable=False)
     user_id: Mapped[UUID] = mapped_column(nullable=False)

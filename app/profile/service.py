@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.common.utils import get_one_by
+from app.common import utils
 from app.db.models.item import ItemDB
 from app.db.models.profile import ProfileDB
 from app.profile.schemas.common import DEFAULT_IMAGE_LIMIT, ProfileExtra
@@ -13,11 +13,11 @@ from app.profile.schemas.requests import ProfileInRequest
 
 
 async def get_profile_by_user_id(session: AsyncSession, user_id: UUID) -> ProfileDB | None:
-    return await get_one_by(session, ProfileDB, user_id=user_id)
+    return await utils.get_one_by(session, ProfileDB, user_id=user_id)
 
 
 async def get_profile_by_handle(session: AsyncSession, handle: str) -> ProfileDB | None:
-    return await get_one_by(session, ProfileDB, handle=handle)
+    return await utils.get_one_by(session, ProfileDB, handle=handle)
 
 
 async def create_profile(
@@ -52,19 +52,3 @@ async def update_profile(
         await session.rollback()
         print(e)
         return None
-
-
-async def get_profile_items(
-    session: AsyncSession,
-    user_id: UUID,
-) -> List[ItemDB]:
-    try:
-        stmt = select(ProfileDB).where(ProfileDB.user_id == user_id).options(selectinload(ProfileDB.items))  # type: ignore
-        result = await session.execute(stmt)
-        profile = result.scalar_one_or_none()
-        if profile:
-            return profile.items
-        return []
-    except Exception as e:
-        print(e)
-        return []

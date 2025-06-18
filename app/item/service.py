@@ -13,13 +13,9 @@ from app.item.schemas.requests import (
     ItemCreateRequest,
     ItemUpdateRequest,
 )
-from app.db.models.profile import ProfileDB
 
 
-def base_query(stmt: Select, query: ItemsRequest, user_id: Optional[UUID] = None):
-    if user_id:
-        stmt = stmt.join(ItemDB.profile).where(ProfileDB.user_id != user_id)  # type: ignore
-
+def base_query(stmt: Select, query: ItemsRequest):
     if query.keyword:
         conditions = [
             func.lower(ItemDB.name).ilike(f"%{query.keyword}%"),
@@ -30,12 +26,15 @@ def base_query(stmt: Select, query: ItemsRequest, user_id: Optional[UUID] = None
     return stmt
 
 
-async def get_items(
+async def get_all_items(
     session: AsyncSession,
     query: ItemsRequest,
-) -> Sequence[ItemDB]:
+) -> Sequence[ItemDB] | None:
     try:
-        stmt = select(ItemDB).options(selectinload(ItemDB.profile))  # type: ignore
+        stmt = select(ItemDB).options(selectinload(ItemDB.profile))
+
+        if query.exclude_user:
+            stmt = stmt.where(ItemDB.user_id != query.exclude_user)
 
         stmt = base_query(stmt, query)
 
@@ -51,12 +50,15 @@ async def get_items(
         return result.scalars().all()
     except Exception as e:
         print(e)
-        return []
+        return None
 
 
-async def get_items_count(session: AsyncSession, query: ItemsRequest) -> int:
+async def get_all_items_count(session: AsyncSession, query: ItemsRequest) -> int:
     try:
-        stmt = select(func.count()).select_from(ItemDB)  # type: ignore
+        stmt = select(func.count()).select_from(ItemDB)
+
+        if query.exclude_user:
+            stmt = stmt.where(ItemDB.user_id != query.exclude_user)
 
         stmt = base_query(stmt, query)
 
@@ -69,15 +71,17 @@ async def get_items_count(session: AsyncSession, query: ItemsRequest) -> int:
 
 async def get_user_items(
     session: AsyncSession,
-    query: ItemsRequest,
     user_id: UUID,
-) -> Sequence[ItemDB]:
+    query: ItemsRequest,
+) -> Sequence[ItemDB] | None:
     try:
-        stmt = select(ItemDB).options(selectinload(ItemDB.profile))  # type: ignore
+        stmt = (
+            select(ItemDB)
+            .options(selectinload(ItemDB.profile))
+            .where(ItemDB.user_id == user_id)
+        )
 
         stmt = base_query(stmt, query)
-
-        stmt = stmt.join(ItemDB.profile).where(ProfileDB.user_id == user_id)  # type: ignore
 
         if query.sort_by:
             sort_column = getattr(ItemDB, query.sort_by.name)
@@ -91,20 +95,18 @@ async def get_user_items(
         return result.scalars().all()
     except Exception as e:
         print(e)
-        return []
+        return None
 
 
 async def get_user_items_count(
     session: AsyncSession,
-    query: ItemsRequest,
     user_id: UUID,
+    query: ItemsRequest,
 ) -> int:
     try:
-        stmt = select(func.count()).select_from(ItemDB)  # type: ignore
+        stmt = select(func.count()).select_from(ItemDB).where(ItemDB.user_id == user_id)
 
         stmt = base_query(stmt, query)
-
-        stmt = stmt.join(ItemDB.profile).where(ProfileDB.user_id == user_id)  # type: ignore
 
         result = await session.execute(stmt)
         return result.scalar_one()
@@ -113,23 +115,23 @@ async def get_user_items_count(
         return 0
 
 
-async def get_item_by_id(session: AsyncSession, item_id: int) -> ItemDB | None:
-    return await get_one_by(session, ItemDB, id=item_id)
-
-
-async def get_item_by_id_and_profile(
-    session: AsyncSession, profile_id: UUID, item_id: int
+async def get_item_by_id_and_user(
+    session: AsyncSession,
+    user_id: UUID,
+    item_id: UUID,
 ) -> ItemDB | None:
     return await get_one_by(
         session,
         ItemDB,
-        profile_id=profile_id,
+        user_id=user_id,
         id=item_id,
     )
 
 
 async def create_item(
-    session: AsyncSession, user_id: UUID, item_in: ItemCreateRequest
+    session: AsyncSession,
+    user_id: UUID,
+    item_in: ItemCreateRequest,
 ) -> ItemDB | None:
     try:
         item_db = ItemDB(
@@ -147,7 +149,10 @@ async def create_item(
         return None
 
 
-async def delete_item(session: AsyncSession, item_db: ItemDB) -> bool:
+async def delete_item(
+    session: AsyncSession,
+    item_db: ItemDB,
+) -> bool:
     try:
         await session.delete(item_db)
         await session.commit()

@@ -7,7 +7,7 @@ from app.common.schemas.response import ResponseBase
 
 class ErrorDetail(ResponseBase):
     message: Optional[str]
-    user_message: Optional[str]
+    # user_message: Optional[str]
 
 
 class ErrorResponse(HTTPException):
@@ -15,13 +15,13 @@ class ErrorResponse(HTTPException):
         self,
         status_code: int = 500,
         message: Optional[str] = None,
-        user_message: Optional[str] = None,
+        # user_message: Optional[str] = None,
         headers: Dict[str, str] | None = None,
     ) -> None:
 
         detail = ErrorDetail(
             message=message,
-            user_message=user_message,
+            # user_message=user_message,
         )
 
         super().__init__(

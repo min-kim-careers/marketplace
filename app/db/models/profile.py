@@ -6,6 +6,7 @@ from sqlalchemy import DateTime, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from app.db.base import Base
+from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 
 
 class ProfileDB(Base):
@@ -16,7 +17,9 @@ class ProfileDB(Base):
         UniqueConstraint("handle"),
     )
 
-    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+    id: Mapped[UUID] = mapped_column(
+        PG_UUID(as_uuid=True), primary_key=True, default=uuid4
+    )
 
     user_id: Mapped[UUID] = mapped_column(nullable=False, index=True)
     email: Mapped[str] = mapped_column(nullable=False, index=True)
