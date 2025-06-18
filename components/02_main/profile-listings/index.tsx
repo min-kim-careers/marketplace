@@ -29,7 +29,7 @@ export default function ProfileListings({
   }, [props])
 
   return (
-    <div className='flex flex-1 flex-col justify-between gap-2'>
+    <div className='flex flex-1 flex-col justify-between gap-2 w-full'>
       <div className='flex w-full flex-1 flex-col gap-2'>
         <Toolbar />
         <PaginationTop />

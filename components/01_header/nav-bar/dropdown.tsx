@@ -15,7 +15,7 @@ import { APP_ROUTES } from '@/lib/constants/app-routes'
 import useProfileStore from '@/lib/stores/profile'
 import Link from 'next/link'
 import Spinner from '../../00_common/spinner'
-import { useSignOut } from '@/lib/hooks/use-sign-out'
+import { useSignOut } from '@/lib/hooks/auth/use-sign-out'
 import { CircleUserIcon } from 'lucide-react'
 
 export default function Dropdown({}: {}) {

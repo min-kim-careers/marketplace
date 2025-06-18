@@ -6,30 +6,28 @@ import { APP_DATA } from '@/lib/constants/app-data'
 
 const firebaseAxios = await createFirebaseAxios('/firebase')
 
-export const FIREBASE_ENDPOINTS = {
-  GET_SESSION: (
-    idToken: string,
-  ): Promise<{
-    decodedToken: DecodedToken
-    sessionCookie: string
-    expiresInSeconds: number
-  }> =>
-    firebaseAxios
-      .post(`/session`, { idToken })
-      .then((res) => res.data),
+export const _GET_SESSION = async (
+  idToken: string,
+): Promise<{
+  decodedToken: DecodedToken
+  sessionCookie: string
+  expiresInSeconds: number
+}> =>
+  firebaseAxios
+    .post(`/session`, { idToken })
+    .then((res) => res.data)
 
-  VERIFY_SESSION: (
-    session: string,
-  ): Promise<{ decodedToken: DecodedToken }> =>
-    firebaseAxios
-      .post(
-        `/session/verify`,
-        {},
-        {
-          headers: {
-            Cookie: `${APP_DATA.SESSION_HEADER}=${session}`,
-          },
+export const _VERIFY_SESSION = async (
+  session: string,
+): Promise<{ decodedToken: DecodedToken }> =>
+  firebaseAxios
+    .post(
+      `/session/verify`,
+      {},
+      {
+        headers: {
+          Cookie: `${APP_DATA.SESSION_HEADER}=${session}`,
         },
-      )
-      .then((res) => res.data),
-}
+      },
+    )
+    .then((res) => res.data)

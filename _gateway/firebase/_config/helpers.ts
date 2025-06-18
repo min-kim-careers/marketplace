@@ -63,7 +63,7 @@ export const clearSessionCookie = async () => {
   }
 }
 
-export const createUserId = async (uid: string) => {
+export const convertToUUID = async (uid: string) => {
   try {
     return uuidv5(uid, envLoader.UuidNamespace)
   } catch (error) {

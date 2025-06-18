@@ -2,11 +2,11 @@
 
 import { getSessionUserId } from '@/_gateway/_common/helpers'
 import { logApiError } from '@/_gateway/api/_config/helpers'
-import { PROFILE_ENDPOINTS } from '@/_gateway/api/profile/endpoints'
+import * as PROFILE_ENDPOINTS from '@/_gateway/api/profile/endpoints'
 import { ProfileExtra } from '@/_gateway/api/profile/interfaces'
 import { Profile } from '@/lib/interfaces/profile'
 
-interface UpsertProfileRequest {
+export interface UpsertProfileRequest {
   email?: string
   handle?: string
   rating?: number
@@ -15,7 +15,7 @@ interface UpsertProfileRequest {
   avatarUrl?: string
 }
 
-export const updateCurrentProfile = async (
+export const UPDATE_PROFILE = async (
   newProfile: UpsertProfileRequest,
 ): Promise<Profile | null> => {
   try {
@@ -23,7 +23,7 @@ export const updateCurrentProfile = async (
     if (!userId) throw new Error()
 
     const { profile } =
-      await PROFILE_ENDPOINTS.UPSERT_PROFILE(
+      await PROFILE_ENDPOINTS._UPSERT_PROFILE(
         userId,
         newProfile,
       )
@@ -35,14 +35,14 @@ export const updateCurrentProfile = async (
   }
 }
 
-export const getCurrentProfile =
+export const GET_PROFILE =
   async (): Promise<Profile | null> => {
     try {
       const userId = await getSessionUserId()
       if (!userId) throw new Error()
 
       const { profile } =
-        await PROFILE_ENDPOINTS.GET_PROFILE(userId)
+        await PROFILE_ENDPOINTS._GET_PROFILE(userId)
 
       return profile
     } catch (error) {
@@ -51,12 +51,12 @@ export const getCurrentProfile =
     }
   }
 
-export const handleExists = async (
+export const HANDLE_EXISTS = async (
   handle: string,
 ): Promise<boolean> => {
   try {
     const { exists } =
-      await PROFILE_ENDPOINTS.HANDLE_EXISTS(handle)
+      await PROFILE_ENDPOINTS._HANDLE_EXISTS(handle)
 
     return exists
   } catch (error) {
@@ -65,14 +65,14 @@ export const handleExists = async (
   }
 }
 
-export const getProfileExtra =
+export const GET_PROFILE_EXTRA =
   async (): Promise<ProfileExtra | null> => {
     try {
       const userId = await getSessionUserId()
       if (!userId) throw new Error()
 
       const { extra } =
-        await PROFILE_ENDPOINTS.GET_PROFILE_EXTRA(userId)
+        await PROFILE_ENDPOINTS._GET_PROFILE_EXTRA(userId)
 
       return extra as ProfileExtra
     } catch (error) {

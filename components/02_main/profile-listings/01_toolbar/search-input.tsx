@@ -1,7 +1,7 @@
 import { Button } from '@/components/shadcn/components/ui/button'
 import { Input } from '@/components/shadcn/components/ui/input'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
-import { toUrlParams } from '@/lib/common/helpers'
+import { toUrlParams } from '@/lib/helpers/to-url-params'
 import { Search } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { FormEvent } from 'react'

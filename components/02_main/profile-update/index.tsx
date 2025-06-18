@@ -15,7 +15,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { useUpdateProfile } from '@/lib/hooks/use-update-profile'
+import { useUpdateProfile } from '@/lib/hooks/profile/use-update-profile'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
 
 export default function ProfileUpdate() {

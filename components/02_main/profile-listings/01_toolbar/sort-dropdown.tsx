@@ -7,7 +7,7 @@ import {
   SelectValue,
 } from '@/components/shadcn/components/ui/select'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
-import { toUrlParams } from '@/lib/common/helpers'
+import { toUrlParams } from '@/lib/helpers/to-url-params'
 import { ItemSortOption } from '@/lib/interfaces/item-sort-options'
 import { MarketParams } from '@/lib/interfaces/market-params'
 import { useRouter } from 'next/navigation'

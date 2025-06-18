@@ -1,5 +1,5 @@
 import { UpsertProfileRequest } from "@/_gateway/api/profile/service"
-import { updateCurrentProfile } from '@/_gateway/api/profile/service'
+import { UPDATE_PROFILE } from '@/_gateway/api/profile/service'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
 import { useLoadingStore } from '@/lib/stores/loading'
 import useProfileStore from '@/lib/stores/profile'
@@ -18,7 +18,7 @@ export const useUpdateProfile = () => {
       setLoading('Updating your profile...', true)
 
       const profile =
-        await updateCurrentProfile(newProfile)
+        await UPDATE_PROFILE(newProfile)
       if (!profile)
         throw new Error('Failed to update profile')
 

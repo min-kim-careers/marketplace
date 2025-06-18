@@ -2,9 +2,9 @@
 
 import {
   getSessionCookie,
-  createUserId,
+  convertToUUID,
 } from '@/_gateway/firebase/_config/helpers'
-import { verifySession } from '@/_gateway/firebase/service'
+import { VERIFY_SESSION } from '@/_gateway/firebase/service'
 import { APP_DATA } from "@/lib/constants/app-data"
 import { logError } from '@/lib/utils/log'
 import { cookies } from 'next/headers'
@@ -43,9 +43,9 @@ export const getSessionUserId = async (): Promise<
     if (!session) return null
 
     const decodedToken =
-      await verifySession(session)
+      await VERIFY_SESSION(session)
 
-    const userId = createUserId(decodedToken.uid)
+    const userId = convertToUUID(decodedToken.uid)
 
     return userId
   } catch (error) {

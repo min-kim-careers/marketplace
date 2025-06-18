@@ -1,6 +1,6 @@
 import {
-  signInWithGoogle,
-  signOut,
+  SIGN_IN_WITH_GOOGLE,
+  SIGN_OUT,
 } from '@/_gateway/firebase/service'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
 import { auth, provider } from '@/lib/firebase/config'
@@ -23,13 +23,13 @@ export const useSignIn = () => {
       const token = await cred.user.getIdToken()
 
       const newProfile =
-        await signInWithGoogle(token)
+        await SIGN_IN_WITH_GOOGLE(token)
       if (newProfile) setProfile(newProfile)
 
       router.refresh()
     } catch (error) {
       await auth.signOut()
-      await signOut()
+      await SIGN_OUT()
       setProfile(null)
       toast({
         description: `Something went wrong.`,

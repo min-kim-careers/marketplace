@@ -4,13 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-import {
-  createItem,
-  deleteItem,
-  uploadImages,
-} from '@/_gateway/api/item/service'
-import ItemImagePreview from '@/components/02_main/market/00_common/item-image-preview'
-import { ItemPostFormSchema } from '@/components/02_main/item-post/form'
+import { ItemEditFormSchema } from '@/components/02_main/item-edit/form'
 import {
   CategoryField,
   ConditionField,
@@ -19,7 +13,8 @@ import {
   LocationField,
   NameField,
   PriceField,
-} from '@/components/02_main/item-post/form/fields'
+} from '@/components/02_main/item-edit/form/fields'
+import ItemImagePreview from '@/components/02_main/market/00_common/item-image-preview'
 import { Button } from '@/components/shadcn/components/ui/button'
 import {
   Card,
@@ -29,9 +24,7 @@ import {
   CardTitle,
 } from '@/components/shadcn/components/ui/card'
 import { Form } from '@/components/shadcn/components/ui/form'
-import { useToast } from '@/components/shadcn/hooks/use-toast'
-import { APP_ROUTES } from '@/lib/constants/app-routes'
-import { useRouter } from 'next/navigation'
+import { useUpdateItem } from '@/lib/hooks/item/use-update-item'
 import { Item } from '@/lib/interfaces/item'
 
 export default function ItemEdit({
@@ -41,62 +34,34 @@ export default function ItemEdit({
   item: Item
   imageLimit: number
 }) {
-  const { toast } = useToast()
-  const router = useRouter()
+  const { handleUpdateItem } = useUpdateItem()
 
-  const form = useForm<z.infer<typeof ItemPostFormSchema>>({
-    resolver: zodResolver(ItemPostFormSchema),
+  const initImageUrls = () =>
+    Array.from({ length: imageLimit }, (_, i) =>
+      i < item.imageUrls.length ? item.imageUrls[i] : null,
+    )
+
+  const form = useForm<z.infer<typeof ItemEditFormSchema>>({
+    resolver: zodResolver(ItemEditFormSchema),
     defaultValues: {
-      name: '',
-      description: '',
-      price: 0,
-      category: '',
-      location: '',
-      condition: '',
-      images: Array.from(
-        { length: imageLimit },
-        () => null,
-      ),
+      ...item,
+      imageUrls: initImageUrls(),
     },
   })
 
-  const imagesWatcher = form.watch('images')
-
   async function onSubmit(
-    values: z.infer<typeof ItemPostFormSchema>,
+    values: z.infer<typeof ItemEditFormSchema>,
   ) {
-    try {
-      const request = {
-        ...values,
-        postcode: values.location,
-      }
-
-      const item = await createItem(request)
-      if (!item) throw new Error('Failed to create item')
-
-      const images = values.images.filter(
-        (img) => img instanceof File,
-      )
-
-      const itemWithImages = await uploadImages(
-        item.id,
-        images,
-      )
-      if (!itemWithImages) {
-        await deleteItem(item.id)
-        throw new Error('Failed to upload item images')
-      }
-
-      toast({
-        description:
-          'Your item has been successfully posted!',
-      })
-      router.push(APP_ROUTES.MARKET.url)
-    } catch (error) {
-      toast({
-        description: 'Something went wrong',
-      })
+    const request = {
+      ...values,
+      postcode: values.location,
     }
+    
+    await handleUpdateItem({
+      itemId: item.id,
+      request,
+      imageUrls: values.imageUrls.filter((v) => v !== null),
+    })
   }
 
   return (
@@ -127,7 +92,7 @@ export default function ItemEdit({
                   type='submit'
                   className='mt-4 w-full'
                 >
-                  Post Ad
+                  Edit Ad
                 </Button>
               </div>
             </form>
@@ -136,9 +101,10 @@ export default function ItemEdit({
       </div>
       <div className='flex flex-1 items-center justify-center bg-muted'>
         <ItemImagePreview
-          imageUrls={imagesWatcher
-            .filter((img) => img !== null)
-            .map((img) => URL.createObjectURL(img))}
+          imageUrls={form
+            .watch('imageUrls')
+            .filter((v) => v != null)
+            .map((v) => v)}
         />
       </div>
     </Card>

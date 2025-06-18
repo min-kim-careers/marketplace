@@ -5,5 +5,5 @@ export interface ApiInternalResponse {
 
 export interface ApiErrorResponse {
   message?: string
-  userMessage?: string
+  // userMessage?: string
 }

@@ -3,17 +3,18 @@
 import {
   clearSessionCookie,
   createHandle,
-  createUserId,
+  convertToUUID,
   getSessionCookie,
   logFirebaseError,
   setSessionCookie,
 } from '@/_gateway/firebase/_config/helpers'
 import { Profile } from '@/lib/interfaces/profile'
 import { DecodedToken } from './interfaces'
-import { FIREBASE_ENDPOINTS } from '@/_gateway/firebase/endpoints'
-import { PROFILE_ENDPOINTS } from '@/_gateway/api/profile/endpoints'
+import * as FIREBASE_ENDPOINTS from '@/_gateway/firebase/endpoints'
+import * as PROFILE_ENDPOINTS from '@/_gateway/api/profile/endpoints'
+import { logApiError } from '@/_gateway/api/_config/helpers'
 
-export const signInWithGoogle = async (
+export const SIGN_IN_WITH_GOOGLE = async (
   idToken: string,
 ): Promise<Profile> => {
   try {
@@ -21,25 +22,30 @@ export const signInWithGoogle = async (
       decodedToken,
       sessionCookie,
       expiresInSeconds,
-    } = await FIREBASE_ENDPOINTS.GET_SESSION(idToken)
+    } = await FIREBASE_ENDPOINTS._GET_SESSION(idToken)
 
-    const userId = await createUserId(decodedToken.uid)
+    const userId = await convertToUUID(decodedToken.uid)
 
-    const { profile: existingProfile } =
-      await PROFILE_ENDPOINTS.GET_PROFILE(userId)
+    try {
+      const { profile } =
+        await PROFILE_ENDPOINTS._GET_PROFILE(userId)
 
-    if (existingProfile) {
-      await setSessionCookie(
-        sessionCookie,
-        expiresInSeconds,
-      )
-      return existingProfile
+      if (profile) {
+        await setSessionCookie(
+          sessionCookie,
+          expiresInSeconds,
+        )
+        return profile
+      }
+    } catch (error) {
+      logApiError(error)
+      console.log('Creating new profile')
     }
 
     const handle = await createHandle(decodedToken.uid)
 
     const { profile: newProfile } =
-      await PROFILE_ENDPOINTS.UPSERT_PROFILE(userId, {
+      await PROFILE_ENDPOINTS._UPSERT_PROFILE(userId, {
         handle,
         email: decodedToken.email,
         avatarUrl: decodedToken.picture,
@@ -54,7 +60,7 @@ export const signInWithGoogle = async (
   }
 }
 
-export const verifySession = async (
+export const VERIFY_SESSION = async (
   session: string,
 ): Promise<DecodedToken> => {
   try {
@@ -66,7 +72,7 @@ export const verifySession = async (
     }
 
     const { decodedToken } =
-      await FIREBASE_ENDPOINTS.VERIFY_SESSION(session)
+      await FIREBASE_ENDPOINTS._VERIFY_SESSION(session)
 
     return decodedToken
   } catch (error) {
@@ -75,7 +81,7 @@ export const verifySession = async (
   }
 }
 
-export const refreshSession = async (idToken: string) => {
+export const REFRESH_SESSION = async (idToken: string) => {
   try {
     const session = await getSessionCookie()
     if (session) {
@@ -89,7 +95,7 @@ export const refreshSession = async (idToken: string) => {
       // decodedToken,
       sessionCookie,
       expiresInSeconds,
-    } = await FIREBASE_ENDPOINTS.GET_SESSION(idToken)
+    } = await FIREBASE_ENDPOINTS._GET_SESSION(idToken)
 
     await setSessionCookie(sessionCookie, expiresInSeconds)
   } catch (error) {
@@ -98,7 +104,7 @@ export const refreshSession = async (idToken: string) => {
   }
 }
 
-export const signOut = async (): Promise<void> => {
+export const SIGN_OUT = async (): Promise<void> => {
   try {
     await clearSessionCookie()
   } catch (error) {

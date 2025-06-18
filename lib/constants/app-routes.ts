@@ -6,9 +6,10 @@ interface AppRoute {
 export const APP_ROUTES = {
   HOME: { url: '/', label: 'Home' },
   MARKET: { url: '/market', label: 'Market' },
-  NOTFOUND: { url: '/404', label: 'Not Found' },
+
   ITEM_POST: { url: '/item/post', label: 'Post' },
   ITEM_EDIT: { url: '/item/edit', label: 'Edit' },
+
   PROFILE_UPDATE: {
     url: '/profile/update',
     label: 'Update Profile',
@@ -21,6 +22,8 @@ export const APP_ROUTES = {
     url: '/profile/listings',
     label: 'My Listings',
   },
+
+  NOTFOUND: { url: '/404', label: 'Not Found' },
 }
 
 const PROTECTED_ROUTES = [
@@ -57,7 +60,7 @@ validateRoutes()
 const FALLBACK_ROUTES = [APP_ROUTES.NOTFOUND.url]
 
 export const isProtectedRoute = (path: string) =>
-  PROTECTED_ROUTES.includes(path)
+  PROTECTED_ROUTES.some((route) => path.startsWith(route))
 
 export const isPublicRoute = (path: string) =>
   PUBLIC_ROUTES.includes(path)
@@ -65,7 +68,10 @@ export const isPublicRoute = (path: string) =>
 export const isFallbackRoute = (path: string) =>
   FALLBACK_ROUTES.includes(path)
 
-export const getPathLabel = (pathname: string) =>
-  Object.values(APP_ROUTES).filter(
-    (r) => r.url === pathname,
-  )[0].label
+export const getPathLabel = (path: string) => {
+  const route = Object.values(APP_ROUTES).find((r) =>
+    path.startsWith(r.url),
+  )
+  if (!route) throw new Error('Route not found')
+  return route.label
+}

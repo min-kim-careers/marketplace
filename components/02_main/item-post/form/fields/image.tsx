@@ -1,4 +1,3 @@
-import Spinner from '@/components/00_common/spinner'
 import { ItemPostFormSchema } from '@/components/02_main/item-post/form'
 import {
   FormControl,
@@ -9,11 +8,9 @@ import {
 } from '@/components/shadcn/components/ui/form'
 import { Input } from '@/components/shadcn/components/ui/input'
 import { Label } from '@/components/shadcn/components/ui/label'
-import { useToast } from '@/components/shadcn/hooks/use-toast'
-import { compressFile } from '@/lib/common/helpers'
 import { Plus, Trash } from 'lucide-react'
 import Image from 'next/image'
-import { ChangeEvent, useEffect, useState } from 'react'
+import { ChangeEvent } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -24,87 +21,49 @@ const ImageInput = ({
   form: UseFormReturn<z.infer<typeof ItemPostFormSchema>>
   index: number
 }) => {
-  const name = 'images'
-
-  const { toast } = useToast()
+  const name = 'imageUrls'
 
   const watcher = form.watch(name)
-
-  const [imageUrl, setImageUrl] = useState<string | null>(
-    null,
-  )
-  const [loading, setLoading] = useState(false)
 
   const handleFileChange = async (
     e: ChangeEvent<HTMLInputElement>,
   ) => {
-    try {
-      setLoading(true)
-      const img = e.target.files?.[0] || null
-      if (!img) throw new Error()
-
-      const compressed = await compressFile(img)
-      const newImages = [...watcher]
-      newImages[index] = compressed
-      form.setValue(name, newImages, {
-        shouldValidate: true,
-      })
-      setImageUrl(URL.createObjectURL(compressed))
-    } catch (error) {
-      toast({
-        description:
-          'Failed to load image. Please try again.',
-      })
-    } finally {
-      setLoading(false)
+    const file = e.target.files?.[0]
+    if (file) {
+      const url = URL.createObjectURL(file)
+      const newUrls = [...watcher]
+      newUrls[index] = url
+      form.setValue(name, newUrls, { shouldValidate: true })
     }
   }
 
-  const handleDelete = (index: number) => {
-    try {
-      if (imageUrl) {
-        const newImages = [...watcher]
-        newImages[index] = null
-        form.setValue(name, newImages, {
-          shouldValidate: true,
-        })
-        URL.revokeObjectURL(imageUrl)
-        setImageUrl(null)
-      }
-    } catch (error) {
-      toast({
-        description:
-          'Something went wrong.',
-      })
-    }
+  const handleDelete = () => {
+    const newUrls = [...watcher]
+    newUrls[index] = null
+    form.setValue(name, newUrls, { shouldValidate: true })
   }
 
   return (
-    <Label className='relative flex aspect-square max-w-[150px] cursor-pointer items-center justify-center rounded bg-gray-300 text-gray-400 shadow-sm'>
+    <Label className='relative flex aspect-square w-full max-w-48 cursor-pointer items-center justify-center rounded bg-gray-300 text-gray-400 shadow-sm'>
       <Input
         type='file'
         accept='image/x'
         onChange={(e) => handleFileChange(e)}
         className='hidden'
       />
-      {imageUrl ? (
+      {watcher[index] ? (
         <div>
           <Image
-            src={imageUrl}
+            src={watcher[index]}
             alt='preview-image'
             layout='fill'
             objectFit='contain'
             className='rounded'
           />
-          <button
-            type='button'
-            onClick={() => handleDelete(index)}
-          >
+          <button type='button' onClick={handleDelete}>
             <Trash className='absolute bottom-0 right-0 z-50 m-1 cursor-pointer fill-gray-100 hover:scale-110 active:scale-90' />
           </button>
         </div>
-      ) : loading ? (
-        <Spinner />
       ) : (
         <Plus className='flex h-1/4 w-1/4 flex-1' />
       )}
@@ -117,7 +76,7 @@ export default function ImageField({
 }: {
   form: UseFormReturn<z.infer<typeof ItemPostFormSchema>>
 }) {
-  const name = 'images'
+  const name = 'imageUrls'
   const label = 'Images'
 
   return (
@@ -129,9 +88,12 @@ export default function ImageField({
           <FormLabel>{label}</FormLabel>
           <FormControl>
             <div className='grid grid-cols-3 gap-2'>
-              {form.watch(name).map((_, index) => (
-                <div key={index} className='w-full'>
-                  <ImageInput form={form} index={index} />
+              {form.watch(name).map((_, i) => (
+                <div
+                  key={i}
+                  className='flex items-center justify-center'
+                >
+                  <ImageInput form={form} index={i} />
                 </div>
               ))}
             </div>

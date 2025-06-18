@@ -9,16 +9,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/shadcn/components/ui/dialog'
-import {
-  formatPrice,
-  toUrlParams,
-} from '@/lib/common/helpers'
+import { formatPrice } from '@/lib/helpers/format-price'
+import { toUrlParams } from '@/lib/helpers/to-url-params'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { ITEM_CONDITION_LABELS } from '@/lib/constants/item-condition-labels'
 import { ITEM_STATUS_LABELS } from '@/lib/constants/item-status-labels'
 import { Item } from '@/lib/interfaces/item'
 import { formatDistanceToNow } from 'date-fns'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { ReactNode } from 'react'
 
 export default function ItemModal({
@@ -28,12 +27,14 @@ export default function ItemModal({
   children: ReactNode
   item: Item
 }) {
+  const router = useRouter()
+
+  const handleDelete = async () => {}
+
   const updatedAt = () =>
     formatDistanceToNow(item.updatedAt.toLocaleString(), {
       addSuffix: true,
     })
-
-  console.log(item.status)
 
   return (
     <Dialog>
@@ -71,7 +72,7 @@ export default function ItemModal({
             </Button>
             <Button variant={'outline'}>Chats</Button>
             <Link
-              href={`${APP_ROUTES.ITEM_EDIT.url}?${toUrlParams({ item: null })}`}
+              href={`${APP_ROUTES.ITEM_EDIT.url}/${item.id}`}
             >
               <Button variant={'outline'}>Edit</Button>
             </Link>

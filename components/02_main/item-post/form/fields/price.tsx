@@ -40,6 +40,7 @@ export default function PriceField({
             <Input
               type={type}
               min={0}
+              step={'0.01'}
               placeholder={placeholder}
               onKeyDown={handleKeyDown}
               {...field}

@@ -25,13 +25,13 @@ import {
 import { cn } from '@/components/shadcn/lib/utils'
 import { ITEM_CATEGORY_LABELS } from "@/lib/constants/item-category-labels"
 import { ItemCategory } from "@/lib/enums/item-category"
-import { ItemPostFormSchema } from '@/components/02_main/item-post/form'
+import { ItemEditFormSchema } from '@/components/02_main/item-edit/form'
 import { Check, ChevronsUpDown } from 'lucide-react'
 
 export default function CategoryField({
   form,
 }: {
-  form: UseFormReturn<z.infer<typeof ItemPostFormSchema>>
+  form: UseFormReturn<z.infer<typeof ItemEditFormSchema>>
 }) {
   const name = 'category'
   const label = 'Category'

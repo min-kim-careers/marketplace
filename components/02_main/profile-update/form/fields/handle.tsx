@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { handleExists } from '@/_gateway/api/profile/service'
+import { HANDLE_EXISTS } from '@/_gateway/api/profile/service'
 import Spinner from '@/components/00_common/spinner'
 import { ProfileUpdateForm } from '@/components/02_main/profile-update/form'
 import { Button } from '@/components/shadcn/components/ui/button'

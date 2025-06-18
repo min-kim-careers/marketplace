@@ -1,9 +1,7 @@
-import {
-  toUrlParams
-} from '@/lib/common/helpers'
+import { toUrlParams } from '@/lib/helpers/to-url-params'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
-import { useSignIn } from '@/lib/hooks/use-sign-in'
-import { useSignOut } from '@/lib/hooks/use-sign-out'
+import { useSignIn } from '@/lib/hooks/auth/use-sign-in'
+import { useSignOut } from '@/lib/hooks/auth/use-sign-out'
 import useProfileStore from '@/lib/stores/profile'
 import Link from 'next/link'
 import { Button } from '../../shadcn/components/ui/button'

@@ -6,7 +6,7 @@ import {
   PaginationLast,
   PaginationLink,
 } from '@/components/shadcn/components/ui/pagination'
-import { toUrlParams } from '@/lib/common/helpers'
+import { toUrlParams } from '@/lib/helpers/to-url-params'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { DEFAULT_ITEM_PAGINATION } from '@/lib/constants/item-pagination'
 import useListingsStore from '@/lib/stores/listing'

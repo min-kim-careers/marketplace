@@ -1,4 +1,4 @@
-import { ItemPostFormSchema } from '@/components/02_main/item-post/form'
+import { ItemEditFormSchema } from '@/components/02_main/item-edit/form'
 import {
   FormControl,
   FormDescription,
@@ -19,7 +19,7 @@ import { z } from 'zod'
 export default function DescriptionField({
   form,
 }: {
-  form: UseFormReturn<z.infer<typeof ItemPostFormSchema>>
+  form: UseFormReturn<z.infer<typeof ItemEditFormSchema>>
 }) {
   const name = 'description'
   const label = 'Description'

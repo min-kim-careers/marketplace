@@ -24,17 +24,17 @@ import {
   PopoverTrigger,
 } from '@/components/shadcn/components/ui/popover'
 import { cn } from '@/components/shadcn/lib/utils'
-import { ItemPostFormSchema } from '@/components/02_main/item-post/form'
+import { ItemEditFormSchema } from '@/components/02_main/item-edit/form'
 import { searchLocations } from '@/lib/utils/fuse/locations'
 import { Check, ChevronsUpDown } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Location } from '@/lib/utils/fuse/location'
 import { logError } from '@/lib/utils/log'
 
 export default function LocationField({
   form,
 }: {
-  form: UseFormReturn<z.infer<typeof ItemPostFormSchema>>
+  form: UseFormReturn<z.infer<typeof ItemEditFormSchema>>
 }) {
   const name = 'location'
   const label = 'Location'
@@ -45,6 +45,10 @@ export default function LocationField({
   const [locations, setLocations] = useState<Location[]>([])
   const [currentLabel, setCurrentLabel] =
     useState(placeholder)
+
+  useEffect(() => {
+    
+  }, [])
 
   const handleChange = (value: string) => {
     setLoading(true)

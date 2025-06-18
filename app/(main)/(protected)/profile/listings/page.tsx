@@ -1,8 +1,8 @@
 'use server'
 
-import { getUserItems } from '@/_gateway/api/profile/service'
+import { GET_USER_ITEMS } from '@/_gateway/api/item/service'
 import ProfileListings from '@/components/02_main/profile-listings'
-import { toUrlParams } from '@/lib/common/helpers'
+import { toUrlParams } from '@/lib/helpers/to-url-params'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { DEFAULT_LISTINGS_PARAMS } from '@/lib/constants/listings-params'
 import { ItemSortBy } from '@/lib/enums/item-sort-by'
@@ -51,7 +51,8 @@ export default async function Page({
 
   const listingsParams: ListingsParams = result.data
 
-  const { items, count } = await getUserItems(listingsParams)
+  const { items, count } =
+    await GET_USER_ITEMS(listingsParams)
 
   return (
     <ProfileListings

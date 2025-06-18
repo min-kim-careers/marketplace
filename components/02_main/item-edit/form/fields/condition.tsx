@@ -24,14 +24,14 @@ import {
 } from '@/components/shadcn/components/ui/popover'
 import { cn } from '@/components/shadcn/lib/utils'
 import { Check, ChevronsUpDown } from 'lucide-react'
-import { ItemPostFormSchema } from '@/components/02_main/item-post/form'
+import { ItemEditFormSchema } from '@/components/02_main/item-edit/form'
 import { ITEM_CONDITION_LABELS } from "@/lib/constants/item-condition-labels"
 import { ItemCondition } from "@/lib/enums/item-condition"
 
 export default function ConditionField({
   form,
 }: {
-  form: UseFormReturn<z.infer<typeof ItemPostFormSchema>>
+  form: UseFormReturn<z.infer<typeof ItemEditFormSchema>>
 }) {
   const name = 'condition'
   const label = 'Condition'

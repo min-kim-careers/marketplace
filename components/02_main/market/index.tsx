@@ -30,7 +30,7 @@ export default function Market({
   }, [props])
 
   return (
-    <div className='flex flex-1 flex-col justify-between gap-2'>
+    <div className='flex w-full flex-1 flex-col justify-between gap-2'>
       <div className='flex w-full flex-1 flex-col gap-2'>
         <Toolbar />
         <PaginationTop />

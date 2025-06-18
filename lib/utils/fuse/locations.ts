@@ -22,9 +22,9 @@ export const searchLocations = (
   return results
 }
 
-export const locationExistsByPostcode = (
+export const getLocationByPostcode = (
   postcode: string,
 ) => {
   const result = locations.search({ postcode })
-  return result.length > 0
+  return result[0]
 }

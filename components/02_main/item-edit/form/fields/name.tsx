@@ -6,14 +6,14 @@ import {
   FormMessage,
 } from '@/components/shadcn/components/ui/form'
 import { Input } from '@/components/shadcn/components/ui/input'
-import { ItemPostFormSchema } from '@/components/02_main/item-post/form'
+import { ItemEditFormSchema } from '@/components/02_main/item-edit/form'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
 export default function NameField({
   form,
 }: {
-  form: UseFormReturn<z.infer<typeof ItemPostFormSchema>>
+  form: UseFormReturn<z.infer<typeof ItemEditFormSchema>>
 }) {
   const name = 'name'
   const label = 'Name'
