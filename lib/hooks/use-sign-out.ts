@@ -1,8 +1,8 @@
 import { SIGN_OUT } from '@/_gateway/firebase/service'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
 import { auth } from '@/lib/firebase/config'
-import { useLoadingStore } from '@/lib/stores/loading'
-import useProfileStore from '@/lib/stores/profile'
+import { useLoadingStore } from '@/lib/stores/loading-store'
+import useProfileStore from '@/lib/stores/profile-store'
 import { useRouter } from 'next/navigation'
 
 export const useSignOut = () => {

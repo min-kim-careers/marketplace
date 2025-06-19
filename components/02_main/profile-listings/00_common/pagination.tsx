@@ -40,7 +40,7 @@ export default function Pagination() {
       <PaginationContent>
         <PaginationFirst
           disabled={params.page === 1 || !count}
-          href={`${APP_ROUTES.PROFILE_LISTINGS.url}?${toUrlParams({ ...params, page: 1 })}`}
+          href={`${APP_ROUTES.PROFILE_LISTINGS.href}?${toUrlParams({ ...params, page: 1 })}`}
         />
 
         {paginationArray.map(
@@ -50,7 +50,7 @@ export default function Pagination() {
               <PaginationItem key={index}>
                 <PaginationLink
                   isActive={params.page === page}
-                  href={`${APP_ROUTES.PROFILE_LISTINGS.url}?${toUrlParams(
+                  href={`${APP_ROUTES.PROFILE_LISTINGS.href}?${toUrlParams(
                     {
                       ...params,
                       page: page,
@@ -65,7 +65,7 @@ export default function Pagination() {
 
         <PaginationLast
           disabled={params.page === lastPage || !count}
-          href={`${APP_ROUTES.PROFILE_LISTINGS.url}?${toUrlParams(
+          href={`${APP_ROUTES.PROFILE_LISTINGS.href}?${toUrlParams(
             {
               ...params,
               page: lastPage,

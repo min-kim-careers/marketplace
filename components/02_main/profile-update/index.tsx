@@ -15,13 +15,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { useUpdateProfile } from '@/lib/hooks/profile/use-update-profile'
+import { useUpsertProfile } from '@/lib/hooks/use-upsert-profile'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
 
 export default function ProfileUpdate() {
   const [handleConfirmed, setHandleConfirmed] =
     useState(false)
-  const { handleUpdateProfile } = useUpdateProfile()
+  const { handleUpdateProfile } = useUpsertProfile()
   const { toast } = useToast()
 
   const form = useForm<z.infer<typeof ProfileUpdateForm>>({

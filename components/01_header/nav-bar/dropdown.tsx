@@ -12,10 +12,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/shadcn/components/ui/dropdown-menu'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
-import useProfileStore from '@/lib/stores/profile'
+import useProfileStore from '@/lib/stores/profile-store'
 import Link from 'next/link'
 import Spinner from '../../00_common/spinner'
-import { useSignOut } from '@/lib/hooks/auth/use-sign-out'
+import { useSignOut } from '@/lib/hooks/use-sign-out'
 import { CircleUserIcon } from 'lucide-react'
 
 export default function Dropdown({}: {}) {
@@ -44,11 +44,11 @@ export default function Dropdown({}: {}) {
         <DropdownMenuSeparator />
 
         <DropdownMenuItem asChild>
-          <Link href={APP_ROUTES.PROFILE_UPDATE.url}>Profile</Link>
+          <Link href={APP_ROUTES.PROFILE_UPDATE.href}>Profile</Link>
         </DropdownMenuItem>
 
         <DropdownMenuItem asChild>
-          <Link href={APP_ROUTES.PROFILE_LISTINGS.url}>Listings</Link>
+          <Link href={APP_ROUTES.PROFILE_LISTINGS.href}>Listings</Link>
         </DropdownMenuItem>
 
         <DropdownMenuItem onClick={handleSignOut}>

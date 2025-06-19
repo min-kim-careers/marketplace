@@ -4,7 +4,7 @@ import { Button } from '@/components/shadcn/components/ui/button'
 import { toUrlParams } from '@/lib/helpers/to-url-params'
 import { APP_DATA } from '@/lib/constants/app-data'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
-import useProfileStore from '@/lib/stores/profile'
+import useProfileStore from '@/lib/stores/profile-store'
 import Link from 'next/link'
 
 export default function Landing() {
@@ -21,7 +21,7 @@ export default function Landing() {
         )}
 
         <Link
-          href={`${APP_ROUTES.MARKET.url}`}
+          href={`${APP_ROUTES.MARKET.href}`}
           passHref
         >
           <Button>Browse the market</Button>

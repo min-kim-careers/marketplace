@@ -1,4 +1,4 @@
-export interface Location {
+export interface LocationJSON {
   postcode: string
   locality: string
   state: string

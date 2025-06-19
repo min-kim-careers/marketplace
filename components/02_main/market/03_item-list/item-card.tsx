@@ -52,8 +52,9 @@ export default function ItemCard({
     >
       <div className='flex-1'>
         <CardHeader className='flex-1'>
-          <CardTitle className='line-clamp-1'>
-            {item.name}
+          <CardTitle className='line-clamp-1 space-x-2'>
+            <span>{item.name}</span>
+            <span className='font-normal'>{`${item.suburb}, ${item.postcode}`}</span>
           </CardTitle>
           <CardDescription className='line-clamp-1'>
             <div className='flex gap-1'>

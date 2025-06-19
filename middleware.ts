@@ -50,7 +50,7 @@ export async function middleware(req: NextRequest) {
   if (!isAuthenticated) {
     if (isProtectedRoute(path)) {
       return NextResponse.redirect(
-        new URL(APP_ROUTES.HOME.url, req.nextUrl),
+        new URL(APP_ROUTES.HOME.href, req.nextUrl),
       )
     }
 
@@ -60,7 +60,7 @@ export async function middleware(req: NextRequest) {
   }
 
   return NextResponse.redirect(
-    new URL(APP_ROUTES.NOTFOUND.url, req.nextUrl),
+    new URL(APP_ROUTES.NOTFOUND.href, req.nextUrl),
   )
 }
 

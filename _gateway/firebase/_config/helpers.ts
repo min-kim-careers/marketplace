@@ -1,7 +1,7 @@
 'use server'
 
-import { FirebaseErrorResponse } from "./interfaces"
-import { APP_DATA } from "@/lib/constants/app-data"
+import { FirebaseErrorResponse } from './interfaces'
+import { APP_DATA } from '@/lib/constants/app-data'
 import { envLoader } from '@/lib/utils/env-loader'
 import { logError } from '@/lib/utils/log'
 import { AxiosError } from 'axios'
@@ -13,6 +13,8 @@ export const logFirebaseError = async (error: any) => {
     const firebaseError = error.response
       ?.data as FirebaseErrorResponse
     if (firebaseError) logError(firebaseError)
+  } else {
+    logError(error)
   }
 }
 
@@ -30,7 +32,9 @@ export const getSessionCookie = async (): Promise<
 > => {
   try {
     const cookieStore = await cookies()
-    const session = cookieStore.get(APP_DATA.SESSION_HEADER)?.value
+    const session = cookieStore.get(
+      APP_DATA.SESSION_HEADER,
+    )?.value
     return session ?? null
   } catch (error) {
     throw error

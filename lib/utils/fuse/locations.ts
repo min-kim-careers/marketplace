@@ -1,6 +1,6 @@
 import Fuse from 'fuse.js'
 import data from './locations.json'
-import { Location } from '@/lib/utils/fuse/location'
+import { LocationJSON } from '@/lib/utils/fuse/location-json'
 import { logError } from '@/lib/utils/log'
 
 const locations = new Fuse(data, {
@@ -12,13 +12,13 @@ const locations = new Fuse(data, {
 export const searchLocations = (
   query: string,
   limit: number = 20,
-): Location[] => {
+): LocationJSON[] => {
   if (!query?.trim()) return []
 
   const results = locations
     .search(`^${query}`)
     .slice(0, limit)
-    .map((result) => result.item as Location)
+    .map((result) => result.item as LocationJSON)
   return results
 }
 

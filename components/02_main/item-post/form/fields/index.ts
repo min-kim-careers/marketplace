@@ -1,7 +1,0 @@
-export { default as NameField } from './name'
-export { default as PriceField } from './price'
-export { default as DescriptionField } from './description'
-export { default as ConditionField } from './condition'
-export { default as CategoryField } from './category'
-export { default as LocationField } from './location'
-export { default as ImageField } from './image'

@@ -2,6 +2,7 @@ import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
 import Spinner from '@/components/00_common/spinner'
+import { ItemFormSchema } from '@/components/02_main/item/form'
 import { Button } from '@/components/shadcn/components/ui/button'
 import {
   Command,
@@ -24,17 +25,15 @@ import {
   PopoverTrigger,
 } from '@/components/shadcn/components/ui/popover'
 import { cn } from '@/components/shadcn/lib/utils'
-import { ItemPostFormSchema } from '@/components/02_main/item-post/form'
+import { LocationJSON } from '@/lib/utils/fuse/location-json'
 import { searchLocations } from '@/lib/utils/fuse/locations'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { useState } from 'react'
-import { Location } from '@/lib/utils/fuse/location'
-import { logError } from '@/lib/utils/log'
 
 export default function LocationField({
   form,
 }: {
-  form: UseFormReturn<z.infer<typeof ItemPostFormSchema>>
+  form: UseFormReturn<z.infer<typeof ItemFormSchema>>
 }) {
   const name = 'location'
   const label = 'Location'
@@ -42,7 +41,9 @@ export default function LocationField({
     'Search for a location, e.g. Sydney or 2000'
 
   const [loading, setLoading] = useState(false)
-  const [locations, setLocations] = useState<Location[]>([])
+  const [locations, setLocations] = useState<
+    LocationJSON[]
+  >([])
   const [currentLabel, setCurrentLabel] =
     useState(placeholder)
 
@@ -58,10 +59,18 @@ export default function LocationField({
     }
   }
 
-  const handleSelect = (location: Location) => {
-    form.setValue(name, location.postcode, {
-      shouldValidate: true,
-    })
+  const handleSelect = (location: LocationJSON) => {
+    form.setValue(
+      name,
+      {
+        postcode: location.postcode,
+        suburb: location.locality,
+        state: location.state,
+      },
+      {
+        shouldValidate: true,
+      },
+    )
     setCurrentLabel(location.label)
   }
 

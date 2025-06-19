@@ -9,6 +9,8 @@ export const logApiError = async (error: any) => {
     const apiError = error.response
       ?.data as ApiErrorResponse
     if (apiError) logError(apiError)
+  } else {
+    logError(error)
   }
 }
 

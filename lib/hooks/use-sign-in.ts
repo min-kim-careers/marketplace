@@ -4,8 +4,8 @@ import {
 } from '@/_gateway/firebase/service'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
 import { auth, provider } from '@/lib/firebase/config'
-import { useLoadingStore } from '@/lib/stores/loading'
-import useProfileStore from '@/lib/stores/profile'
+import { useLoadingStore } from '@/lib/stores/loading-store'
+import useProfileStore from '@/lib/stores/profile-store'
 import { signInWithPopup } from 'firebase/auth'
 import { useRouter } from 'next/navigation'
 

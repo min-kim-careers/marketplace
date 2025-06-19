@@ -14,7 +14,7 @@ export default function Header() {
       <span className='space-x-2'>
         <span>
           <Link
-            href={APP_ROUTES.HOME.url}
+            href={APP_ROUTES.HOME.href}
             className='text-2xl font-bold'
           >
             {APP_DATA.TITLE}

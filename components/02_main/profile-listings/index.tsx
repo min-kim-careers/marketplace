@@ -8,7 +8,7 @@ import PaginationTop from '@/components/02_main/profile-listings/02_pagination-t
 import ItemList from '@/components/02_main/profile-listings/03_item-list'
 import PaginationBottom from '@/components/02_main/profile-listings/04_pagination-bottom'
 import useListingsStore from '@/lib/stores/listing'
-import { ListingsParams } from '@/lib/interfaces/listings-params'
+import { ItemPageParams } from '@/lib/interfaces/listings-params'
 
 export default function ProfileListings({
   props,
@@ -16,7 +16,7 @@ export default function ProfileListings({
   props: {
     items: Item[]
     count: number
-    params: ListingsParams
+    params: ItemPageParams
   }
 }) {
   const { setItems, setCount, setParams } =

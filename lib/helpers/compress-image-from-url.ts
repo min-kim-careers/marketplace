@@ -1,34 +1,46 @@
 import imageCompression from 'browser-image-compression'
 
+const extractFilenameFromUrl = (fn: string) => {
+  const urlParts = fn.split('/')
+  const rawName =
+    urlParts[urlParts.length - 1].split('?')[0]
+  return rawName
+}
+
 async function urlToFile(
   url: string,
-  fallbackName = 'image.jpg',
+  filename?: string,
 ): Promise<File> {
   const response = await fetch(url)
   const blob = await response.blob()
   const mime = blob.type || 'image/jpeg'
-
-  const urlParts = url.split('/')
-  const rawName =
-    urlParts[urlParts.length - 1].split('?')[0]
-  const filename = rawName || fallbackName
-
-  return new File([blob], filename, { type: mime })
+  const rawName = extractFilenameFromUrl(url)
+  return new File([blob], filename || rawName, {
+    type: mime,
+  })
 }
 
-const compressFile = async (file: File) => {
+const compressFile = async (
+  file: File,
+  filename?: string,
+) => {
   const blob = await imageCompression(file, {
     maxSizeMB: 1,
     maxWidthOrHeight: 1024,
     useWebWorker: true,
   })
 
-  return new File([blob], blob.name, { type: blob.type })
+  return new File([blob], filename || blob.name, {
+    type: blob.type,
+  })
 }
 
-export const compressImageFromUrl = async (url: string) => {
-  const image = await urlToFile(url)
-  const compressed = await compressFile(image)
+export const compressedFileFromUrl = async (
+  url: string,
+) => {
+  const file = await urlToFile(url)
+
+  const compressed = await compressFile(file)
+
   return compressed
 }
-

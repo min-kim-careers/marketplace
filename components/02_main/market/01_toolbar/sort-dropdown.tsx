@@ -45,7 +45,7 @@ export default function SortDropdown() {
         sortOrder: option.sortOrder,
       }
       const urlParams = toUrlParams(newParams)
-      router.replace(`${APP_ROUTES.MARKET.url}?${urlParams}`)
+      router.replace(`${APP_ROUTES.MARKET.href}?${urlParams}`)
       setParams(newParams)
     }
   }

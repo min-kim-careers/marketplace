@@ -2,7 +2,7 @@
 
 import LoadingDots from '@/components/00_common/loading-dots'
 import { cn } from '@/components/shadcn/lib/utils'
-import { useLoadingStore } from '@/lib/stores/loading'
+import { useLoadingStore } from '@/lib/stores/loading-store'
 
 export default function LoadingOverlay() {
   const { message, isOpaque } = useLoadingStore()

@@ -72,7 +72,7 @@ export default function ItemModal({
             </Button>
             <Button variant={'outline'}>Chats</Button>
             <Link
-              href={`${APP_ROUTES.ITEM_EDIT.url}/${item.id}`}
+              href={`${APP_ROUTES.ITEM_EDIT.href}/${item.id}`}
             >
               <Button variant={'outline'}>Edit</Button>
             </Link>

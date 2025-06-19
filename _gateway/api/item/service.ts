@@ -6,7 +6,7 @@ import { DEFAULT_ITEM_PAGINATION } from '@/lib/constants/item-pagination'
 import { Item } from '@/lib/interfaces/item'
 import { MarketParams } from '@/lib/interfaces/market-params'
 import * as ITEM_ENDPOINTS from '@/_gateway/api/item/endpoints'
-import { ListingsParams } from '@/lib/interfaces/listings-params'
+import { ItemPageParams } from '@/lib/interfaces/listings-params'
 
 export interface GetItemsRequest {
   page: number
@@ -32,10 +32,11 @@ export const GET_ITEMS = async (
       sortBy: marketParams.sortBy,
       sortOrder: marketParams.sortOrder,
       limit: DEFAULT_ITEM_PAGINATION.LIMIT,
-      excludeUser: userId ?? undefined
+      excludeUser: userId ?? undefined,
     }
 
-    const { items, count } = await ITEM_ENDPOINTS._GET_ALL_ITEMS(request)
+    const { items, count } =
+      await ITEM_ENDPOINTS._GET_ALL_ITEMS(request)
 
     return {
       items,
@@ -59,7 +60,7 @@ export interface GetItemsRequest {
 }
 
 export const GET_USER_ITEMS = async (
-  listingsParams: ListingsParams,
+  listingsParams: ItemPageParams,
 ): Promise<{
   items: Item[]
   count: number
@@ -111,64 +112,6 @@ export const GET_USER_ITEM = async (
   }
 }
 
-export interface CreateItemRequest {
-  name: string
-  description: string
-  price: number
-  category: string
-  condition: string
-  postcode: string
-}
-
-export const CREATE_ITEM = async (
-  request: CreateItemRequest,
-  images: File[],
-): Promise<Item | null> => {
-  try {
-    const userId = await getSessionUserId()
-    if (!userId) throw new Error()
-
-    let newItem
-
-    try {
-      const { item } =
-        await ITEM_ENDPOINTS._CREATE_USER_ITEM(
-          userId,
-          request,
-        )
-      newItem = item
-    } catch (error) {
-      throw error
-    }
-
-    const formData = new FormData()
-    images.forEach((image) =>
-      formData.append('images', image),
-    )
-
-    try {
-      const { item } =
-        await ITEM_ENDPOINTS._UPLOAD_USER_ITEM_IMAGES(
-          userId,
-          newItem.id,
-          formData,
-        )
-      newItem = item
-    } catch (error) {
-      await ITEM_ENDPOINTS._DELETE_USER_ITEM(
-        userId,
-        newItem.id,
-      )
-      throw error
-    }
-
-    return newItem
-  } catch (error) {
-    logApiError(error)
-    return null
-  }
-}
-
 export interface UpdateItemRequest {
   name?: string
   description?: string
@@ -177,50 +120,57 @@ export interface UpdateItemRequest {
   condition?: string
   status?: string
   postcode?: string
+  state?: string
+  suburb?: string
+  imageUrls?: string[]
+  uploadImages?: File[]
 }
 
-export const UPDATE_ITEM = async (
-  itemId: string,
+const requestToFormData = (request: UpdateItemRequest) => {
+  const formData = new FormData()
+  Object.entries(request).forEach(([key, value]) => {
+    if (Array.isArray(value)) {
+      value.forEach((v) => formData.append(key, v))
+    } else {
+      formData.append(key, value)
+    }
+  })
+  return formData
+}
+
+export const UPSERT_ITEM = async (
   request: UpdateItemRequest,
-  images: File[],
+  itemId?: string,
 ): Promise<Item | null> => {
   try {
     const userId = await getSessionUserId()
     if (!userId) throw new Error()
 
-    let newItem
+    if (request.imageUrls) {
+      let placeholder_index = 0
+      request.imageUrls = request.imageUrls.map((url) => {
+        return url.startsWith('blob:')
+          ? `{{${placeholder_index++}}}`
+          : url
+      })
+    }
 
-    try {
+    const formData = requestToFormData(request)
+
+    if (itemId) {
       const { item } =
-        await ITEM_ENDPOINTS._UPDATE_USER_ITEM(
+        await ITEM_ENDPOINTS._UPSERT_USER_ITEM(
           userId,
           itemId,
-          request,
-        )
-      newItem = item
-    } catch (error) {
-      throw error
-    }
-
-    const formData = new FormData()
-    images.forEach((image) =>
-      formData.append('images', image),
-    )
-
-    try {
-      const { item } =
-        await ITEM_ENDPOINTS._UPLOAD_USER_ITEM_IMAGES(
-          userId,
-          newItem.id,
           formData,
         )
-      newItem = item
-    } catch (error) {
-      throw error
+      return item
     }
 
-    return newItem
+    return null
   } catch (error) {
+    console.error(error)
+
     logApiError(error)
     return null
   }

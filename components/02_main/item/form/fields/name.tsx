@@ -6,28 +6,20 @@ import {
   FormMessage,
 } from '@/components/shadcn/components/ui/form'
 import { Input } from '@/components/shadcn/components/ui/input'
-import { ItemEditFormSchema } from '@/components/02_main/item-edit/form'
-import { KeyboardEvent } from 'react'
+import { ItemFormSchema } from '@/components/02_main/item/form'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
-export default function PriceField({
+export default function NameField({
   form,
 }: {
-  form: UseFormReturn<z.infer<typeof ItemEditFormSchema>>
+  form: UseFormReturn<z.infer<typeof ItemFormSchema>>
 }) {
-  const name = 'price'
-  const label = 'Price'
-  const type = 'number'
-  const placeholder = 'Enter the price in AUD, e.g., 150.00'
-
-  const handleKeyDown = (
-    e: KeyboardEvent<HTMLInputElement>,
-  ) => {
-    if (!/[0-9]/.test(e.key) && e.key !== 'Backspace') {
-      e.preventDefault()
-    }
-  }
+  const name = 'name'
+  const label = 'Name'
+  const type = 'text'
+  const placeholder =
+    'Enter the item name, e.g., AMD RYZEN 7 7800X3D'
 
   return (
     <FormField
@@ -39,10 +31,7 @@ export default function PriceField({
           <FormControl>
             <Input
               type={type}
-              step={"0.01"}
-              min={0}
               placeholder={placeholder}
-              onKeyDown={handleKeyDown}
               {...field}
             />
           </FormControl>

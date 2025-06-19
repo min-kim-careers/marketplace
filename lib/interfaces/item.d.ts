@@ -15,6 +15,8 @@ export interface Item {
   updatedAt: Date
   expiresAt?: Date
   postcode: string
+  suburb: string
+  state: string
   imageUrls: string[]
 
   profileHandle: str

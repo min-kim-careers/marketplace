@@ -13,7 +13,7 @@ import {
 } from '@/components/shadcn/components/ui/form'
 import { Input } from '@/components/shadcn/components/ui/input'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
-import useProfileStore from '@/lib/stores/profile'
+import useProfileStore from '@/lib/stores/profile-store'
 import { CheckCheck, X } from 'lucide-react'
 import {
   ChangeEvent,

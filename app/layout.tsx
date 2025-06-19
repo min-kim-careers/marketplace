@@ -1,7 +1,7 @@
 import '@/app/globals.css'
 import { Toaster } from '@/components/shadcn/components/ui/toaster'
 import { APP_DATA } from '@/lib/constants/app-data'
-import FirebaseAuthListener from '@/lib/firebase/listener'
+import FirebaseAuthListener from '@/lib/firebase/firebase-auth-listener'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {

@@ -23,7 +23,7 @@ export default function SearchInput() {
     } else {
       urlParams.delete('keyword')
     }
-    router.replace(`${APP_ROUTES.PROFILE_LISTINGS.url}?${urlParams}`)
+    router.replace(`${APP_ROUTES.PROFILE_LISTINGS.href}?${urlParams}`)
   }
 
   return (

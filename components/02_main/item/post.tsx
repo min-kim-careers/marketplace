@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-import { ItemEditFormSchema } from '@/components/02_main/item-edit/form'
+import { ItemFormSchema } from '@/components/02_main/item/form'
 import {
   CategoryField,
   ConditionField,
@@ -13,7 +13,7 @@ import {
   LocationField,
   NameField,
   PriceField,
-} from '@/components/02_main/item-edit/form/fields'
+} from '@/components/02_main/item/form/fields'
 import ItemImagePreview from '@/components/02_main/market/00_common/item-image-preview'
 import { Button } from '@/components/shadcn/components/ui/button'
 import {
@@ -24,43 +24,44 @@ import {
   CardTitle,
 } from '@/components/shadcn/components/ui/card'
 import { Form } from '@/components/shadcn/components/ui/form'
-import { useUpdateItem } from '@/lib/hooks/item/use-update-item'
+import { useUpsertItem } from '@/lib/hooks/use-upsert-item'
 import { Item } from '@/lib/interfaces/item'
+import { UpdateItemRequest } from '@/_gateway/api/item/service'
 
-export default function ItemEdit({
-  item,
+export default function ItemPost({
   imageLimit,
 }: {
-  item: Item
   imageLimit: number
 }) {
-  const { handleUpdateItem } = useUpdateItem()
+  const { handleUpdateItem } = useUpsertItem()
 
   const initImageUrls = () =>
-    Array.from({ length: imageLimit }, (_, i) =>
-      i < item.imageUrls.length ? item.imageUrls[i] : null,
-    )
+    Array.from({ length: imageLimit }, (_, i) => null)
 
-  const form = useForm<z.infer<typeof ItemEditFormSchema>>({
-    resolver: zodResolver(ItemEditFormSchema),
+  const form = useForm<z.infer<typeof ItemFormSchema>>({
+    resolver: zodResolver(ItemFormSchema),
     defaultValues: {
-      ...item,
+      name: '',
+      description: '',
+      price: 0,
+      category: '',
+      location: { postcode: '', suburb: '', state: '' },
+      condition: '',
       imageUrls: initImageUrls(),
     },
   })
 
   async function onSubmit(
-    values: z.infer<typeof ItemEditFormSchema>,
+    values: z.infer<typeof ItemFormSchema>,
   ) {
     const request = {
       ...values,
-      postcode: values.location,
-    }
-    
-    await handleUpdateItem({
-      itemId: item.id,
-      request,
+      ...values.location,
       imageUrls: values.imageUrls.filter((v) => v !== null),
+    } satisfies UpdateItemRequest
+
+    await handleUpdateItem({
+      request,
     })
   }
 
@@ -69,10 +70,10 @@ export default function ItemEdit({
       <div className='flex-1'>
         <CardHeader className='pb-4'>
           <CardTitle className='text-2xl'>
-            Edit your Ad
+            Post your Ad
           </CardTitle>
           <CardDescription>
-            Fill out the form below to edit your ad.
+            Fill out the form below to post your ad.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -92,7 +93,7 @@ export default function ItemEdit({
                   type='submit'
                   className='mt-4 w-full'
                 >
-                  Edit Ad
+                  Post Ad
                 </Button>
               </div>
             </form>

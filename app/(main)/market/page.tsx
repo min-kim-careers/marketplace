@@ -47,7 +47,7 @@ export default async function Page({
 
   if (!result.success) {
     redirect(
-      `${APP_ROUTES.MARKET.url}?${toUrlParams(DEFAULT_MARKET_PARAMS)}`,
+      `${APP_ROUTES.MARKET.href}?${toUrlParams(DEFAULT_MARKET_PARAMS)}`,
     )
   }
 

@@ -6,7 +6,7 @@ import {
   FormMessage,
 } from '@/components/shadcn/components/ui/form'
 import { Input } from '@/components/shadcn/components/ui/input'
-import { ItemPostFormSchema } from '@/components/02_main/item-post/form'
+import { ItemFormSchema } from '@/components/02_main/item/form'
 import { KeyboardEvent } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
@@ -14,7 +14,7 @@ import { z } from 'zod'
 export default function PriceField({
   form,
 }: {
-  form: UseFormReturn<z.infer<typeof ItemPostFormSchema>>
+  form: UseFormReturn<z.infer<typeof ItemFormSchema>>
 }) {
   const name = 'price'
   const label = 'Price'
@@ -39,8 +39,8 @@ export default function PriceField({
           <FormControl>
             <Input
               type={type}
+              step={"0.01"}
               min={0}
-              step={'0.01'}
               placeholder={placeholder}
               onKeyDown={handleKeyDown}
               {...field}

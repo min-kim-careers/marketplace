@@ -1,8 +1,8 @@
 import { toUrlParams } from '@/lib/helpers/to-url-params'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
-import { useSignIn } from '@/lib/hooks/auth/use-sign-in'
-import { useSignOut } from '@/lib/hooks/auth/use-sign-out'
-import useProfileStore from '@/lib/stores/profile'
+import { useSignIn } from '@/lib/hooks/use-sign-in'
+import { useSignOut } from '@/lib/hooks/use-sign-out'
+import useProfileStore from '@/lib/stores/profile-store'
 import Link from 'next/link'
 import { Button } from '../../shadcn/components/ui/button'
 import Dropdown from './dropdown'
@@ -25,12 +25,12 @@ export default function NavBar() {
   return (
     <span className='flex items-center justify-between gap-4'>
       <Link
-        href={`${APP_ROUTES.MARKET.url}`}
+        href={`${APP_ROUTES.MARKET.href}`}
         passHref
       >
         <Button>Browse</Button>
       </Link>
-      <Link href={APP_ROUTES.ITEM_POST.url}>
+      <Link href={APP_ROUTES.ITEM_POST.href}>
         <Button>Post Ad</Button>
       </Link>
       <Dropdown />

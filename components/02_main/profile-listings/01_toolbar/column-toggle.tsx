@@ -2,7 +2,7 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from '@/components/shadcn/components/ui/toggle-group'
-import useLayoutStore from '@/lib/stores/layout'
+import useLayoutStore from '@/lib/stores/layout-store'
 import { Grip, Menu } from 'lucide-react'
 
 const ALLOWED_COLUMNS = new Set([1, 3])

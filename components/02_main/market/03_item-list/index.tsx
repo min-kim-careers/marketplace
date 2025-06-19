@@ -1,7 +1,7 @@
 import ItemCard from '@/components/02_main/market/03_item-list/item-card'
 import ItemModal from '@/components/02_main/market/03_item-list/item-modal'
 import { Item } from '@/lib/interfaces/item'
-import  useLayoutStore  from '@/lib/stores/layout'
+import  useLayoutStore  from '@/lib/stores/layout-store'
 import useMarketStore  from '@/lib/stores/market'
 
 export default function ItemList() {

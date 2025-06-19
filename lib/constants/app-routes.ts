@@ -4,46 +4,46 @@ interface AppRoute {
 }
 
 export const APP_ROUTES = {
-  HOME: { url: '/', label: 'Home' },
-  MARKET: { url: '/market', label: 'Market' },
+  HOME: { href: '/', label: 'Home' },
+  MARKET: { href: '/market', label: 'Market' },
 
-  ITEM_POST: { url: '/item/post', label: 'Post' },
-  ITEM_EDIT: { url: '/item/edit', label: 'Edit' },
+  ITEM_POST: { href: '/item/post', label: 'Post' },
+  ITEM_EDIT: { href: '/item/edit', label: 'Edit' },
 
   PROFILE_UPDATE: {
-    url: '/profile/update',
+    href: '/profile/update',
     label: 'Update Profile',
   },
   PROFILE_COMPLETE: {
-    url: '/profile/complete',
+    href: '/profile/complete',
     label: 'Complete Profile',
   },
   PROFILE_LISTINGS: {
-    url: '/profile/listings',
+    href: '/profile/listings',
     label: 'My Listings',
   },
 
-  NOTFOUND: { url: '/404', label: 'Not Found' },
+  NOTFOUND: { href: '/404', label: 'Not Found' },
 }
 
 const PROTECTED_ROUTES = [
-  APP_ROUTES.ITEM_POST.url,
-  APP_ROUTES.ITEM_EDIT.url,
-  APP_ROUTES.PROFILE_UPDATE.url,
-  APP_ROUTES.PROFILE_COMPLETE.url,
-  APP_ROUTES.PROFILE_LISTINGS.url,
+  APP_ROUTES.ITEM_POST.href,
+  APP_ROUTES.ITEM_EDIT.href,
+  APP_ROUTES.PROFILE_UPDATE.href,
+  APP_ROUTES.PROFILE_COMPLETE.href,
+  APP_ROUTES.PROFILE_LISTINGS.href,
 ]
 
 const PUBLIC_ROUTES = [
-  APP_ROUTES.HOME.url,
-  APP_ROUTES.MARKET.url,
-  APP_ROUTES.NOTFOUND.url,
+  APP_ROUTES.HOME.href,
+  APP_ROUTES.MARKET.href,
+  APP_ROUTES.NOTFOUND.href,
 ]
 
 const validateRoutes = () => {
   const allRoutes = [...PROTECTED_ROUTES, ...PUBLIC_ROUTES]
   const routesValues = Object.values(APP_ROUTES).map(
-    (r) => r.url,
+    (r) => r.href,
   )
   allRoutes.forEach((route) => {
     if (!routesValues.includes(route)) {
@@ -57,7 +57,7 @@ const validateRoutes = () => {
 
 validateRoutes()
 
-const FALLBACK_ROUTES = [APP_ROUTES.NOTFOUND.url]
+const FALLBACK_ROUTES = [APP_ROUTES.NOTFOUND.href]
 
 export const isProtectedRoute = (path: string) =>
   PROTECTED_ROUTES.some((route) => path.startsWith(route))
@@ -69,9 +69,11 @@ export const isFallbackRoute = (path: string) =>
   FALLBACK_ROUTES.includes(path)
 
 export const getPathLabel = (path: string) => {
-  const route = Object.values(APP_ROUTES).find((r) =>
-    path.startsWith(r.url),
-  )
+  const splitPath = path.split('/')
+  const route = Object.values(APP_ROUTES).find((r) => {
+    const splitHref = r.href.split('/')
+    return splitHref.every((h, i) => splitPath[i] === h)
+  })
   if (!route) throw new Error('Route not found')
   return route.label
 }

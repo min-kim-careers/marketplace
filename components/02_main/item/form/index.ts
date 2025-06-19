@@ -1,9 +1,14 @@
-import { getLocationByPostcode } from '@/lib/utils/fuse/locations'
-import { z } from 'zod'
-import { ITEM_CONDITION_LABELS } from '@/lib/constants/item-condition-labels'
 import { ITEM_CATEGORY_LABELS } from '@/lib/constants/item-category-labels'
+import { ITEM_CONDITION_LABELS } from '@/lib/constants/item-condition-labels'
+import { z } from 'zod'
 
-export const ItemEditFormSchema = z.object({
+const LocationSchema = z.object({
+  postcode: z.string(),
+  suburb: z.string(),
+  state: z.string(),
+})
+
+export const ItemFormSchema = z.object({
   name: z
     .string()
     .trim()
@@ -48,15 +53,7 @@ export const ItemEditFormSchema = z.object({
     { message: 'Condition is required' },
   ),
 
-  location: z
-    .string()
-    .nonempty({ message: 'Location is required' })
-    .refine(
-      (postcode) => !!getLocationByPostcode(postcode),
-      {
-        message: 'Invalid location',
-      },
-    ),
+  location: LocationSchema,
 
   imageUrls: z.array(z.string().nullable()),
 })

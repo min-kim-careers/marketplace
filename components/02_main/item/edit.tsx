@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-import { ItemPostFormSchema } from '@/components/02_main/item-post/form'
+import { ItemFormSchema } from '@/components/02_main/item/form'
 import {
   CategoryField,
   ConditionField,
@@ -13,7 +13,7 @@ import {
   LocationField,
   NameField,
   PriceField,
-} from '@/components/02_main/item-post/form/fields'
+} from '@/components/02_main/item/form/fields'
 import ItemImagePreview from '@/components/02_main/market/00_common/item-image-preview'
 import { Button } from '@/components/shadcn/components/ui/button'
 import {
@@ -24,42 +24,44 @@ import {
   CardTitle,
 } from '@/components/shadcn/components/ui/card'
 import { Form } from '@/components/shadcn/components/ui/form'
-import { useCreateItem } from '@/lib/hooks/item/use-create-item'
+import { useUpsertItem } from '@/lib/hooks/use-upsert-item'
+import { Item } from '@/lib/interfaces/item'
+import { UpdateItemRequest } from '@/_gateway/api/item/service'
 
-export default function ItemPost({
+export default function ItemEdit({
+  item,
   imageLimit,
 }: {
+  item: Item
   imageLimit: number
 }) {
-  const { handleCreateItem } = useCreateItem()
+  const { handleUpdateItem } = useUpsertItem()
 
   const initImageUrls = () =>
-    Array.from({ length: imageLimit }, () => null)
+    Array.from({ length: imageLimit }, (_, i) =>
+      i < item.imageUrls.length ? item.imageUrls[i] : null,
+    )
 
-  const form = useForm<z.infer<typeof ItemPostFormSchema>>({
-    resolver: zodResolver(ItemPostFormSchema),
+  const form = useForm<z.infer<typeof ItemFormSchema>>({
+    resolver: zodResolver(ItemFormSchema),
     defaultValues: {
-      name: '',
-      description: '',
-      price: 0,
-      category: '',
-      location: '',
-      condition: '',
+      ...item,
       imageUrls: initImageUrls(),
     },
   })
 
   async function onSubmit(
-    values: z.infer<typeof ItemPostFormSchema>,
+    values: z.infer<typeof ItemFormSchema>,
   ) {
     const request = {
       ...values,
-      postcode: values.location,
-    }
-
-    await handleCreateItem({
-      request,
+      ...values.location,
       imageUrls: values.imageUrls.filter((v) => v !== null),
+    } satisfies UpdateItemRequest
+
+    await handleUpdateItem({
+      itemId: item.id,
+      request,
     })
   }
 
@@ -68,10 +70,10 @@ export default function ItemPost({
       <div className='flex-1'>
         <CardHeader className='pb-4'>
           <CardTitle className='text-2xl'>
-            Post Your Ad
+            Edit your Ad
           </CardTitle>
           <CardDescription>
-            Fill out the form below to post your ad.
+            Fill out the form below to edit your ad.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -91,7 +93,7 @@ export default function ItemPost({
                   type='submit'
                   className='mt-4 w-full'
                 >
-                  Post Ad
+                  Edit Ad
                 </Button>
               </div>
             </form>

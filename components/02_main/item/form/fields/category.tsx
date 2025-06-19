@@ -23,21 +23,20 @@ import {
   PopoverTrigger,
 } from '@/components/shadcn/components/ui/popover'
 import { cn } from '@/components/shadcn/lib/utils'
+import { ITEM_CATEGORY_LABELS } from "@/lib/constants/item-category-labels"
+import { ItemCategory } from "@/lib/enums/item-category"
+import { ItemFormSchema } from '@/components/02_main/item/form'
 import { Check, ChevronsUpDown } from 'lucide-react'
-import { ItemPostFormSchema } from '@/components/02_main/item-post/form'
-import { ITEM_CONDITION_LABELS } from "@/lib/constants/item-condition-labels"
-import { ItemCondition } from "@/lib/enums/item-condition"
 
-export default function ConditionField({
+export default function CategoryField({
   form,
 }: {
-  form: UseFormReturn<z.infer<typeof ItemPostFormSchema>>
+  form: UseFormReturn<z.infer<typeof ItemFormSchema>>
 }) {
-  const name = 'condition'
-  const label = 'Condition'
-  const lookup = ITEM_CONDITION_LABELS
-  const placeholder =
-    'Choose the condition, e.g., New or Used'
+  const name = 'category'
+  const label = 'Category'
+  const lookup = ITEM_CATEGORY_LABELS
+  const placeholder = 'Select an item category'
 
   const handleSearch = (value: string, search: string) =>
     value.startsWith(search) ? 1 : 0
@@ -60,8 +59,7 @@ export default function ConditionField({
                     !field.value && 'text-muted-foreground',
                   )}
                 >
-                  {lookup[field.value as ItemCondition] ??
-                    placeholder}
+                  {lookup[field.value as ItemCategory] ?? placeholder}
                   <ChevronsUpDown className='opacity-50' />
                 </Button>
               </FormControl>
@@ -87,7 +85,7 @@ export default function ConditionField({
                           })
                         }}
                       >
-                        {lookup[key as ItemCondition]}
+                        {lookup[key as ItemCategory]}
                         <Check
                           className={cn(
                             'ml-auto',

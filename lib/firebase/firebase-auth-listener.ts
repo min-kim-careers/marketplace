@@ -2,8 +2,8 @@
 
 import { REFRESH_SESSION } from '@/_gateway/firebase/service'
 import { auth } from '@/lib/firebase/config'
-import { useSignOut } from '@/lib/hooks/auth/use-sign-out'
-import useProfileStore from '@/lib/stores/profile'
+import { useSignOut } from '@/lib/hooks/use-sign-out'
+import useProfileStore from '@/lib/stores/profile-store'
 import { logInfo } from '@/lib/utils/log'
 import { onAuthStateChanged } from 'firebase/auth'
 import { useEffect } from 'react'

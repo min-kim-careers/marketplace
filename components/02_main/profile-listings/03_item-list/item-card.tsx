@@ -56,9 +56,7 @@ export default function ItemCard({
                 Listing
               </span>
               <span>{item.name}</span>
-              {item.brand && (
-                <span className='font-normal'>{`- ${item.brand}`}</span>
-              )}
+              <span className='font-normal'>{`${item.suburb}, ${item.postcode}`}</span>
             </div>
           </CardTitle>
           <CardDescription className='line-clamp-1'>

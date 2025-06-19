@@ -1,17 +1,17 @@
 import { UpsertProfileRequest } from "@/_gateway/api/profile/service"
 import { UPDATE_PROFILE } from '@/_gateway/api/profile/service'
 import { useToast } from '@/components/shadcn/hooks/use-toast'
-import { useLoadingStore } from '@/lib/stores/loading'
-import useProfileStore from '@/lib/stores/profile'
+import { useLoadingStore } from '@/lib/stores/loading-store'
+import useProfileStore from '@/lib/stores/profile-store'
 import { useRouter } from 'next/navigation'
 
-export const useUpdateProfile = () => {
+export const useUpsertProfile = () => {
   const { setProfile } = useProfileStore()
   const { setLoading } = useLoadingStore()
   const { toast } = useToast()
   const router = useRouter()
 
-  const handleUpdateProfile = async (
+  const handleUpsertProfile = async (
     newProfile: UpsertProfileRequest,
   ) => {
     try {
@@ -37,5 +37,5 @@ export const useUpdateProfile = () => {
     }
   }
 
-  return { handleUpdateProfile }
+  return { handleUpdateProfile: handleUpsertProfile }
 }

@@ -7,18 +7,18 @@ import {
   SelectValue,
 } from '@/components/shadcn/components/ui/select'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
+import { ITEM_SORT_OPTIONS } from '@/lib/constants/item-sort-options'
 import { toUrlParams } from '@/lib/helpers/to-url-params'
 import { ItemSortOption } from '@/lib/interfaces/item-sort-options'
-import { MarketParams } from '@/lib/interfaces/market-params'
+import { ItemPageParams } from '@/lib/interfaces/listings-params'
+import useListingsStore from '@/lib/stores/listing'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { ITEM_SORT_OPTIONS } from '@/lib/constants/item-sort-options'
-import useListingsStore from '@/lib/stores/listing'
 
 export default function SortDropdown() {
   const sortOptions = ITEM_SORT_OPTIONS
 
-  const { params, setParams } = useListingsStore()
+  const { params } = useListingsStore()
 
   const [currentSortOption, setCurrentSortOption] =
     useState<ItemSortOption | null>(null)
@@ -39,16 +39,15 @@ export default function SortDropdown() {
     )
     if (option) {
       setCurrentSortOption(option)
-      const newParams: MarketParams = {
+      const newParams: ItemPageParams = {
         ...params,
         sortBy: option.sortBy,
         sortOrder: option.sortOrder,
       }
       const urlParams = toUrlParams(newParams)
       router.replace(
-        `${APP_ROUTES.PROFILE_LISTINGS.url}?${urlParams}`,
+        `${APP_ROUTES.PROFILE_LISTINGS.href}?${urlParams}`,
       )
-      setParams(newParams)
     }
   }
 

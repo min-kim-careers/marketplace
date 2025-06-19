@@ -1,4 +1,4 @@
-import { ItemEditFormSchema } from '@/components/02_main/item-edit/form'
+import { ItemFormSchema } from '@/components/02_main/item/form'
 import {
   FormControl,
   FormField,
@@ -18,7 +18,7 @@ const ImageInput = ({
   form,
   index,
 }: {
-  form: UseFormReturn<z.infer<typeof ItemEditFormSchema>>
+  form: UseFormReturn<z.infer<typeof ItemFormSchema>>
   index: number
 }) => {
   const name = 'imageUrls'
@@ -43,41 +43,41 @@ const ImageInput = ({
     form.setValue(name, newUrls, { shouldValidate: true })
   }
 
+  if (!watcher[index])
+    return (
+      <Label className='flex cursor-pointer items-center justify-center rounded bg-gray-200 text-gray-400'>
+        <Input
+          type='file'
+          accept='image/x'
+          onChange={handleFileChange}
+          className='hidden'
+        />
+        <Plus />
+      </Label>
+    )
+
   return (
-    <Label className='relative flex aspect-square w-full max-w-48 cursor-pointer items-center justify-center rounded bg-gray-300 text-gray-400 shadow-sm'>
-      <Input
-        type='file'
-        accept='image/x'
-        onChange={(e) => handleFileChange(e)}
-        className='hidden'
-      />
-      {watcher[index] ? (
-        <div>
-          <Image
-            src={watcher[index]}
-            alt='preview-image'
-            layout='fill'
-            objectFit='contain'
-            className='rounded'
-          />
-          <button
-            type='button'
-            onClick={handleDelete}
-          >
-            <Trash className='absolute bottom-0 right-0 z-50 m-1 cursor-pointer fill-gray-100 hover:scale-110 active:scale-90' />
-          </button>
-        </div>
-      ) : (
-        <Plus className='flex h-1/4 w-1/4 flex-1' />
-      )}
-    </Label>
+    <div className='relative rounded bg-gray-200'>
+      <div className='relative h-full'>
+        <Image
+          src={watcher[index]}
+          alt='Failed to load'
+          layout='fill'
+          objectFit='contain'
+          className='flex items-center justify-center rounded text-gray-400'
+        />
+      </div>
+      <button type='button' onClick={handleDelete}>
+        <Trash className='absolute bottom-0 right-0 z-50 m-1 cursor-pointer fill-gray-100 hover:scale-110 active:scale-90' />
+      </button>
+    </div>
   )
 }
 
 export default function ImageField({
   form,
 }: {
-  form: UseFormReturn<z.infer<typeof ItemEditFormSchema>>
+  form: UseFormReturn<z.infer<typeof ItemFormSchema>>
 }) {
   const name = 'imageUrls'
   const label = 'Images'
@@ -90,14 +90,9 @@ export default function ImageField({
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <div className='grid grid-cols-3 gap-2'>
+            <div className='grid h-[20vh] grid-cols-3 gap-2'>
               {form.watch(name).map((_, i) => (
-                <div
-                  key={i}
-                  className='flex items-center justify-center'
-                >
-                  <ImageInput form={form} index={i} />
-                </div>
+                <ImageInput form={form} index={i} key={i} />
               ))}
             </div>
           </FormControl>
