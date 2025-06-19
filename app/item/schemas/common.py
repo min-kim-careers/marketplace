@@ -23,6 +23,8 @@ class ItemOut(ResponseBase):
     condition: ItemCondition
     status: ItemStatus
     postcode: str
+    suburb: str
+    state: str
     created_at: datetime
     updated_at: datetime
     expires_at: Optional[datetime] = None

@@ -13,4 +13,6 @@ class ProfileOut(ResponseBase):
   rating: float
   rating_count: int
   postcode: Optional[str] = None
+  suburb: Optional[str] = None
+  state: Optional[str] = None
   avatar_url: Optional[str] = None

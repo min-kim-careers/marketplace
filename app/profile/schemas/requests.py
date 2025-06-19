@@ -11,6 +11,6 @@ class ProfileInRequest(RequestBase):
     rating: Optional[float] = None
     rating_count: Optional[int] = None
     postcode: Optional[str] = Field(default=None, min_length=4, max_length=4)
+    suburb: Optional[str] = None
+    state: Optional[str] = None
     avatar_url: Optional[str] = None
-
-    

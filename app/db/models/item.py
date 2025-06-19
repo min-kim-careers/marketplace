@@ -16,8 +16,7 @@ class ItemDB(Base):
         PG_UUID(as_uuid=True), primary_key=True, default=uuid4
     )
 
-    profile_id: Mapped[UUID] = mapped_column(ForeignKey("profiles.id"), nullable=False)
-    user_id: Mapped[UUID] = mapped_column(nullable=False)
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("profiles.user_id"), nullable=False)
 
     name: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=False)
@@ -28,6 +27,8 @@ class ItemDB(Base):
         Enum(ItemCondition), nullable=False
     )
     postcode: Mapped[str] = mapped_column(nullable=False)
+    suburb: Mapped[str] = mapped_column(nullable=False)
+    state: Mapped[str] = mapped_column(nullable=False)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
@@ -48,4 +49,4 @@ class ItemDB(Base):
     image_urls: Mapped[list[str]] = mapped_column(ARRAY(String), default=list)
 
     # Relationship
-    profile = relationship("ProfileDB", back_populates="items", lazy="selectin")
+    profile = relationship("ProfileDB",  lazy="selectin")

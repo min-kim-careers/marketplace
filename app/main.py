@@ -1,10 +1,12 @@
 from contextlib import asynccontextmanager
 
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, Request, status
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.common.mocks import seed_db
+from app.common.schemas.error import ErrorResponse
 from app.common.security import verify_service_key
 
 from app.db.session import init_db
@@ -40,3 +42,12 @@ app.include_router(items_router, prefix="/api/items", tags=["Items"])
 app.include_router(profiles_router, prefix="/api/profiles", tags=["Profiles"])
 
 app.mount("/images", StaticFiles(directory="/code/images"), name="images")
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    print(exc.errors())  # prints full error list including loc arrays
+    # return ErrorResponse(
+    #     status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+    #     message=exc.errors()
+    # )

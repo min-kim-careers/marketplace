@@ -1,6 +1,7 @@
 from typing import List, Optional
 from uuid import UUID
 
+from fastapi import File, UploadFile
 from pydantic import Field, field_validator, model_validator
 
 from app.common.schemas.request import RequestBase
@@ -39,19 +40,20 @@ class ItemsRequest(RequestBase):
         return v.lower() if v else v
 
 
-class ItemUpdateRequest(RequestBase):
+class ItemInRequest(RequestBase):
     name: Optional[str] = None
     description: Optional[str] = None
     price: Optional[float] = None
     category: Optional[ItemCategory] = None
     condition: Optional[ItemCondition] = None
     postcode: Optional[str] = Field(default=None, min_length=4, max_length=4)
+    suburb: Optional[str] = None
+    state: Optional[str] = None
+    image_urls: Optional[List[str]] = None
+    upload_images: Optional[List[UploadFile]] = File(default=None)
 
-
-class ItemCreateRequest(RequestBase):
-    name: str
-    description: str
-    price: float
-    category: ItemCategory
-    condition: ItemCondition
-    postcode: str = Field(..., min_length=4, max_length=4)
+    @model_validator(mode='after')
+    def check_image_urls_if_upload_images(self):
+        if self.image_urls is None and self.upload_images is not None:
+            raise ValueError("image_urls must be None if upload_images is None")
+        return self
