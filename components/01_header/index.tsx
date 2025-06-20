@@ -1,13 +1,17 @@
 'use client'
 
 import { APP_DATA } from '@/lib/constants/app-data'
-import { APP_ROUTES, getPathLabel } from '@/lib/constants/app-routes'
+import {
+  APP_ROUTES,
+  getPathLabel,
+} from '@/lib/constants/app-routes'
 import Link from 'next/link'
 import NavBar from './nav-bar'
 import { usePathname } from 'next/navigation'
 
 export default function Header() {
   const pathname = usePathname()
+  const pathLabel = getPathLabel(pathname)
 
   return (
     <div className='flex w-full items-start justify-between'>
@@ -20,9 +24,11 @@ export default function Header() {
             {APP_DATA.TITLE}
           </Link>
         </span>
-        <span>
-          {getPathLabel(pathname) ?? undefined}
-        </span>
+        {!!pathLabel && (
+          <span className='text-2xl font-bold'>
+            {`/ ${pathLabel}`}
+          </span>
+        )}
       </span>
       <span className='flex min-w-[10rem] items-center justify-end'>
         <NavBar />

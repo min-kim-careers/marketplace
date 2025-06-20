@@ -4,9 +4,8 @@ import { getSessionUserId } from '@/_gateway/_common/helpers'
 import { logApiError } from '@/_gateway/api/_config/helpers'
 import { DEFAULT_ITEM_PAGINATION } from '@/lib/constants/item-pagination'
 import { Item } from '@/lib/interfaces/item'
-import { MarketParams } from '@/lib/interfaces/market-params'
 import * as ITEM_ENDPOINTS from '@/_gateway/api/item/endpoints'
-import { ItemPageParams } from '@/lib/interfaces/listings-params'
+import { ItemPageParams } from '@/lib/interfaces/item-page-params'
 
 export interface GetItemsRequest {
   page: number
@@ -18,7 +17,7 @@ export interface GetItemsRequest {
 }
 
 export const GET_ITEMS = async (
-  marketParams: MarketParams,
+  itemPageParams: ItemPageParams,
 ): Promise<{
   items: Item[]
   count: number
@@ -27,10 +26,10 @@ export const GET_ITEMS = async (
     const userId = await getSessionUserId()
 
     const request: GetItemsRequest = {
-      page: marketParams.page,
-      keyword: marketParams.keyword,
-      sortBy: marketParams.sortBy,
-      sortOrder: marketParams.sortOrder,
+      page: itemPageParams.page,
+      keyword: itemPageParams.keyword,
+      sortBy: itemPageParams.sortBy,
+      sortOrder: itemPageParams.sortOrder,
       limit: DEFAULT_ITEM_PAGINATION.LIMIT,
       excludeUser: userId ?? undefined,
     }
@@ -112,7 +111,7 @@ export const GET_USER_ITEM = async (
   }
 }
 
-export interface UpdateItemRequest {
+export interface UpsertItemRequest {
   name?: string
   description?: string
   price?: number
@@ -126,7 +125,7 @@ export interface UpdateItemRequest {
   uploadImages?: File[]
 }
 
-const requestToFormData = (request: UpdateItemRequest) => {
+const requestToFormData = (request: UpsertItemRequest) => {
   const formData = new FormData()
   Object.entries(request).forEach(([key, value]) => {
     if (Array.isArray(value)) {
@@ -139,7 +138,7 @@ const requestToFormData = (request: UpdateItemRequest) => {
 }
 
 export const UPSERT_ITEM = async (
-  request: UpdateItemRequest,
+  request: UpsertItemRequest,
   itemId?: string,
 ): Promise<Item | null> => {
   try {
@@ -157,20 +156,14 @@ export const UPSERT_ITEM = async (
 
     const formData = requestToFormData(request)
 
-    if (itemId) {
-      const { item } =
-        await ITEM_ENDPOINTS._UPSERT_USER_ITEM(
-          userId,
-          itemId,
-          formData,
-        )
-      return item
-    }
+    const { item } = await ITEM_ENDPOINTS._UPSERT_USER_ITEM(
+      userId,
+      formData,
+      itemId,
+    )
 
-    return null
+    return item
   } catch (error) {
-    console.error(error)
-
     logApiError(error)
     return null
   }

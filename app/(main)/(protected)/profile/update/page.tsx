@@ -1,4 +1,4 @@
-import ProfileUpdate from "@/components/02_main/profile-update";
+import ProfileUpdate from "@/components/02_content/profile/profile-update";
 
 export default function Page() {
   return <ProfileUpdate />

@@ -5,7 +5,7 @@ import { Item } from '@/lib/interfaces/item'
 import { GenericFormData } from 'axios'
 import {
   GetItemsRequest,
-  UpdateItemRequest,
+  UpsertItemRequest,
 } from './service'
 
 const apiItemAxios = await createApiAxios('/api/items')
@@ -45,8 +45,8 @@ export const _DELETE_USER_ITEM = async (
 
 export const _UPSERT_USER_ITEM = async (
   userId: string,
-  itemId: string,
   formData: GenericFormData,
+  itemId?: string,
 ): Promise<{ item: Item }> =>
   apiItemAxios
     .putForm(`/user/${userId}`, formData, {
@@ -56,7 +56,7 @@ export const _UPSERT_USER_ITEM = async (
 
 export const _CREATE_USER_ITEM = async (
   userId: string,
-  request: UpdateItemRequest,
+  request: UpsertItemRequest,
 ): Promise<{ item: Item }> =>
   apiItemAxios
     .post(`/user/${userId}`, request)

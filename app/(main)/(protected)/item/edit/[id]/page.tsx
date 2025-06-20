@@ -2,7 +2,7 @@
 
 import { GET_USER_ITEM } from '@/_gateway/api/item/service'
 import { GET_PROFILE_EXTRA } from '@/_gateway/api/profile/service'
-import ItemEdit from '@/components/02_main/item/edit'
+import ItemEdit from '@/components/02_content/item/item-edit'
 import { notFound } from 'next/navigation'
 
 export default async function Page({

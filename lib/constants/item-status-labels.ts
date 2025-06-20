@@ -8,4 +8,5 @@ export const ITEM_STATUS_LABELS: Record<
   [ItemStatus.Expired]: 'Expired',
   [ItemStatus.Pending]: 'Pending',
   [ItemStatus.Sold]: 'Sold',
+  [ItemStatus.Inactive]: 'Inactive',
 }

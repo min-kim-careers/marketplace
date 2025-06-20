@@ -1,13 +1,13 @@
 'use server'
 
 import { GET_USER_ITEMS } from '@/_gateway/api/item/service'
-import ProfileListings from '@/components/02_main/profile-listings'
+import ProfileListings from '@/components/02_content/main/profile-listings'
 import { toUrlParams } from '@/lib/helpers/to-url-params'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { DEFAULT_ITEM_PAGE_PARAMS } from '@/lib/constants/item-page-params'
 import { ItemSortBy } from '@/lib/enums/item-sort-by'
 import { ItemSortOrder } from '@/lib/enums/item-sort-order'
-import { ItemPageParams } from '@/lib/interfaces/listings-params'
+import { ItemPageParams } from '@/lib/interfaces/item-page-params'
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
 
@@ -49,18 +49,15 @@ export default async function Page({
     )
   }
 
-  const listingsParams: ItemPageParams = result.data
+  const params: ItemPageParams = result.data
 
-  const { items, count } =
-    await GET_USER_ITEMS(listingsParams)
+  const { items, count } = await GET_USER_ITEMS(params)
 
   return (
     <ProfileListings
-      props={{
-        items,
-        count,
-        params: listingsParams,
-      }}
+      items={items}
+      count={count}
+      params={params}
     />
   )
 }

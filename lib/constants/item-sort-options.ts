@@ -26,22 +26,22 @@ export const ITEM_SORT_OPTIONS: ItemSortOption[] = [
   },
   {
     sortBy: ItemSortBy.Price,
-    sortOrder: ItemSortOrder.Desc,
+    sortOrder: ItemSortOrder.Asc,
     label: 'Lowest price',
   },
   {
     sortBy: ItemSortBy.Price,
-    sortOrder: ItemSortOrder.Asc,
+    sortOrder: ItemSortOrder.Desc,
     label: 'Highest price',
   },
   {
     sortBy: ItemSortBy.Name,
-    sortOrder: ItemSortOrder.Desc,
+    sortOrder: ItemSortOrder.Asc,
     label: 'Name A-Z',
   },
   {
     sortBy: ItemSortBy.Name,
-    sortOrder: ItemSortOrder.Asc,
+    sortOrder: ItemSortOrder.Desc,
     label: 'Name Z-A',
   },
 ]

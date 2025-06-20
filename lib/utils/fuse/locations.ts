@@ -22,9 +22,20 @@ export const searchLocations = (
   return results
 }
 
-export const getLocationByPostcode = (
-  postcode: string,
-) => {
-  const result = locations.search({ postcode })
-  return result[0]
+export const getLocationLabel = ({
+  postcode,
+  suburb,
+  state,
+}: {
+  postcode: string
+  suburb: string
+  state: string
+}) => {
+  const result = locations.search<LocationJSON>({
+    postcode,
+    locality: suburb,
+    state,
+  })
+  if (!result.length) return null
+  return result[0].item.label
 }

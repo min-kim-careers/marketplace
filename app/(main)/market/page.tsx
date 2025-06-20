@@ -1,15 +1,15 @@
 'use server'
 
 import { GET_ITEMS } from '@/_gateway/api/item/service'
-import Market from '@/components/02_main/market'
-import { toUrlParams } from '@/lib/helpers/to-url-params'
+import Market from '@/components/02_content/main/market'
 import {
   APP_ROUTES
 } from '@/lib/constants/app-routes'
 import { DEFAULT_MARKET_PARAMS } from '@/lib/constants/market-params'
 import { ItemSortBy } from '@/lib/enums/item-sort-by'
 import { ItemSortOrder } from '@/lib/enums/item-sort-order'
-import { MarketParams } from '@/lib/interfaces/market-params'
+import { toUrlParams } from '@/lib/helpers/to-url-params'
+import { ItemPageParams } from '@/lib/interfaces/item-page-params'
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
 
@@ -51,17 +51,15 @@ export default async function Page({
     )
   }
 
-  const marketParams: MarketParams = result.data
+  const params: ItemPageParams = result.data
 
-  const { items, count } = await GET_ITEMS(marketParams)
+  const { items, count } = await GET_ITEMS(params)
 
   return (
     <Market
-      props={{
-        items,
-        count,
-        params: marketParams,
-      }}
+      items={items}
+      count={count}
+      params={params}
     />
   )
 }

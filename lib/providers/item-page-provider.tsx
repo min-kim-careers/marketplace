@@ -1,6 +1,6 @@
 import { DEFAULT_ITEM_PAGE_PARAMS } from '@/lib/constants/item-page-params'
 import { Item } from '@/lib/interfaces/item'
-import { ItemPageParams } from '@/lib/interfaces/listings-params'
+import { ItemPageParams } from '@/lib/interfaces/item-page-params'
 import {
   createContext,
   ReactNode,
@@ -12,10 +12,11 @@ export interface ItemPageState {
   items: Item[]
   count: number
   params: ItemPageParams
+  route: string
 
-  setItems: (item: any) => void
-  setCount: (count: number) => void
-  setParams: (params: ItemPageParams) => void
+  setItems?: (item: any) => void
+  setCount?: (count: number) => void
+  setParams?: (params: ItemPageParams) => void
 }
 
 const ItemPageContext = createContext<
@@ -24,21 +25,21 @@ const ItemPageContext = createContext<
 
 export const ItemPageProvider = ({
   children,
+  value,
 }: {
   children: ReactNode
+  value: ItemPageState
 }) => {
-  const [items, setItems] = useState([])
-  const [count, setCount] = useState(0)
-  const [params, setParams] = useState(
+  const [items, setItems] = useState<Item[]>([])
+  const [count, setCount] = useState<number>(0)
+  const [params, setParams] = useState<ItemPageParams>(
     DEFAULT_ITEM_PAGE_PARAMS,
   )
 
   return (
     <ItemPageContext.Provider
       value={{
-        items,
-        count,
-        params,
+        ...value,
 
         setItems,
         setCount,
