@@ -2,10 +2,10 @@ from typing import Optional
 
 from pydantic import EmailStr, Field
 
-from app.common.schemas.request import RequestBase
+from app.common.schemas.inbound import InboundBase
 
 
-class ProfileInRequest(RequestBase):
+class ProfileIn(InboundBase):
     email: Optional[EmailStr] = None
     handle: Optional[str] = None
     rating: Optional[float] = None

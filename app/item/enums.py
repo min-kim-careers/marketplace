@@ -40,3 +40,4 @@ class ItemStatus(str, Enum):
     pending = "pending"
     sold = "sold"
     expired = "expired"
+    inactive = "inactive"

@@ -9,7 +9,7 @@ from app.common.mocks import seed_db
 from app.common.schemas.error import ErrorResponse
 from app.common.security import verify_service_key
 
-from app.db.session import init_db
+from app.db.config.session import init_db
 from app.item.router import items_router
 from app.profile.router import profiles_router
 

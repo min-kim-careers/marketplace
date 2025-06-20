@@ -8,8 +8,8 @@ from app.common.utils import slug_to_uuid
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models.item import ItemDB
-from app.db.session import get_session
-from app.item import repository
+from app.db.config.session import get_session
+from app.db.repositories.item import ItemRepository
 
 
 async def resolve_item(
@@ -18,7 +18,7 @@ async def resolve_item(
     session: AsyncSession = Depends(get_session),
 ) -> ItemDB:
     item_id = slug_to_uuid(item_slug)
-    item_db = await repository.get_item_by_id_and_user(session, user_id, item_id)
+    item_db = await ItemRepository.get_item_by_id_and_user(session, user_id, item_id)
     if not item_db:
         raise ErrorResponse(status_code=404, message="Item not found")
     return item_db

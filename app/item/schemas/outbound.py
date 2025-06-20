@@ -1,19 +1,21 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import Generic, List, Optional, TypeVar
 
-from app.common.schemas.response import ResponseBase
+from app.common.schemas.outbound import OutboundBase
 from app.common.utils import uuid_to_slug
-from app.item.enums import (
-    ItemCategory,
-    ItemCondition,
-    ItemSortBy,
-    ItemSortOrder,
-    ItemStatus,
-)
 from app.db.models.item import ItemDB
+from app.item.enums import ItemCategory, ItemCondition, ItemStatus
 
 
-class ItemOut(ResponseBase):
+T = TypeVar("T")
+
+
+class ItemResponse(OutboundBase, Generic[T]):
+    success: bool = False
+    data: Optional[T] = None
+
+
+class ItemOut(OutboundBase):
     id: str
     name: str
     description: str
@@ -42,10 +44,3 @@ class ItemOut(ResponseBase):
             },
             from_attributes=True,
         )
-
-
-class ItemSortOption(ResponseBase):
-    sort_by: ItemSortBy
-    sort_order: ItemSortOrder
-    label: str
-    is_default: bool = False

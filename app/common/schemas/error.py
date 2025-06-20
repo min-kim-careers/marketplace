@@ -2,10 +2,10 @@ from typing import Dict, Optional
 
 from fastapi import HTTPException
 
-from app.common.schemas.response import ResponseBase
+from app.common.schemas.outbound import OutboundBase
 
 
-class ErrorDetail(ResponseBase):
+class ErrorDetail(OutboundBase):
     message: Optional[str]
     # user_message: Optional[str]
 

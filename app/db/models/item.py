@@ -4,7 +4,7 @@ from uuid import UUID, uuid4
 
 from sqlalchemy import String, DateTime, ForeignKey, Enum, ARRAY
 from sqlalchemy.orm import relationship, Mapped, mapped_column
-from app.db.base import Base
+from app.db.config.base import Base
 from app.item.enums import ItemCategory, ItemCondition, ItemStatus
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 

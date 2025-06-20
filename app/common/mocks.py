@@ -3,7 +3,7 @@ from uuid import UUID, uuid4
 from faker import Faker
 from sqlalchemy import select
 from app.common.utils import get_one_by
-from app.db.session import get_session
+from app.db.config.session import get_session
 from app.item.enums import ItemCategory, ItemCondition
 from app.db.models.item import ItemDB
 from app.db.models.profile import ProfileDB

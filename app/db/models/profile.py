@@ -5,7 +5,7 @@ from uuid import UUID, uuid4
 from sqlalchemy import DateTime, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship, Mapped, mapped_column
-from app.db.base import Base
+from app.db.config.base import Base
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 
 
