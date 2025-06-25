@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/shadcn/components/ui/card'
-import { Item } from '@/lib/interfaces/item'
+import { IItem } from '@/lib/interfaces/item'
 import useProfileStore from '@/lib/stores/profile-store'
 import { StarIcon } from 'lucide-react'
 

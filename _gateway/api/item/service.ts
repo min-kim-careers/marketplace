@@ -3,9 +3,9 @@
 import { getSessionUserId } from '@/_gateway/_common/helpers'
 import { logApiError } from '@/_gateway/api/_config/helpers'
 import { DEFAULT_ITEM_PAGINATION } from '@/lib/constants/item-pagination'
-import { Item } from '@/lib/interfaces/item'
+import { IItem } from '@/lib/interfaces/item'
 import * as ITEM_ENDPOINTS from '@/_gateway/api/item/endpoints'
-import { ItemPageParams } from '@/lib/interfaces/item-page-params'
+import { IItemPageParams } from '@/lib/interfaces/item-page-params'
 import { ItemStatus } from '@/lib/enums/item-status'
 
 export interface GetItemsRequest {
@@ -18,9 +18,9 @@ export interface GetItemsRequest {
 }
 
 export const GET_ITEMS = async (
-  itemPageParams: ItemPageParams,
+  itemPageParams: IItemPageParams,
 ): Promise<{
-  items: Item[]
+  items: IItem[]
   count: number
 }> => {
   try {
@@ -60,9 +60,9 @@ export interface GetItemsRequest {
 }
 
 export const GET_USER_ITEMS = async (
-  listingsParams: ItemPageParams,
+  listingsParams: IItemPageParams,
 ): Promise<{
-  items: Item[]
+  items: IItem[]
   count: number
 }> => {
   try {
@@ -95,7 +95,7 @@ export const GET_USER_ITEMS = async (
 
 export const GET_USER_ITEM = async (
   itemId: string,
-): Promise<Item | null> => {
+): Promise<IItem | null> => {
   try {
     const userId = await getSessionUserId()
     if (!userId) throw new Error()
@@ -153,7 +153,7 @@ const insertImageUrlsPlaceholders = (
 export const UPSERT_ITEM = async (
   request: UpsertItemRequest,
   itemId?: string,
-): Promise<Item | null> => {
+): Promise<IItem | null> => {
   try {
     const userId = await getSessionUserId()
     if (!userId) throw new Error()

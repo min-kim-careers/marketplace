@@ -7,7 +7,7 @@ import { DEFAULT_MARKET_PARAMS } from '@/lib/constants/market-params'
 import { ItemSortBy } from '@/lib/enums/item-sort-by'
 import { ItemSortOrder } from '@/lib/enums/item-sort-order'
 import { toUrlParams } from '@/lib/helpers/to-url-params'
-import { ItemPageParams } from '@/lib/interfaces/item-page-params'
+import { IItemPageParams } from '@/lib/interfaces/item-page-params'
 import { ItemPageProvider } from '@/lib/providers/item-page-provider'
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
@@ -50,7 +50,7 @@ export default async function Page({
     )
   }
 
-  const params: ItemPageParams = result.data
+  const params: IItemPageParams = result.data
 
   const { items, count } = await GET_ITEMS(params)
 
@@ -63,7 +63,7 @@ export default async function Page({
         route: APP_ROUTES.MARKET.href,
       }}
     >
-      <Market />
+        <Market />
     </ItemPageProvider>
   )
 }

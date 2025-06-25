@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-type LoadingState = {
+interface LoadingState {
   message: string | null
   isOpaque: boolean
   setLoading: (
@@ -9,13 +9,13 @@ type LoadingState = {
   ) => void
 }
 
-export const useLoadingStore = create<LoadingState>(
-  (set) => ({
-    message: null,
-    isOpaque: false,
-    setLoading: (
-      message: string | null,
-      isOpaque: boolean = false,
-    ) => set({ message, isOpaque }),
-  }),
-)
+const useLoadingStore = create<LoadingState>((set) => ({
+  message: null,
+  isOpaque: false,
+  setLoading: (
+    message: string | null,
+    isOpaque: boolean = false,
+  ) => set({ message, isOpaque }),
+}))
+
+export default useLoadingStore

@@ -4,7 +4,7 @@ import {
   subscribeWithSelector,
 } from 'zustand/middleware'
 
-type LayoutState = {
+interface LayoutState {
   columns: number
   setColumns: (columns: number) => void
 }

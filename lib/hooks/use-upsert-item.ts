@@ -3,7 +3,7 @@ import {
   UpsertItemRequest,
 } from '@/_gateway/api/item/service'
 import { compressedFileFromUrl } from '@/lib/helpers/compress-image-from-url'
-import { useLoadingStore } from '@/lib/stores/loading-store'
+import useLoadingStore from '@/lib/stores/loading-store'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 

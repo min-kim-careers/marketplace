@@ -17,7 +17,7 @@ import {
 import { ITEM_CONDITION_LABELS } from '@/lib/constants/item-condition-labels'
 import { ItemCondition } from '@/lib/enums/item-condition'
 import { formatCurrency } from '@/lib/helpers/format-price'
-import { Item } from '@/lib/interfaces/item'
+import { IItem } from '@/lib/interfaces/item'
 import { formatDistanceToNow } from 'date-fns'
 import { CircleUserIcon } from 'lucide-react'
 import { ReactNode } from 'react'
@@ -27,12 +27,16 @@ export default function MarketModal({
   item,
 }: {
   children: ReactNode
-  item: Item
+  item: IItem
 }) {
+
   const updatedAt = () =>
     formatDistanceToNow(item.updatedAt.toLocaleString(), {
       addSuffix: true,
     })
+
+  const handleChatButton = () => {
+  }
 
   return (
     <Dialog>
@@ -84,9 +88,12 @@ export default function MarketModal({
 
         <DialogFooter className='items-center sm:justify-between'>
           <span className='font-semibold'>
-            Offered at {formatCurrency(item.price.toString())}
+            Offered at{' '}
+            {formatCurrency(item.price.toString())}
           </span>
-          <Button>Chat with {item.profileHandle}</Button>
+          <Button onClick={handleChatButton}>
+            Chat with {item.profileHandle}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

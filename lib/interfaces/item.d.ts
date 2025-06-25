@@ -2,7 +2,7 @@ import { ItemCategory } from '@/lib/enums/item-category'
 import { ItemCondition } from '@/lib/enums/item-condition'
 import { ItemStatus } from '@/lib/enums/item-status'
 
-export interface Item {
+export interface IItem {
   id: string
   name: string
   description: string

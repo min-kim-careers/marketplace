@@ -1,6 +1,6 @@
 import ListingsCard from '@/components/02_content/main/03_listings-list/listings-card'
 import ListingsModal from '@/components/02_content/main/03_listings-list/listings-modal'
-import { Item } from '@/lib/interfaces/item'
+import { IItem } from '@/lib/interfaces/item'
 import { useItemPageContext } from '@/lib/providers/item-page-provider'
 import  useLayoutStore  from '@/lib/stores/layout-store'
 
@@ -22,7 +22,7 @@ export default function ListingsItemList() {
         gridTemplateColumns: `repeat(${columns}, 1fr)`,
       }}
     >
-      {items.map((item: Item, i) => (
+      {items.map((item: IItem, i) => (
         <ListingsModal key={i} item={item} index={i}>
           <div className='cursor-pointer'>
             <ListingsCard item={item} columns={columns} />

@@ -1,8 +1,8 @@
 import { ItemSortBy } from '@/lib/enums/item-sort-by'
 import { ItemSortOrder } from '@/lib/enums/item-sort-order'
-import { ItemSortOption } from '@/lib/interfaces/item-sort-options'
+import { IItemSortOption } from '@/lib/interfaces/item-sort-options'
 
-export const ITEM_SORT_OPTIONS: ItemSortOption[] = [
+export const ITEM_SORT_OPTIONS: IItemSortOption[] = [
   {
     sortBy: ItemSortBy.CreatedAt,
     sortOrder: ItemSortOrder.Desc,
@@ -46,7 +46,7 @@ export const ITEM_SORT_OPTIONS: ItemSortOption[] = [
   },
 ]
 
-const getDefaultItemSortOption = (): ItemSortOption => {
+const getDefaultItemSortOption = (): IItemSortOption => {
   const defaultSortOption = ITEM_SORT_OPTIONS.filter(
     (i) => i.isDefault,
   )

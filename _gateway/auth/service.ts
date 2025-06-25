@@ -8,7 +8,7 @@ import {
   logAuthError,
   setSessionCookie,
 } from '@/_gateway/auth/_config/helpers'
-import { Profile } from '@/lib/interfaces/profile'
+import { IProfile } from '@/lib/interfaces/profile'
 import { DecodedToken } from './interfaces'
 import * as AUTH_ENDPOINTS from '@/_gateway/auth/endpoints'
 import * as PROFILE_ENDPOINTS from '@/_gateway/api/profile/endpoints'
@@ -16,7 +16,7 @@ import { logApiError } from '@/_gateway/api/_config/helpers'
 
 export const SIGN_IN_WITH_GOOGLE = async (
   idToken: string,
-): Promise<Profile> => {
+): Promise<IProfile> => {
   try {
     const {
       decodedToken,

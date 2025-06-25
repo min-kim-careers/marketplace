@@ -3,7 +3,7 @@ import {
   SIGN_OUT,
 } from '@/_gateway/auth/service'
 import { auth, provider } from '@/lib/firebase/config'
-import { useLoadingStore } from '@/lib/stores/loading-store'
+import useLoadingStore from '@/lib/stores/loading-store'
 import useProfileStore from '@/lib/stores/profile-store'
 import { signInWithPopup } from 'firebase/auth'
 import { useRouter } from 'next/navigation'

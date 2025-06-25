@@ -1,6 +1,6 @@
 import { UpsertProfileRequest } from '@/_gateway/api/profile/service'
 import { UPDATE_PROFILE } from '@/_gateway/api/profile/service'
-import { useLoadingStore } from '@/lib/stores/loading-store'
+import useLoadingStore from '@/lib/stores/loading-store'
 import useProfileStore from '@/lib/stores/profile-store'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'

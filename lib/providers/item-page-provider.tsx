@@ -1,7 +1,7 @@
 'use client'
 
-import { Item } from '@/lib/interfaces/item'
-import { ItemPageParams } from '@/lib/interfaces/item-page-params'
+import { IItem } from '@/lib/interfaces/item'
+import { IItemPageParams } from '@/lib/interfaces/item-page-params'
 import React, {
   createContext,
   ReactNode,
@@ -11,14 +11,14 @@ import React, {
 } from 'react'
 
 interface ItemPageProps {
-  items: Item[]
+  items: IItem[]
   count: number
-  params: ItemPageParams
+  params: IItemPageParams
   route: string
 }
 
 interface ItemPageState extends ItemPageProps {
-  updateItemAtIndex: (index: number, item: Item) => void
+  updateItemAtIndex: (index: number, item: IItem) => void
 }
 
 const ItemPageContext = createContext<ItemPageState | null>(
@@ -32,9 +32,9 @@ export const ItemPageProvider = ({
   children: ReactNode
   props: ItemPageProps
 }) => {
-  const [items, setItems] = useState<Item[]>(props.items)
+  const [items, setItems] = useState<IItem[]>(props.items)
   const [count, setCount] = useState<number>(props.count)
-  const [params, setParams] = useState<ItemPageParams>(
+  const [params, setParams] = useState<IItemPageParams>(
     props.params,
   )
 
@@ -44,7 +44,7 @@ export const ItemPageProvider = ({
     setParams(props.params)
   }, [props])
 
-  const updateItemAtIndex = (index: number, item: Item) =>
+  const updateItemAtIndex = (index: number, item: IItem) =>
     setItems((prev) => {
       const newItems = [...prev]
       newItems[index] = item

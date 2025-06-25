@@ -23,6 +23,11 @@ export const APP_ROUTES = {
     label: 'My Listings',
   },
 
+  CHAT: {
+    href: '/chat',
+    label: 'Chat',
+  },
+
   NOTFOUND: { href: '/404', label: 'Not Found' },
 }
 
@@ -32,6 +37,7 @@ const PROTECTED_ROUTES = [
   APP_ROUTES.PROFILE_DASHBOARD.href,
   APP_ROUTES.PROFILE_COMPLETE.href,
   APP_ROUTES.PROFILE_LISTINGS.href,
+  APP_ROUTES.CHAT.href,
 ]
 
 const PUBLIC_ROUTES = [

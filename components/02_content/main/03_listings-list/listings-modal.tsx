@@ -35,14 +35,14 @@ import { ITEM_STATUS_LABELS } from '@/lib/constants/item-status-labels'
 import { ItemStatus } from '@/lib/enums/item-status'
 import { formatCurrency } from '@/lib/helpers/format-price'
 import { useUpsertItem } from '@/lib/hooks/use-upsert-item'
-import { Item } from '@/lib/interfaces/item'
+import { IItem } from '@/lib/interfaces/item'
 import { useItemPageContext } from '@/lib/providers/item-page-provider'
-import { useLoadingStore } from '@/lib/stores/loading-store'
+import useLoadingStore from '@/lib/stores/loading-store'
 import { formatDistanceToNow } from 'date-fns'
 import { Circle } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { ReactNode, useState } from 'react'
+import { ReactNode } from 'react'
 import { toast } from 'sonner'
 
 export default function ListingsModal({
@@ -51,7 +51,7 @@ export default function ListingsModal({
   index,
 }: {
   children: ReactNode
-  item: Item
+  item: IItem
   index: number
 }) {
   const updatedAt = () =>
@@ -121,7 +121,7 @@ const ItemStatusSelect = ({
   item,
   index,
 }: {
-  item: Item
+  item: IItem
   index: number
 }) => {
   const { updateItemAtIndex } = useItemPageContext()
@@ -177,7 +177,7 @@ const DeleteConfirmDialog = ({
   item,
 }: {
   children: ReactNode
-  item: Item
+  item: IItem
 }) => {
   const { setLoading } = useLoadingStore()
   const router = useRouter()

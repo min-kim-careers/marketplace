@@ -9,7 +9,7 @@ import {
 } from '@/components/shadcn/components/ui/card'
 import { ITEM_STATUS_COLORS } from '@/lib/constants/item-status-colors'
 import { formatCurrency } from '@/lib/helpers/format-price'
-import { Item } from '@/lib/interfaces/item'
+import { IItem } from '@/lib/interfaces/item'
 import { formatDistanceToNow } from 'date-fns'
 import { Circle } from 'lucide-react'
 
@@ -17,7 +17,7 @@ export default function ListingsCard({
   item,
   columns,
 }: {
-  item: Item
+  item: IItem
   columns: number
 }) {
   const createdAt = () =>

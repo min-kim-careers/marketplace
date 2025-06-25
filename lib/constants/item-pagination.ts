@@ -1,6 +1,6 @@
-import { ItemPagination } from '@/lib/interfaces/item-pagination'
+import { IItemPagination } from '@/lib/interfaces/item-pagination'
 
-export const DEFAULT_ITEM_PAGINATION: ItemPagination = {
+export const DEFAULT_ITEM_PAGINATION: IItemPagination = {
   PAGE: 1,
   LIMIT: 9,
   SIZE: 5,

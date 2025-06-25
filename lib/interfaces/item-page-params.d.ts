@@ -1,4 +1,4 @@
-export interface ItemPageParams {
+export interface IItemPageParams {
   page: number
   sortBy: string
   sortOrder: string

@@ -4,7 +4,7 @@ import { getSessionUserId } from '@/_gateway/_common/helpers'
 import { logApiError } from '@/_gateway/api/_config/helpers'
 import * as PROFILE_ENDPOINTS from '@/_gateway/api/profile/endpoints'
 import { ProfileExtra } from '@/_gateway/api/profile/interfaces'
-import { Profile } from '@/lib/interfaces/profile'
+import { IProfile } from '@/lib/interfaces/profile'
 
 export interface UpsertProfileRequest {
   email?: string
@@ -19,7 +19,7 @@ export interface UpsertProfileRequest {
 
 export const UPDATE_PROFILE = async (
   newProfile: UpsertProfileRequest,
-): Promise<Profile | null> => {
+): Promise<IProfile | null> => {
   try {
     const userId = await getSessionUserId()
     if (!userId) throw new Error()
@@ -38,7 +38,7 @@ export const UPDATE_PROFILE = async (
 }
 
 export const GET_PROFILE =
-  async (): Promise<Profile | null> => {
+  async (): Promise<IProfile | null> => {
     try {
       const userId = await getSessionUserId()
       if (!userId) throw new Error()

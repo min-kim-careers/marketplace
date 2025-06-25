@@ -1,6 +1,5 @@
 'use client'
 
-
 import Toolbar from '@/components/02_content/main/01_toolbar'
 import PaginationTop from '@/components/02_content/main/02_pagination-top'
 import ListingsItemList from '@/components/02_content/main/03_listings-list'

@@ -2,7 +2,7 @@
 
 import { createApiAxios } from '@/_gateway/api/_config/axios'
 import { ProfileExtra } from './interfaces'
-import { Profile } from '@/lib/interfaces/profile'
+import { IProfile } from '@/lib/interfaces/profile'
 import { UpsertProfileRequest } from '@/_gateway/api/profile/service'
 
 const profileApiAxios =
@@ -10,7 +10,7 @@ const profileApiAxios =
 
 export const _GET_PROFILE = async (
   userId: string,
-): Promise<{ profile: Profile }> =>
+): Promise<{ profile: IProfile }> =>
   profileApiAxios
     .get(`/user/${userId}`)
     .then((res) => res.data)
@@ -32,7 +32,7 @@ export const _GET_PROFILE_EXTRA = async (
 export const _UPSERT_PROFILE = async (
   userId: string,
   request: UpsertProfileRequest,
-): Promise<{ profile: Profile }> =>
+): Promise<{ profile: IProfile }> =>
   profileApiAxios
     .put(`/user/${userId}`, request)
     .then((res) => res.data)

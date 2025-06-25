@@ -9,6 +9,8 @@ interface EnvLoader {
   authKey: string
   authKeyHeader: string
 
+  chatUrl: string
+
   UuidNamespace: string
 }
 
@@ -17,9 +19,11 @@ export const envLoader: EnvLoader = {
   apiKey: process.env.API_KEY!,
   apiKeyHeader: process.env.API_KEY_HEADER!,
 
-  authUrl: process.env.FIREBASE_URL!,
-  authKey: process.env.FIREBASE_KEY!,
-  authKeyHeader: process.env.FIREBASE_KEY_HEADER!,
+  authUrl: process.env.AUTH_URL!,
+  authKey: process.env.AUTH_KEY!,
+  authKeyHeader: process.env.AUTH_KEY_HEADER!,
+
+  chatUrl: process.env.CHAT_URL!,
 
   UuidNamespace: process.env.UUID_NAMESPACE!,
 }

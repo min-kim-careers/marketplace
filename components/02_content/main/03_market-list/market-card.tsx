@@ -8,14 +8,14 @@ import {
   CardTitle,
 } from '@/components/shadcn/components/ui/card'
 import { formatCurrency } from '@/lib/helpers/format-price'
-import { Item } from '@/lib/interfaces/item'
+import { IItem } from '@/lib/interfaces/item'
 import { formatDistanceToNow } from 'date-fns'
 
 export default function MarketCard({
   item,
   columns,
 }: {
-  item: Item
+  item: IItem
   columns: number
 }) {
   const createdAt = () =>
