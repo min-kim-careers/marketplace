@@ -6,6 +6,7 @@ import { DEFAULT_ITEM_PAGINATION } from '@/lib/constants/item-pagination'
 import { Item } from '@/lib/interfaces/item'
 import * as ITEM_ENDPOINTS from '@/_gateway/api/item/endpoints'
 import { ItemPageParams } from '@/lib/interfaces/item-page-params'
+import { ItemStatus } from '@/lib/enums/item-status'
 
 export interface GetItemsRequest {
   page: number
@@ -137,6 +138,18 @@ const requestToFormData = (request: UpsertItemRequest) => {
   return formData
 }
 
+const insertImageUrlsPlaceholders = (
+  imageUrls: string[],
+) => {
+  let placeholder_index = 0
+  imageUrls.map((url) => {
+    return url.startsWith('blob:')
+      ? `{{${placeholder_index++}}}`
+      : url
+  })
+  return imageUrls
+}
+
 export const UPSERT_ITEM = async (
   request: UpsertItemRequest,
   itemId?: string,
@@ -145,14 +158,10 @@ export const UPSERT_ITEM = async (
     const userId = await getSessionUserId()
     if (!userId) throw new Error()
 
-    if (request.imageUrls) {
-      let placeholder_index = 0
-      request.imageUrls = request.imageUrls.map((url) => {
-        return url.startsWith('blob:')
-          ? `{{${placeholder_index++}}}`
-          : url
-      })
-    }
+    if (request.imageUrls)
+      request.imageUrls = insertImageUrlsPlaceholders(
+        request.imageUrls,
+      )
 
     const formData = requestToFormData(request)
 
@@ -176,10 +185,32 @@ export const DELETE_ITEM = async (
     const userId = await getSessionUserId()
     if (!userId) throw new Error()
 
-    const { deleted } =
-      await ITEM_ENDPOINTS._DELETE_USER_ITEM(userId, itemId)
+    await ITEM_ENDPOINTS._DELETE_USER_ITEM(userId, itemId)
 
-    return deleted
+    return true
+  } catch (error) {
+    logApiError(error)
+    return false
+  }
+}
+
+export const UPDATE_ITEM_STATUS = async (
+  itemId: string,
+  status: ItemStatus,
+) => {
+  try {
+    const userId = await getSessionUserId()
+    if (!userId) throw new Error()
+
+    const formData = requestToFormData({ status })
+
+    await ITEM_ENDPOINTS._UPSERT_USER_ITEM(
+      userId,
+      formData,
+      itemId,
+    )
+
+    return true
   } catch (error) {
     logApiError(error)
     return false

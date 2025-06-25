@@ -1,49 +1,65 @@
-import { DEFAULT_ITEM_PAGE_PARAMS } from '@/lib/constants/item-page-params'
+'use client'
+
 import { Item } from '@/lib/interfaces/item'
 import { ItemPageParams } from '@/lib/interfaces/item-page-params'
-import {
+import React, {
   createContext,
   ReactNode,
   useContext,
+  useEffect,
   useState,
 } from 'react'
 
-export interface ItemPageState {
+interface ItemPageProps {
   items: Item[]
   count: number
   params: ItemPageParams
   route: string
-
-  setItems?: (item: any) => void
-  setCount?: (count: number) => void
-  setParams?: (params: ItemPageParams) => void
 }
 
-const ItemPageContext = createContext<
-  ItemPageState | undefined
->(undefined)
+interface ItemPageState extends ItemPageProps {
+  updateItemAtIndex: (index: number, item: Item) => void
+}
+
+const ItemPageContext = createContext<ItemPageState | null>(
+  null,
+)
 
 export const ItemPageProvider = ({
   children,
-  value,
+  props,
 }: {
   children: ReactNode
-  value: ItemPageState
+  props: ItemPageProps
 }) => {
-  const [items, setItems] = useState<Item[]>([])
-  const [count, setCount] = useState<number>(0)
+  const [items, setItems] = useState<Item[]>(props.items)
+  const [count, setCount] = useState<number>(props.count)
   const [params, setParams] = useState<ItemPageParams>(
-    DEFAULT_ITEM_PAGE_PARAMS,
+    props.params,
   )
+
+  useEffect(() => {
+    setItems(props.items)
+    setCount(props.count)
+    setParams(props.params)
+  }, [props])
+
+  const updateItemAtIndex = (index: number, item: Item) =>
+    setItems((prev) => {
+      const newItems = [...prev]
+      newItems[index] = item
+      return newItems
+    })
 
   return (
     <ItemPageContext.Provider
       value={{
-        ...value,
+        items,
+        count,
+        params,
+        route: props.route,
 
-        setItems,
-        setCount,
-        setParams,
+        updateItemAtIndex,
       }}
     >
       {children}

@@ -1,9 +1,9 @@
 import { logApiError } from '@/_gateway/api/_config/helpers'
-import { DecodedToken } from './_gateway/firebase/interfaces'
+import { DecodedToken } from './_gateway/auth/interfaces'
 import {
   SIGN_OUT,
   VERIFY_SESSION,
-} from '@/_gateway/firebase/service'
+} from '@/_gateway/auth/service'
 import { APP_DATA } from "./lib/constants/app-data"
 import {
   isFallbackRoute,

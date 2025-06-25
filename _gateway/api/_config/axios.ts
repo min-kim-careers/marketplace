@@ -2,6 +2,7 @@
 
 import { ApiInternalResponse } from '@/_gateway/api/_config/interfaces'
 import { envLoader } from '@/lib/utils/env-loader'
+import { logInfo } from '@/lib/utils/log'
 import axios, {
   AxiosResponse,
   InternalAxiosRequestConfig,
@@ -23,8 +24,8 @@ export const createApiAxios = async (endpoint: string) => {
 
   instance.interceptors.response.use(
     (response: AxiosResponse<ApiInternalResponse>) => {
-      const { success, data } = response.data
-      if (!success) throw new Error()
+      const { message, data } = response.data
+      if (message) logInfo(message)
       if (data) response.data = data
 
       return response

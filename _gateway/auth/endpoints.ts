@@ -1,10 +1,10 @@
 'use server'
 
-import { createFirebaseAxios } from '@/_gateway/firebase/_config/axios'
-import { DecodedToken } from '@/_gateway/firebase/interfaces'
+import { createAuthAxios } from '@/_gateway/auth/_config/axios'
+import { DecodedToken } from '@/_gateway/auth/interfaces'
 import { APP_DATA } from '@/lib/constants/app-data'
 
-const firebaseAxios = await createFirebaseAxios('/firebase')
+const authAxios = await createAuthAxios('/firebase')
 
 export const _GET_SESSION = async (
   idToken: string,
@@ -13,14 +13,14 @@ export const _GET_SESSION = async (
   sessionCookie: string
   expiresInSeconds: number
 }> =>
-  firebaseAxios
+  authAxios
     .post(`/session`, { idToken })
     .then((res) => res.data)
 
 export const _VERIFY_SESSION = async (
   session: string,
 ): Promise<{ decodedToken: DecodedToken }> =>
-  firebaseAxios
+  authAxios
     .post(
       `/session/verify`,
       {},

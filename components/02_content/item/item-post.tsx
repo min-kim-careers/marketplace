@@ -26,6 +26,7 @@ import {
 } from '@/components/shadcn/components/ui/card'
 import { Form } from '@/components/shadcn/components/ui/form'
 import { useUpsertItem } from '@/lib/hooks/use-upsert-item'
+import { APP_ROUTES } from '@/lib/constants/app-routes'
 
 export default function ItemPost({
   imageLimit,
@@ -62,7 +63,11 @@ export default function ItemPost({
       imageUrls: imageUrls.filter((u) => u !== null),
     }
 
-    await handleUpdateItem(request)
+    await handleUpdateItem(
+      request,
+      undefined,
+      APP_ROUTES.PROFILE_LISTINGS.href,
+    )
   }
 
   return (

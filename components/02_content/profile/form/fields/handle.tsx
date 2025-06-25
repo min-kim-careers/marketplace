@@ -11,7 +11,6 @@ import {
   FormMessage,
 } from '@/components/shadcn/components/ui/form'
 import { Input } from '@/components/shadcn/components/ui/input'
-import { useToast } from '@/components/shadcn/hooks/use-toast'
 import useProfileStore from '@/lib/stores/profile-store'
 import { logError } from '@/lib/utils/log'
 import { CheckCheck, X } from 'lucide-react'
@@ -25,6 +24,7 @@ import {
 } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { HANDLE_EXISTS } from '@/_gateway/api/profile/service'
+import { toast } from 'sonner'
 
 const DefaultButtonNode = () => <>Confirm</>
 const HandleTakenButtonNode = () => <X />
@@ -40,7 +40,6 @@ export default function HandleField({
   form: UseFormReturn<z.infer<typeof ProfileUpdateForm>>
 }) {
   const { profile } = useProfileStore()
-  const { toast } = useToast()
 
   const name = 'handle'
   const label = 'Handle'
@@ -94,8 +93,7 @@ export default function HandleField({
     e.preventDefault()
     try {
       setButtonNode(<Spinner />)
-      const handleExists =
-        await HANDLE_EXISTS(input)
+      const handleExists = await HANDLE_EXISTS(input)
 
       if (handleExists) {
         setButtonNode(<HandleTakenButtonNode />)
@@ -106,9 +104,7 @@ export default function HandleField({
       } else {
         setButtonNode(<ConfirmedButtonNode />)
         setConfirmed(true)
-        toast({
-          description: 'Handle is available :)'
-        })
+        toast('Handle is available :)')
       }
     } catch (error) {
       logError('Error confirming handle')

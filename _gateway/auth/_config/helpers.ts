@@ -1,6 +1,6 @@
 'use server'
 
-import { FirebaseErrorResponse } from './interfaces'
+import { AuthErrorResponse } from './interfaces'
 import { APP_DATA } from '@/lib/constants/app-data'
 import { envLoader } from '@/lib/utils/env-loader'
 import { logError } from '@/lib/utils/log'
@@ -8,10 +8,10 @@ import { AxiosError } from 'axios'
 import { cookies } from 'next/headers'
 import { v5 as uuidv5 } from 'uuid'
 
-export const logFirebaseError = async (error: any) => {
+export const logAuthError = async (error: any) => {
   if (error instanceof AxiosError) {
     const firebaseError = error.response
-      ?.data as FirebaseErrorResponse
+      ?.data as AuthErrorResponse
     if (firebaseError) logError(firebaseError)
   } else {
     logError(error)

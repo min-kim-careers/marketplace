@@ -25,8 +25,8 @@ export default function Header() {
           </Link>
         </span>
         {!!pathLabel && (
-          <span className='text-2xl font-bold'>
-            {`/ ${pathLabel}`}
+          <span >
+            {`${pathLabel}`}
           </span>
         )}
       </span>

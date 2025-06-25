@@ -28,27 +28,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/shadcn/components/ui/select'
-import { useToast } from '@/components/shadcn/hooks/use-toast'
-import { cn } from '@/components/shadcn/lib/utils'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { ITEM_CONDITION_LABELS } from '@/lib/constants/item-condition-labels'
 import { ITEM_STATUS_COLORS } from '@/lib/constants/item-status-colors'
 import { ITEM_STATUS_LABELS } from '@/lib/constants/item-status-labels'
 import { ItemStatus } from '@/lib/enums/item-status'
 import { formatCurrency } from '@/lib/helpers/format-price'
+import { useUpsertItem } from '@/lib/hooks/use-upsert-item'
 import { Item } from '@/lib/interfaces/item'
+import { useItemPageContext } from '@/lib/providers/item-page-provider'
 import { useLoadingStore } from '@/lib/stores/loading-store'
 import { formatDistanceToNow } from 'date-fns'
+import { Circle } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ReactNode, useState } from 'react'
+import { toast } from 'sonner'
 
 export default function ListingsModal({
   children,
   item,
+  index,
 }: {
   children: ReactNode
   item: Item
+  index: number
 }) {
   const updatedAt = () =>
     formatDistanceToNow(item.updatedAt.toLocaleString(), {
@@ -69,7 +73,10 @@ export default function ListingsModal({
                 <span>{item.name}</span>
               </span>
               <span className='pr-4'>
-                <ItemStatusSelect item={item} />
+                <ItemStatusSelect
+                  item={item}
+                  index={index}
+                />
               </span>
             </DialogTitle>
             <DialogDescription className='flex gap-2'>
@@ -110,41 +117,58 @@ export default function ListingsModal({
   )
 }
 
-const ItemStatusSelect = ({ item }: { item: Item }) => {
-  const [status, setStatus] = useState<ItemStatus>(
-    item.status,
-  )
+const ItemStatusSelect = ({
+  item,
+  index,
+}: {
+  item: Item
+  index: number
+}) => {
+  const { updateItemAtIndex } = useItemPageContext()
+
+  const { handleUpsertItem } = useUpsertItem()
+
+  const handleStatusChange = async (status: ItemStatus) => {
+    if (await handleUpsertItem({ status }, item.id))
+      updateItemAtIndex(index, {
+        ...item,
+        status,
+      })
+  }
+
   return (
-    <Select
-      value={status}
-      onValueChange={(s) => setStatus(s as ItemStatus)}
-    >
-      <SelectTrigger className='w-32'>
-        <SelectValue>
-          <span className='flex flex-row items-center gap-2 pr-2'>
-            {ITEM_STATUS_LABELS[status]}
-            <span
-              className={cn(
-                `h-2 w-2 shrink-0 grow-0 rounded-full`,
-                ITEM_STATUS_COLORS[status as ItemStatus],
-              )}
-            />
-          </span>
-        </SelectValue>
-      </SelectTrigger>
-      <SelectContent>
-        {Object.entries(ITEM_STATUS_LABELS).map(
-          ([_status, label]) => (
-            <SelectItem
-              value={_status.toString()}
-              key={_status}
-            >
-              <span>{label}</span>
-            </SelectItem>
-          ),
-        )}
-      </SelectContent>
-    </Select>
+    <div>
+      <Select
+        value={item.status}
+        onValueChange={handleStatusChange}
+      >
+        <SelectTrigger className='w-32'>
+          <SelectValue>
+            <span className='flex flex-row items-center gap-2 pr-2'>
+              <span>{ITEM_STATUS_LABELS[item.status]}</span>
+              <span>
+                <Circle
+                  fill={ITEM_STATUS_COLORS[item.status]}
+                  size={8}
+                />
+              </span>
+            </span>
+          </SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          {Object.entries(ITEM_STATUS_LABELS).map(
+            ([_status, label]) => (
+              <SelectItem
+                value={_status.toString()}
+                key={_status}
+              >
+                <span>{label}</span>
+              </SelectItem>
+            ),
+          )}
+        </SelectContent>
+      </Select>
+    </div>
   )
 }
 
@@ -156,7 +180,6 @@ const DeleteConfirmDialog = ({
   item: Item
 }) => {
   const { setLoading } = useLoadingStore()
-  const { toast } = useToast()
   const router = useRouter()
 
   const handleDelete = async () => {
@@ -164,11 +187,9 @@ const DeleteConfirmDialog = ({
       setLoading('Deleting post', true)
       await DELETE_ITEM(item.id)
       router.replace(APP_ROUTES.PROFILE_LISTINGS.href)
-      toast({
-        description: 'Successfully deleted post',
-      })
+      toast('Successfully deleted post')
     } catch (error) {
-      toast({ description: 'Something went wrong' })
+      toast('Something went wrong')
     } finally {
       setLoading(null)
     }

@@ -5,7 +5,7 @@ export const ITEM_STATUS_LABELS: Record<
   string
 > = {
   [ItemStatus.Available]: 'Available',
-  [ItemStatus.Expired]: 'Expired',
+  // [ItemStatus.Expired]: 'Expired',
   [ItemStatus.Pending]: 'Pending',
   [ItemStatus.Sold]: 'Sold',
   [ItemStatus.Inactive]: 'Inactive',

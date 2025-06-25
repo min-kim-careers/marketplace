@@ -10,9 +10,9 @@ export const APP_ROUTES = {
   ITEM_POST: { href: '/item/post', label: 'Post' },
   ITEM_EDIT: { href: '/item/edit', label: 'Edit' },
 
-  PROFILE_UPDATE: {
-    href: '/profile/update',
-    label: 'Update Profile',
+  PROFILE_DASHBOARD: {
+    href: '/profile/dashboard',
+    label: 'Profile Dashboard',
   },
   PROFILE_COMPLETE: {
     href: '/profile/complete',
@@ -29,7 +29,7 @@ export const APP_ROUTES = {
 const PROTECTED_ROUTES = [
   APP_ROUTES.ITEM_POST.href,
   APP_ROUTES.ITEM_EDIT.href,
-  APP_ROUTES.PROFILE_UPDATE.href,
+  APP_ROUTES.PROFILE_DASHBOARD.href,
   APP_ROUTES.PROFILE_COMPLETE.href,
   APP_ROUTES.PROFILE_LISTINGS.href,
 ]

@@ -14,6 +14,8 @@ export default function SearchInput() {
     e: FormEvent<HTMLFormElement>,
   ) => {
     e.preventDefault()
+    console.log(route, params);
+    
     const formData = new FormData(e.currentTarget)
     const keyword = formData.get('keyword') as string
     const urlParams = toUrlParams(params)

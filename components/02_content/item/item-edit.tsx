@@ -28,6 +28,7 @@ import { useUpsertItem } from '@/lib/hooks/use-upsert-item'
 import { Item } from '@/lib/interfaces/item'
 import { UpsertItemRequest } from '@/_gateway/api/item/service'
 import { toast } from 'sonner'
+import { APP_ROUTES } from '@/lib/constants/app-routes'
 
 export default function ItemEdit({
   item,
@@ -36,7 +37,6 @@ export default function ItemEdit({
   item: Item
   imageLimit: number
 }) {
-
   const { handleUpsertItem } = useUpsertItem()
 
   const initImageUrls = () =>
@@ -57,7 +57,7 @@ export default function ItemEdit({
     },
   })
 
-  const formHasUpdate = (
+  const formWasUpdated = (
     values: z.infer<typeof ItemFormSchema>,
   ) => {
     const conditions = [
@@ -74,7 +74,9 @@ export default function ItemEdit({
       ),
     ]
 
-    return conditions.some((condition: boolean) => !condition)
+    return conditions.some(
+      (condition: boolean) => !condition,
+    )
   }
 
   async function onSubmit(
@@ -82,7 +84,7 @@ export default function ItemEdit({
   ) {
     if (!item.id) throw new Error('Item missing Id')
 
-    if (!formHasUpdate(values)) {
+    if (!formWasUpdated(values)) {
       toast('Please make a change before submitting.')
       return
     }
@@ -95,7 +97,11 @@ export default function ItemEdit({
       imageUrls: imageUrls.filter((u) => u !== null),
     }
 
-    await handleUpsertItem(request, item.id)
+    await handleUpsertItem(
+      request,
+      item.id,
+      APP_ROUTES.PROFILE_LISTINGS.href,
+    )
   }
 
   return (

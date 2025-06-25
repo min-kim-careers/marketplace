@@ -7,10 +7,11 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/shadcn/components/ui/card'
+import { ITEM_STATUS_COLORS } from '@/lib/constants/item-status-colors'
 import { formatCurrency } from '@/lib/helpers/format-price'
 import { Item } from '@/lib/interfaces/item'
 import { formatDistanceToNow } from 'date-fns'
-import Image from 'next/image'
+import { Circle } from 'lucide-react'
 
 export default function ListingsCard({
   item,
@@ -46,9 +47,15 @@ export default function ListingsCard({
         minHeight: columns === 1 ? '12rem' : '15rem',
       }}
     >
-      <div className='flex-1 flex justify-between flex-col'>
+      <div className='flex flex-1 flex-col justify-between'>
         <CardHeader className='flex-1'>
-          <CardTitle className='line-clamp-1 space-x-2'>
+          <CardTitle className='line-clamp-1 space-x-2 flex items-center'>
+            <span>
+              <Circle
+                fill={ITEM_STATUS_COLORS[item.status]}
+                size={8}
+              />
+            </span>
             <span className='font-thin italic text-gray-400'>
               Listing
             </span>

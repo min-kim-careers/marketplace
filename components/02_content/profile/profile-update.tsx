@@ -16,13 +16,16 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useUpsertProfile } from '@/lib/hooks/use-upsert-profile'
-import { useToast } from '@/components/shadcn/hooks/use-toast'
+import { toast } from 'sonner'
 
-export default function ProfileUpdate() {
+export default function ProfileUpdate({
+  className,
+}: {
+  className?: string
+}) {
   const [handleConfirmed, setHandleConfirmed] =
     useState(false)
   const { handleUpdateProfile } = useUpsertProfile()
-  const { toast } = useToast()
 
   const form = useForm<z.infer<typeof ProfileUpdateForm>>({
     resolver: zodResolver(ProfileUpdateForm),
@@ -36,42 +39,35 @@ export default function ProfileUpdate() {
   ) {
     await handleUpdateProfile({ handle: values.handle })
 
-    toast({
-      description:
-        'Your profile was updated successfully!',
-    })
+    toast('Your profile was updated successfully!')
   }
 
   return (
-    <div className='flex flex-1 items-center justify-center'>
-      <Card>
-        <CardHeader>
-          <CardTitle>Profile</CardTitle>
-          <CardDescription>
-            View and manage your personal details.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              <div className='flex flex-col gap-4'>
-                <HandleField
-                  confirmed={handleConfirmed}
-                  setConfirmed={setHandleConfirmed}
-                  form={form}
-                />
-              </div>
-              <Button
-                type='submit'
-                disabled={!handleConfirmed}
-                className='mt-4 w-full'
-              >
-                Update Profile
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
-    </div>
+    <Card className={className}>
+      <CardHeader>
+        <CardTitle>Update</CardTitle>
+        <CardDescription></CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <div className='flex flex-col gap-4'>
+              <HandleField
+                confirmed={handleConfirmed}
+                setConfirmed={setHandleConfirmed}
+                form={form}
+              />
+            </div>
+            <Button
+              type='submit'
+              disabled={!handleConfirmed}
+              className='mt-4 w-full'
+            >
+              Update Profile
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
   )
 }

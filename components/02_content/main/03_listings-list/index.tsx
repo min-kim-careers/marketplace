@@ -23,7 +23,7 @@ export default function ListingsItemList() {
       }}
     >
       {items.map((item: Item, i) => (
-        <ListingsModal key={i} item={item}>
+        <ListingsModal key={i} item={item} index={i}>
           <div className='cursor-pointer'>
             <ListingsCard item={item} columns={columns} />
           </div>

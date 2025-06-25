@@ -2,22 +2,32 @@ import {
   UPSERT_ITEM,
   UpsertItemRequest,
 } from '@/_gateway/api/item/service'
-import { ItemFormSchema } from '@/components/02_content/item/form'
-import { useToast } from '@/components/shadcn/hooks/use-toast'
-import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { compressedFileFromUrl } from '@/lib/helpers/compress-image-from-url'
 import { useLoadingStore } from '@/lib/stores/loading-store'
 import { useRouter } from 'next/navigation'
-import { z } from 'zod'
+import { toast } from 'sonner'
 
 export const useUpsertItem = () => {
   const { setLoading } = useLoadingStore()
-  const { toast } = useToast()
   const router = useRouter()
+
+  const parseImageUrls = async (imageUrls: string[]) =>
+    await Promise.all(
+      imageUrls
+        .filter((url) => url.startsWith('blob:'))
+        .map(async (url) => {
+          try {
+            return await compressedFileFromUrl(url)
+          } catch (error) {
+            throw error
+          }
+        }),
+    )
 
   const handleUpsertItem = async (
     request: UpsertItemRequest,
     itemId?: string,
+    reroute?: string,
   ) => {
     const isUpdate = !!itemId
 
@@ -27,19 +37,10 @@ export const useUpsertItem = () => {
         true,
       )
 
-      if (request.imageUrls) {
-        request.uploadImages = await Promise.all(
-          request.imageUrls
-            .filter((url) => url.startsWith('blob:'))
-            .map(async (url) => {
-              try {
-                return await compressedFileFromUrl(url)
-              } catch (error) {
-                throw error
-              }
-            }),
+      if (request.imageUrls)
+        request.uploadImages = await parseImageUrls(
+          request.imageUrls,
         )
-      }
 
       const item = await UPSERT_ITEM(request, itemId)
       if (!item)
@@ -47,15 +48,19 @@ export const useUpsertItem = () => {
           `Failed to ${isUpdate ? 'update' : 'post'} item`,
         )
 
-      toast({
-        description: `Your item was ${isUpdate ? 'updated' : 'posted'} successfully!`,
-      })
+      toast(
+        `Your item was ${isUpdate ? 'updated' : 'posted'} successfully!`,
+      )
 
-      router.replace(APP_ROUTES.PROFILE_LISTINGS.href)
+      if (reroute) router.replace(reroute)
+
+      return true
     } catch (error) {
       console.error(error)
 
-      toast({ description: `Something went wrong.` })
+      toast(`Something went wrong.`)
+
+      return false
     } finally {
       setLoading(null)
     }

@@ -1,31 +1,32 @@
 'use server'
 
-import { FirebaseInternalResponse } from '@/_gateway/firebase/_config/interfaces'
+import { AuthInternalResponse } from '@/_gateway/auth/_config/interfaces'
 import { envLoader } from '@/lib/utils/env-loader'
+import { logInfo } from '@/lib/utils/log'
 import axios, {
   AxiosResponse,
   InternalAxiosRequestConfig,
 } from 'axios'
 
-export const createFirebaseAxios = async (
+export const createAuthAxios = async (
   endpoint: string,
 ) => {
   const instance = axios.create({
-    baseURL: envLoader.firebaseUrl + endpoint,
+    baseURL: envLoader.authUrl + endpoint,
   })
 
   instance.interceptors.request.use(
     async (config: InternalAxiosRequestConfig) => {
-      config.headers[envLoader.firebaseKeyHeader] =
-        envLoader.firebaseKey
+      config.headers[envLoader.authKeyHeader] =
+        envLoader.authKey
       return config
     },
   )
 
   instance.interceptors.response.use(
-    (response: AxiosResponse<FirebaseInternalResponse>) => {
-      const { success, data } = response.data
-      if (!success) throw new Error()
+    (response: AxiosResponse<AuthInternalResponse>) => {
+      const { message, data } = response.data
+      if (message) logInfo(message)
       if (data) response.data = data
 
       return response

@@ -1,6 +1,6 @@
 'use client'
 
-import { REFRESH_SESSION } from '@/_gateway/firebase/service'
+import { REFRESH_SESSION } from '@/_gateway/auth/service'
 import { auth } from '@/lib/firebase/config'
 import { useSignOut } from '@/lib/hooks/use-sign-out'
 import useProfileStore from '@/lib/stores/profile-store'

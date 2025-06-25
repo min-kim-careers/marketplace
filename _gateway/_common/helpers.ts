@@ -3,8 +3,8 @@
 import {
   getSessionCookie,
   convertToUUID,
-} from '@/_gateway/firebase/_config/helpers'
-import { VERIFY_SESSION } from '@/_gateway/firebase/service'
+} from '@/_gateway/auth/_config/helpers'
+import { VERIFY_SESSION } from '@/_gateway/auth/service'
 import { APP_DATA } from "@/lib/constants/app-data"
 import { logError } from '@/lib/utils/log'
 import { cookies } from 'next/headers'

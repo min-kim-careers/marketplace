@@ -44,7 +44,7 @@ export default function Dropdown({}: {}) {
         <DropdownMenuSeparator />
 
         <DropdownMenuItem asChild>
-          <Link href={APP_ROUTES.PROFILE_UPDATE.href}>Profile</Link>
+          <Link href={APP_ROUTES.PROFILE_DASHBOARD.href}>Dashboard</Link>
         </DropdownMenuItem>
 
         <DropdownMenuItem asChild>

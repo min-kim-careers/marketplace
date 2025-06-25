@@ -10,6 +10,7 @@ import { ItemSortOrder } from '@/lib/enums/item-sort-order'
 import { ItemPageParams } from '@/lib/interfaces/item-page-params'
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
+import { ItemPageProvider } from '@/lib/providers/item-page-provider'
 
 const ListingsParamsSchema = z
   .object({
@@ -54,10 +55,15 @@ export default async function Page({
   const { items, count } = await GET_USER_ITEMS(params)
 
   return (
-    <ProfileListings
-      items={items}
-      count={count}
-      params={params}
-    />
+    <ItemPageProvider
+      props={{
+        items,
+        count,
+        params,
+        route: APP_ROUTES.MARKET.href,
+      }}
+    >
+      <ProfileListings />
+    </ItemPageProvider>
   )
 }

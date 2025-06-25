@@ -29,28 +29,28 @@ export const _GET_USER_ITEMS = async (
 
 export const _GET_USER_ITEM = async (
   userId: string,
-  itemId: string,
+  itemSlug: string,
 ): Promise<{ item: Item }> =>
   apiItemAxios
-    .get(`/user/${userId}/item/${itemId}`)
+    .get(`/user/${userId}/item/${itemSlug}`)
     .then((res) => res.data)
 
 export const _DELETE_USER_ITEM = async (
   userId: string,
-  itemId: string,
+  itemSlug: string,
 ): Promise<{ deleted: boolean }> =>
   apiItemAxios
-    .delete(`/user/${userId}/item/${itemId}`)
+    .delete(`/user/${userId}/item/${itemSlug}`)
     .then((res) => res.data)
 
 export const _UPSERT_USER_ITEM = async (
   userId: string,
   formData: GenericFormData,
-  itemId?: string,
+  itemSlug?: string,
 ): Promise<{ item: Item }> =>
   apiItemAxios
     .putForm(`/user/${userId}`, formData, {
-      params: { itemId },
+      params: { itemSlug },
     })
     .then((res) => res.data)
 
@@ -61,3 +61,5 @@ export const _CREATE_USER_ITEM = async (
   apiItemAxios
     .post(`/user/${userId}`, request)
     .then((res) => res.data)
+
+

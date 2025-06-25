@@ -1,14 +1,13 @@
-import { SIGN_OUT } from '@/_gateway/firebase/service'
-import { useToast } from '@/components/shadcn/hooks/use-toast'
+import { SIGN_OUT } from '@/_gateway/auth/service'
 import { auth } from '@/lib/firebase/config'
 import { useLoadingStore } from '@/lib/stores/loading-store'
 import useProfileStore from '@/lib/stores/profile-store'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 export const useSignOut = () => {
   const { setLoading } = useLoadingStore()
   const { setProfile } = useProfileStore()
-  const { toast } = useToast()
   const router = useRouter()
 
   const handleSignOut = async () => {
@@ -19,15 +18,11 @@ export const useSignOut = () => {
       await SIGN_OUT()
       setProfile(null)
 
-      toast({
-        description: `See you again!`,
-      })
+      toast(`See you again!`)
 
       router.refresh()
     } catch (error) {
-      toast({
-        description: `Something went wrong.`,
-      })
+      toast(`Something went wrong.`)
     } finally {
       setLoading(null)
     }

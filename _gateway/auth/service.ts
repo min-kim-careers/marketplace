@@ -5,12 +5,12 @@ import {
   createHandle,
   convertToUUID,
   getSessionCookie,
-  logFirebaseError,
+  logAuthError,
   setSessionCookie,
-} from '@/_gateway/firebase/_config/helpers'
+} from '@/_gateway/auth/_config/helpers'
 import { Profile } from '@/lib/interfaces/profile'
 import { DecodedToken } from './interfaces'
-import * as FIREBASE_ENDPOINTS from '@/_gateway/firebase/endpoints'
+import * as AUTH_ENDPOINTS from '@/_gateway/auth/endpoints'
 import * as PROFILE_ENDPOINTS from '@/_gateway/api/profile/endpoints'
 import { logApiError } from '@/_gateway/api/_config/helpers'
 
@@ -22,7 +22,7 @@ export const SIGN_IN_WITH_GOOGLE = async (
       decodedToken,
       sessionCookie,
       expiresInSeconds,
-    } = await FIREBASE_ENDPOINTS._GET_SESSION(idToken)
+    } = await AUTH_ENDPOINTS._GET_SESSION(idToken)
 
     const userId = await convertToUUID(decodedToken.uid)
 
@@ -54,7 +54,7 @@ export const SIGN_IN_WITH_GOOGLE = async (
     await setSessionCookie(sessionCookie, expiresInSeconds)
     return newProfile
   } catch (error) {
-    logFirebaseError(error)
+    logAuthError(error)
     await clearSessionCookie()
     throw new Error()
   }
@@ -72,11 +72,11 @@ export const VERIFY_SESSION = async (
     }
 
     const { decodedToken } =
-      await FIREBASE_ENDPOINTS._VERIFY_SESSION(session)
+      await AUTH_ENDPOINTS._VERIFY_SESSION(session)
 
     return decodedToken
   } catch (error) {
-    logFirebaseError(error)
+    logAuthError(error)
     throw new Error()
   }
 }
@@ -95,11 +95,11 @@ export const REFRESH_SESSION = async (idToken: string) => {
       // decodedToken,
       sessionCookie,
       expiresInSeconds,
-    } = await FIREBASE_ENDPOINTS._GET_SESSION(idToken)
+    } = await AUTH_ENDPOINTS._GET_SESSION(idToken)
 
     await setSessionCookie(sessionCookie, expiresInSeconds)
   } catch (error) {
-    logFirebaseError(error)
+    logAuthError(error)
     throw new Error()
   }
 }
@@ -108,7 +108,7 @@ export const SIGN_OUT = async (): Promise<void> => {
   try {
     await clearSessionCookie()
   } catch (error) {
-    logFirebaseError(error)
+    logAuthError(error)
     throw new Error()
   }
 }
