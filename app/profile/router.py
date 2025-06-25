@@ -25,7 +25,6 @@ async def get_profile(
     profile = ProfileOut.model_validate(profile_db, from_attributes=True)
 
     return ProfileResponse(
-        success=True,
         data={"profile": profile},
     )
 
@@ -52,7 +51,6 @@ async def upsert_profile(
     profile = ProfileOut.model_validate(profile_db, from_attributes=True)
 
     return ProfileResponse(
-        success=True,
         data={"profile": profile},
     )
 
@@ -67,7 +65,7 @@ async def check_handle_exists(
     exists = profile is not None
 
     return ProfileResponse(
-        success=True,
+        message="Handle already exists",
         data={"exists": exists},
     )
 
@@ -86,6 +84,5 @@ async def get_profile_extra(
         raise ErrorResponse(status_code=404, message="Profile extra not found")
 
     return ProfileResponse(
-        success=True,
         data={"extra": extra},
     )

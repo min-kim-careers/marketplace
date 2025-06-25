@@ -26,16 +26,19 @@ async def get_items(
     query: ItemsQuery = Depends(),
     session: AsyncSession = Depends(get_session),
 ) -> ItemResponse:
-    data = {"items": [], "count": 0}
+    item_count = await ItemRepository.get_items_count(session, query)
+    if not item_count:
+        return ItemResponse(data={"items": [], "count": 0})
 
-    items_db = await ItemRepository.get_all_items(session, query)
-    if items_db:
-        data["items"] = [ItemOut.from_db(item) for item in items_db]
-        data["count"] = await ItemRepository.get_all_items_count(session, query)
+    items_db = await ItemRepository.get_items(session, query)
+    if not items_db:
+        raise ErrorResponse(status_code=500, message="Error fetching items")
 
     return ItemResponse(
-        success=True,
-        data=data,
+        data={
+            "items": [ItemOut.from_db(item) for item in items_db],
+            "count": item_count,
+        },
     )
 
 
@@ -45,18 +48,19 @@ async def get_user_items(
     query: ItemsQuery = Depends(),
     session: AsyncSession = Depends(get_session),
 ) -> ItemResponse:
-    data = {"items": [], "count": 0}
+    item_count = await ItemRepository.get_user_items_count(session, user_id, query)
+    if not item_count:
+        return ItemResponse(data={"items": [], "count": 0})
 
     items_db = await ItemRepository.get_user_items(session, user_id, query)
-    if items_db:
-        data["items"] = [ItemOut.from_db(item) for item in items_db]
-        data["count"] = await ItemRepository.get_user_items_count(
-            session, user_id, query
-        )
+    if not items_db:
+        raise ErrorResponse(status_code=500, message="Error fetching user's items")
 
     return ItemResponse(
-        success=True,
-        data=data,
+        data={
+            "items": [ItemOut.from_db(item) for item in items_db],
+            "count": item_count,
+        },
     )
 
 
@@ -67,7 +71,6 @@ async def get_user_item(
     item = ItemOut.from_db(item_db)
 
     return ProfileResponse(
-        success=True,
         data={"item": item},
     )
 
@@ -82,7 +85,6 @@ async def delete_user_item(
         raise ErrorResponse(status_code=404, message="Failed to delete item")
 
     return ItemResponse(
-        success=True,
         data={"deleted": deleted},
     )
 
@@ -118,6 +120,5 @@ async def upsert_user_item(
     item = ItemOut.from_db(new_item_db)
 
     return ItemResponse(
-        success=True,
         data={"item": item},
     )

@@ -28,7 +28,8 @@ class ProfileRepository:
     ) -> ProfileDB | None:
         try:
             profile_db = ProfileDB(
-                user_id=user_id, **profile_in.model_dump(exclude_unset=True)
+                user_id=user_id,
+                **profile_in.model_dump(exclude_unset=True),
             )
 
             session.add(profile_db)

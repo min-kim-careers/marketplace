@@ -10,6 +10,7 @@ from app.item.enums import (
     ItemCondition,
     ItemSortBy,
     ItemSortOrder,
+    ItemStatus,
 )
 
 DEFAULT_PAGINATION_PAGE = 1
@@ -21,13 +22,10 @@ DEFAULT_SORT_BY = ItemSortBy.created_at
 
 class ItemsQuery(InboundBase):
     keyword: Optional[str] = None
-
     sort_order: Optional[ItemSortOrder] = DEFAULT_SORT_ORDER
     sort_by: Optional[ItemSortBy] = DEFAULT_SORT_BY
-
     page: int = DEFAULT_PAGINATION_PAGE
     limit: int = DEFAULT_PAGINATION_LIMIT
-
     exclude_user: Optional[UUID] = None
 
     @property
@@ -46,6 +44,7 @@ class ItemIn(InboundBase):
     price: Optional[float] = None
     category: Optional[ItemCategory] = None
     condition: Optional[ItemCondition] = None
+    status: Optional[ItemStatus] = None
     postcode: Optional[str] = Field(default=None, min_length=4, max_length=4)
     suburb: Optional[str] = None
     state: Optional[str] = None

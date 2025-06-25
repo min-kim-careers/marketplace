@@ -42,11 +42,3 @@ class ProfileDB(Base):
     )
 
     extra: Mapped[dict] = mapped_column(JSONB, default=dict)
-
-    # # Relationship to items
-    # items = relationship(
-    #     "ItemDB",
-    #     back_populates="profile",
-    #     lazy="selectin",
-    #     cascade="all, delete-orphan",
-    # )

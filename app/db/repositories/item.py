@@ -1,44 +1,56 @@
 from typing import Any, List, Optional, Sequence, Tuple
 from uuid import UUID
 
-from sqlalchemy import Select, String, asc, cast, desc, func, or_, select, update
+from sqlalchemy import Select, String, and_, asc, cast, desc, func, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.common.utils import get_one_by
 from app.db.schemas.item import ItemInDB
-from app.item.enums import ItemSortOrder
+from app.item.enums import ItemSortOrder, ItemStatus
 from app.db.models.item import ItemDB
 from app.item.schemas.inbound import (
     ItemsQuery,
-    ItemIn,
 )
+
 
 class ItemRepository:
     @staticmethod
-    def base_query(stmt: Select, query: ItemsQuery):
+    def build_base_query(stmt: Select, query: ItemsQuery):
         if query.keyword:
-            conditions = [
+            or_conditions = [
                 func.lower(ItemDB.name).ilike(f"%{query.keyword}%"),
                 func.lower(ItemDB.description).ilike(f"%{query.keyword}%"),
                 func.lower(cast(ItemDB.category, String)).ilike(f"%{query.keyword}%"),
             ]
-            stmt = stmt.where(or_(*conditions))
+            stmt = stmt.where(
+                or_(*or_conditions),
+            )
         return stmt
 
-
     @staticmethod
-    async def get_all_items(
+    async def get_items(
         session: AsyncSession,
         query: ItemsQuery,
     ) -> Sequence[ItemDB] | None:
         try:
-            stmt = select(ItemDB).options(selectinload(ItemDB.profile))
+            stmt = (
+                select(ItemDB)
+                .options(selectinload(ItemDB.profile))
+                .where(
+                    ItemDB.status.in_(
+                        [
+                            ItemStatus.available,
+                            ItemStatus.pending,
+                        ]
+                    )
+                )
+            )
 
             if query.exclude_user:
                 stmt = stmt.where(ItemDB.user_id != query.exclude_user)
 
-            stmt = ItemRepository.base_query(stmt, query)
+            stmt = ItemRepository.build_base_query(stmt, query)
 
             if query.sort_by:
                 sort_column = getattr(ItemDB, query.sort_by.value)
@@ -54,23 +66,32 @@ class ItemRepository:
             print(e)
             return None
 
-
     @staticmethod
-    async def get_all_items_count(session: AsyncSession, query: ItemsQuery) -> int:
+    async def get_items_count(session: AsyncSession, query: ItemsQuery) -> int:
         try:
-            stmt = select(func.count()).select_from(ItemDB)
+            stmt = (
+                select(func.count())
+                .select_from(ItemDB)
+                .where(
+                    ItemDB.status.in_(
+                        [
+                            ItemStatus.available,
+                            ItemStatus.pending,
+                        ]
+                    )
+                )
+            )
 
             if query.exclude_user:
                 stmt = stmt.where(ItemDB.user_id != query.exclude_user)
 
-            stmt = ItemRepository.base_query(stmt, query)
+            stmt = ItemRepository.build_base_query(stmt, query)
 
             result = await session.execute(stmt)
             return result.scalar_one()
         except Exception as e:
             print(e)
             return 0
-
 
     @staticmethod
     async def get_user_items(
@@ -85,7 +106,7 @@ class ItemRepository:
                 .where(ItemDB.user_id == user_id)
             )
 
-            stmt = ItemRepository.base_query(stmt, query)
+            stmt = ItemRepository.build_base_query(stmt, query)
 
             if query.sort_by:
                 sort_column = getattr(ItemDB, query.sort_by.value)
@@ -101,7 +122,6 @@ class ItemRepository:
             print(e)
             return None
 
-
     @staticmethod
     async def get_user_items_count(
         session: AsyncSession,
@@ -109,16 +129,19 @@ class ItemRepository:
         query: ItemsQuery,
     ) -> int:
         try:
-            stmt = select(func.count()).select_from(ItemDB).where(ItemDB.user_id == user_id)
+            stmt = (
+                select(func.count())
+                .select_from(ItemDB)
+                .where(ItemDB.user_id == user_id)
+            )
 
-            stmt = ItemRepository.base_query(stmt, query)
+            stmt = ItemRepository.build_base_query(stmt, query)
 
             result = await session.execute(stmt)
             return result.scalar_one()
         except Exception as e:
             print(e)
             return 0
-
 
     @staticmethod
     async def get_item_by_id_and_user(
@@ -132,7 +155,6 @@ class ItemRepository:
             user_id=user_id,
             id=item_id,
         )
-
 
     @staticmethod
     async def create_item(
@@ -155,7 +177,6 @@ class ItemRepository:
             print(e)
             return None
 
-
     @staticmethod
     async def update_item(
         session: AsyncSession,
@@ -163,8 +184,11 @@ class ItemRepository:
         item_in_db: ItemInDB,
     ) -> ItemDB | None:
         try:
-            for field, value in item_in_db.model_dump(exclude_unset=True).items():
-                setattr(item_db, field, value)
+            for field, value in item_in_db.model_dump(
+                exclude_unset=True, exclude_none=True
+            ).items():
+                if value:
+                    setattr(item_db, field, value)
 
             await session.commit()
             await session.refresh(item_db)
@@ -173,7 +197,6 @@ class ItemRepository:
             await session.rollback()
             print(e)
             return None
-
 
     @staticmethod
     async def delete_item(

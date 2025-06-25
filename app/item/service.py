@@ -10,6 +10,7 @@ from app.db.schemas.item import ItemInDB
 from app.item.schemas.inbound import ItemIn
 from app.storage.image import store_image_bulk
 from sqlalchemy.ext.asyncio import AsyncSession
+from rich import print
 
 
 class ItemService:
@@ -34,10 +35,16 @@ class ItemService:
     ):
         item_in_db = ItemInDB.model_validate(item_in, from_attributes=True)
 
+        print(item_in_db)
+
         new_item_db = None
         if item_db:
+            print('Updating...')
             new_item_db = await ItemRepository.update_item(session, item_db, item_in_db)
         else:
+            print('Creating...')
             new_item_db = await ItemRepository.create_item(session, user_id, item_in_db)
+
+        print(new_item_db.__dict__)
 
         return new_item_db

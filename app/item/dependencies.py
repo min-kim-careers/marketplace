@@ -24,7 +24,7 @@ async def resolve_item(
     return item_db
 
 
-def resolve_item_slug(item_slug: str = Query(None)) -> UUID | None:
+def resolve_item_slug(item_slug: str = Query(None, alias='itemSlug')) -> UUID | None:
     if not item_slug:
         return None
     return slug_to_uuid(item_slug)

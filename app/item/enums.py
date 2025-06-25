@@ -39,5 +39,8 @@ class ItemStatus(str, Enum):
     available = "available"
     pending = "pending"
     sold = "sold"
-    expired = "expired"
     inactive = "inactive"
+
+    # API ONLY
+    expired = "expired"
+

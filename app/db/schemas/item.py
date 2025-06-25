@@ -1,7 +1,7 @@
 from typing import List, Optional
 from pydantic import BaseModel, Field
 
-from app.item.enums import ItemCategory, ItemCondition
+from app.item.enums import ItemCategory, ItemCondition, ItemStatus
 
 
 class ItemInDB(BaseModel):
@@ -10,6 +10,7 @@ class ItemInDB(BaseModel):
     price: Optional[float] = None
     category: Optional[ItemCategory] = None
     condition: Optional[ItemCondition] = None
+    status: Optional[ItemStatus] = None
     postcode: Optional[str] = Field(default=None, min_length=4, max_length=4)
     suburb: Optional[str] = None
     state: Optional[str] = None

@@ -11,7 +11,7 @@ T = TypeVar("T")
 
 
 class ItemResponse(OutboundBase, Generic[T]):
-    success: bool = False
+    message: Optional[str] = None
     data: Optional[T] = None
 
 
