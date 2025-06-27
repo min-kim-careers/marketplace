@@ -1,7 +1,7 @@
 'use server'
 
 import { GET_PROFILE_EXTRA } from '@/_gateway/api/profile/service'
-import ItemPost from '@/components/02_content/item/item-post'
+import ItemPost from '@/components/02_content/item-post'
 
 export default async function Page() {
   const extra = await GET_PROFILE_EXTRA()

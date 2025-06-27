@@ -1,7 +1,7 @@
 'use server'
 
 import { GET_ITEMS } from '@/_gateway/api/item/service'
-import Market from '@/components/02_content/main/market'
+import Market from '@/components/02_content/market'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { DEFAULT_MARKET_PARAMS } from '@/lib/constants/market-params'
 import { ItemSortBy } from '@/lib/enums/item-sort-by'

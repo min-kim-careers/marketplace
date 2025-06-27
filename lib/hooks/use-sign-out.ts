@@ -1,4 +1,4 @@
-import { SIGN_OUT } from '@/_gateway/auth/service'
+import { SIGN_OUT } from '@/_gateway/auth/firebase/service'
 import { auth } from '@/lib/firebase/config'
 import useLoadingStore from '@/lib/stores/loading-store'
 import useProfileStore from '@/lib/stores/profile-store'

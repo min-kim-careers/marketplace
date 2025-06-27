@@ -1,9 +1,9 @@
 import { logApiError } from '@/_gateway/api/_config/helpers'
-import { DecodedToken } from './_gateway/auth/interfaces'
+import { FirebaseUser } from './_gateway/auth/firebase/interfaces'
 import {
   SIGN_OUT,
   VERIFY_SESSION,
-} from '@/_gateway/auth/service'
+} from '@/_gateway/auth/firebase/service'
 import { APP_DATA } from "./lib/constants/app-data"
 import {
   isFallbackRoute,
@@ -22,12 +22,12 @@ export async function middleware(req: NextRequest) {
   }
 
   const session = req.cookies.get(APP_DATA.SESSION_HEADER)?.value
-  let verifiedToken: DecodedToken | null = null
+  let verified = false
 
   if (session) {
     try {
-      const decodedToken = await VERIFY_SESSION(session)
-      verifiedToken = decodedToken
+      const firebaseUser = await VERIFY_SESSION(session)
+      verified = Boolean(firebaseUser)
     } catch (error) {
       logApiError(error)
       await SIGN_OUT()
@@ -35,7 +35,7 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  const isAuthenticated = !!verifiedToken
+  const isAuthenticated = !!verified
   
   if (isAuthenticated) {
     if (isProtectedRoute(path)) {

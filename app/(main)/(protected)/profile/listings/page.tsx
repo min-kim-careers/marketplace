@@ -1,7 +1,7 @@
 'use server'
 
 import { GET_USER_ITEMS } from '@/_gateway/api/item/service'
-import ProfileListings from '@/components/02_content/main/profile-listings'
+import ProfileListings from '@/components/02_content/profile-listings'
 import { toUrlParams } from '@/lib/helpers/to-url-params'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { DEFAULT_ITEM_PAGE_PARAMS } from '@/lib/constants/item-page-params'

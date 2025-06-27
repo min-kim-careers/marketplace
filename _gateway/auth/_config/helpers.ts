@@ -10,9 +10,9 @@ import { v5 as uuidv5 } from 'uuid'
 
 export const logAuthError = async (error: any) => {
   if (error instanceof AxiosError) {
-    const firebaseError = error.response
+    const authError = error.response
       ?.data as AuthErrorResponse
-    if (firebaseError) logError(firebaseError)
+    if (authError) logError(authError)
   } else {
     logError(error)
   }
@@ -75,7 +75,7 @@ export const convertToUUID = async (uid: string) => {
   }
 }
 
-export const createHandle = async (base: string) => {
+export const createHash = async (base: string) => {
   try {
     const encoder = new TextEncoder()
     const data = encoder.encode(base)
@@ -87,9 +87,17 @@ export const createHandle = async (base: string) => {
     const hashHex = hashArray
       .map((b) => b.toString(16).padStart(2, '0'))
       .join('')
-    const hash = hashHex.slice(0, 10)
 
-    return 'user' + hash
+    return hashHex
+  } catch (error) {
+    throw error
+  }
+}
+
+export const createHandle = async (base: string) => {
+  try {
+    const hashed = await createHash(base)
+    return 'user' + hashed
   } catch (error) {
     throw error
   }

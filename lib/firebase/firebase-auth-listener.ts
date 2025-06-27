@@ -1,6 +1,5 @@
 'use client'
 
-import { REFRESH_SESSION } from '@/_gateway/auth/service'
 import { auth } from '@/lib/firebase/config'
 import { useSignOut } from '@/lib/hooks/use-sign-out'
 import useProfileStore from '@/lib/stores/profile-store'
@@ -21,14 +20,6 @@ export default function FirebaseAuthListener() {
 
         if (hasSignedIn) {
           logInfo('signed in')
-
-          // try {
-          //   const idToken = await user.getIdToken(true)
-          //   if (idToken)
-          //     await serviceRefreshSession(idToken)
-          // } catch (_) {
-          //   await handleSignOut()
-          // }
         }
 
         if (hasSignedOut) {

@@ -16,14 +16,14 @@ export default function ItemImagePreview({
   if (!imageUrls.length) return null
 
   return (
-    <Carousel className='flex-1'>
-      <CarouselContent className='m-0'>
+    <Carousel className='flex-1 rounded'>
+      <CarouselContent className='m-0 rounded'>
         {imageUrls.map(
           (url, index) =>
             url && (
               <CarouselItem
                 key={index}
-                className='relative aspect-square bg-gray-100'
+                className='relative aspect-square bg-gray-100 rounded'
               >
                 <ImageContainer url={url} />
               </CarouselItem>
