@@ -1,0 +1,3 @@
+#!/bin/bash
+
+docker exec -it chat-db-container bash  -c 'psql -U chatdbuser -d chatdb'

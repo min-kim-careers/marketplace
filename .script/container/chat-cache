@@ -1,0 +1,3 @@
+#!/bin/bash
+
+docker exec -it chat-cache-container redis-cli -a redispassword

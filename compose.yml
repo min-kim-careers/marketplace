@@ -1,13 +1,22 @@
 services:
+  # AUTH
+  auth-db-service:
+    extends:
+      file: ./auth/compose.yml
+      service: auth-db-service
+    networks:
+      - auth-network
+
   auth-service:
     extends:
       file: ./auth/compose.yml
       service: auth-service
-    ports:
-      - 8001:8000
     networks:
       - auth-network
+    depends_on:
+      - auth-db-service
 
+  # API
   api-db-service:
     extends:
       file: ./api/compose.yml
@@ -22,12 +31,39 @@ services:
     depends_on:
       api-db-service:
         condition: service_healthy
-    ports:
-      - 8000:8000
     networks:
       - api-network
+
+  # CHAT
+  chat-cache-service:
+    extends:
+      file: ./chat/compose.yml
+      service: chat-cache-service
+    networks:
+      - chat-network
+
+  chat-db-service:
+    extends:
+      file: ./chat/compose.yml
+      service: chat-db-service
+    networks:
+      - chat-network
+
+  chat-service:
+    extends:
+      file: ./chat/compose.yml
+      service: chat-server-service
+    ports:
+      - 8080:8080
+    depends_on:
+      - chat-db-service
+      - chat-cache-service
+    networks:
+      - chat-network
       - auth-network
 
+
+  # WEB
   web-service:
     extends:
       file: ./web/compose.yml
@@ -37,10 +73,15 @@ services:
     networks:
       - api-network
       - auth-network
+      - chat-network
 
 volumes:
+  auth-db-data:
   api-db-data:
+  chat-db-data:
+  chat-cache-data:
 
 networks:
   api-network:
   auth-network:
+  chat-network:
