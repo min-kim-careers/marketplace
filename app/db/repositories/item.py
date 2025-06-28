@@ -30,7 +30,7 @@ class ItemRepository:
 
     @staticmethod
     async def get_items(
-        session: AsyncSession,
+        db: AsyncSession,
         query: ItemsQuery,
     ) -> Sequence[ItemDB] | None:
         try:
@@ -60,14 +60,14 @@ class ItemRepository:
                     stmt = stmt.order_by(desc(sort_column))
 
             stmt = stmt.offset(query.offset).limit(query.limit)
-            result = await session.execute(stmt)
+            result = await db.execute(stmt)
             return result.scalars().all()
         except Exception as e:
             print(e)
             return None
 
     @staticmethod
-    async def get_items_count(session: AsyncSession, query: ItemsQuery) -> int:
+    async def get_items_count(db: AsyncSession, query: ItemsQuery) -> int:
         try:
             stmt = (
                 select(func.count())
@@ -87,7 +87,7 @@ class ItemRepository:
 
             stmt = ItemRepository.build_base_query(stmt, query)
 
-            result = await session.execute(stmt)
+            result = await db.execute(stmt)
             return result.scalar_one()
         except Exception as e:
             print(e)
@@ -95,7 +95,7 @@ class ItemRepository:
 
     @staticmethod
     async def get_user_items(
-        session: AsyncSession,
+        db: AsyncSession,
         user_id: UUID,
         query: ItemsQuery,
     ) -> Sequence[ItemDB] | None:
@@ -116,7 +116,7 @@ class ItemRepository:
                     stmt = stmt.order_by(desc(sort_column))
 
             stmt = stmt.offset(query.offset).limit(query.limit)
-            result = await session.execute(stmt)
+            result = await db.execute(stmt)
             return result.scalars().all()
         except Exception as e:
             print(e)
@@ -124,7 +124,7 @@ class ItemRepository:
 
     @staticmethod
     async def get_user_items_count(
-        session: AsyncSession,
+        db: AsyncSession,
         user_id: UUID,
         query: ItemsQuery,
     ) -> int:
@@ -137,7 +137,7 @@ class ItemRepository:
 
             stmt = ItemRepository.build_base_query(stmt, query)
 
-            result = await session.execute(stmt)
+            result = await db.execute(stmt)
             return result.scalar_one()
         except Exception as e:
             print(e)
@@ -145,12 +145,12 @@ class ItemRepository:
 
     @staticmethod
     async def get_item_by_id_and_user(
-        session: AsyncSession,
+        db: AsyncSession,
         user_id: UUID,
         item_id: UUID,
     ) -> ItemDB | None:
         return await get_one_by(
-            session,
+            db,
             ItemDB,
             user_id=user_id,
             id=item_id,
@@ -158,7 +158,7 @@ class ItemRepository:
 
     @staticmethod
     async def create_item(
-        session: AsyncSession,
+        db: AsyncSession,
         user_id: UUID,
         item_in_db: ItemInDB,
     ) -> ItemDB | None:
@@ -168,18 +168,18 @@ class ItemRepository:
                 user_id=user_id,
             )
 
-            session.add(item_db)
-            await session.commit()
-            await session.refresh(item_db)
+            db.add(item_db)
+            await db.commit()
+            await db.refresh(item_db)
             return item_db
         except Exception as e:
-            await session.rollback()
+            await db.rollback()
             print(e)
             return None
 
     @staticmethod
     async def update_item(
-        session: AsyncSession,
+        db: AsyncSession,
         item_db: ItemDB,
         item_in_db: ItemInDB,
     ) -> ItemDB | None:
@@ -190,24 +190,24 @@ class ItemRepository:
                 if value:
                     setattr(item_db, field, value)
 
-            await session.commit()
-            await session.refresh(item_db)
+            await db.commit()
+            await db.refresh(item_db)
             return item_db
         except Exception as e:
-            await session.rollback()
+            await db.rollback()
             print(e)
             return None
 
     @staticmethod
     async def delete_item(
-        session: AsyncSession,
+        db: AsyncSession,
         item_db: ItemDB,
     ) -> bool:
         try:
-            await session.delete(item_db)
-            await session.commit()
+            await db.delete(item_db)
+            await db.commit()
             return True
         except Exception as e:
-            await session.rollback()
+            await db.rollback()
             print(e)
             return False

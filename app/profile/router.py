@@ -3,7 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.config.session import get_session
+from app.db.config.session import get_db
 from app.common.schemas.error import ErrorResponse
 from app.db.repositories.profile import ProfileRepository
 from app.profile.schemas.outbound import ProfileExtra
@@ -16,9 +16,9 @@ profiles_router = APIRouter()
 @profiles_router.get("/user/{user_id}", response_model=ProfileResponse)
 async def get_profile(
     user_id: UUID,
-    session: AsyncSession = Depends(get_session),
+    db: AsyncSession = Depends(get_db),
 ) -> ProfileResponse:
-    profile_db = await ProfileRepository.get_profile_by_user_id(session, user_id)
+    profile_db = await ProfileRepository.get_profile_by_user_id(db, user_id)
     if not profile_db:
         raise ErrorResponse(status_code=404, message="Profile not found")
 
@@ -33,16 +33,16 @@ async def get_profile(
 async def upsert_profile(
     user_id: UUID,
     profile_in: ProfileIn,
-    session: AsyncSession = Depends(get_session),
+    db: AsyncSession = Depends(get_db),
 ) -> ProfileResponse:
-    profile_db = await ProfileRepository.get_profile_by_user_id(session, user_id)
+    profile_db = await ProfileRepository.get_profile_by_user_id(db, user_id)
     if profile_db:
         profile_db = await ProfileRepository.update_profile(
-            session, profile_db, profile_in
+            db, profile_db, profile_in
         )
     else:
         profile_db = await ProfileRepository.create_profile(
-            session, user_id, profile_in
+            db, user_id, profile_in
         )
 
     if not profile_db:
@@ -58,9 +58,9 @@ async def upsert_profile(
 @profiles_router.get("/exists/handle/{handle}", response_model=ProfileResponse)
 async def check_handle_exists(
     handle: str,
-    session: AsyncSession = Depends(get_session),
+    db: AsyncSession = Depends(get_db),
 ) -> ProfileResponse:
-    profile = await ProfileRepository.get_profile_by_handle(session, handle)
+    profile = await ProfileRepository.get_profile_by_handle(db, handle)
 
     exists = profile is not None
 
@@ -73,9 +73,9 @@ async def check_handle_exists(
 @profiles_router.get("/user/{user_id}/extra", response_model=ProfileResponse)
 async def get_profile_extra(
     user_id: UUID,
-    session: AsyncSession = Depends(get_session),
+    db: AsyncSession = Depends(get_db),
 ) -> ProfileResponse:
-    profile_db = await ProfileRepository.get_profile_by_user_id(session, user_id)
+    profile_db = await ProfileRepository.get_profile_by_user_id(db, user_id)
     if not profile_db:
         raise ErrorResponse(status_code=404, message="Profile not found")
 

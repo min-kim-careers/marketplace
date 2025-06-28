@@ -3,7 +3,7 @@ from uuid import UUID, uuid4
 from faker import Faker
 from sqlalchemy import select
 from app.common.utils import get_one_by
-from app.db.config.session import get_session
+from app.db.config.session import get_db
 from app.item.enums import ItemCategory, ItemCondition
 from app.db.models.item import ItemDB
 from app.db.models.profile import ProfileDB
@@ -47,27 +47,27 @@ def create_mock_item(user_id: UUID) -> ItemDB:
 
 
 async def seed_db():
-    async for session in get_session():
-        res = await session.execute(select(ProfileDB))
+    async for db in get_db():
+        res = await db.execute(select(ProfileDB))
         if res.first():
             # print("Database already seeded.")
             return
 
         mock_profiles = [create_mock_profile() for _ in range(5)]
-        session.add_all(mock_profiles)
-        await session.commit()
+        db.add_all(mock_profiles)
+        await db.commit()
 
         for profile in mock_profiles:
             items = [create_mock_item(profile.user_id) for _ in range(3)]
-            session.add_all(items)
+            db.add_all(items)
 
-        await session.commit()
+        await db.commit()
         print("Seeding complete.")
 
 
 async def seed_user_items(email, count):
-    async for session in get_session():
-        profile = await get_one_by(session, ProfileDB, email=email)
+    async for db in get_db():
+        profile = await get_one_by(db, ProfileDB, email=email)
         if not profile:
             raise ValueError("Profile not found")
         items = [
@@ -76,8 +76,8 @@ async def seed_user_items(email, count):
             )
             for _ in range(count)
         ]
-        session.add_all(items)
-        await session.commit()
+        db.add_all(items)
+        await db.commit()
         print("User items seeded.")
 
 

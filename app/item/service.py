@@ -31,7 +31,7 @@ class ItemService:
 
     @staticmethod
     async def upsert_item(
-        session: AsyncSession, user_id: UUID, item_in: ItemIn, item_db: ItemDB | None
+        db: AsyncSession, user_id: UUID, item_in: ItemIn, item_db: ItemDB | None
     ):
         item_in_db = ItemInDB.model_validate(item_in, from_attributes=True)
 
@@ -40,10 +40,10 @@ class ItemService:
         new_item_db = None
         if item_db:
             print('Updating...')
-            new_item_db = await ItemRepository.update_item(session, item_db, item_in_db)
+            new_item_db = await ItemRepository.update_item(db, item_db, item_in_db)
         else:
             print('Creating...')
-            new_item_db = await ItemRepository.create_item(session, user_id, item_in_db)
+            new_item_db = await ItemRepository.create_item(db, user_id, item_in_db)
 
         print(new_item_db.__dict__)
 
