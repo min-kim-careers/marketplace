@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# Delete Migrations/* if exists
-# Restart/Rebuild container after initial migration to mock DB 
-
-rm -f api/App/Infrastructure/Data/Migrations/*
-docker exec -it api-container bash -c "dotnet ef database drop -f"
-docker exec -it api-container bash -c "dotnet ef migrations add InitialCreate --output-dir Infrastructure/Data/Migrations"
-docker exec -it api-container bash -c "dotnet ef database update"
-.script/restart/api
+docker exec -it api-db-container bash -c "psql -U apidbuser -d apidb -c 'DROP TABLE profiles cascade;'"
+docker exec -it api-db-container bash -c "psql -U apidbuser -d apidb -c 'DROP TABLE items cascade;'"
+# .script/restart/api

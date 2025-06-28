@@ -1,0 +1,3 @@
+#!/bin/bash
+
+docker exec -it api-db-container bash -c "pg_dump -U apidbuser -d apidb" > api-db-backup.sql

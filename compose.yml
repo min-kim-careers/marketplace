@@ -1,12 +1,12 @@
 services:
-  firebase-service:
+  auth-service:
     extends:
-      file: ./firebase/compose.yml
-      service: firebase-service
+      file: ./auth/compose.yml
+      service: auth-service
     ports:
       - 8001:8000
     networks:
-      - firebase-network
+      - auth-network
 
   api-db-service:
     extends:
@@ -26,7 +26,7 @@ services:
       - 8000:8000
     networks:
       - api-network
-      - firebase-network
+      - auth-network
 
   web-service:
     extends:
@@ -36,11 +36,11 @@ services:
       - 3000:3000
     networks:
       - api-network
-      - firebase-network
+      - auth-network
 
 volumes:
   api-db-data:
 
 networks:
   api-network:
-  firebase-network:
+  auth-network:
