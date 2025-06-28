@@ -1,6 +1,6 @@
 'use server'
 
-import { getSessionUserId } from '@/_gateway/_common/helpers'
+import { getCurrentUserId } from '../_config/helpers'
 import { logApiError } from '@/_gateway/api/_config/helpers'
 import * as PROFILE_ENDPOINTS from '@/_gateway/api/profile/endpoints'
 import { ProfileExtra } from '@/_gateway/api/profile/interfaces'
@@ -21,7 +21,7 @@ export const UPDATE_PROFILE = async (
   newProfile: UpsertProfileRequest,
 ): Promise<IProfile | null> => {
   try {
-    const userId = await getSessionUserId()
+    const userId = await getCurrentUserId()
     if (!userId) throw new Error()
 
     const { profile } =
@@ -40,7 +40,7 @@ export const UPDATE_PROFILE = async (
 export const GET_PROFILE =
   async (): Promise<IProfile | null> => {
     try {
-      const userId = await getSessionUserId()
+      const userId = await getCurrentUserId()
       if (!userId) throw new Error()
 
       const { profile } =
@@ -70,7 +70,7 @@ export const HANDLE_EXISTS = async (
 export const GET_PROFILE_EXTRA =
   async (): Promise<ProfileExtra | null> => {
     try {
-      const userId = await getSessionUserId()
+      const userId = await getCurrentUserId()
       if (!userId) throw new Error()
 
       const { extra } =

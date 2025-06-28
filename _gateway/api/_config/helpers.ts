@@ -1,5 +1,7 @@
 'use server'
 
+import { getSessionCookie } from '@/_gateway/auth/_config/helpers'
+import { _VERIFY_SESSION } from '@/_gateway/auth/firebase/endpoints'
 import { ApiErrorResponse } from './interfaces'
 import { logError } from '@/lib/utils/log'
 import { AxiosError } from 'axios'
@@ -21,3 +23,13 @@ export const cleanObject = async (obj: Object) =>
       typeof value === 'string' ? value.trim() : value,
     ]),
   )
+
+export const getCurrentUserId = async (): Promise<
+  string | null
+> => {
+  const session = await getSessionCookie()
+  if (!session) return null
+
+  const { userId } = await _VERIFY_SESSION(session)
+  return userId
+}

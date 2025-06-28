@@ -11,20 +11,24 @@ const authFirebaseAxios = await createAuthAxios(
 export const _GET_SESSION = async (
   idToken: string,
 ): Promise<{
+  userId: string
+
   firebaseUser: FirebaseUser
   sessionCookie: string
   expiresInSeconds: number
 }> =>
   authFirebaseAxios
-    .post(`/session`, { idToken })
+    .post(`/get-session`, { idToken })
     .then((res) => res.data)
 
 export const _VERIFY_SESSION = async (
   session: string,
-): Promise<{ firebaseUser: FirebaseUser }> =>
+): Promise<{
+  userId: string
+}> =>
   authFirebaseAxios
     .post(
-      `/session/verify`,
+      `/verify-session`,
       {},
       {
         headers: {

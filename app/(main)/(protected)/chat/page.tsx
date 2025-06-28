@@ -1,15 +1,26 @@
 'use server'
 
-import { GET_USER_ITEM } from '@/_gateway/api/item/service'
-import { GET_PROFILE, HANDLE_EXISTS } from '@/_gateway/api/profile/service'
-import { createHash } from '@/_gateway/auth/_config/helpers'
 import Chat from '@/components/02_content/chat'
-import { notFound } from 'next/navigation'
-import { string, z } from 'zod'
+import { decodeParams } from '@/lib/helpers/encode-params'
+import { z } from 'zod'
 
 const ChatParamsSchema = z
   .object({
-    session: z.string().nonempty(),
+    session: z
+      .string()
+      .nonempty()
+      .transform(
+        async (encoded) => await decodeParams(encoded),
+      )
+      .refine((val) =>
+        z
+          .object({
+            item: z.string().nonempty(),
+            seller: z.string().nonempty(),
+            buyer: z.string().nonempty(),
+          })
+          .safeParse(val),
+      ),
   })
   .strict()
 
@@ -24,12 +35,10 @@ export default async function Page({
 
   if (!Object.keys(urlParams).length) return <Chat />
 
-  const result = ChatParamsSchema.safeParse(urlParams)
+  const result =
+    await ChatParamsSchema.parseAsync(urlParams)
 
-  if (!result.success) notFound()
+  const { item, seller, buyer } = result.session
 
-  const { session } = result.data
-
-
-  return <Chat roomId={session} />
+  return <Chat roomId={''} />
 }

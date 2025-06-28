@@ -1,7 +1,6 @@
+import { LocationJSON } from '@/lib/utils/fuse/location-json'
 import Fuse from 'fuse.js'
 import data from './locations.json'
-import { LocationJSON } from '@/lib/utils/fuse/location-json'
-import { logError } from '@/lib/utils/log'
 
 const locations = new Fuse(data, {
   keys: ['locality', 'postcode', 'state'],

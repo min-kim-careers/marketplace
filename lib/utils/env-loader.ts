@@ -10,8 +10,6 @@ interface EnvLoader {
   authKeyHeader: string
 
   chatUrl: string
-
-  UuidNamespace: string
 }
 
 export const envLoader: EnvLoader = {
@@ -24,8 +22,6 @@ export const envLoader: EnvLoader = {
   authKeyHeader: process.env.AUTH_KEY_HEADER!,
 
   chatUrl: process.env.CHAT_URL!,
-
-  UuidNamespace: process.env.UUID_NAMESPACE!,
 }
 
 const validateEnv = (env: EnvLoader) => {

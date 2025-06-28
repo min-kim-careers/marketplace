@@ -26,8 +26,8 @@ export async function middleware(req: NextRequest) {
 
   if (session) {
     try {
-      const firebaseUser = await VERIFY_SESSION(session)
-      verified = Boolean(firebaseUser)
+      verified = Boolean(await VERIFY_SESSION(session))
+      console.log('Verified');
     } catch (error) {
       logApiError(error)
       await SIGN_OUT()

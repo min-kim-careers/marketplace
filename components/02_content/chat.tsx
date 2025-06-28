@@ -1,13 +1,13 @@
 'use client'
 
 import ChatSession from '@/components/00_common/chat/chat-session'
-import Spinner from '@/components/00_common/spinner'
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from '@/components/shadcn/components/ui/resizable'
 import { IChatSession } from '@/lib/interfaces/chat-session'
+import useFirebaseStore from '@/lib/stores/firebase-store'
 import useProfileStore from '@/lib/stores/profile-store'
 import { useEffect, useState } from 'react'
 
@@ -18,8 +18,20 @@ export default function Chat({
   roomId?: string
   existingSessions?: IChatSession[]
 }) {
-  const { profile } = useProfileStore()
+  const { user, getToken } = useFirebaseStore()
+  const [token, setToken] = useState<string | null>(null)
 
+  useEffect(() => {
+    const loadToken = async () => {
+      if (user) {
+        const t = await getToken()
+        setToken(t)
+      }
+    }
+    loadToken()
+  }, [user])
+
+  const { profile } = useProfileStore()
   const [currentSession, setCurrentSession] =
     useState<IChatSession | null>(null)
 
@@ -57,8 +69,11 @@ export default function Chat({
       <ResizableHandle withHandle />
 
       <ResizablePanel className='flex' defaultSize={75}>
-        {!!currentSession && (
-          <ChatSession session={currentSession} />
+        {!!currentSession && !!token && (
+          <ChatSession
+            session={currentSession}
+            token={token}
+          />
         )}
       </ResizablePanel>
     </ResizablePanelGroup>

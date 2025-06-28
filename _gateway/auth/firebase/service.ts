@@ -1,30 +1,28 @@
 'use server'
 
+import { logApiError } from '@/_gateway/api/_config/helpers'
+import * as PROFILE_ENDPOINTS from '@/_gateway/api/profile/endpoints'
 import {
   clearSessionCookie,
   createHandle,
-  convertToUUID,
   getSessionCookie,
   logAuthError,
   setSessionCookie,
 } from '@/_gateway/auth/_config/helpers'
-import { IProfile } from '@/lib/interfaces/profile'
-import { FirebaseUser } from './interfaces'
 import * as AUTH_ENDPOINTS from '@/_gateway/auth/firebase/endpoints'
-import * as PROFILE_ENDPOINTS from '@/_gateway/api/profile/endpoints'
-import { logApiError } from '@/_gateway/api/_config/helpers'
+import { IProfile } from '@/lib/interfaces/profile'
 
 export const SIGN_IN_WITH_GOOGLE = async (
   idToken: string,
 ): Promise<IProfile> => {
   try {
     const {
+      userId,
+
       firebaseUser,
       sessionCookie,
       expiresInSeconds,
     } = await AUTH_ENDPOINTS._GET_SESSION(idToken)
-
-    const userId = await convertToUUID(firebaseUser.uid)
 
     try {
       const { profile } =
@@ -62,41 +60,13 @@ export const SIGN_IN_WITH_GOOGLE = async (
 
 export const VERIFY_SESSION = async (
   session: string,
-): Promise<FirebaseUser> => {
+): Promise<string> => {
+  return 'dd1dca96-45c6-4c39-b652-7cc66cc59e09'
   try {
-    return {
-      uid: 'eZ1oYyTnK7RVPC83HeonR30rjS83',
-      email: 'user1@example.com',
-      picture:
-        'https://lh3.googleusercontent.com/a/ACg8ocJVq6R_VPqzjgbv4go2Gm7o9isHXUZ6K4GexJ2JzPF3TDoYvQ=s96-c',
-    }
-
-    const { firebaseUser } =
+    const { userId } =
       await AUTH_ENDPOINTS._VERIFY_SESSION(session)
 
-    return firebaseUser
-  } catch (error) {
-    logAuthError(error)
-    throw new Error()
-  }
-}
-
-export const REFRESH_SESSION = async (idToken: string) => {
-  try {
-    const session = await getSessionCookie()
-    if (session) {
-      console.log(
-        'Session already exists. Aborting refresh.',
-      )
-      return
-    }
-
-    const {
-      sessionCookie,
-      expiresInSeconds,
-    } = await AUTH_ENDPOINTS._GET_SESSION(idToken)
-
-    await setSessionCookie(sessionCookie, expiresInSeconds)
+    return userId
   } catch (error) {
     logAuthError(error)
     throw new Error()

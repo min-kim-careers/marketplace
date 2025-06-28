@@ -1,6 +1,6 @@
 'use server'
 
-import { getSessionUserId } from '@/_gateway/_common/helpers'
+import { getCurrentUserId } from '../_config/helpers'
 import { logApiError } from '@/_gateway/api/_config/helpers'
 import { DEFAULT_ITEM_PAGINATION } from '@/lib/constants/item-pagination'
 import { IItem } from '@/lib/interfaces/item'
@@ -24,7 +24,7 @@ export const GET_ITEMS = async (
   count: number
 }> => {
   try {
-    const userId = await getSessionUserId()
+    const userId = await getCurrentUserId()
 
     const request: GetItemsRequest = {
       page: itemPageParams.page,
@@ -60,21 +60,21 @@ export interface GetItemsRequest {
 }
 
 export const GET_USER_ITEMS = async (
-  listingsParams: IItemPageParams,
+  itemPageParams: IItemPageParams,
 ): Promise<{
   items: IItem[]
   count: number
 }> => {
   try {
     const request: GetItemsRequest = {
-      page: listingsParams.page,
-      keyword: listingsParams.keyword,
-      sortBy: listingsParams.sortBy,
-      sortOrder: listingsParams.sortOrder,
+      page: itemPageParams.page,
+      keyword: itemPageParams.keyword,
+      sortBy: itemPageParams.sortBy,
+      sortOrder: itemPageParams.sortOrder,
       limit: DEFAULT_ITEM_PAGINATION.LIMIT,
     }
 
-    const userId = await getSessionUserId()
+    const userId = await getCurrentUserId()
     if (!userId) throw new Error()
 
     const { items, count } =
@@ -97,7 +97,7 @@ export const GET_USER_ITEM = async (
   itemId: string,
 ): Promise<IItem | null> => {
   try {
-    const userId = await getSessionUserId()
+    const userId = await getCurrentUserId()
     if (!userId) throw new Error()
 
     const { item } = await ITEM_ENDPOINTS._GET_USER_ITEM(
@@ -155,7 +155,7 @@ export const UPSERT_ITEM = async (
   itemId?: string,
 ): Promise<IItem | null> => {
   try {
-    const userId = await getSessionUserId()
+    const userId = await getCurrentUserId()
     if (!userId) throw new Error()
 
     if (request.imageUrls)
@@ -182,7 +182,7 @@ export const DELETE_ITEM = async (
   itemId: string,
 ): Promise<boolean> => {
   try {
-    const userId = await getSessionUserId()
+    const userId = await getCurrentUserId()
     if (!userId) throw new Error()
 
     await ITEM_ENDPOINTS._DELETE_USER_ITEM(userId, itemId)
@@ -199,7 +199,7 @@ export const UPDATE_ITEM_STATUS = async (
   status: ItemStatus,
 ) => {
   try {
-    const userId = await getSessionUserId()
+    const userId = await getCurrentUserId()
     if (!userId) throw new Error()
 
     const formData = requestToFormData({ status })

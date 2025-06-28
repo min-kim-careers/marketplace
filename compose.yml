@@ -12,11 +12,9 @@ services:
       - AUTH_KEY=b6c54fe621c6df75a54f0c245956519251adae29c2a0fa1c7f1cc03674f61ce5
       - AUTH_KEY_HEADER=x-auth-key
 
-      - CHAT_URL=http://chat-service:8080
+      - CHAT_URL=http://chat-service:8081
       
       - NEXT_PUBLIC_CHAT_WS=http://192.168.8.103:8080
-
-      - UUID_NAMESPACE=56688042-70e2-4e58-be93-9fc75fba7a8e
     env_file:
       - .env
     volumes:
