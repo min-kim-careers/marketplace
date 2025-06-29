@@ -8,14 +8,13 @@ import {
 } from '@/components/shadcn/components/ui/resizable'
 import { IChatSession } from '@/lib/interfaces/chat-session'
 import useFirebaseStore from '@/lib/stores/firebase-store'
-import useProfileStore from '@/lib/stores/profile-store'
 import { useEffect, useState } from 'react'
 
 export default function Chat({
-  roomId,
+  session,
   existingSessions = [],
 }: {
-  roomId?: string
+  session?: IChatSession
   existingSessions?: IChatSession[]
 }) {
   const { user, getToken } = useFirebaseStore()
@@ -31,18 +30,8 @@ export default function Chat({
     loadToken()
   }, [user])
 
-  const { profile } = useProfileStore()
   const [currentSession, setCurrentSession] =
-    useState<IChatSession | null>(null)
-
-  useEffect(() => {
-    if (profile && roomId) {
-      setCurrentSession({
-        clientId: profile.handle,
-        roomId,
-      })
-    }
-  }, [profile])
+    useState<IChatSession | null>(session ?? null)
 
   return (
     <ResizablePanelGroup
@@ -53,14 +42,15 @@ export default function Chat({
         defaultSize={25}
         minSize={25}
         maxSize={50}
+        className='p-2'
       >
-        <div className='flex w-full flex-col items-center justify-start p-4'>
+        <div className='flex h-full w-full flex-1 flex-col items-center justify-start'>
           {existingSessions.map((session, i) => (
             <div
               key={i}
               className='flex cursor-pointer items-center justify-center rounded-lg border p-2'
             >
-              {session.clientId}
+              {session.roomId}
             </div>
           ))}
         </div>

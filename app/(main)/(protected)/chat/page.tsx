@@ -40,5 +40,12 @@ export default async function Page({
 
   const { item, seller, buyer } = result.session
 
-  return <Chat roomId={''} />
+  return (
+    <Chat
+      session={{
+        clientId: buyer,
+        roomId: `${item}_${seller}_${buyer}`,
+      }}
+    />
+  )
 }
