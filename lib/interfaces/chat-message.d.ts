@@ -2,9 +2,8 @@ import { ChatMessageType } from "@/lib/enums/chat-message-type"
 
 export interface IChatMessage {
   id?: number
-  messageType: ChatMessageType
-  clientId: string
+  mode: ChatMessageType
   roomId: string
-  createdAt?: string
+  createdAt?: Date
   data?: any
 }

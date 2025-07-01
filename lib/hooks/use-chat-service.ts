@@ -48,14 +48,16 @@ export function useChatService({
 
   const handleOnOpen = () => {
     console.log(`Connected to chat server`)
-    handleSend(ChatMessageType.CONNECT)
+    if (handleSend(ChatMessageType.CONNECT)) {
+      handleSend(ChatMessageType.RESTORE)
+    }
   }
 
   const handleOnMessage = (event: MessageEvent<any>) => {
     const newMessage: IChatMessage = JSON.parse(event.data)
     console.log('Received message:', newMessage)
 
-    switch (newMessage.messageType) {
+    switch (newMessage.mode) {
       case ChatMessageType.CHAT: {
         setMessages((prev) => [newMessage, ...prev])
         break
@@ -106,10 +108,7 @@ export function useChatService({
 
   const sendChat = (text: string) => {
     const message = handleSend(ChatMessageType.CHAT, text)
-
     setMessages((prev) => [message, ...prev])
-
-    console.log('Message sent:', text)
   }
 
   const handleSend = (
@@ -118,12 +117,15 @@ export function useChatService({
   ): IChatMessage => {
     const message: IChatMessage = {
       ...session,
-      messageType,
+      mode: messageType,
       data,
     }
     wsRef.current?.send(JSON.stringify(message))
+
+    console.log('Message sent:', message)
     return message
   }
+
 
   return { messages, sendChat, noMessages, loading }
 }

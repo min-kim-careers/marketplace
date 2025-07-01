@@ -7,9 +7,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/shadcn/components/ui/card'
+import { formatDateFrom } from '@/lib/helpers/format-date-from'
 import { formatCurrency } from '@/lib/helpers/format-price'
 import { IItem } from '@/lib/interfaces/item'
-import { formatDistanceToNow } from 'date-fns'
 
 export default function MarketCard({
   item,
@@ -18,11 +18,6 @@ export default function MarketCard({
   item: IItem
   columns: number
 }) {
-  const createdAt = () =>
-    formatDistanceToNow(item.createdAt.toLocaleString(), {
-      addSuffix: true,
-    })
-
   const renderCardImage = () => {
     if (!item.imageUrls[0]) return null
 
@@ -45,7 +40,7 @@ export default function MarketCard({
         minHeight: columns === 1 ? '12rem' : '15rem',
       }}
     >
-      <div className='flex-1 flex justify-between flex-col'>
+      <div className='flex flex-1 flex-col justify-between'>
         <CardHeader className='flex-1'>
           <CardTitle className='line-clamp-1 space-x-2'>
             <span>{item.name}</span>
@@ -53,7 +48,7 @@ export default function MarketCard({
           </CardTitle>
           <CardDescription className='line-clamp-1'>
             <div className='flex gap-1'>
-              <span>{`${createdAt()} by `}</span>
+              <span>{`${formatDateFrom(item.createdAt)} by `}</span>
               <span>
                 <button className='font-semibold'>
                   {item.profileHandle}

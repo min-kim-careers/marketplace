@@ -8,9 +8,9 @@ import {
   CardTitle,
 } from '@/components/shadcn/components/ui/card'
 import { ITEM_STATUS_COLORS } from '@/lib/constants/item-status-colors'
+import { formatDateFrom } from '@/lib/helpers/format-date-from'
 import { formatCurrency } from '@/lib/helpers/format-price'
 import { IItem } from '@/lib/interfaces/item'
-import { formatDistanceToNow } from 'date-fns'
 import { Circle } from 'lucide-react'
 
 export default function ProfileListingsCard({
@@ -20,11 +20,6 @@ export default function ProfileListingsCard({
   item: IItem
   columns: number
 }) {
-  const createdAt = () =>
-    formatDistanceToNow(item.createdAt.toLocaleString(), {
-      addSuffix: true,
-    })
-
   const renderCardImage = () => {
     if (!item.imageUrls[0]) return null
 
@@ -49,7 +44,7 @@ export default function ProfileListingsCard({
     >
       <div className='flex flex-1 flex-col justify-between'>
         <CardHeader className='flex-1'>
-          <CardTitle className='line-clamp-1 space-x-2 flex items-center'>
+          <CardTitle className='line-clamp-1 flex items-center space-x-2'>
             <span>
               <Circle
                 fill={ITEM_STATUS_COLORS[item.status]}
@@ -64,7 +59,7 @@ export default function ProfileListingsCard({
           </CardTitle>
           <CardDescription className='line-clamp-1'>
             <div className='flex gap-1'>
-              <span>{`Posted ${createdAt()} `}</span>
+              <span>{`Posted ${formatDateFrom(item.createdAt)} `}</span>
             </div>
           </CardDescription>
         </CardHeader>

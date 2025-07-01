@@ -18,11 +18,11 @@ import {
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { ITEM_CONDITION_LABELS } from '@/lib/constants/item-condition-labels'
 import { ItemCondition } from '@/lib/enums/item-condition'
-import { formatCurrency } from '@/lib/helpers/format-price'
 import { encodeParams } from '@/lib/helpers/encode-params'
+import { formatDateFrom } from '@/lib/helpers/format-date-from'
+import { formatCurrency } from '@/lib/helpers/format-price'
 import { IItem } from '@/lib/interfaces/item'
 import useProfileStore from '@/lib/stores/profile-store'
-import { formatDistanceToNow } from 'date-fns'
 import { CircleUserIcon } from 'lucide-react'
 import Link from 'next/link'
 import { ReactNode, useEffect, useState } from 'react'
@@ -34,36 +34,6 @@ export default function MarketModal({
   children: ReactNode
   item: IItem
 }) {
-  const { profile } = useProfileStore()
-  const [open, setOpen] = useState(false)
-  const [chatSession, setChatSession] = useState<
-    string | null
-  >(null)
-
-  useEffect(() => {
-    const fetchParams = async () => {
-      if (profile && open) {
-        setChatSession(
-          await encodeParams(
-            {
-              seller: item.profileHandle,
-              item: item.id,
-              buyer: profile.handle,
-            },
-            'session',
-          ),
-        )
-      }
-    }
-
-    fetchParams()
-  }, [item, profile, open])
-
-  const updatedAt = () =>
-    formatDistanceToNow(item.updatedAt.toLocaleString(), {
-      addSuffix: true,
-    })
-
   const renderContent = () => (
     <>
       <DialogHeader className='flex-row justify-between'>
@@ -80,7 +50,7 @@ export default function MarketModal({
           </DialogTitle>
           <DialogDescription className='flex gap-2'>
             <span>
-              <span>{`Updated ${updatedAt()} by `}</span>
+              <span>{`Updated ${formatDateFrom(item.updatedAt)} by `}</span>
               <span>
                 <button className='font-semibold'>
                   {item.profileHandle}
@@ -115,7 +85,7 @@ export default function MarketModal({
           Offered at {formatCurrency(item.price.toString())}
         </span>
         <Link
-          href={`${APP_ROUTES.CHAT.href}?${chatSession}`}
+          href={`${APP_ROUTES.CHAT.href}?${new URLSearchParams({ item: item.id, handle: item.profileHandle })}`}
         >
           <Button>Chat with {item.profileHandle}</Button>
         </Link>
@@ -124,16 +94,10 @@ export default function MarketModal({
   )
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className='max-h-[90vh] min-h-[50vh] overflow-auto'>
-        {!chatSession ? (
-          <DialogTitle className='flex items-center justify-center'>
-            <Spinner />
-          </DialogTitle>
-        ) : (
-          renderContent()
-        )}
+        {renderContent()}
       </DialogContent>
     </Dialog>
   )

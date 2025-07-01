@@ -1,3 +1,3 @@
-export interface ProfileExtra {
+export interface IProfileExtra {
   imageLimit: number
 }

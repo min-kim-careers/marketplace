@@ -1,9 +1,9 @@
 'use server'
 
 import { createApiAxios } from '@/_gateway/api/_config/axios'
-import { ProfileExtra } from './interfaces'
-import { IProfile } from '@/lib/interfaces/profile'
 import { UpsertProfileRequest } from '@/_gateway/api/profile/service'
+import { IProfileExtra } from './interfaces'
+import { IProfile } from '@/lib/interfaces/profile'
 
 const profileApiAxios =
   await createApiAxios('/api/profiles')
@@ -15,16 +15,23 @@ export const _GET_PROFILE = async (
     .get(`/user/${userId}`)
     .then((res) => res.data)
 
-export const _HANDLE_EXISTS = async (
+export const _EXISTS_BY_HANDLE = async (
   handle: string,
 ): Promise<{ exists: boolean }> =>
   profileApiAxios
-    .get(`/exists/handle/${handle}`)
+    .get(`/handle/${handle}`)
+    .then((res) => res.data)
+
+export const _GET_USER_ID_BY_HANDLE = async (
+  handle: string,
+): Promise<{ userId: string }> =>
+  profileApiAxios
+    .get(`/handle/${handle}/user-id`)
     .then((res) => res.data)
 
 export const _GET_PROFILE_EXTRA = async (
   userId: string,
-): Promise<{ extra: ProfileExtra }> =>
+): Promise<{ extra: IProfileExtra }> =>
   profileApiAxios
     .get(`/user/${userId}/extra`)
     .then((res) => res.data)

@@ -33,12 +33,12 @@ import { ITEM_CONDITION_LABELS } from '@/lib/constants/item-condition-labels'
 import { ITEM_STATUS_COLORS } from '@/lib/constants/item-status-colors'
 import { ITEM_STATUS_LABELS } from '@/lib/constants/item-status-labels'
 import { ItemStatus } from '@/lib/enums/item-status'
+import { formatDateFrom } from '@/lib/helpers/format-date-from'
 import { formatCurrency } from '@/lib/helpers/format-price'
 import { useUpsertItem } from '@/lib/hooks/use-upsert-item'
 import { IItem } from '@/lib/interfaces/item'
 import { useItemPageContext } from '@/lib/providers/item-page-provider'
 import useLoadingStore from '@/lib/stores/loading-store'
-import { formatDistanceToNow } from 'date-fns'
 import { Circle } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -54,11 +54,6 @@ export default function ProfileListingsModal({
   item: IItem
   index: number
 }) {
-  const updatedAt = () =>
-    formatDistanceToNow(item.updatedAt.toLocaleString(), {
-      addSuffix: true,
-    })
-
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -80,7 +75,7 @@ export default function ProfileListingsModal({
               </span>
             </DialogTitle>
             <DialogDescription className='flex gap-2'>
-              <span>{`Last update at ${updatedAt()}`}</span>
+              <span>{`Last update at ${formatDateFrom(item.updatedAt)}`}</span>
             </DialogDescription>
           </span>
         </DialogHeader>

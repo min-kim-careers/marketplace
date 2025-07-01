@@ -1,26 +1,15 @@
 'use server'
 
+import { GET_USER_ID_BY_HANDLE } from '@/_gateway/api/profile/service'
+import { REGISTER_ROOM } from '@/_gateway/chat/rooms/service'
 import Chat from '@/components/02_content/chat'
-import { decodeParams } from '@/lib/helpers/encode-params'
+import { notFound } from 'next/navigation'
 import { z } from 'zod'
 
 const ChatParamsSchema = z
   .object({
-    session: z
-      .string()
-      .nonempty()
-      .transform(
-        async (encoded) => await decodeParams(encoded),
-      )
-      .refine((val) =>
-        z
-          .object({
-            item: z.string().nonempty(),
-            seller: z.string().nonempty(),
-            buyer: z.string().nonempty(),
-          })
-          .safeParse(val),
-      ),
+    item: z.string().nonempty(),
+    handle: z.string().nonempty(),
   })
   .strict()
 
@@ -33,18 +22,22 @@ export default async function Page({
 }) {
   const urlParams = await searchParams
 
-  if (!Object.keys(urlParams).length) return <Chat />
+  const result = ChatParamsSchema.safeParse(urlParams)
 
-  const result =
-    await ChatParamsSchema.parseAsync(urlParams)
+  if (!result.success) return <Chat />
 
-  const { item, seller, buyer } = result.session
+  const { item: itemId, handle } = result.data
+
+  const peerId = await GET_USER_ID_BY_HANDLE(handle)
+
+  if (!peerId) notFound()
+
+  const roomId = await REGISTER_ROOM(itemId, peerId)
 
   return (
     <Chat
       session={{
-        clientId: buyer,
-        roomId: `${item}_${seller}_${buyer}`,
+        roomId,
       }}
     />
   )
