@@ -4,8 +4,8 @@ from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from app.common.config import env_loader
-from app.db.config.base import Base
-from app.db.models.rating import RatingDB
+from app.db.base import Base
+from app.item.models.rating import RatingDB
 
 DATABASE_URL = f"postgresql+asyncpg://{env_loader.DB_USER}:{env_loader.DB_PASSWORD}@{env_loader.DB_HOST}/{env_loader.DB_NAME}"
 

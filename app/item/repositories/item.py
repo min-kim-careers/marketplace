@@ -6,9 +6,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.common.utils import get_one_by
-from app.db.schemas.item import ItemInDB
+from app.item.schemas.inbound import ItemInDB
 from app.item.enums import ItemSortOrder, ItemStatus
-from app.db.models.item import ItemDB
+from app.item.models.item import ItemDB
 from app.item.schemas.inbound import (
     ItemsQuery,
 )
@@ -16,7 +16,7 @@ from app.item.schemas.inbound import (
 
 class ItemRepository:
     @staticmethod
-    def build_base_query(stmt: Select, query: ItemsQuery):
+    def base_query(stmt: Select, query: ItemsQuery):
         if query.keyword:
             or_conditions = [
                 func.lower(ItemDB.name).ilike(f"%{query.keyword}%"),
@@ -29,7 +29,7 @@ class ItemRepository:
         return stmt
 
     @staticmethod
-    async def get_items(
+    async def get_all(
         db: AsyncSession,
         query: ItemsQuery,
     ) -> Sequence[ItemDB] | None:
@@ -50,7 +50,7 @@ class ItemRepository:
             if query.exclude_user:
                 stmt = stmt.where(ItemDB.user_id != query.exclude_user)
 
-            stmt = ItemRepository.build_base_query(stmt, query)
+            stmt = ItemRepository.base_query(stmt, query)
 
             if query.sort_by:
                 sort_column = getattr(ItemDB, query.sort_by.value)
@@ -67,7 +67,7 @@ class ItemRepository:
             return None
 
     @staticmethod
-    async def get_items_count(db: AsyncSession, query: ItemsQuery) -> int:
+    async def get_all_count(db: AsyncSession, query: ItemsQuery) -> int:
         try:
             stmt = (
                 select(func.count())
@@ -85,7 +85,7 @@ class ItemRepository:
             if query.exclude_user:
                 stmt = stmt.where(ItemDB.user_id != query.exclude_user)
 
-            stmt = ItemRepository.build_base_query(stmt, query)
+            stmt = ItemRepository.base_query(stmt, query)
 
             result = await db.execute(stmt)
             return result.scalar_one()
@@ -94,7 +94,7 @@ class ItemRepository:
             return 0
 
     @staticmethod
-    async def get_user_items(
+    async def get_all_by_user_id(
         db: AsyncSession,
         user_id: UUID,
         query: ItemsQuery,
@@ -106,7 +106,7 @@ class ItemRepository:
                 .where(ItemDB.user_id == user_id)
             )
 
-            stmt = ItemRepository.build_base_query(stmt, query)
+            stmt = ItemRepository.base_query(stmt, query)
 
             if query.sort_by:
                 sort_column = getattr(ItemDB, query.sort_by.value)
@@ -123,7 +123,7 @@ class ItemRepository:
             return None
 
     @staticmethod
-    async def get_user_items_count(
+    async def get_all_count_by_user_id(
         db: AsyncSession,
         user_id: UUID,
         query: ItemsQuery,
@@ -135,7 +135,7 @@ class ItemRepository:
                 .where(ItemDB.user_id == user_id)
             )
 
-            stmt = ItemRepository.build_base_query(stmt, query)
+            stmt = ItemRepository.base_query(stmt, query)
 
             result = await db.execute(stmt)
             return result.scalar_one()
@@ -144,7 +144,7 @@ class ItemRepository:
             return 0
 
     @staticmethod
-    async def get_item_by_id_and_user(
+    async def get_by_item_and_user_id(
         db: AsyncSession,
         user_id: UUID,
         item_id: UUID,
@@ -157,7 +157,7 @@ class ItemRepository:
         )
 
     @staticmethod
-    async def create_item(
+    async def create(
         db: AsyncSession,
         user_id: UUID,
         item_in_db: ItemInDB,
@@ -178,7 +178,7 @@ class ItemRepository:
             return None
 
     @staticmethod
-    async def update_item(
+    async def update(
         db: AsyncSession,
         item_db: ItemDB,
         item_in_db: ItemInDB,
@@ -199,7 +199,7 @@ class ItemRepository:
             return None
 
     @staticmethod
-    async def delete_item(
+    async def delete(
         db: AsyncSession,
         item_db: ItemDB,
     ) -> bool:

@@ -3,7 +3,7 @@ from typing import Generic, List, Optional, TypeVar
 
 from app.common.schemas.outbound import OutboundBase
 from app.common.utils import uuid_to_slug
-from app.db.models.item import ItemDB
+from app.item.models.item import ItemDB
 from app.item.enums import ItemCategory, ItemCondition, ItemStatus
 
 

@@ -4,9 +4,9 @@ from uuid import UUID
 
 from fastapi import UploadFile
 from app.common.schemas.error import ErrorResponse
-from app.db.models.item import ItemDB
-from app.db.repositories.item import ItemRepository
-from app.db.schemas.item import ItemInDB
+from app.item.models.item import ItemDB
+from app.item.repositories.item import ItemRepository
+from app.item.schemas.inbound import ItemInDB
 from app.item.schemas.inbound import ItemIn
 from app.storage.image import store_image_bulk
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -40,10 +40,10 @@ class ItemService:
         new_item_db = None
         if item_db:
             print('Updating...')
-            new_item_db = await ItemRepository.update_item(db, item_db, item_in_db)
+            new_item_db = await ItemRepository.update(db, item_db, item_in_db)
         else:
             print('Creating...')
-            new_item_db = await ItemRepository.create_item(db, user_id, item_in_db)
+            new_item_db = await ItemRepository.create(db, user_id, item_in_db)
 
         print(new_item_db.__dict__)
 

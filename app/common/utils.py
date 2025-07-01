@@ -16,6 +16,17 @@ async def get_one_by(db: AsyncSession, model, **filters) -> Any | None:
     except Exception as e:
         print(e)
         return None
+    
+async def get_exists_by(db: AsyncSession, model, **filters) -> bool:
+    try:
+        stmt = select(1).where(
+            and_(*(getattr(model, k) == v for k, v in filters.items()))
+        ).limit(1)
+        result = await db.execute(stmt)
+        return result.scalar_one_or_none() is not None
+    except Exception as e:
+        print(e)
+        return False
 
 def uuid_to_slug(u: UUID) -> str:
     b = u.bytes

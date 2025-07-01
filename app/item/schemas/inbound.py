@@ -2,7 +2,7 @@ from typing import List, Optional
 from uuid import UUID
 
 from fastapi import File, UploadFile
-from pydantic import Field, field_validator, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from app.common.schemas.inbound import InboundBase
 from app.item.enums import (
@@ -51,8 +51,21 @@ class ItemIn(InboundBase):
     image_urls: Optional[List[str]] = None
     upload_images: Optional[List[UploadFile]] = File(default=None)
 
-    @model_validator(mode='after')
+    @model_validator(mode="after")
     def check_image_urls_if_upload_images(self):
         if self.image_urls is None and self.upload_images is not None:
             raise ValueError("image_urls must be None if upload_images is None")
         return self
+
+
+class ItemInDB(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    price: Optional[float] = None
+    category: Optional[ItemCategory] = None
+    condition: Optional[ItemCondition] = None
+    status: Optional[ItemStatus] = None
+    postcode: Optional[str] = Field(default=None, min_length=4, max_length=4)
+    suburb: Optional[str] = None
+    state: Optional[str] = None
+    image_urls: Optional[List[str]] = None

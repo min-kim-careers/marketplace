@@ -15,10 +15,10 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 import uuid
 from datetime import datetime, timezone
 
-from app.db.config.base import Base
+from app.db.base import Base
 
 if TYPE_CHECKING:
-    from app.db.models.profile import ProfileDB
+    from app.profile.models.profile import ProfileDB
 
 
 class RatingDB(Base):

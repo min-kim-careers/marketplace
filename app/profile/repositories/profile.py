@@ -5,25 +5,31 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.common import utils
-from app.db.models.profile import ProfileDB
+from app.profile.models.profile import ProfileDB
 from app.profile.schemas.inbound import ProfileIn
 
 
 class ProfileRepository:
     @staticmethod
-    async def get_profile_by_user_id(
+    async def get_by_user_id(
         db: AsyncSession, user_id: UUID
     ) -> ProfileDB | None:
         return await utils.get_one_by(db, ProfileDB, user_id=user_id)
 
     @staticmethod
-    async def get_profile_by_handle(
+    async def get_by_handle(
         db: AsyncSession, handle: str
     ) -> ProfileDB | None:
         return await utils.get_one_by(db, ProfileDB, handle=handle)
+    
+    @staticmethod
+    async def exists_by_handle(
+        db: AsyncSession, handle: str
+    ) -> bool:
+        return await utils.get_exists_by(db, ProfileDB, handle=handle)
 
     @staticmethod
-    async def create_profile(
+    async def create(
         db: AsyncSession, user_id: UUID, profile_in: ProfileIn
     ) -> ProfileDB | None:
         try:
@@ -42,7 +48,7 @@ class ProfileRepository:
             return None
 
     @staticmethod
-    async def update_profile(
+    async def update(
         db: AsyncSession, profile_db: ProfileDB, profile_in: ProfileIn
     ) -> ProfileDB | None:
         try:

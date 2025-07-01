@@ -4,10 +4,10 @@ from uuid import UUID
 from fastapi import APIRouter, Body, Depends, File, Form, Path, Query, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.models.item import ItemDB
-from app.db.config.session import get_db
+from app.item.models.item import ItemDB
+from app.db.session import get_db
 from app.common.schemas.error import ErrorResponse
-from app.db.repositories.item import ItemRepository
+from app.item.repositories.item import ItemRepository
 from app.item.dependencies import resolve_item, resolve_item_slug
 from app.item.schemas.outbound import ItemOut
 from app.item.schemas.inbound import ItemIn
@@ -26,11 +26,11 @@ async def get_items(
     query: ItemsQuery = Depends(),
     db: AsyncSession = Depends(get_db),
 ) -> ItemResponse:
-    item_count = await ItemRepository.get_items_count(db, query)
+    item_count = await ItemRepository.get_all_count(db, query)
     if not item_count:
         return ItemResponse(data={"items": [], "count": 0})
 
-    items_db = await ItemRepository.get_items(db, query)
+    items_db = await ItemRepository.get_all(db, query)
     if not items_db:
         raise ErrorResponse(status_code=500, message="Error fetching items")
 
@@ -48,11 +48,11 @@ async def get_user_items(
     query: ItemsQuery = Depends(),
     db: AsyncSession = Depends(get_db),
 ) -> ItemResponse:
-    item_count = await ItemRepository.get_user_items_count(db, user_id, query)
+    item_count = await ItemRepository.get_all_count_by_user_id(db, user_id, query)
     if not item_count:
         return ItemResponse(data={"items": [], "count": 0})
 
-    items_db = await ItemRepository.get_user_items(db, user_id, query)
+    items_db = await ItemRepository.get_all_by_user_id(db, user_id, query)
     if not items_db:
         raise ErrorResponse(status_code=500, message="Error fetching user's items")
 
@@ -80,7 +80,7 @@ async def delete_user_item(
     item_db: ItemDB = Depends(resolve_item),
     db: AsyncSession = Depends(get_db),
 ) -> ItemResponse:
-    deleted = await ItemRepository.delete_item(db, item_db)
+    deleted = await ItemRepository.delete(db, item_db)
     if not deleted:
         raise ErrorResponse(status_code=404, message="Failed to delete item")
 
@@ -98,7 +98,7 @@ async def upsert_user_item(
 ) -> ItemResponse:
     item_db = None
     if item_id:
-        item_db = await ItemRepository.get_item_by_id_and_user(
+        item_db = await ItemRepository.get_by_item_and_user_id(
             db, user_id, item_id
         )
 

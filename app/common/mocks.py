@@ -3,10 +3,10 @@ from uuid import UUID, uuid4
 from faker import Faker
 from sqlalchemy import select
 from app.common.utils import get_one_by
-from app.db.config.session import get_db
+from app.db.session import get_db
 from app.item.enums import ItemCategory, ItemCondition
-from app.db.models.item import ItemDB
-from app.db.models.profile import ProfileDB
+from app.item.models.item import ItemDB
+from app.profile.models.profile import ProfileDB
 import random
 
 fake = Faker(locale="en_AU")

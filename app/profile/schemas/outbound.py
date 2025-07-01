@@ -1,4 +1,5 @@
 from typing import Generic, Optional, TypeVar
+from uuid import UUID
 
 from app.common.schemas.outbound import OutboundBase
 
