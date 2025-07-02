@@ -50,7 +50,9 @@ export default function ChatSession({
             className='flex flex-col gap-1 rounded border p-2'
           >
             <p>{profile?.handle}</p>
-            <p>{m.createdAt && formatDateFrom(m.createdAt)}</p>
+            {m.createdAt && (
+              <p>{formatDateFrom(new Date(m.createdAt))}</p>
+            )}
             <p>{m.data}</p>
           </div>
         ))}

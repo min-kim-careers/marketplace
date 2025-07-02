@@ -1,6 +1,6 @@
 'use client'
 
-import { ChatMessageType } from '@/lib/enums/chat-message-type'
+import { ChatMessageMode } from '@/lib/enums/chat-message-type'
 import { IChatMessage } from '@/lib/interfaces/chat-message'
 import { IChatSession } from '@/lib/interfaces/chat-session'
 import { useEffect, useRef, useState } from 'react'
@@ -48,8 +48,11 @@ export function useChatService({
 
   const handleOnOpen = () => {
     console.log(`Connected to chat server`)
-    if (handleSend(ChatMessageType.CONNECT)) {
-      handleSend(ChatMessageType.RESTORE)
+    if (!!handleSend({ mode: ChatMessageMode.CONNECT })) {
+      handleSend({
+        mode: ChatMessageMode.RESTORE,
+        createdAt: new Date().toISOString(),
+      })
     }
   }
 
@@ -58,12 +61,12 @@ export function useChatService({
     console.log('Received message:', newMessage)
 
     switch (newMessage.mode) {
-      case ChatMessageType.CHAT: {
+      case ChatMessageMode.CHAT: {
         setMessages((prev) => [newMessage, ...prev])
         break
       }
 
-      case ChatMessageType.RESTORE: {
+      case ChatMessageMode.RESTORE: {
         if (!!!newMessage.data) {
           break
         }
@@ -107,25 +110,25 @@ export function useChatService({
   }
 
   const sendChat = (text: string) => {
-    const message = handleSend(ChatMessageType.CHAT, text)
+    const message = handleSend({
+      mode: ChatMessageMode.CHAT,
+      data: text,
+    })
     setMessages((prev) => [message, ...prev])
   }
 
   const handleSend = (
-    messageType: ChatMessageType,
-    data?: any,
+    message: IChatMessage,
   ): IChatMessage => {
-    const message: IChatMessage = {
-      ...session,
-      mode: messageType,
-      data,
+    const _message: IChatMessage = {
+      ...message,
+      roomId: session.roomId,
     }
-    wsRef.current?.send(JSON.stringify(message))
+    wsRef.current?.send(JSON.stringify(_message))
 
-    console.log('Message sent:', message)
-    return message
+    console.log('Message sent:', _message)
+    return _message
   }
-
 
   return { messages, sendChat, noMessages, loading }
 }

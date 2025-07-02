@@ -1,7 +1,6 @@
 'use server'
 
 import { getCurrentUserId } from '@/_gateway/api/_config/helpers'
-import { getSessionCookie } from '@/_gateway/auth/_config/helpers'
 import { logChatError } from '@/_gateway/chat/_config/helpers'
 import * as ENDPOINTS from '@/_gateway/chat/rooms/endpoints'
 
@@ -14,7 +13,8 @@ export const REGISTER_ROOM = async (
     if (!userId) throw new Error()
 
     const { roomId } = await ENDPOINTS._REGISTER_ROOM({
-      clientIds: [userId, peerId],
+      client1: userId,
+      client2: peerId,
       itemId,
     })
 

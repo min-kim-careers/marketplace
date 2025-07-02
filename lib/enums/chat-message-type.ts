@@ -1,4 +1,4 @@
-export enum ChatMessageType {
+export enum ChatMessageMode {
   CONNECT = 'connect',
   DISCONNECT = 'disconnect',
   CHAT = 'chat',

@@ -6,7 +6,8 @@ const authAxios = await createChatAxios('')
 
 export interface RegisterRoomRequest {
   itemId: string
-  clientIds: string[]
+  client1: string
+  client2: string
 }
 
 export const _REGISTER_ROOM = async (
