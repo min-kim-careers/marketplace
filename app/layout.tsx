@@ -3,7 +3,7 @@ import 'sonner/dist/styles.css';
 import { APP_DATA } from '@/lib/constants/app-data'
 import type { Metadata } from 'next'
 import { Toaster } from 'sonner';
-import FirebaseAuthListener from '@/lib/firebase/firebase-auth-listener';
+import FirebaseAuthListener from '@/lib/firebase/auth-listener';
 
 export const metadata: Metadata = {
   title: APP_DATA.TITLE,

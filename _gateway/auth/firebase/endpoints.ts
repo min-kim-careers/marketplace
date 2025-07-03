@@ -12,7 +12,6 @@ export const _GET_SESSION = async (
   idToken: string,
 ): Promise<{
   userId: string
-
   firebaseUser: FirebaseUser
   sessionCookie: string
   expiresInSeconds: number

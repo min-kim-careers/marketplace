@@ -1,18 +1,29 @@
 'use client'
 
 import { hasSessionCookie } from '@/_gateway/auth/_config/helpers'
+import { SIGN_IN_WITH_GOOGLE } from '@/_gateway/auth/firebase/service'
 import { auth } from '@/lib/firebase/config'
 import { useSignOut } from '@/lib/hooks/use-sign-out'
 import useFirebaseStore from '@/lib/stores/firebase-store'
 import useProfileStore from '@/lib/stores/profile-store'
 import { logInfo } from '@/lib/utils/log'
-import { onAuthStateChanged } from 'firebase/auth'
+import { onAuthStateChanged, User } from 'firebase/auth'
 import { useEffect } from 'react'
 
 export default function FirebaseAuthListener() {
   const { profile, setProfile } = useProfileStore()
   const { setUser } = useFirebaseStore()
   const { handleSignOut } = useSignOut()
+
+  const refreshSession = async (user: User) => {
+    try {
+      const token = await user.getIdToken(true)
+      const newProfile = await SIGN_IN_WITH_GOOGLE(token)
+      if (newProfile) setProfile(newProfile)
+    } catch (error) {
+      await handleSignOut()
+    }
+  }
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(
@@ -26,7 +37,7 @@ export default function FirebaseAuthListener() {
 
           setUser(user)
           if (profile && !(await hasSessionCookie()))
-            await handleSignOut()
+            await refreshSession(user)
         }
 
         if (hasSignedOut) {

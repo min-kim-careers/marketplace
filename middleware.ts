@@ -28,8 +28,7 @@ export async function middleware(req: NextRequest) {
     try {
       verified = Boolean(await VERIFY_SESSION(session))
       // console.log('Verified');
-    } catch (error) {
-      logApiError(error)
+    } catch (_) {
       await SIGN_OUT()
       return NextResponse.error()
     }

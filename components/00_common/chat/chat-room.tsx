@@ -1,19 +1,52 @@
+import Spinner from '@/components/00_common/spinner'
 import { Button } from '@/components/shadcn/components/ui/button'
 import { Input } from '@/components/shadcn/components/ui/input'
 import { formatDateFrom } from '@/lib/helpers/format-date-from'
-import { useChatService } from '@/lib/hooks/use-chat-service'
-import { IChatSession } from '@/lib/interfaces/chat-session'
+import { useChatService } from '@/components/00_common/chat/hooks/use-chat-service'
+import { IChatMessage } from '@/lib/interfaces/chat-message'
+import { IChatRoom } from '@/lib/interfaces/chat-session'
 import { IProfile } from '@/lib/interfaces/profile'
 import useLoadingStore from '@/lib/stores/loading-store'
 import useProfileStore from '@/lib/stores/profile-store'
 import { FormEvent, useEffect } from 'react'
 
-export default function ChatSession({
+function ChatBubble({
+  message,
+  profile,
+}: {
+  message: IChatMessage
+  profile: IProfile
+}) {
+  if (message.isMine)
+    return (
+      <div className='flex flex-col gap-1 rounded-lg border p-2'>
+        <p>Me</p>
+        {message.createdAt && (
+          <p>
+            {formatDateFrom(new Date(message.createdAt))}
+          </p>
+        )}
+        <p>{message.data}</p>
+      </div>
+    )
+
+  return (
+    <div className='flex flex-col gap-1 rounded-lg border p-2'>
+      <p>{profile?.handle}</p>
+      {message.createdAt && (
+        <p>{formatDateFrom(new Date(message.createdAt))}</p>
+      )}
+      <p>{message.data}</p>
+    </div>
+  )
+}
+
+export default function ChatRoom({
   token,
   session,
 }: {
   token: string
-  session: IChatSession
+  session: IChatRoom
 }) {
   const { profile } = useProfileStore()
   const { messages, sendChat, noMessages, loading } =
@@ -41,20 +74,17 @@ export default function ChatSession({
     }
   }
 
+  if (!profile) return <Spinner />
+
   return (
     <div className='flex flex-1 flex-col gap-2 p-2'>
-      <div className='flex flex-1 flex-col-reverse rounded border p-2'>
+      <div className='flex flex-1 flex-col-reverse gap-2 rounded-lg border p-2'>
         {messages.map((m, i) => (
-          <div
+          <ChatBubble
             key={i}
-            className='flex flex-col gap-1 rounded border p-2'
-          >
-            <p>{profile?.handle}</p>
-            {m.createdAt && (
-              <p>{formatDateFrom(new Date(m.createdAt))}</p>
-            )}
-            <p>{m.data}</p>
-          </div>
+            message={m}
+            profile={profile}
+          />
         ))}
       </div>
       <form

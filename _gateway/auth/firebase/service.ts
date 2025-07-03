@@ -5,9 +5,8 @@ import * as PROFILE_ENDPOINTS from '@/_gateway/api/profile/endpoints'
 import {
   clearSessionCookie,
   createHandle,
-  getSessionCookie,
   logAuthError,
-  setSessionCookie,
+  setSessionCookie
 } from '@/_gateway/auth/_config/helpers'
 import * as AUTH_ENDPOINTS from '@/_gateway/auth/firebase/endpoints'
 import { IProfile } from '@/lib/interfaces/profile'
@@ -18,7 +17,6 @@ export const SIGN_IN_WITH_GOOGLE = async (
   try {
     const {
       userId,
-
       firebaseUser,
       sessionCookie,
       expiresInSeconds,
@@ -61,7 +59,6 @@ export const SIGN_IN_WITH_GOOGLE = async (
 export const VERIFY_SESSION = async (
   session: string,
 ): Promise<string> => {
-  return 'dd1dca96-45c6-4c39-b652-7cc66cc59e09'
   try {
     const { userId } =
       await AUTH_ENDPOINTS._VERIFY_SESSION(session)

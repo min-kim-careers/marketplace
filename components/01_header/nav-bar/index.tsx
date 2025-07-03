@@ -24,14 +24,14 @@ export default function NavBar() {
 
   return (
     <span className='flex items-center justify-between gap-4'>
-      <Link
-        href={`${APP_ROUTES.MARKET.href}`}
-        passHref
-      >
+      <Link href={`${APP_ROUTES.MARKET.href}`} passHref>
         <Button>Browse</Button>
       </Link>
       <Link href={APP_ROUTES.ITEM_POST.href}>
         <Button>Post Ad</Button>
+      </Link>
+      <Link href={APP_ROUTES.CHAT.href}>
+        <Button>Chat</Button>
       </Link>
       <Dropdown />
     </span>

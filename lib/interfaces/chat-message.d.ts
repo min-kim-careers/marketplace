@@ -7,4 +7,6 @@ export interface IChatMessage {
   clientId?: string
   createdAt?: string
   data?: any
+  read?: boolean
+  isMine?: boolean
 }

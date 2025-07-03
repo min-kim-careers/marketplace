@@ -1,3 +1,3 @@
-export interface IChatSession {
+export interface IChatRoom {
   roomId: string
 }

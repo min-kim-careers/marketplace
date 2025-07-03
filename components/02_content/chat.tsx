@@ -1,21 +1,21 @@
 'use client'
 
-import ChatSession from '@/components/00_common/chat/chat-session'
+import ChatRoom from '@/components/00_common/chat/chat-room'
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from '@/components/shadcn/components/ui/resizable'
-import { IChatSession } from '@/lib/interfaces/chat-session'
+import { IChatRoom } from '@/lib/interfaces/chat-session'
 import useFirebaseStore from '@/lib/stores/firebase-store'
 import { useEffect, useState } from 'react'
 
 export default function Chat({
-  session,
-  existingSessions = [],
+  currentRoom: _currentRoom,
+  existingRooms,
 }: {
-  session?: IChatSession
-  existingSessions?: IChatSession[]
+  currentRoom?: IChatRoom
+  existingRooms: IChatRoom[]
 }) {
   const { user, getToken } = useFirebaseStore()
   const [token, setToken] = useState<string | null>(null)
@@ -30,8 +30,8 @@ export default function Chat({
     loadToken()
   }, [user])
 
-  const [currentSession, setCurrentSession] =
-    useState<IChatSession | null>(session ?? null)
+  const [currentRoom, setCurrentRoom] =
+    useState<IChatRoom | null>(_currentRoom ?? null)
 
   return (
     <ResizablePanelGroup
@@ -45,7 +45,7 @@ export default function Chat({
         className='p-2'
       >
         <div className='flex h-full w-full flex-1 flex-col items-center justify-start'>
-          {existingSessions.map((session, i) => (
+          {existingRooms.map((session, i) => (
             <div
               key={i}
               className='flex cursor-pointer items-center justify-center rounded-lg border p-2'
@@ -59,9 +59,9 @@ export default function Chat({
       <ResizableHandle withHandle />
 
       <ResizablePanel className='flex' defaultSize={75}>
-        {!!currentSession && !!token && (
-          <ChatSession
-            session={currentSession}
+        {!!currentRoom && !!token && (
+          <ChatRoom
+            session={currentRoom}
             token={token}
           />
         )}

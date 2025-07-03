@@ -2,7 +2,7 @@
 
 import { ChatMessageMode } from '@/lib/enums/chat-message-type'
 import { IChatMessage } from '@/lib/interfaces/chat-message'
-import { IChatSession } from '@/lib/interfaces/chat-session'
+import { IChatRoom } from '@/lib/interfaces/chat-session'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -11,7 +11,7 @@ export function useChatService({
   session,
 }: {
   token: string
-  session: IChatSession
+  session: IChatRoom
 }) {
   const wsRef = useRef<WebSocket | null>(null)
 
@@ -48,7 +48,10 @@ export function useChatService({
 
   const handleOnOpen = () => {
     console.log(`Connected to chat server`)
-    if (!!handleSend({ mode: ChatMessageMode.CONNECT })) {
+    if (
+      !!handleSend({ mode: ChatMessageMode.CONNECT }) &&
+      !messages.length
+    ) {
       handleSend({
         mode: ChatMessageMode.RESTORE,
         createdAt: new Date().toISOString(),
@@ -84,9 +87,7 @@ export function useChatService({
           ...restoredMessages,
         ])
 
-        toast(
-          `Restored ${restoredMessages.length} messages`,
-        )
+        toast(`Restored messages`)
         break
       }
 
