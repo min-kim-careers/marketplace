@@ -4,7 +4,7 @@ import { getCurrentUserId } from '@/_gateway/api/_config/helpers'
 import { logChatError } from '@/_gateway/chat/_config/helpers'
 import * as CHAT_ENDPOINTS from '@/_gateway/chat/rooms/endpoints'
 import * as PROFILE_ENDPOINTS from '@/_gateway/api/profile/endpoints'
-import { IChatRoom } from '@/lib/interfaces/chat-session'
+import { IChatRoom } from '@/lib/interfaces/chat-room'
 
 export const REGISTER_ROOM = async (
   itemId: string,

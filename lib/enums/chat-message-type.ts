@@ -1,7 +1,15 @@
 export enum ChatMessageMode {
-  CONNECT = 'connect',
-  DISCONNECT = 'disconnect',
+  // Flags
+  CONNECTED = 'connected',
+  JOINED = 'joined',
+  RESTORED = 'restored',
+  LEFT = 'left',
+  EMPTY = 'empty',
+
+  // Actions
   CHAT = 'chat',
   RESTORE = 'restore',
-  EMPTY = 'empty',
+  JOIN = 'join',
+  LEAVE = 'leave',
+  DISCONNECT = 'disconnect',
 }

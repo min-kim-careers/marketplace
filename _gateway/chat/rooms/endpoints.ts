@@ -1,7 +1,7 @@
 'use server'
 
 import { createChatAxios } from '@/_gateway/chat/_config/axios'
-import { IChatRoom } from '@/lib/interfaces/chat-session'
+import { IChatRoom } from '@/lib/interfaces/chat-room'
 
 const chatAxios = await createChatAxios('')
 

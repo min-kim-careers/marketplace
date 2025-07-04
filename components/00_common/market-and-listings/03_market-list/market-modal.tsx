@@ -1,5 +1,4 @@
 import ItemImagePreview from '@/components/00_common/item-image-preview'
-import Spinner from '@/components/00_common/spinner'
 import {
   Avatar,
   AvatarFallback,
@@ -18,14 +17,12 @@ import {
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { ITEM_CONDITION_LABELS } from '@/lib/constants/item-condition-labels'
 import { ItemCondition } from '@/lib/enums/item-condition'
-import { encodeParams } from '@/lib/helpers/encode-params'
 import { formatDateFrom } from '@/lib/helpers/format-date-from'
 import { formatCurrency } from '@/lib/helpers/format-price'
 import { IItem } from '@/lib/interfaces/item'
-import useProfileStore from '@/lib/stores/profile-store'
 import { CircleUserIcon } from 'lucide-react'
-import Link from 'next/link'
-import { ReactNode, useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { ReactNode } from 'react'
 
 export default function MarketModal({
   children,
@@ -34,17 +31,22 @@ export default function MarketModal({
   children: ReactNode
   item: IItem
 }) {
+  const router = useRouter()
+
+  const handleChatButton = () => {
+    router.replace(
+      `${APP_ROUTES.CHAT.href}?${new URLSearchParams({ item: item.id, handle: item.profileHandle })}`,
+    )
+    router.refresh()
+  }
+
   const renderContent = () => (
     <>
       <DialogHeader className='flex-row justify-between'>
         <span className='flex flex-col justify-around'>
           <DialogTitle className='space-x-2'>
             <span className='italic opacity-50'>
-              {
-                ITEM_CONDITION_LABELS[
-                  item.condition as ItemCondition
-                ]
-              }
+              {ITEM_CONDITION_LABELS[item.condition as ItemCondition]}
             </span>
             <span>{item.name}</span>
           </DialogTitle>
@@ -52,9 +54,7 @@ export default function MarketModal({
             <span>
               <span>{`Updated ${formatDateFrom(item.updatedAt)} by `}</span>
               <span>
-                <button className='font-semibold'>
-                  {item.profileHandle}
-                </button>
+                <button className='font-semibold'>{item.profileHandle}</button>
               </span>
             </span>
             <button className='text-sm italic text-black/40'>
@@ -84,11 +84,9 @@ export default function MarketModal({
         <span className='font-semibold'>
           Offered at {formatCurrency(item.price.toString())}
         </span>
-        <Link
-          href={`${APP_ROUTES.CHAT.href}?${new URLSearchParams({ item: item.id, handle: item.profileHandle })}`}
-        >
-          <Button>Chat with {item.profileHandle}</Button>
-        </Link>
+        <Button onClick={handleChatButton}>
+          Chat with {item.profileHandle}
+        </Button>
       </DialogFooter>
     </>
   )
