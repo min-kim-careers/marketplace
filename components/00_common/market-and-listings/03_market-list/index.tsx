@@ -1,12 +1,12 @@
 import MarketCard from '@/components/00_common/market-and-listings/03_market-list/market-card'
 import MarketModal from '@/components/00_common/market-and-listings/03_market-list/market-modal'
 import { IItem } from '@/lib/interfaces/item'
-import { useItemPageContext } from '@/lib/providers/item-page-provider'
+import { useItemPageStore } from '@/lib/providers/item-page-provider'
 import  useLayoutStore  from '@/lib/stores/layout-store'
 
 export default function MarketList() {
   const { columns } = useLayoutStore()
-  const { items } = useItemPageContext()
+  const items = useItemPageStore((store) => store.items)
 
   if (!items.length)
     return (

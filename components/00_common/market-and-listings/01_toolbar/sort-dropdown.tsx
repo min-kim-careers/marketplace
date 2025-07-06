@@ -12,12 +12,13 @@ import { IItemSortOption } from '@/lib/interfaces/item-sort-options'
 import { IItemPageParams } from '@/lib/interfaces/item-page-params'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { useItemPageContext } from '@/lib/providers/item-page-provider'
+import { useItemPageStore } from '@/lib/providers/item-page-provider'
 
 export default function SortDropdown() {
   const sortOptions = ITEM_SORT_OPTIONS
 
-  const { params, route } = useItemPageContext()
+  const params = useItemPageStore((store) => store.params)
+  const route = useItemPageStore((store) => store.route)
 
   const [currentSortOption, setCurrentSortOption] =
     useState<IItemSortOption | null>(null)

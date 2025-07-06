@@ -4,11 +4,12 @@ import { toUrlParams } from '@/lib/helpers/to-url-params'
 import { Search } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { FormEvent } from 'react'
-import { useItemPageContext } from '@/lib/providers/item-page-provider'
+import { useItemPageStore } from '@/lib/providers/item-page-provider'
 
 export default function SearchInput() {
   const router = useRouter()
-  const { params, route } = useItemPageContext()
+  const params = useItemPageStore((store) => store.params)
+  const route = useItemPageStore((store) => store.route)
 
   const handleSearch = async (
     e: FormEvent<HTMLFormElement>,

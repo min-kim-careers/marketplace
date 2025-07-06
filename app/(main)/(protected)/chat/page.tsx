@@ -2,6 +2,8 @@
 
 import * as CHAT_SERVICE from '@/_gateway/chat/rooms/service'
 import Chat from '@/components/02_content/chat'
+import { IChatRoom } from '@/lib/interfaces/chat-room'
+import { ChatPageProvider } from '@/lib/providers/chat-page-provider'
 import { notFound } from 'next/navigation'
 import { z } from 'zod'
 
@@ -23,24 +25,19 @@ export default async function Page({
 
   const result = ChatParamsSchema.safeParse(urlParams)
 
-  const existingRooms =
-    await CHAT_SERVICE.GET_EXISTING_ROOMS()
+  const existingRooms = await CHAT_SERVICE.GET_EXISTING_ROOMS()
 
-  if (!result.success)
-    return <Chat existingRooms={existingRooms} />
+  var currentRoom: IChatRoom | null = null
 
-  const { item: itemId, handle } = result.data
-
-  const currentRoom = await CHAT_SERVICE.REGISTER_ROOM(
-    itemId,
-    handle,
-  )
-  if (!currentRoom) notFound()
+  if (result.success) {
+    const { item: itemId, handle } = result.data
+    currentRoom = await CHAT_SERVICE.REGISTER_ROOM(itemId, handle)
+    if (!currentRoom) notFound()
+  }
 
   return (
-    <Chat
-      currentRoom={currentRoom}
-      existingRooms={existingRooms}
-    />
+    <ChatPageProvider props={{ currentRoom, existingRooms }}>
+      <Chat />
+    </ChatPageProvider>
   )
 }

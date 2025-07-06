@@ -37,7 +37,7 @@ import { formatDateFrom } from '@/lib/helpers/format-date-from'
 import { formatCurrency } from '@/lib/helpers/format-price'
 import { useUpsertItem } from '@/lib/hooks/use-upsert-item'
 import { IItem } from '@/lib/interfaces/item'
-import { useItemPageContext } from '@/lib/providers/item-page-provider'
+import { useItemPageStore } from '@/lib/providers/item-page-provider'
 import useLoadingStore from '@/lib/stores/loading-store'
 import { Circle } from 'lucide-react'
 import Link from 'next/link'
@@ -119,7 +119,8 @@ const ItemStatusSelect = ({
   item: IItem
   index: number
 }) => {
-  const { updateItemAtIndex } = useItemPageContext()
+    const updateItemAtIndex = useItemPageStore((store) => store.updateItemAtIndex)
+
 
   const { handleUpsertItem } = useUpsertItem()
 

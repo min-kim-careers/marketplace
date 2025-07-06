@@ -1,21 +1,22 @@
 'use client'
 
 import { ChatMessageMode } from '@/lib/enums/chat-message-type'
+import { useLoadToken } from '@/lib/firebase/use-load-token'
 import { IChatMessage } from '@/lib/interfaces/chat-message'
+import { IChatMessageChat } from '@/lib/interfaces/chat-message-chat'
+import { IChatMessageRestore } from '@/lib/interfaces/chat-message-restore'
 import { IChatRoom } from '@/lib/interfaces/chat-room'
+import { useChatPageStore } from '@/lib/providers/chat-page-provider'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-export function useChatSocket({
-  token,
-  room,
-}: {
-  token: string
-  room: IChatRoom | null
-}) {
+export function useChatSocket() {
+  const token = useLoadToken()
+  const room = useChatPageStore(store => store.currentRoom)
+
   const wsRef = useRef<WebSocket | null>(null)
 
-  const [messages, setMessages] = useState<IChatMessage[]>([])
+  const [messages, setMessages] = useState<IChatMessageChat[]>([])
   const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
@@ -23,6 +24,8 @@ export function useChatSocket({
   }, [room])
 
   useEffect(() => {
+    if (!token) return
+
     try {
       setLoading(true)
       const url = `${process.env.NEXT_PUBLIC_CHAT_WS}?${new URLSearchParams({ token })}`
@@ -32,15 +35,16 @@ export function useChatSocket({
 
       ws.onopen = () => {}
       ws.onmessage = (event: MessageEvent<any>) => {
-        const newMessage: IChatMessage = JSON.parse(event.data)
+        const data = JSON.parse(event.data)
+        const newMessage: IChatMessage = data
         console.log('Received message:', newMessage)
         switch (newMessage.mode) {
           case ChatMessageMode.CHAT: {
-            handleChatMessage(newMessage)
+            handleChatMessage(data as IChatMessageChat)
             break
           }
           case ChatMessageMode.RESTORED: {
-            handleRestoredMessage(newMessage)
+            handleRestoredMessage(data as IChatMessageRestore)
             break
           }
           case ChatMessageMode.CONNECTED: {
@@ -82,15 +86,13 @@ export function useChatSocket({
   const [noMessages, setNoMessages] = useState<boolean>(false)
   // ----------------------------- Message handlers -----------------------------
 
-  const handleChatMessage = (message: IChatMessage) => {
+  const handleChatMessage = (message: IChatMessageChat) => {
     setMessages((prev) => [message, ...prev])
   }
 
-  const handleRestoredMessage = (message: IChatMessage) => {
-    if (!message.data) return
-    const restoredMessages: IChatMessage[] = message.data
-    if (!restoredMessages.length) return setNoMessages(true)
-    setMessages((prev) => [...prev, ...restoredMessages])
+  const handleRestoredMessage = (message: IChatMessageRestore) => {
+    if (!message.messages.length) return setNoMessages(true)
+    setMessages((prev) => [...prev, ...message.messages])
     toast(`Restored messages`)
   }
 
@@ -118,7 +120,7 @@ export function useChatSocket({
 
   // ----------------------------------------------------------------------------
 
-  const sendMessage = (message: IChatMessage) => {
+  const sendMessage = (message: any) => {
     if (wsRef.current) {
       wsRef.current.send(JSON.stringify(message))
       console.log('Message sent:', message)

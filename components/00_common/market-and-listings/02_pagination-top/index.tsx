@@ -1,9 +1,12 @@
 import Pagination from '@/components/00_common/market-and-listings/00_common/pagination'
 import { DEFAULT_ITEM_PAGINATION } from '@/lib/constants/item-pagination'
-import { useItemPageContext } from '@/lib/providers/item-page-provider'
+import { useItemPageStore } from '@/lib/providers/item-page-provider'
 
 export default function PaginationTop() {
-  const { items, count, params } = useItemPageContext()
+  const params = useItemPageStore((store) => store.params)
+  const items = useItemPageStore((store) => store.items)
+  const count = useItemPageStore((store) => store.count)
+
 
   return (
     <div className='flex w-full items-center justify-between px-2 text-sm'>

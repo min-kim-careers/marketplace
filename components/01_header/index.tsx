@@ -14,7 +14,7 @@ export default function Header() {
   const pathLabel = getPathLabel(pathname)
 
   return (
-    <div className='flex w-full items-start justify-between'>
+    <div className='flex w-full items-center justify-between h-[8vh]'>
       <span className='space-x-2'>
         <span>
           <Link

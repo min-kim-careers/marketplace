@@ -2,13 +2,13 @@
 
 import { IItem } from '@/lib/interfaces/item'
 import { IItemPageParams } from '@/lib/interfaces/item-page-params'
-import React, {
+import {
   createContext,
   ReactNode,
   useContext,
-  useEffect,
-  useState,
+  useRef
 } from 'react'
+import { createStore, StoreApi, useStore } from 'zustand'
 
 interface ItemPageProps {
   items: IItem[]
@@ -21,9 +21,7 @@ interface ItemPageState extends ItemPageProps {
   updateItemAtIndex: (index: number, item: IItem) => void
 }
 
-const ItemPageContext = createContext<ItemPageState | null>(
-  null,
-)
+const ItemPageContext = createContext<StoreApi<ItemPageState> | null>(null)
 
 export const ItemPageProvider = ({
   children,
@@ -32,43 +30,26 @@ export const ItemPageProvider = ({
   children: ReactNode
   props: ItemPageProps
 }) => {
-  const [items, setItems] = useState<IItem[]>(props.items)
-  const [count, setCount] = useState<number>(props.count)
-  const [params, setParams] = useState<IItemPageParams>(
-    props.params,
+  const storeRef = useRef(
+    createStore<ItemPageState>((set, get) => ({
+      ...props,
+      updateItemAtIndex: (index: number, item: IItem) => {
+        const newItems = [...get().items]
+        newItems[index] = item
+        set({ items: newItems })
+      },
+    })),
   )
 
-  useEffect(() => {
-    setItems(props.items)
-    setCount(props.count)
-    setParams(props.params)
-  }, [props])
-
-  const updateItemAtIndex = (index: number, item: IItem) =>
-    setItems((prev) => {
-      const newItems = [...prev]
-      newItems[index] = item
-      return newItems
-    })
-
   return (
-    <ItemPageContext.Provider
-      value={{
-        items,
-        count,
-        params,
-        route: props.route,
-
-        updateItemAtIndex,
-      }}
-    >
+    <ItemPageContext.Provider value={storeRef.current}>
       {children}
     </ItemPageContext.Provider>
   )
 }
 
-export const useItemPageContext = () => {
-  const context = useContext(ItemPageContext)
-  if (!context) throw new Error('Not inside provider')
-  return context
+export const useItemPageStore = <T,>(selector: (state: ItemPageState) => T) => {
+  const store = useContext(ItemPageContext)
+  if (!store) throw new Error('Not inside provider')
+  return useStore(store, selector)
 }

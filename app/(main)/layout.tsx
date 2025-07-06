@@ -8,10 +8,10 @@ export default function MainLayout({
   children: React.ReactNode
 }>) {
   return (
-    <div className='flex min-h-screen flex-col gap-2 p-2'>
+    <div className='flex flex-col px-2'>
       <LoadingOverlay />
-      <Header />
-      <div className='flex w-full flex-1 flex-col items-center'>
+      <div className='flex flex-col items-center min-h-screen pb-2'>
+        <Header />
         {children}
       </div>
       <Footer />
