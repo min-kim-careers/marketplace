@@ -18,7 +18,7 @@ export interface UpsertProfileRequest {
 }
 
 export const UPDATE_PROFILE = async (
-  newProfile: UpsertProfileRequest,
+  request: UpsertProfileRequest,
 ): Promise<IProfile | null> => {
   try {
     const userId = await getCurrentUserId()
@@ -27,7 +27,7 @@ export const UPDATE_PROFILE = async (
     const { profile } =
       await PROFILE_ENDPOINTS._UPSERT_PROFILE(
         userId,
-        newProfile,
+        request,
       )
 
     return profile

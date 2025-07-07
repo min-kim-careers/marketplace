@@ -19,6 +19,7 @@ import { ITEM_CONDITION_LABELS } from '@/lib/constants/item-condition-labels'
 import { ItemCondition } from '@/lib/enums/item-condition'
 import { formatDateFrom } from '@/lib/helpers/format-date-from'
 import { formatCurrency } from '@/lib/helpers/format-price'
+import { useRegisterRoom } from '@/lib/hooks/use-register-room'
 import { IItem } from '@/lib/interfaces/item'
 import { CircleUserIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -32,12 +33,14 @@ export default function MarketModal({
   item: IItem
 }) {
   const router = useRouter()
+  const { handleRegisterRoom } = useRegisterRoom()
 
-  const handleChatButton = () => {
-    router.replace(
-      `${APP_ROUTES.CHAT.href}?${new URLSearchParams({ item: item.id, handle: item.profileHandle })}`,
-    )
-    router.refresh()
+  const handleChatButton = async () => {
+    const roomId = await handleRegisterRoom(item.id, item.profileHandle)
+    if (roomId)
+      router.replace(
+        `${APP_ROUTES.CHAT.href}?${new URLSearchParams({ roomId })}`,
+      )
   }
 
   const renderContent = () => (

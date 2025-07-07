@@ -1,5 +1,5 @@
 import { formatDateFrom } from '@/lib/helpers/format-date-from'
-import { IChatMessageChat } from '@/lib/interfaces/chat-message-chat'
+import { IChatMessageChat } from "@/lib/interfaces/chat-message"
 import { IProfile } from '@/lib/interfaces/profile'
 import useProfileStore from '@/lib/stores/profile-store'
 

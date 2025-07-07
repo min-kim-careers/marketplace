@@ -1,16 +1,10 @@
 'use server'
 
 import { createChatAxios } from '@/_gateway/chat/_config/axios'
+import { RegisterRoomRequest } from '@/_gateway/chat/rooms/service'
 import { IChatRoom } from '@/lib/interfaces/chat-room'
 
 const chatAxios = await createChatAxios('')
-
-export interface RegisterRoomRequest {
-  itemId: string
-  clientId: string
-  peerId: string
-  withExisting?: boolean
-}
 
 export const _REGISTER_ROOM = async (
   request: RegisterRoomRequest,

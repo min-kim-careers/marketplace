@@ -2,7 +2,7 @@ import { APP_DATA } from "@/lib/constants/app-data";
 
 export default function Footer() {
   return (
-    <div className='flex flex-col items-start text-xs gap-2'>
+    <div className='flex flex-col items-start text-xs gap-2 pb-2'>
       <div>
         <p>{APP_DATA.TITLE}</p>
       </div>

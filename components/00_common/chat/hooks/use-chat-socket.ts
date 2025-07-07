@@ -1,18 +1,21 @@
 'use client'
 
+import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { ChatMessageMode } from '@/lib/enums/chat-message-type'
 import { useLoadToken } from '@/lib/firebase/use-load-token'
 import { IChatMessage } from '@/lib/interfaces/chat-message'
-import { IChatMessageChat } from '@/lib/interfaces/chat-message-chat'
-import { IChatMessageRestore } from '@/lib/interfaces/chat-message-restore'
-import { IChatRoom } from '@/lib/interfaces/chat-room'
+import { IChatMessageChat } from '@/lib/interfaces/chat-message'
+import { IChatMessageRestore } from '@/lib/interfaces/chat-message'
 import { useChatPageStore } from '@/lib/providers/chat-page-provider'
+import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 export function useChatSocket() {
+  const router = useRouter()
+
   const token = useLoadToken()
-  const room = useChatPageStore(store => store.currentRoom)
+  const currentRoom = useChatPageStore((store) => store.currentRoom)
 
   const wsRef = useRef<WebSocket | null>(null)
 
@@ -20,8 +23,15 @@ export function useChatSocket() {
   const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
-    if (room) sendMessage({ mode: ChatMessageMode.JOIN, roomId: room.id })
-  }, [room])
+    if (currentRoom) {
+      sendMessage({ mode: ChatMessageMode.JOIN, roomId: currentRoom.id })
+    } else {
+      setLoading(true)
+      if (hasSession) sendMessage({ mode: ChatMessageMode.LEAVE })
+      setHasSession(false)
+      setMessages([])
+    }
+  }, [currentRoom])
 
   useEffect(() => {
     if (!token) return
@@ -77,12 +87,10 @@ export function useChatSocket() {
       setLoading(false)
     }
 
-    return () => {
-      wsRef.current?.close()
-    }
-  }, [])
+    return () => wsRef.current?.close()
+  }, [token])
 
-  const [isChatting, setIsChatting] = useState<boolean>(false)
+  const [hasSession, setHasSession] = useState<boolean>(false)
   const [noMessages, setNoMessages] = useState<boolean>(false)
   // ----------------------------- Message handlers -----------------------------
 
@@ -97,7 +105,10 @@ export function useChatSocket() {
   }
 
   const handleConnectedMessage = () => {
-    if (room) sendMessage({ mode: ChatMessageMode.JOIN, roomId: room.id })
+    if (currentRoom) {
+      sendMessage({ mode: ChatMessageMode.JOIN, roomId: currentRoom.id })
+      setLoading(true)
+    }
   }
 
   const handleEmptyMessage = () => {
@@ -110,12 +121,14 @@ export function useChatSocket() {
         mode: ChatMessageMode.RESTORE,
         createdAt: new Date().toISOString(),
       })
-    setIsChatting(true)
+    setHasSession(true)
+    setLoading(false)
   }
 
   const handleLeftMessage = () => {
-    setIsChatting(false)
+    setHasSession(false)
     setMessages([])
+    setLoading(false)
   }
 
   // ----------------------------------------------------------------------------
@@ -134,13 +147,14 @@ export function useChatSocket() {
       setMessages((prev) => [
         sendMessage({
           mode: ChatMessageMode.CHAT,
-          data: text,
+          createdAt: new Date().toISOString(),
+          content: text,
           isMine: true,
         }),
         ...prev,
       ]),
-    leaveChat: () => sendMessage({ mode: ChatMessageMode.LEAVE }),
-    isChatting,
+    leaveChat: () => router.replace(APP_ROUTES.CHAT.href),
+    hasSession,
     noMessages,
     loading,
   }

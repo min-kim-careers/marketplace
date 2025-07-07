@@ -1,12 +1,7 @@
 'use client'
 
 import { IChatRoom } from '@/lib/interfaces/chat-room'
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useRef
-} from 'react'
+import { createContext, ReactNode, useContext, useEffect, useRef } from 'react'
 import { createStore, StoreApi, useStore } from 'zustand'
 
 interface ChatPageProps {
@@ -15,6 +10,8 @@ interface ChatPageProps {
 }
 
 interface ChatPageState extends ChatPageProps {
+  setCurrentRoom: (currentRoom: IChatRoom) => void
+  setExistingRooms: (existingRooms: IChatRoom[]) => void
 }
 
 const ChatPageContext = createContext<StoreApi<ChatPageState> | null>(null)
@@ -29,8 +26,18 @@ export const ChatPageProvider = ({
   const storeRef = useRef(
     createStore<ChatPageState>((set, get) => ({
       ...props,
+      setCurrentRoom: (currentRoom: IChatRoom) => set({ currentRoom }),
+      setExistingRooms: (existingRooms: IChatRoom[]) => set({ existingRooms }),
     })),
   )
+
+  useEffect(() => {
+    storeRef.current.setState({ currentRoom: props.currentRoom })
+  }, [props.currentRoom])
+
+  useEffect(() => {
+    storeRef.current.setState({ existingRooms: props.existingRooms })
+  }, [props.existingRooms])
 
   return (
     <ChatPageContext.Provider value={storeRef.current}>

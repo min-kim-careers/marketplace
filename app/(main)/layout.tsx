@@ -10,7 +10,7 @@ export default function MainLayout({
   return (
     <div className='flex flex-col px-2'>
       <LoadingOverlay />
-      <div className='flex flex-col items-center min-h-screen pb-2'>
+      <div className='flex flex-col items-center min-h-screen'>
         <Header />
         {children}
       </div>
