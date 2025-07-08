@@ -4,6 +4,7 @@ from uuid import UUID
 from fastapi import APIRouter, Body, Depends, File, Form, Path, Query, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.common import utils
 from app.item.models.item import ItemDB
 from app.db.session import get_db
 from app.common.schemas.error import ErrorResponse
@@ -98,9 +99,7 @@ async def upsert_user_item(
 ) -> ItemResponse:
     item_db = None
     if item_id:
-        item_db = await ItemRepository.get_by_item_and_user_id(
-            db, user_id, item_id
-        )
+        item_db = await ItemRepository.get_by_item_and_user_id(db, user_id, item_id)
 
     new_image_urls = []
     if item_in.upload_images and item_in.image_urls:
@@ -121,4 +120,19 @@ async def upsert_user_item(
 
     return ItemResponse(
         data={"item": item},
+    )
+
+
+@items_router.get("/user/{user_id}/items", response_model=ProfileResponse)
+async def get_items_by_ids(
+    user_id: UUID = Path(...),
+    item_slugs: List[str] = Query(..., alias='itemSlugs'),
+    db: AsyncSession = Depends(get_db),
+) -> ProfileResponse:
+    item_ids = [utils.decode_slug(i) for i in set(item_slugs)]
+
+    items = ItemRepository.get_by_items_and_user_id(db, user_id, item_ids)
+
+    return ProfileResponse(
+        data={"items": items},
     )

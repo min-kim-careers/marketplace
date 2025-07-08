@@ -157,6 +157,25 @@ class ItemRepository:
         )
 
     @staticmethod
+    async def get_by_items_and_user_id(
+        db: AsyncSession,
+        user_id: UUID,
+        item_ids: List[UUID],
+    ) -> Sequence[ItemDB]:
+        try:
+            stmt = select(ItemDB).where(
+                and_(
+                    ItemDB.user_id == user_id,
+                    ItemDB.id.in_(item_ids),
+                )
+            )
+            result = await db.execute(stmt)
+            return result.scalars().all()
+        except Exception as e:
+            print(e)
+            return []
+
+    @staticmethod
     async def create(
         db: AsyncSession,
         user_id: UUID,

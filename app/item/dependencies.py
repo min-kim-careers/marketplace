@@ -4,7 +4,7 @@ from uuid import UUID
 from fastapi import Depends, Path, Query
 
 from app.common.schemas.error import ErrorResponse
-from app.common.utils import slug_to_uuid
+from app.common.utils import decode_slug
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.item.models.item import ItemDB
@@ -17,7 +17,7 @@ async def resolve_item(
     user_id: UUID = Path(...),
     db: AsyncSession = Depends(get_db),
 ) -> ItemDB:
-    item_id = slug_to_uuid(item_slug)
+    item_id = decode_slug(item_slug)
     item_db = await ItemRepository.get_by_item_and_user_id(db, user_id, item_id)
     if not item_db:
         raise ErrorResponse(status_code=404, message="Item not found")
@@ -27,4 +27,4 @@ async def resolve_item(
 def resolve_item_slug(item_slug: str = Query(None, alias='itemSlug')) -> UUID | None:
     if not item_slug:
         return None
-    return slug_to_uuid(item_slug)
+    return decode_slug(item_slug)

@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Generic, List, Optional, TypeVar
 
 from app.common.schemas.outbound import OutboundBase
-from app.common.utils import uuid_to_slug
+from app.common.utils import encode_slug
 from app.item.models.item import ItemDB
 from app.item.enums import ItemCategory, ItemCondition, ItemStatus
 
@@ -40,7 +40,7 @@ class ItemOut(OutboundBase):
             {
                 **item.__dict__,
                 "profile_handle": item.profile.handle,
-                "id": uuid_to_slug(item.id),
+                "id": encode_slug(item.id),
             },
             from_attributes=True,
         )
