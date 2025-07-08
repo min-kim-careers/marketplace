@@ -4,6 +4,7 @@ import { getCurrentUserId } from '@/_gateway/api/_config/helpers'
 import { logChatError } from '@/_gateway/chat/_config/helpers'
 import * as CHAT_ENDPOINTS from '@/_gateway/chat/rooms/endpoints'
 import * as PROFILE_ENDPOINTS from '@/_gateway/api/profile/endpoints'
+import * as ITEM_ENDPOINTS from '@/_gateway/api/item/endpoints'
 import { IChatRoom } from '@/lib/interfaces/chat-room'
 
 export interface RegisterRoomRequest {
@@ -12,7 +13,7 @@ export interface RegisterRoomRequest {
   peerId: string
 }
 
-export const REGISTER_AND_GET_ROOM_ID = async (
+export const FETCH_ROOM_ID = async (
   itemId: string,
   handle: string,
 ): Promise<string | null> => {
@@ -42,6 +43,12 @@ export const GET_EXISTING_ROOMS = async (): Promise<IChatRoom[]> => {
     if (!userId) throw new Error()
 
     const { rooms } = await CHAT_ENDPOINTS._GET_ROOMS_BY_CLIENT(userId)
+
+    const itemSlugs: string[] = rooms.map((r) => r.itemId)
+
+    const { items } = await ITEM_ENDPOINTS._GET_ITEMS_BY_IDS(userId, itemSlugs)
+
+    console.log(items)
 
     return rooms
   } catch (error) {

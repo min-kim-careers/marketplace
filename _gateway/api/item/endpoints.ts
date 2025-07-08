@@ -3,19 +3,14 @@
 import { createApiAxios } from '@/_gateway/api/_config/axios'
 import { IItem } from '@/lib/interfaces/item'
 import { GenericFormData } from 'axios'
-import {
-  GetItemsRequest,
-  UpsertItemRequest,
-} from './service'
+import { GetItemsRequest, UpsertItemRequest } from './service'
 
 const apiItemAxios = await createApiAxios('/api/items')
 
 export const _GET_ALL_ITEMS = async (
   request: GetItemsRequest,
 ): Promise<{ items: IItem[]; count: number }> =>
-  apiItemAxios
-    .get(``, { params: request })
-    .then((res) => res.data)
+  apiItemAxios.get(``, { params: request }).then((res) => res.data)
 
 export const _GET_USER_ITEMS = async (
   userId: string,
@@ -31,9 +26,7 @@ export const _GET_USER_ITEM = async (
   userId: string,
   itemSlug: string,
 ): Promise<{ item: IItem }> =>
-  apiItemAxios
-    .get(`/user/${userId}/item/${itemSlug}`)
-    .then((res) => res.data)
+  apiItemAxios.get(`/user/${userId}/item/${itemSlug}`).then((res) => res.data)
 
 export const _DELETE_USER_ITEM = async (
   userId: string,
@@ -58,8 +51,12 @@ export const _CREATE_USER_ITEM = async (
   userId: string,
   request: UpsertItemRequest,
 ): Promise<{ item: IItem }> =>
+  apiItemAxios.post(`/user/${userId}`, request).then((res) => res.data)
+
+export const _GET_ITEMS_BY_IDS = async (
+  userId: string,
+  itemSlugs: string[],
+): Promise<{ items: IItem[] }> =>
   apiItemAxios
-    .post(`/user/${userId}`, request)
+    .get(`/user/${userId}/items`, { params: { itemSlugs } })
     .then((res) => res.data)
-
-

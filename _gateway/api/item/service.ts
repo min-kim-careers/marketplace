@@ -94,7 +94,7 @@ export const GET_USER_ITEMS = async (
 }
 
 export const GET_USER_ITEM = async (
-  itemId: string,
+  itemSlug: string,
 ): Promise<IItem | null> => {
   try {
     const userId = await getCurrentUserId()
@@ -102,7 +102,7 @@ export const GET_USER_ITEM = async (
 
     const { item } = await ITEM_ENDPOINTS._GET_USER_ITEM(
       userId,
-      itemId,
+      itemSlug,
     )
 
     return item
@@ -152,7 +152,7 @@ const insertImageUrlsPlaceholders = (
 
 export const UPSERT_ITEM = async (
   request: UpsertItemRequest,
-  itemId?: string,
+  itemSlug?: string,
 ): Promise<IItem | null> => {
   try {
     const userId = await getCurrentUserId()
@@ -168,7 +168,7 @@ export const UPSERT_ITEM = async (
     const { item } = await ITEM_ENDPOINTS._UPSERT_USER_ITEM(
       userId,
       formData,
-      itemId,
+      itemSlug,
     )
 
     return item
@@ -179,13 +179,13 @@ export const UPSERT_ITEM = async (
 }
 
 export const DELETE_ITEM = async (
-  itemId: string,
+  itemSlug: string,
 ): Promise<boolean> => {
   try {
     const userId = await getCurrentUserId()
     if (!userId) throw new Error()
 
-    await ITEM_ENDPOINTS._DELETE_USER_ITEM(userId, itemId)
+    await ITEM_ENDPOINTS._DELETE_USER_ITEM(userId, itemSlug)
 
     return true
   } catch (error) {
@@ -195,9 +195,9 @@ export const DELETE_ITEM = async (
 }
 
 export const UPDATE_ITEM_STATUS = async (
-  itemId: string,
+  itemSlug: string,
   status: ItemStatus,
-) => {
+): Promise<boolean> => {
   try {
     const userId = await getCurrentUserId()
     if (!userId) throw new Error()
@@ -207,7 +207,7 @@ export const UPDATE_ITEM_STATUS = async (
     await ITEM_ENDPOINTS._UPSERT_USER_ITEM(
       userId,
       formData,
-      itemId,
+      itemSlug,
     )
 
     return true
@@ -216,3 +216,4 @@ export const UPDATE_ITEM_STATUS = async (
     return false
   }
 }
+

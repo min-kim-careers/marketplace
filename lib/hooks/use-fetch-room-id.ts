@@ -1,18 +1,18 @@
-import { REGISTER_AND_GET_ROOM_ID } from '@/_gateway/chat/rooms/service'
+import { FETCH_ROOM_ID } from '@/_gateway/chat/rooms/service'
 import useLoadingStore from '@/lib/stores/loading-store'
 import { toast } from 'sonner'
 
-export const useRegisterRoom = () => {
+export const useFetchRoomId = () => {
   const { setLoading } = useLoadingStore()
 
-  const handleRegisterRoom = async (
+  const handleFetchRoomId = async (
     itemId: string,
     handle: string,
   ): Promise<string | null> => {
     try {
       setLoading('Loading...', true)
 
-      const roomId = await REGISTER_AND_GET_ROOM_ID(itemId, handle)
+      const roomId = await FETCH_ROOM_ID(itemId, handle)
       if (!roomId) throw new Error()
 
       return roomId
@@ -24,5 +24,5 @@ export const useRegisterRoom = () => {
     }
   }
 
-  return { handleRegisterRoom }
+  return { handleFetchRoomId }
 }

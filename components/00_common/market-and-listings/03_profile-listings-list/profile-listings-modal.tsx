@@ -103,8 +103,6 @@ export default function ProfileListingsModal({
             <DeleteConfirmDialog item={item}>
               <Button variant={'outline'}>Delete</Button>
             </DeleteConfirmDialog>
-
-            <Button variant={'outline'}>Show Chats</Button>
           </span>
         </DialogFooter>
       </DialogContent>

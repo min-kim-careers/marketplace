@@ -8,12 +8,12 @@ import { notFound } from 'next/navigation'
 export default async function Page({
   params,
 }: {
-  params: Promise<{ id: string }>
+  params: Promise<{ slug: string }>
 }) {
-  const { id } = await params
-  if (!id) notFound()
+  const { slug } = await params
+  if (!slug) notFound()
 
-  const item = await GET_USER_ITEM(id)
+  const item = await GET_USER_ITEM(slug)
   if (!item) notFound()
 
   const extra = await GET_PROFILE_EXTRA()

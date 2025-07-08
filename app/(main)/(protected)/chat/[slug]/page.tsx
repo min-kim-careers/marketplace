@@ -2,33 +2,27 @@
 
 import * as CHAT_SERVICE from '@/_gateway/chat/rooms/service'
 import Chat from '@/components/02_content/chat'
+import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { IChatRoom } from '@/lib/interfaces/chat-room'
 import { ChatPageProvider } from '@/lib/providers/chat-page-provider'
-import { z } from 'zod'
-
-const ChatParamsSchema = z
-  .object({
-    roomId: z.string().nonempty(),
-  })
-  .strict()
+import { notFound } from 'next/navigation'
 
 export default async function Page({
-  searchParams,
+  params,
 }: {
-  searchParams: Promise<{
-    [key: string]: string | string[] | undefined
-  }>
+  params: Promise<{ slug: string }>
 }) {
-  const urlParams = await searchParams
+  const { slug } = await params
 
-  const result = ChatParamsSchema.safeParse(urlParams)
+  const isIndex = slug === APP_ROUTES.CHAT.index
 
   const existingRooms = await CHAT_SERVICE.GET_EXISTING_ROOMS()
 
-  var currentRoom: IChatRoom | null =
-    (result.success &&
-      existingRooms.find((r) => r.id === result.data.roomId)) ||
-    null
+  var currentRoom: IChatRoom | null = null
+  if (slug && !isIndex) {
+    currentRoom = existingRooms.find((r) => r.id === slug) || null
+    if (!currentRoom) notFound()
+  }
 
   return (
     <ChatPageProvider props={{ currentRoom, existingRooms }}>

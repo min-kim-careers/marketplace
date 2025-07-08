@@ -13,14 +13,9 @@ export default function NavBar() {
   const { handleSignOut } = useSignOut()
 
   if (!profile)
-    return (
-      <Button onClick={handleSignIn}>
-        Sign in with Google
-      </Button>
-    )
+    return <Button onClick={handleSignIn}>Sign in with Google</Button>
 
-  if (!profile.handle)
-    return <Button onClick={handleSignOut}>Sign out</Button>
+  if (!profile.handle) return <Button onClick={handleSignOut}>Sign out</Button>
 
   return (
     <span className='flex items-center justify-between gap-4'>
@@ -30,7 +25,7 @@ export default function NavBar() {
       <Link href={APP_ROUTES.ITEM_POST.href}>
         <Button>Post Ad</Button>
       </Link>
-      <Link href={APP_ROUTES.CHAT.href}>
+      <Link href={`${APP_ROUTES.CHAT.href}/${APP_ROUTES.CHAT.index}`}>
         <Button>Chat</Button>
       </Link>
       <Dropdown />

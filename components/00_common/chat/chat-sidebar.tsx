@@ -11,7 +11,7 @@ export function ChatSidebar({ className }: { className?: string }) {
   const existingRooms = useChatPageStore((store) => store.existingRooms)
   const isMobile = useIsMobile()
 
-  const [open, setOpen] = useState<boolean>(true)
+  const [open, setOpen] = useState<boolean>(false)
 
   // if (isMobile) return null
 

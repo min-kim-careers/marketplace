@@ -1,11 +1,15 @@
 'use client'
 
 import { APP_ROUTES } from '@/lib/constants/app-routes'
-import { ChatMessageMode } from '@/lib/enums/chat-message-type'
+import { ChatMessageMode } from '@/lib/enums/chat-message-mode'
 import { useLoadToken } from '@/lib/firebase/use-load-token'
-import { IChatMessage } from '@/lib/interfaces/chat-message'
+import {
+  IChatMessage,
+  IChatMessageJoin,
+  IChatMessageRestore,
+} from '@/lib/interfaces/chat-message'
 import { IChatMessageChat } from '@/lib/interfaces/chat-message'
-import { IChatMessageRestore } from '@/lib/interfaces/chat-message'
+import { IChatMessageRestored } from '@/lib/interfaces/chat-message'
 import { useChatPageStore } from '@/lib/providers/chat-page-provider'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
@@ -24,10 +28,13 @@ export function useChatSocket() {
 
   useEffect(() => {
     if (currentRoom) {
-      sendMessage({ mode: ChatMessageMode.JOIN, roomId: currentRoom.id })
+      sendMessage<IChatMessageJoin>({
+        mode: ChatMessageMode.JOIN,
+        roomSlug: currentRoom.id,
+      })
     } else {
       setLoading(true)
-      if (hasSession) sendMessage({ mode: ChatMessageMode.LEAVE })
+      if (hasSession) sendMessage<IChatMessage>({ mode: ChatMessageMode.LEAVE })
       setHasSession(false)
       setMessages([])
     }
@@ -54,7 +61,7 @@ export function useChatSocket() {
             break
           }
           case ChatMessageMode.RESTORED: {
-            handleRestoredMessage(data as IChatMessageRestore)
+            handleRestoredMessage(data as IChatMessageRestored)
             break
           }
           case ChatMessageMode.CONNECTED: {
@@ -98,7 +105,7 @@ export function useChatSocket() {
     setMessages((prev) => [message, ...prev])
   }
 
-  const handleRestoredMessage = (message: IChatMessageRestore) => {
+  const handleRestoredMessage = (message: IChatMessageRestored) => {
     if (!message.messages.length) return setNoMessages(true)
     setMessages((prev) => [...prev, ...message.messages])
     toast(`Restored messages`)
@@ -106,7 +113,10 @@ export function useChatSocket() {
 
   const handleConnectedMessage = () => {
     if (currentRoom) {
-      sendMessage({ mode: ChatMessageMode.JOIN, roomId: currentRoom.id })
+      sendMessage<IChatMessageJoin>({
+        mode: ChatMessageMode.JOIN,
+        roomSlug: currentRoom.id,
+      })
       setLoading(true)
     }
   }
@@ -117,7 +127,7 @@ export function useChatSocket() {
 
   const handleJoinedMessage = () => {
     !messages.length &&
-      sendMessage({
+      sendMessage<IChatMessageRestore>({
         mode: ChatMessageMode.RESTORE,
         createdAt: new Date().toISOString(),
       })
@@ -133,19 +143,19 @@ export function useChatSocket() {
 
   // ----------------------------------------------------------------------------
 
-  const sendMessage = (message: any) => {
+  const sendMessage = <T>(message: T) => {
     if (wsRef.current) {
       wsRef.current.send(JSON.stringify(message))
       console.log('Message sent:', message)
     }
-    return message
+    return message as T
   }
 
   return {
     messages,
     sendChat: (text: string) =>
       setMessages((prev) => [
-        sendMessage({
+        sendMessage<IChatMessageChat>({
           mode: ChatMessageMode.CHAT,
           createdAt: new Date().toISOString(),
           content: text,
