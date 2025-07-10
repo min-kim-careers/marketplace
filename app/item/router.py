@@ -123,16 +123,27 @@ async def upsert_user_item(
     )
 
 
-@items_router.get("/user/{user_id}/items", response_model=ProfileResponse)
+@items_router.get("/items/slugs", response_model=ProfileResponse)
 async def get_items_by_ids(
-    user_id: UUID = Path(...),
-    item_slugs: List[str] = Query(..., alias='itemSlugs'),
+    item_slugs: List[str] = Query(..., alias="itemSlugs"),
     db: AsyncSession = Depends(get_db),
 ) -> ProfileResponse:
     item_ids = [utils.decode_slug(i) for i in set(item_slugs)]
 
-    items = ItemRepository.get_by_items_and_user_id(db, user_id, item_ids)
+    item_dbs = await ItemRepository.get_by_items_and_user_id(db, item_ids)
 
+    items = [ItemOut.from_db(i) for i in item_dbs]
+    order = [
+        next((idx for idx, item in enumerate(item_dbs) if item.id == _id), None)
+        for _id in item_ids
+    ]
+
+    if None in order or len(items) != len(order):
+        raise ErrorResponse(status_code=404, message="Error getting items by ids")
+    
     return ProfileResponse(
-        data={"items": items},
+        data={
+            "items": items,
+            "order": order,
+        },
     )

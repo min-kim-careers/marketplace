@@ -46,6 +46,7 @@ app.mount("/images", StaticFiles(directory="/code/images"), name="images")
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    print(request.url)
     print(exc.errors())  # prints full error list including loc arrays
     # return ErrorResponse(
     #     status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
