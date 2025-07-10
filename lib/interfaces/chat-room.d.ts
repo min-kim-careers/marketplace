@@ -5,6 +5,8 @@ export interface IChatRoom {
   itemId: string
   createdAt: Date
   updatedAt: Date
+}
 
-  item?: IItem
+export interface IChatRoomWithItem extends IChatRoom {
+  item: IItem
 }

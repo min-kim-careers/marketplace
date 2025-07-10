@@ -8,7 +8,7 @@ import { Grip, Menu } from 'lucide-react'
 const ALLOWED_COLUMNS = new Set([1, 3])
 
 export default function ColumnToggle() {
-  const { columns, setColumns } = useLayoutStore()
+  const { itemColumns: columns, setItemColumns: setColumns } = useLayoutStore()
   
   const handleValueChange = (value: string) => {
     const col = +value

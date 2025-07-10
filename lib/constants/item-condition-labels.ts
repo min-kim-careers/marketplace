@@ -8,4 +8,4 @@ export const ITEM_CONDITION_LABELS: Record<
   [ItemCondition.Used]: 'Used',
   [ItemCondition.Refurbished]: 'Refurbished',
   [ItemCondition.Defective]: 'Defective',
-}
+} as const

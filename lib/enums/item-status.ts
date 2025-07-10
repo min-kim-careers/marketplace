@@ -1,4 +1,4 @@
-export enum ItemStatus {
+export const enum ItemStatus {
   Available = 'available',
   Pending = 'pending',
   Sold = 'sold',

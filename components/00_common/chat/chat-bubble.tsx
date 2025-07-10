@@ -1,5 +1,5 @@
 import { formatDateFrom } from '@/lib/helpers/format-date-from'
-import { IChatMessageChat } from '@/lib/interfaces/chat-message'
+import { IChatMessageChat } from '@/lib/types/chat-message'
 
 export function ChatBubble({ message }: { message: IChatMessageChat }) {
   if (message.isMine)

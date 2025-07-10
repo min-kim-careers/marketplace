@@ -4,6 +4,7 @@ import { createApiAxios } from '@/_gateway/api/_config/axios'
 import { IItem } from '@/lib/interfaces/item'
 import { GenericFormData } from 'axios'
 import { GetItemsRequest, UpsertItemRequest } from './service'
+import { toSearchParams } from '@/_gateway/_common/helpers'
 
 const apiItemAxios = await createApiAxios('/api/items')
 
@@ -54,9 +55,12 @@ export const _CREATE_USER_ITEM = async (
   apiItemAxios.post(`/user/${userId}`, request).then((res) => res.data)
 
 export const _GET_ITEMS_BY_IDS = async (
-  userId: string,
   itemSlugs: string[],
-): Promise<{ items: IItem[] }> =>
+): Promise<{ items: IItem[]; order: number[] }> =>
   apiItemAxios
-    .get(`/user/${userId}/items`, { params: { itemSlugs } })
+    .get(
+      `/items/slugs?${await toSearchParams({
+        itemSlugs,
+      })}`,
+    )
     .then((res) => res.data)

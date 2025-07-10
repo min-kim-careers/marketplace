@@ -1,8 +1,3 @@
-interface AppRoute {
-  url: string
-  label: string
-}
-
 export const APP_ROUTES = {
   HOME: { href: '/', label: 'Home' },
   MARKET: { href: '/market', label: 'Market' },
@@ -26,11 +21,11 @@ export const APP_ROUTES = {
   CHAT: {
     href: '/chat',
     label: 'Chat',
-    index: 'index'
+    index: 'index',
   },
 
   NOTFOUND: { href: '/404', label: 'Not Found' },
-}
+} as const
 
 const PROTECTED_ROUTES = [
   APP_ROUTES.ITEM_POST.href,
@@ -39,19 +34,18 @@ const PROTECTED_ROUTES = [
   APP_ROUTES.PROFILE_COMPLETE.href,
   APP_ROUTES.PROFILE_LISTINGS.href,
   APP_ROUTES.CHAT.href,
-]
+] as const
 
 const PUBLIC_ROUTES = [
   APP_ROUTES.HOME.href,
   APP_ROUTES.MARKET.href,
   APP_ROUTES.NOTFOUND.href,
-]
+] as const
+
 
 const validateRoutes = () => {
   const allRoutes = [...PROTECTED_ROUTES, ...PUBLIC_ROUTES]
-  const routesValues = Object.values(APP_ROUTES).map(
-    (r) => r.href,
-  )
+  const routesValues = Object.values(APP_ROUTES).map((r) => r.href)
   allRoutes.forEach((route) => {
     if (!routesValues.includes(route)) {
       throw new Error(`Invalid route: ${route}`)
@@ -64,16 +58,18 @@ const validateRoutes = () => {
 
 validateRoutes()
 
-const FALLBACK_ROUTES = [APP_ROUTES.NOTFOUND.href]
+const _isInArray = <T>(value: T, array: readonly T[]): boolean =>
+  array.includes(value)
 
 export const isProtectedRoute = (path: string) =>
   PROTECTED_ROUTES.some((route) => path.startsWith(route))
 
-export const isPublicRoute = (path: string) =>
-  PUBLIC_ROUTES.includes(path)
+export const isPublicRoute = (path: string) => _isInArray(path, PUBLIC_ROUTES)
+
+const FALLBACK_ROUTES = [APP_ROUTES.NOTFOUND.href] as const
 
 export const isFallbackRoute = (path: string) =>
-  FALLBACK_ROUTES.includes(path)
+  _isInArray(path, FALLBACK_ROUTES)
 
 export const getPathLabel = (path: string) => {
   const splitPath = path.split('/')

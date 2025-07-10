@@ -6,4 +6,4 @@ export const ITEM_STATUS_COLORS: Record<ItemStatus, string> = {
   [ItemStatus.Pending]: 'yellow',
   [ItemStatus.Sold]: 'lightblue',
   [ItemStatus.Inactive]: 'gray',
-}
+} as const

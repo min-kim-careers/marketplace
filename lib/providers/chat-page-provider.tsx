@@ -1,17 +1,17 @@
 'use client'
 
-import { IChatRoom } from '@/lib/interfaces/chat-room'
+import { IChatRoomWithItem } from '@/lib/interfaces/chat-room'
 import { createContext, ReactNode, useContext, useEffect, useRef } from 'react'
 import { createStore, StoreApi, useStore } from 'zustand'
 
 interface ChatPageProps {
-  currentRoom: IChatRoom | null
-  existingRooms: IChatRoom[]
+  currentRoom: IChatRoomWithItem | null
+  existingRooms: IChatRoomWithItem[]
 }
 
 interface ChatPageState extends ChatPageProps {
-  setCurrentRoom: (currentRoom: IChatRoom) => void
-  setExistingRooms: (existingRooms: IChatRoom[]) => void
+  setCurrentRoom: (currentRoom: IChatRoomWithItem) => void
+  setExistingRooms: (existingRooms: IChatRoomWithItem[]) => void
 }
 
 const ChatPageContext = createContext<StoreApi<ChatPageState> | null>(null)
@@ -24,10 +24,11 @@ export const ChatPageProvider = ({
   props: ChatPageProps
 }) => {
   const storeRef = useRef(
-    createStore<ChatPageState>((set, get) => ({
+    createStore<ChatPageState>((set) => ({
       ...props,
-      setCurrentRoom: (currentRoom: IChatRoom) => set({ currentRoom }),
-      setExistingRooms: (existingRooms: IChatRoom[]) => set({ existingRooms }),
+      setCurrentRoom: (currentRoom: IChatRoomWithItem) => set({ currentRoom }),
+      setExistingRooms: (existingRooms: IChatRoomWithItem[]) =>
+        set({ existingRooms }),
     })),
   )
 
@@ -46,8 +47,14 @@ export const ChatPageProvider = ({
   )
 }
 
-export const useChatPageStore = <T,>(selector: (state: ChatPageState) => T) => {
+// export const useChatPageStore = <T,>(selector: (state: ChatPageState) => T) => {
+//   const store = useContext(ChatPageContext)
+//   if (!store) throw new Error('Not inside provider')
+//   return useStore(store, selector)
+// }
+
+export const useChatPageStore = () => {
   const store = useContext(ChatPageContext)
   if (!store) throw new Error('Not inside provider')
-  return useStore(store, selector)
+  return useStore(store)
 }

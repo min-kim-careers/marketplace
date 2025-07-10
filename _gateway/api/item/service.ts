@@ -7,6 +7,7 @@ import { IItem } from '@/lib/interfaces/item'
 import * as ITEM_ENDPOINTS from '@/_gateway/api/item/endpoints'
 import { IItemPageParams } from '@/lib/interfaces/item-page-params'
 import { ItemStatus } from '@/lib/enums/item-status'
+import { toFormData } from "@/_gateway/_common/helpers"
 
 export interface GetItemsRequest {
   page: number
@@ -35,8 +36,7 @@ export const GET_ITEMS = async (
       excludeUser: userId ?? undefined,
     }
 
-    const { items, count } =
-      await ITEM_ENDPOINTS._GET_ALL_ITEMS(request)
+    const { items, count } = await ITEM_ENDPOINTS._GET_ALL_ITEMS(request)
 
     return {
       items,
@@ -77,8 +77,10 @@ export const GET_USER_ITEMS = async (
     const userId = await getCurrentUserId()
     if (!userId) throw new Error()
 
-    const { items, count } =
-      await ITEM_ENDPOINTS._GET_USER_ITEMS(userId, request)
+    const { items, count } = await ITEM_ENDPOINTS._GET_USER_ITEMS(
+      userId,
+      request,
+    )
 
     return {
       items,
@@ -100,10 +102,7 @@ export const GET_USER_ITEM = async (
     const userId = await getCurrentUserId()
     if (!userId) throw new Error()
 
-    const { item } = await ITEM_ENDPOINTS._GET_USER_ITEM(
-      userId,
-      itemSlug,
-    )
+    const { item } = await ITEM_ENDPOINTS._GET_USER_ITEM(userId, itemSlug)
 
     return item
   } catch (error) {
@@ -126,26 +125,10 @@ export interface UpsertItemRequest {
   uploadImages?: File[]
 }
 
-const requestToFormData = (request: UpsertItemRequest) => {
-  const formData = new FormData()
-  Object.entries(request).forEach(([key, value]) => {
-    if (Array.isArray(value)) {
-      value.forEach((v) => formData.append(key, v))
-    } else {
-      formData.append(key, value)
-    }
-  })
-  return formData
-}
-
-const insertImageUrlsPlaceholders = (
-  imageUrls: string[],
-) => {
+const insertImageUrlsPlaceholders = (imageUrls: string[]) => {
   let placeholder_index = 0
   imageUrls.map((url) => {
-    return url.startsWith('blob:')
-      ? `{{${placeholder_index++}}}`
-      : url
+    return url.startsWith('blob:') ? `{{${placeholder_index++}}}` : url
   })
   return imageUrls
 }
@@ -159,11 +142,9 @@ export const UPSERT_ITEM = async (
     if (!userId) throw new Error()
 
     if (request.imageUrls)
-      request.imageUrls = insertImageUrlsPlaceholders(
-        request.imageUrls,
-      )
+      request.imageUrls = insertImageUrlsPlaceholders(request.imageUrls)
 
-    const formData = requestToFormData(request)
+    const formData = await toFormData(request)
 
     const { item } = await ITEM_ENDPOINTS._UPSERT_USER_ITEM(
       userId,
@@ -178,9 +159,7 @@ export const UPSERT_ITEM = async (
   }
 }
 
-export const DELETE_ITEM = async (
-  itemSlug: string,
-): Promise<boolean> => {
+export const DELETE_ITEM = async (itemSlug: string): Promise<boolean> => {
   try {
     const userId = await getCurrentUserId()
     if (!userId) throw new Error()
@@ -202,13 +181,9 @@ export const UPDATE_ITEM_STATUS = async (
     const userId = await getCurrentUserId()
     if (!userId) throw new Error()
 
-    const formData = requestToFormData({ status })
+    const formData = await toFormData({ status })
 
-    await ITEM_ENDPOINTS._UPSERT_USER_ITEM(
-      userId,
-      formData,
-      itemSlug,
-    )
+    await ITEM_ENDPOINTS._UPSERT_USER_ITEM(userId, formData, itemSlug)
 
     return true
   } catch (error) {
@@ -216,4 +191,3 @@ export const UPDATE_ITEM_STATUS = async (
     return false
   }
 }
-

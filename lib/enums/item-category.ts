@@ -1,4 +1,4 @@
-export enum ItemCategory {
+export const enum ItemCategory {
   CPU = 'cpu',
   GPU = 'gpu',
   RAM = 'ram',

@@ -4,4 +4,4 @@ export const DEFAULT_ITEM_PAGINATION: IItemPagination = {
   PAGE: 1,
   LIMIT: 9,
   SIZE: 5,
-}
+} as const

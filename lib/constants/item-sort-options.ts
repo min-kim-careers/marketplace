@@ -44,7 +44,7 @@ export const ITEM_SORT_OPTIONS: IItemSortOption[] = [
     sortOrder: ItemSortOrder.Desc,
     label: 'Name Z-A',
   },
-]
+] as const
 
 const getDefaultItemSortOption = (): IItemSortOption => {
   const defaultSortOption = ITEM_SORT_OPTIONS.filter(

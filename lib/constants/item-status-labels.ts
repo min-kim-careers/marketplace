@@ -9,4 +9,4 @@ export const ITEM_STATUS_LABELS: Record<
   [ItemStatus.Pending]: 'Pending',
   [ItemStatus.Sold]: 'Sold',
   [ItemStatus.Inactive]: 'Inactive',
-}
+} as const

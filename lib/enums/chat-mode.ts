@@ -1,4 +1,6 @@
-export enum ChatMessageMode {
+export const enum ChatMode {
+  INITIALIZING = 'initializing',
+
   // Flags
   CONNECTED = 'connected',
   JOINED = 'joined',

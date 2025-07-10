@@ -6,4 +6,4 @@ export const DEFAULT_ITEM_PAGE_PARAMS: IItemPageParams = {
   page: DEFAULT_ITEM_PAGINATION.PAGE,
   sortBy: DEFAULT_ITEM_SORT_OPTION.sortBy,
   sortOrder: DEFAULT_ITEM_SORT_OPTION.sortOrder,
-}
+} as const

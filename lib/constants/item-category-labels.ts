@@ -16,4 +16,4 @@ export const ITEM_CATEGORY_LABELS: Record<
   [ItemCategory.Peripheral]: 'Peripheral',
   [ItemCategory.Software]: 'Software',
   [ItemCategory.Other]: 'Other',
-}
+} as const

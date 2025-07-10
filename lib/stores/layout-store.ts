@@ -1,12 +1,12 @@
 import { create } from 'zustand'
-import {
-  persist,
-  subscribeWithSelector,
-} from 'zustand/middleware'
+import { persist, subscribeWithSelector } from 'zustand/middleware'
 
 interface LayoutState {
-  columns: number
-  setColumns: (columns: number) => void
+  itemColumns: number
+  setItemColumns: (columns: number) => void
+
+  chatSidebarOpen: boolean
+  setChatSidebarOpen: (open: boolean) => void
 }
 
 const useLayoutStore = create(
@@ -14,15 +14,19 @@ const useLayoutStore = create(
     persist<LayoutState>(
       (set) => {
         return {
-          columns: 1,
-          setColumns: (columns: number) => set({ columns }),
+          itemColumns: 1,
+          setItemColumns: (columns: number) => set({ itemColumns: columns }),
+
+          chatSidebarOpen: false,
+          setChatSidebarOpen: (open: boolean) => set({ chatSidebarOpen: open }),
         }
       },
       {
         name: 'layout',
         partialize: (state) =>
           ({
-            columns: state.columns,
+            itemColumns: state.itemColumns,
+            chatSidebarOpen: state.chatSidebarOpen,
           }) as LayoutState,
       },
     ),
