@@ -2,14 +2,14 @@
 
 import { createChatAxios } from '@/_gateway/chat/_config/axios'
 import { RegisterRoomRequest } from '@/_gateway/chat/rooms/service'
-import { IChatRoom } from '@/lib/interfaces/chat-room'
+import { ChatRoom } from '@/chat/interfaces/chat-room'
 
 const chatAxios = await createChatAxios('')
 
 export const _REGISTER_ROOM = async (
   request: RegisterRoomRequest,
 ): Promise<{
-  room: IChatRoom
+  room: ChatRoom
 }> =>
   chatAxios
     .post(`/rooms/register`, request)
@@ -17,7 +17,7 @@ export const _REGISTER_ROOM = async (
 
 export const _GET_ROOMS_BY_CLIENT = async (
   clientId: string,
-): Promise<{ rooms: IChatRoom[] }> =>
+): Promise<{ rooms: ChatRoom[] }> =>
   chatAxios
     .get(`/rooms/client/${clientId}`)
     .then((res) => res.data)

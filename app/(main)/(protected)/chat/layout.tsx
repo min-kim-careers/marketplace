@@ -1,6 +1,6 @@
 'use client'
 
-import { ChatSocketProvider } from '@/lib/providers/chat-socket-provider'
+import { ChatSocketProvider } from '@/chat/providers/chat-socket-provider'
 
 export default function ChatLayout({
   children,

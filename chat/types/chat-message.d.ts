@@ -1,4 +1,4 @@
-import { ChatMode } from '@/lib/enums/chat-mode'
+import { ChatMode } from '@/chat/enums/chat-mode'
 
 export type ChatMessage =
   | {
@@ -9,6 +9,11 @@ export type ChatMessage =
       id?: string
       read?: string
     }
+  | {
+      mode: ChatMode.RESTORE
+      createdAt: string
+    }
+  | { mode: ChatMode.RESTORED; messages: ChatMessage[] }
   | { mode: ChatMode.CONNECTED }
   | { mode: ChatMode.DISCONNECT }
   | { mode: ChatMode.EMPTY }
@@ -17,8 +22,5 @@ export type ChatMessage =
   | { mode: ChatMode.JOINED }
   | { mode: ChatMode.LEAVE }
   | { mode: ChatMode.LEFT }
-  | {
-      mode: ChatMode.RESTORE
-      createdAt: string
-    }
-  | { mode: ChatMode.RESTORED; messages: ChatMessage[] }
+  | { mode: ChatMode.TYPING }
+  | { mode: ChatMode.NOT_TYPING }

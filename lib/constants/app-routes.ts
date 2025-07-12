@@ -1,3 +1,5 @@
+import { isInConst } from '@/lib/helpers/is-in-const'
+
 export const APP_ROUTES = {
   HOME: { href: '/', label: 'Home' },
   MARKET: { href: '/market', label: 'Market' },
@@ -42,7 +44,6 @@ const PUBLIC_ROUTES = [
   APP_ROUTES.NOTFOUND.href,
 ] as const
 
-
 const validateRoutes = () => {
   const allRoutes = [...PROTECTED_ROUTES, ...PUBLIC_ROUTES]
   const routesValues = Object.values(APP_ROUTES).map((r) => r.href)
@@ -58,18 +59,15 @@ const validateRoutes = () => {
 
 validateRoutes()
 
-const _isInArray = <T>(value: T, array: readonly T[]): boolean =>
-  array.includes(value)
-
 export const isProtectedRoute = (path: string) =>
   PROTECTED_ROUTES.some((route) => path.startsWith(route))
 
-export const isPublicRoute = (path: string) => _isInArray(path, PUBLIC_ROUTES)
+export const isPublicRoute = (path: string) => isInConst(path, PUBLIC_ROUTES)
 
 const FALLBACK_ROUTES = [APP_ROUTES.NOTFOUND.href] as const
 
 export const isFallbackRoute = (path: string) =>
-  _isInArray(path, FALLBACK_ROUTES)
+  isInConst(path, FALLBACK_ROUTES)
 
 export const getPathLabel = (path: string) => {
   const splitPath = path.split('/')

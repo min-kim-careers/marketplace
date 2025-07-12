@@ -5,7 +5,7 @@ import * as ITEM_ENDPOINTS from '@/_gateway/api/item/endpoints'
 import * as PROFILE_ENDPOINTS from '@/_gateway/api/profile/endpoints'
 import { logChatError } from '@/_gateway/chat/_config/helpers'
 import * as CHAT_ENDPOINTS from '@/_gateway/chat/rooms/endpoints'
-import { IChatRoomWithItem } from '@/lib/interfaces/chat-room'
+import { ChatRoom } from '@/chat/interfaces/chat-room'
 
 export interface RegisterRoomRequest {
   itemId: string
@@ -37,7 +37,7 @@ export const FETCH_ROOM_ID = async (
   }
 }
 
-export const GET_EXISTING_ROOMS = async (): Promise<IChatRoomWithItem[]> => {
+export const GET_EXISTING_ROOMS = async (): Promise<ChatRoom[]> => {
   try {
     const userId = await getCurrentUserId()
     if (!userId) throw new Error()

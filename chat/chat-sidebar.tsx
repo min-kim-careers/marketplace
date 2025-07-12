@@ -1,17 +1,19 @@
+import { ChatRoom } from '@/chat/interfaces/chat-room'
+import { useChatPageStore } from '@/chat/providers/chat-page-provider'
 import { cn } from '@/components/shadcn/lib/utils'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { useIsMobile } from '@/lib/hooks/use-is-mobile'
-import { useChatPageStore } from '@/lib/providers/chat-page-provider'
 import useLayoutStore from '@/lib/stores/layout-store'
-import { EllipsisVertical, Menu } from 'lucide-react'
+import { Menu } from 'lucide-react'
 import Link from 'next/link'
 
 export function ChatSidebar({ className }: { className?: string }) {
   const { currentRoom, existingRooms } = useChatPageStore()
-  const isMobile = useIsMobile()
 
   const { chatSidebarOpen: open, setChatSidebarOpen: setOpen } =
     useLayoutStore()
+
+  const isMobile = useIsMobile()
 
   return (
     <div
@@ -40,31 +42,46 @@ export function ChatSidebar({ className }: { className?: string }) {
         )}
       >
         {existingRooms.map((room, i) => (
-          <Link
-            key={i}
-            href={`${APP_ROUTES.CHAT.href}/${room.id}`}
-            className={cn(
-              ((currentRoom && currentRoom.id === room.id) || !open) &&
-                'pointer-events-none',
-            )}
-          >
-            <button
-              className={cn(
-                'line-clamp-1 flex w-full flex-row items-center justify-between truncate rounded-xl border bg-gray-100 p-2 transition-colors duration-200 hover:bg-gray-300',
-                currentRoom &&
-                  currentRoom.id === room.id &&
-                  'rounded-xl border-4 border-gray-400',
-              )}
-            >
-              <div className='flex flex-col items-start gap-1'>
-                <p>{room.item.profileHandle}</p>
-                <p>{room.item.name}</p>
-              </div>
-              <EllipsisVertical />
-            </button>
-          </Link>
+          <ChatLink key={i} currentRoom={currentRoom} open={open} room={room} />
         ))}
       </div>
+    </div>
+  )
+}
+
+function ChatLink({
+  room,
+  currentRoom,
+  open,
+}: {
+  room: ChatRoom
+  currentRoom: ChatRoom | null
+  open: boolean
+}) {
+  return (
+    <div className='flex flex-row items-center justify-between h-full gap-2'>
+      <Link
+        href={`${APP_ROUTES.CHAT.href}/${room.id}`}
+        className={cn(
+          'flex-[9]',
+          ((currentRoom && currentRoom.id === room.id) || !open) &&
+            'pointer-events-none',
+        )}
+      >
+        <button
+          className={cn(
+            'line-clamp-1 flex w-full flex-row items-center justify-between truncate rounded-xl border bg-gray-100 p-2 transition-colors duration-200 hover:bg-gray-300',
+            currentRoom &&
+              currentRoom.id === room.id &&
+              'bg-gray-400',
+          )}
+        >
+          <div className='flex flex-col items-start gap-1'>
+            <p>{room.item.profileHandle}</p>
+            <p>{room.item.name}</p>
+          </div>
+        </button>
+      </Link>
     </div>
   )
 }

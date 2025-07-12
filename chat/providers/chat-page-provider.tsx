@@ -1,17 +1,18 @@
 'use client'
 
-import { IChatRoomWithItem } from '@/lib/interfaces/chat-room'
+import { ChatRoom } from '@/chat/interfaces/chat-room'
+import { useChatSocketContext } from '@/chat/providers/chat-socket-provider'
 import { createContext, ReactNode, useContext, useEffect, useRef } from 'react'
 import { createStore, StoreApi, useStore } from 'zustand'
 
 interface ChatPageProps {
-  currentRoom: IChatRoomWithItem | null
-  existingRooms: IChatRoomWithItem[]
+  currentRoom: ChatRoom | null
+  existingRooms: ChatRoom[]
 }
 
 interface ChatPageState extends ChatPageProps {
-  setCurrentRoom: (currentRoom: IChatRoomWithItem) => void
-  setExistingRooms: (existingRooms: IChatRoomWithItem[]) => void
+  setCurrentRoom: (currentRoom: ChatRoom) => void
+  setExistingRooms: (existingRooms: ChatRoom[]) => void
 }
 
 const ChatPageContext = createContext<StoreApi<ChatPageState> | null>(null)
@@ -23,16 +24,19 @@ export const ChatPageProvider = ({
   children: ReactNode
   props: ChatPageProps
 }) => {
+  const { setRoomId } = useChatSocketContext()
+
   const storeRef = useRef(
     createStore<ChatPageState>((set) => ({
       ...props,
-      setCurrentRoom: (currentRoom: IChatRoomWithItem) => set({ currentRoom }),
-      setExistingRooms: (existingRooms: IChatRoomWithItem[]) =>
+      setCurrentRoom: (currentRoom: ChatRoom) => set({ currentRoom }),
+      setExistingRooms: (existingRooms: ChatRoom[]) =>
         set({ existingRooms }),
     })),
   )
 
   useEffect(() => {
+    setRoomId(props.currentRoom ? props.currentRoom.id : null)
     storeRef.current.setState({ currentRoom: props.currentRoom })
   }, [props.currentRoom])
 
@@ -46,12 +50,6 @@ export const ChatPageProvider = ({
     </ChatPageContext.Provider>
   )
 }
-
-// export const useChatPageStore = <T,>(selector: (state: ChatPageState) => T) => {
-//   const store = useContext(ChatPageContext)
-//   if (!store) throw new Error('Not inside provider')
-//   return useStore(store, selector)
-// }
 
 export const useChatPageStore = () => {
   const store = useContext(ChatPageContext)

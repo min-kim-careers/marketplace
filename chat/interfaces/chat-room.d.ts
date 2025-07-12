@@ -1,12 +1,8 @@
 import { IItem } from '@/lib/interfaces/item'
 
-export interface IChatRoom {
+export type ChatRoom = {
   id: string
   itemId: string
   createdAt: Date
   updatedAt: Date
-}
-
-export interface IChatRoomWithItem extends IChatRoom {
-  item: IItem
-}
+} & { item: IItem }

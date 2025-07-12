@@ -1,16 +1,11 @@
 'use client'
 
-import { ChatSidebar } from '@/components/00_common/chat/chat-sidebar'
-import ChatWindow from '@/components/00_common/chat/chat-window'
-import { useChatPageStore } from '@/lib/providers/chat-page-provider'
-import { useChatSocketContext } from '@/lib/providers/chat-socket-provider'
-import { useEffect } from 'react'
+import { ChatSidebar } from '@/chat/chat-sidebar'
+import ChatWindow from '@/chat/chat-window'
+import { useChatSocketContext } from '@/chat/providers/chat-socket-provider'
 
 export default function Chat() {
-  const { isChatting, setCurrentRoom } = useChatSocketContext()
-  const { currentRoom } = useChatPageStore()
-
-  useEffect(() => setCurrentRoom(currentRoom), [currentRoom])
+  const { isChatting } = useChatSocketContext()
 
   return (
     <div className='relative flex max-h-[93vh] w-full flex-1 flex-row rounded-lg border'>

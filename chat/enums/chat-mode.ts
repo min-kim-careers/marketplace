@@ -7,6 +7,8 @@ export const enum ChatMode {
   RESTORED = 'restored',
   LEFT = 'left',
   EMPTY = 'empty',
+  TYPING = 'typing',
+  NOT_TYPING = 'not_typing',
 
   // Actions
   CHAT = 'chat',

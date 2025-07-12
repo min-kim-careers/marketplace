@@ -1,29 +1,42 @@
 'use client'
 
-import { ChatMode } from '@/lib/enums/chat-mode'
+import { ChatMode } from '@/chat/enums/chat-mode'
 import { useLoadToken } from '@/lib/firebase/use-load-token'
-import { IChatRoomWithItem } from '@/lib/interfaces/chat-room'
-import { ChatMessage } from '@/lib/types/chat-message'
+import { ChatMessage } from '@/chat/types/chat-message'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
+import { ACTIVE_CHAT_MODES } from '@/chat/constants/active-modes'
+import { isInConst } from '@/lib/helpers/is-in-const'
+import { getSocket } from '@/chat/lib/ws-client'
 
 export interface IChatSocket {
   sendChat: (text: string) => void
+  sendTyping: () => void
+  sendNotTyping: () => void
   isChatting: () => boolean
+  setRoomId: (roomId: string | null) => void
 
   messages: ChatMessage[]
   noMessages: boolean
+  isTyping: boolean
 }
 
-export function useChatSocket(
-  currentRoom: IChatRoomWithItem | null,
-): IChatSocket {
+export function useChatSocket(): IChatSocket {
   const token = useLoadToken()
 
   const wsRef = useRef<WebSocket | null>(null)
 
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [mode, setMode] = useState<ChatMode>(ChatMode.INITIALIZING)
+  const [roomId, setRoomId] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (roomId) {
+      sendMessage({ mode: ChatMode.JOIN, roomSlug: roomId })
+    } else {
+      sendMessage({ mode: ChatMode.LEAVE })
+    }
+  }, [roomId])
 
   useEffect(() => {
     if (!token) return
@@ -64,10 +77,21 @@ export function useChatSocket(
             handleLeftMessage()
             break
           }
+          case ChatMode.TYPING: {
+            handleTypingMessage()
+            break
+          }
+          case ChatMode.NOT_TYPING: {
+            handleNotTypingMessage()
+            break
+          }
           default: {
             console.log('Invalid message:', event.data)
             break
           }
+        }
+        if (newMessage.mode !== ChatMode.CHAT) {
+          setMode(newMessage.mode)
         }
       }
       ws.onclose = (event: CloseEvent) =>
@@ -80,6 +104,7 @@ export function useChatSocket(
   }, [token])
 
   const [noMessages, setNoMessages] = useState<boolean>(false)
+  const [isTyping, setIsTyping] = useState<boolean>(false)
   // ----------------------------- Message handlers -----------------------------
 
   const handleChatMessage = (message: ChatMessage) => {
@@ -99,10 +124,10 @@ export function useChatSocket(
   }
 
   const handleConnectedMessage = () => {
-    if (currentRoom) {
+    if (roomId) {
       sendMessage({
         mode: ChatMode.JOIN,
-        roomSlug: currentRoom.id,
+        roomSlug: roomId,
       })
     }
   }
@@ -119,15 +144,20 @@ export function useChatSocket(
     setMessages([])
   }
 
+  const handleTypingMessage = () => {
+    setIsTyping(true)
+  }
+
+  const handleNotTypingMessage = () => {
+    setIsTyping(false)
+  }
+
   // ----------------------------------------------------------------------------
 
   const sendMessage = (message: ChatMessage) => {
     if (wsRef.current) {
       wsRef.current.send(JSON.stringify(message))
       console.log('Message sent:', message)
-    }
-    if (message.mode !== ChatMode.CHAT) {
-      setMode(message.mode)
     }
     return message
   }
@@ -143,14 +173,25 @@ export function useChatSocket(
       ...prev,
     ])
 
-  const isChatting = () =>
-    (mode && [ChatMode.JOINED, ChatMode.RESTORED].includes(mode)) ?? false
+  const sendTyping = () => {
+    sendMessage({ mode: ChatMode.TYPING })
+  }
+
+  const sendNotTyping = () => {
+    sendMessage({ mode: ChatMode.NOT_TYPING })
+  }
+
+  const isChatting = () => (mode && isInConst(mode, ACTIVE_CHAT_MODES)) ?? false
 
   return {
     sendChat,
     isChatting,
+    setRoomId,
+    sendTyping,
+    sendNotTyping,
 
     messages,
     noMessages,
+    isTyping,
   }
 }
