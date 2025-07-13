@@ -134,8 +134,8 @@ async def get_items_by_ids(
 
     items = [ItemOut.from_db(i) for i in item_dbs]
     order = [
-        next((idx for idx, item in enumerate(item_dbs) if item.id == _id), None)
-        for _id in item_ids
+        next((idx for idx, item in enumerate(items) if item.id == _id), None)
+        for _id in item_slugs
     ]
 
     if None in order or len(items) != len(order):
