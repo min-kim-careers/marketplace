@@ -1,4 +1,4 @@
-export interface IItemPagination {
+export interface ItemPagination {
   PAGE: number,
   LIMIT: number
   SIZE: number

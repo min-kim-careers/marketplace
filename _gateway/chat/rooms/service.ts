@@ -49,9 +49,21 @@ export const GET_EXISTING_ROOMS = async (): Promise<ChatRoom[]> => {
 
     const { items, order } = await ITEM_ENDPOINTS._GET_ITEMS_BY_IDS(itemIds)
 
-    return rooms.map((r, i) => ({ ...r, item: items[order[i]] }))
+    const res = rooms.map((r, i) => ({ ...r, item: items[order[i]] }))
+
+    return res
   } catch (error) {
     logChatError(error)
     return []
+  }
+}
+
+export const DELETE_ROOM_BY_ID = async (roomId: string): Promise<boolean> => {
+  try {
+    await CHAT_ENDPOINTS._DELETE_ROOM_BY_ID(roomId)
+    return true
+  } catch (error) {
+    logChatError(error)
+    return false
   }
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { IProfile } from '@/lib/interfaces/profile'
+import { Profile } from '@/lib/interfaces/profile'
 import { create } from 'zustand'
 import {
   persist,
@@ -8,9 +8,9 @@ import {
 } from 'zustand/middleware'
 
 interface ProfileStore {
-  profile: IProfile | null
-  getProfile: () => IProfile
-  setProfile: (profile: IProfile | null) => void
+  profile: Profile | null
+  getProfile: () => Profile
+  setProfile: (profile: Profile | null) => void
 }
 
 const useProfileStore = create(
@@ -24,7 +24,7 @@ const useProfileStore = create(
             if (!profile) throw new Error()
             return profile
           },
-          setProfile: (profile: IProfile | null) =>
+          setProfile: (profile: Profile | null) =>
             set({
               profile,
             }),

@@ -8,8 +8,8 @@ import {
 } from '@/components/shadcn/components/ui/select'
 import { ITEM_SORT_OPTIONS } from '@/lib/constants/item-sort-options'
 import { toUrlParams } from '@/lib/helpers/to-url-params'
-import { IItemSortOption } from '@/lib/interfaces/item-sort-options'
-import { IItemPageParams } from '@/lib/interfaces/item-page-params'
+import { ItemSortOption } from '@/lib/interfaces/item-sort-options'
+import { ItemPageParams } from '@/lib/interfaces/item-page-params'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useItemPageStore } from '@/lib/providers/item-page-provider'
@@ -21,7 +21,7 @@ export default function SortDropdown() {
   const route = useItemPageStore((store) => store.route)
 
   const [currentSortOption, setCurrentSortOption] =
-    useState<IItemSortOption | null>(null)
+    useState<ItemSortOption | null>(null)
     
   const router = useRouter()
 
@@ -39,7 +39,7 @@ export default function SortDropdown() {
     )
     if (option) {
       setCurrentSortOption(option)
-      const newParams: IItemPageParams = {
+      const newParams: ItemPageParams = {
         ...params,
         sortBy: option.sortBy,
         sortOrder: option.sortOrder,

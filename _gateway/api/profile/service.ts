@@ -4,7 +4,7 @@ import { getCurrentUserId } from '../_config/helpers'
 import { logApiError } from '@/_gateway/api/_config/helpers'
 import * as PROFILE_ENDPOINTS from '@/_gateway/api/profile/endpoints'
 import { IProfileExtra } from '@/_gateway/api/profile/interfaces'
-import { IProfile } from '@/lib/interfaces/profile'
+import { Profile } from '@/lib/interfaces/profile'
 
 export interface UpsertProfileRequest {
   email?: string
@@ -19,7 +19,7 @@ export interface UpsertProfileRequest {
 
 export const UPDATE_PROFILE = async (
   request: UpsertProfileRequest,
-): Promise<IProfile | null> => {
+): Promise<Profile | null> => {
   try {
     const userId = await getCurrentUserId()
     if (!userId) throw new Error()

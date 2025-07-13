@@ -23,7 +23,7 @@ export const APP_ROUTES = {
   CHAT: {
     href: '/chat',
     label: 'Chat',
-    index: 'index',
+    indexHref: '/chat/index',
   },
 
   NOTFOUND: { href: '/404', label: 'Not Found' },

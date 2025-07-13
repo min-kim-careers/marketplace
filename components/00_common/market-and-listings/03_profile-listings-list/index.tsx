@@ -1,6 +1,6 @@
 import ProfileListingsCard from '@/components/00_common/market-and-listings/03_profile-listings-list/profile-listings-card'
 import ProfileListingsModal from '@/components/00_common/market-and-listings/03_profile-listings-list/profile-listings-modal'
-import { IItem } from '@/lib/interfaces/item'
+import { Item } from '@/lib/interfaces/item'
 import { useItemPageStore } from '@/lib/providers/item-page-provider'
 import  useLayoutStore  from '@/lib/stores/layout-store'
 
@@ -22,7 +22,7 @@ export default function ProfileListingsList() {
         gridTemplateColumns: `repeat(${columns}, 1fr)`,
       }}
     >
-      {items.map((item: IItem, i) => (
+      {items.map((item: Item, i) => (
         <ProfileListingsModal key={i} item={item} index={i}>
           <div className='cursor-pointer'>
             <ProfileListingsCard item={item} columns={columns} />

@@ -25,7 +25,7 @@ import {
 } from '@/components/shadcn/components/ui/card'
 import { Form } from '@/components/shadcn/components/ui/form'
 import { useUpsertItem } from '@/lib/hooks/use-upsert-item'
-import { IItem } from '@/lib/interfaces/item'
+import { Item } from '@/lib/interfaces/item'
 import { UpsertItemRequest } from '@/_gateway/api/item/service'
 import { toast } from 'sonner'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
@@ -34,7 +34,7 @@ export default function ItemEdit({
   item,
   imageLimit,
 }: {
-  item: IItem
+  item: Item
   imageLimit: number
 }) {
   const { handleUpsertItem } = useUpsertItem()

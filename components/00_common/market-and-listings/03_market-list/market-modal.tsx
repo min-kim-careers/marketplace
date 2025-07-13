@@ -20,7 +20,7 @@ import { ItemCondition } from '@/lib/enums/item-condition'
 import { formatDateFrom } from '@/lib/helpers/format-date-from'
 import { formatCurrency } from '@/lib/helpers/format-price'
 import { useFetchRoomId } from '@/lib/hooks/use-fetch-room-id'
-import { IItem } from '@/lib/interfaces/item'
+import { Item } from '@/lib/interfaces/item'
 import { CircleUserIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { ReactNode } from 'react'
@@ -30,7 +30,7 @@ export default function MarketModal({
   item,
 }: {
   children: ReactNode
-  item: IItem
+  item: Item
 }) {
   const router = useRouter()
   const { handleFetchRoomId } = useFetchRoomId()

@@ -9,13 +9,13 @@ import {
 } from '@/components/shadcn/components/ui/card'
 import { formatDateFrom } from '@/lib/helpers/format-date-from'
 import { formatCurrency } from '@/lib/helpers/format-price'
-import { IItem } from '@/lib/interfaces/item'
+import { Item } from '@/lib/interfaces/item'
 
 export default function MarketCard({
   item,
   columns,
 }: {
-  item: IItem
+  item: Item
   columns: number
 }) {
   const renderCardImage = () => {

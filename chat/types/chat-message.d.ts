@@ -1,19 +1,21 @@
 import { ChatMode } from '@/chat/enums/chat-mode'
 
+export type ChatModeMessage = {
+  mode: ChatMode.CHAT
+  createdAt: string
+  isMine: boolean
+  content: any
+  id?: string
+  read?: string
+}
+
 export type ChatMessage =
-  | {
-      mode: ChatMode.CHAT
-      createdAt: string
-      isMine: boolean
-      content: any
-      id?: string
-      read?: string
-    }
+  | ChatTypeMessage
   | {
       mode: ChatMode.RESTORE
       createdAt: string
     }
-  | { mode: ChatMode.RESTORED; messages: ChatMessage[] }
+  | { mode: ChatMode.RESTORED; messages: ChatTypeMessage[] }
   | { mode: ChatMode.CONNECTED }
   | { mode: ChatMode.DISCONNECT }
   | { mode: ChatMode.EMPTY }

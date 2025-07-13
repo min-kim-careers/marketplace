@@ -1,9 +1,14 @@
 import { ChatRoom } from '@/chat/interfaces/chat-room'
 import { useChatPageStore } from '@/chat/providers/chat-page-provider'
+import {
+  AvatarFallback,
+  AvatarImage,
+} from '@/components/shadcn/components/ui/avatar'
 import { cn } from '@/components/shadcn/lib/utils'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { useIsMobile } from '@/lib/hooks/use-is-mobile'
 import useLayoutStore from '@/lib/stores/layout-store'
+import { Avatar } from '@radix-ui/react-avatar'
 import { Menu } from 'lucide-react'
 import Link from 'next/link'
 
@@ -37,12 +42,17 @@ export function ChatSidebar({ className }: { className?: string }) {
       </div>
       <div
         className={cn(
-          'flex w-full flex-col gap-2 overflow-y-auto p-2 transition-opacity duration-200 ease-in-out',
+          'flex w-full flex-col gap-2 overflow-y-auto overflow-x-hidden p-2 transition-opacity duration-200 ease-in-out',
           open ? 'opacity-100' : 'opacity-0',
         )}
       >
         {existingRooms.map((room, i) => (
-          <ChatLink key={i} currentRoom={currentRoom} open={open} room={room} />
+          <ChatLink
+            key={i}
+            isActive={room === currentRoom}
+            open={open}
+            room={room}
+          />
         ))}
       </div>
     </div>
@@ -51,34 +61,41 @@ export function ChatSidebar({ className }: { className?: string }) {
 
 function ChatLink({
   room,
-  currentRoom,
   open,
+  isActive,
 }: {
   room: ChatRoom
-  currentRoom: ChatRoom | null
   open: boolean
+  isActive: boolean
 }) {
   return (
-    <div className='flex flex-row items-center justify-between h-full gap-2'>
+    <div className='flex h-full flex-row items-center justify-between gap-2'>
       <Link
         href={`${APP_ROUTES.CHAT.href}/${room.id}`}
-        className={cn(
-          'flex-[9]',
-          ((currentRoom && currentRoom.id === room.id) || !open) &&
-            'pointer-events-none',
-        )}
+        className={cn('flex-[9]', (isActive || !open) && 'pointer-events-none')}
       >
         <button
           className={cn(
-            'line-clamp-1 flex w-full flex-row items-center justify-between truncate rounded-xl border bg-gray-100 p-2 transition-colors duration-200 hover:bg-gray-300',
-            currentRoom &&
-              currentRoom.id === room.id &&
-              'bg-gray-400',
+            'line-clamp-1 flex w-full flex-row items-center justify-between truncate rounded-xl border bg-gray-100 p-4 transition-colors duration-200 hover:bg-gray-300',
+            isActive && 'bg-gray-400',
           )}
         >
-          <div className='flex flex-col items-start gap-1'>
-            <p>{room.item.profileHandle}</p>
-            <p>{room.item.name}</p>
+          <div className='flex flex-row items-center gap-2 w-full'>
+            <span className='mr-2'>
+              <Avatar>
+                <AvatarImage src={room.item.imageUrls[0]} />
+                <AvatarFallback>
+                  <div className='flex h-8 w-8 items-center justify-center rounded-full'>
+                    ?
+                  </div>
+                </AvatarFallback>
+              </Avatar>
+            </span>
+            <span className='flex flex-col items-start justify-center'>
+              <p className='font-semibold'>{room.item.profileHandle}</p>
+              <p>{room.item.name}</p>
+            </span>
+            {isActive && <span className='flex w-full items-center justify-end pr-2 italic text-gray-100'>Joined</span>}
           </div>
         </button>
       </Link>

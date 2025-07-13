@@ -1,6 +1,6 @@
 import MarketCard from '@/components/00_common/market-and-listings/03_market-list/market-card'
 import MarketModal from '@/components/00_common/market-and-listings/03_market-list/market-modal'
-import { IItem } from '@/lib/interfaces/item'
+import { Item } from '@/lib/interfaces/item'
 import { useItemPageStore } from '@/lib/providers/item-page-provider'
 import  useLayoutStore  from '@/lib/stores/layout-store'
 
@@ -22,7 +22,7 @@ export default function MarketList() {
         gridTemplateColumns: `repeat(${columns}, 1fr)`,
       }}
     >
-      {items.map((item: IItem, i: number) => (
+      {items.map((item: Item, i: number) => (
         <MarketModal key={i} item={item}>
           <div className='cursor-pointer'>
             <MarketCard item={item} columns={columns} />

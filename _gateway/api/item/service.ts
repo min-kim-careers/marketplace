@@ -3,9 +3,9 @@
 import { getCurrentUserId } from '../_config/helpers'
 import { logApiError } from '@/_gateway/api/_config/helpers'
 import { DEFAULT_ITEM_PAGINATION } from '@/lib/constants/item-pagination'
-import { IItem } from '@/lib/interfaces/item'
+import { Item } from '@/lib/interfaces/item'
 import * as ITEM_ENDPOINTS from '@/_gateway/api/item/endpoints'
-import { IItemPageParams } from '@/lib/interfaces/item-page-params'
+import { ItemPageParams } from '@/lib/interfaces/item-page-params'
 import { ItemStatus } from '@/lib/enums/item-status'
 import { toFormData } from "@/_gateway/_common/helpers"
 
@@ -19,9 +19,9 @@ export interface GetItemsRequest {
 }
 
 export const GET_ITEMS = async (
-  itemPageParams: IItemPageParams,
+  itemPageParams: ItemPageParams,
 ): Promise<{
-  items: IItem[]
+  items: Item[]
   count: number
 }> => {
   try {
@@ -60,9 +60,9 @@ export interface GetItemsRequest {
 }
 
 export const GET_USER_ITEMS = async (
-  itemPageParams: IItemPageParams,
+  itemPageParams: ItemPageParams,
 ): Promise<{
-  items: IItem[]
+  items: Item[]
   count: number
 }> => {
   try {
@@ -97,7 +97,7 @@ export const GET_USER_ITEMS = async (
 
 export const GET_USER_ITEM = async (
   itemSlug: string,
-): Promise<IItem | null> => {
+): Promise<Item | null> => {
   try {
     const userId = await getCurrentUserId()
     if (!userId) throw new Error()
@@ -136,7 +136,7 @@ const insertImageUrlsPlaceholders = (imageUrls: string[]) => {
 export const UPSERT_ITEM = async (
   request: UpsertItemRequest,
   itemSlug?: string,
-): Promise<IItem | null> => {
+): Promise<Item | null> => {
   try {
     const userId = await getCurrentUserId()
     if (!userId) throw new Error()

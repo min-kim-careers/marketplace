@@ -1,10 +1,7 @@
 import { logApiError } from '@/_gateway/api/_config/helpers'
 import { FirebaseUser } from './_gateway/auth/firebase/interfaces'
-import {
-  SIGN_OUT,
-  VERIFY_SESSION,
-} from '@/_gateway/auth/firebase/service'
-import { APP_DATA } from "./lib/constants/app-data"
+import { SIGN_OUT, VERIFY_SESSION } from '@/_gateway/auth/firebase/service'
+import { APP_DATA } from './lib/constants/app-data'
 import {
   isFallbackRoute,
   isProtectedRoute,
@@ -16,9 +13,12 @@ import { NextResponse } from 'next/server'
 
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname
+  const headers = new Headers(req.headers)
+  headers.set('x-current-path', req.nextUrl.pathname)
+  const nextResponse = NextResponse.next({ request: { headers } })
 
   if (isFallbackRoute(path) || req.method !== 'GET') {
-    return NextResponse.next()
+    return nextResponse
   }
 
   const session = req.cookies.get(APP_DATA.SESSION_HEADER)?.value
@@ -35,32 +35,28 @@ export async function middleware(req: NextRequest) {
   }
 
   const isAuthenticated = !!verified
-  
+
   if (isAuthenticated) {
     if (isProtectedRoute(path)) {
-      return NextResponse.next()
+      return nextResponse
     }
 
     if (isPublicRoute(path)) {
-      return NextResponse.next()
+      return nextResponse
     }
   }
 
   if (!isAuthenticated) {
     if (isProtectedRoute(path)) {
-      return NextResponse.redirect(
-        new URL(APP_ROUTES.HOME.href, req.nextUrl),
-      )
+      return NextResponse.redirect(new URL(APP_ROUTES.HOME.href, req.nextUrl))
     }
 
     if (isPublicRoute(path)) {
-      return NextResponse.next()
+      return nextResponse
     }
   }
 
-  return NextResponse.redirect(
-    new URL(APP_ROUTES.NOTFOUND.href, req.nextUrl),
-  )
+  return NextResponse.redirect(new URL(APP_ROUTES.NOTFOUND.href, req.nextUrl))
 }
 
 export const config = {

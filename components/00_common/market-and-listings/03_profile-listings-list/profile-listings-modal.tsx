@@ -36,7 +36,7 @@ import { ItemStatus } from '@/lib/enums/item-status'
 import { formatDateFrom } from '@/lib/helpers/format-date-from'
 import { formatCurrency } from '@/lib/helpers/format-price'
 import { useUpsertItem } from '@/lib/hooks/use-upsert-item'
-import { IItem } from '@/lib/interfaces/item'
+import { Item } from '@/lib/interfaces/item'
 import { useItemPageStore } from '@/lib/providers/item-page-provider'
 import useLoadingStore from '@/lib/stores/loading-store'
 import { Circle } from 'lucide-react'
@@ -51,7 +51,7 @@ export default function ProfileListingsModal({
   index,
 }: {
   children: ReactNode
-  item: IItem
+  item: Item
   index: number
 }) {
   return (
@@ -114,7 +114,7 @@ const ItemStatusSelect = ({
   item,
   index,
 }: {
-  item: IItem
+  item: Item
   index: number
 }) => {
     const updateItemAtIndex = useItemPageStore((store) => store.updateItemAtIndex)
@@ -171,7 +171,7 @@ const DeleteConfirmDialog = ({
   item,
 }: {
   children: ReactNode
-  item: IItem
+  item: Item
 }) => {
   const { setLoading } = useLoadingStore()
   const router = useRouter()

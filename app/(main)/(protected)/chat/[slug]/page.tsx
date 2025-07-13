@@ -6,15 +6,21 @@ import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { ChatRoom } from '@/chat/interfaces/chat-room'
 import { ChatPageProvider } from '@/chat/providers/chat-page-provider'
 import { notFound } from 'next/navigation'
+import { headers } from 'next/headers'
 
 export default async function Page({
   params,
 }: {
   params: Promise<{ slug: string }>
 }) {
+  const headerList = await headers()
+  const pathname = headerList.get('x-current-path')
+
   const { slug } = await params
 
-  const isIndex = slug === APP_ROUTES.CHAT.index
+  const isIndex = pathname === APP_ROUTES.CHAT.indexHref
+
+  if (!slug && !isIndex) notFound()
 
   const existingRooms = await CHAT_SERVICE.GET_EXISTING_ROOMS()
 

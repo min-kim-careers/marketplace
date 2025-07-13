@@ -1,19 +1,20 @@
 'use client'
 
-import { IChatSocket, useChatSocket } from '@/chat/hooks/use-chat-socket'
+import { useChatSocket } from '@/chat/hooks/use-chat-socket'
+import { ChatSocket } from '../interfaces/chat-socket'
 import {
   createContext,
   ReactNode,
   useContext
 } from 'react'
 
-interface ChatSocketState extends IChatSocket {
+interface ChatSocketState extends ChatSocket {
 }
 
 const ChatSocketContext = createContext<ChatSocketState | null>(null)
 
 export const ChatSocketProvider = ({ children }: { children: ReactNode }) => {
-  const chatSocket: IChatSocket = useChatSocket()
+  const chatSocket: ChatSocket = useChatSocket()
 
   return (
     <ChatSocketContext.Provider value={{ ...chatSocket }}>

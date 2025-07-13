@@ -1,4 +1,4 @@
-export interface IItemSortOption {
+export interface ItemSortOption {
   sortBy: string
   sortOrder: string
   label: string

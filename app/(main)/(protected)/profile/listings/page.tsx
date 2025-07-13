@@ -7,10 +7,11 @@ import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { DEFAULT_ITEM_PAGE_PARAMS } from '@/lib/constants/item-page-params'
 import { ItemSortBy } from '@/lib/enums/item-sort-by'
 import { ItemSortOrder } from '@/lib/enums/item-sort-order'
-import { IItemPageParams } from '@/lib/interfaces/item-page-params'
+import { ItemPageParams } from '@/lib/interfaces/item-page-params'
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
 import { ItemPageProvider } from '@/lib/providers/item-page-provider'
+import { isInConst } from '@/lib/helpers/is-in-const'
 
 const ListingsParamsSchema = z
   .object({
@@ -50,7 +51,7 @@ export default async function Page({
     )
   }
 
-  const params: IItemPageParams = result.data
+  const params: ItemPageParams = result.data
 
   const { items, count } = await GET_USER_ITEMS(params)
 

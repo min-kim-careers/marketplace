@@ -10,14 +10,14 @@ import {
 import { ITEM_STATUS_COLORS } from '@/lib/constants/item-status-colors'
 import { formatDateFrom } from '@/lib/helpers/format-date-from'
 import { formatCurrency } from '@/lib/helpers/format-price'
-import { IItem } from '@/lib/interfaces/item'
+import { Item } from '@/lib/interfaces/item'
 import { Circle } from 'lucide-react'
 
 export default function ProfileListingsCard({
   item,
   columns,
 }: {
-  item: IItem
+  item: Item
   columns: number
 }) {
   const renderCardImage = () => {

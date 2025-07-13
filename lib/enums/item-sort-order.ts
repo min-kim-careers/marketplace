@@ -1,4 +1,4 @@
-export const enum ItemSortOrder {
+export enum ItemSortOrder {
   Asc = 'asc',
   Desc = 'desc',
 }

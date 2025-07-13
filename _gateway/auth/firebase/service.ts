@@ -9,11 +9,11 @@ import {
   setSessionCookie
 } from '@/_gateway/auth/_config/helpers'
 import * as AUTH_ENDPOINTS from '@/_gateway/auth/firebase/endpoints'
-import { IProfile } from '@/lib/interfaces/profile'
+import { Profile } from '@/lib/interfaces/profile'
 
 export const SIGN_IN_WITH_GOOGLE = async (
   idToken: string,
-): Promise<IProfile> => {
+): Promise<Profile> => {
   try {
     const {
       userId,
