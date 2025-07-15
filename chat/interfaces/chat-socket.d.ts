@@ -1,5 +1,5 @@
 'use client'
-import { ChatModeMessage } from '@/chat/types/chat-message'
+import { ChatMessageInChat } from '@/chat/types/chat-message-in'
 
 export interface ChatSocket {
   senders: {
@@ -11,7 +11,7 @@ export interface ChatSocket {
   isChatting: () => boolean
   setRoomId: (roomId: string | null) => void
 
-  messages: ChatModeMessage[]
+  chatMessages: ChatMessageInChat[]
   noMessages: boolean
   isTyping: boolean
 }

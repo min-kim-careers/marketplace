@@ -1,7 +1,7 @@
 export const enum ChatMode {
-  INITIALIZING = 'initializing',
+  NULL = 'null',
 
-  // Flags
+  // Events
   CONNECTED = 'connected',
   JOINED = 'joined',
   RESTORED = 'restored',
@@ -9,11 +9,11 @@ export const enum ChatMode {
   EMPTY = 'empty',
   TYPING = 'typing',
   NOT_TYPING = 'not_typing',
+  LEAVE = 'leave',
+  DISCONNECT = 'disconnect',
 
   // Actions
   CHAT = 'chat',
   RESTORE = 'restore',
   JOIN = 'join',
-  LEAVE = 'leave',
-  DISCONNECT = 'disconnect',
 }

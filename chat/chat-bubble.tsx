@@ -1,9 +1,9 @@
 import { ChatMode } from '@/chat/enums/chat-mode'
-import { ChatMessage } from '@/chat/types/chat-message'
+import { ChatMessageIn } from '@/chat/types/chat-message-in'
 import { formatDateFrom } from '@/lib/helpers/format-date-from'
 
 
-export function ChatBubble({ message }: { message: ChatMessage }) {
+export function ChatBubble({ message }: { message: ChatMessageIn }) {
   if (message.mode !== ChatMode.CHAT) return null
 
   if (message.isMine)

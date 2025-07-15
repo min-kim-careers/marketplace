@@ -64,7 +64,7 @@ export default function ChatWindow({ className }: { className?: string }) {
 }
 
 function ChatPane() {
-  const { senders, messages, noMessages } = useChatSocketContext()
+  const { senders, chatMessages: messages, noMessages } = useChatSocketContext()
   const divRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {

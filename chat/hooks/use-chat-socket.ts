@@ -3,7 +3,11 @@
 import { isActiveMode } from '@/chat/constants/active-modes'
 import { ChatMode } from '@/chat/enums/chat-mode'
 import { ChatSocket } from '@/chat/interfaces/chat-socket'
-import { ChatMessage, ChatModeMessage } from '@/chat/types/chat-message'
+import { ChatMessageIn, ChatMessageInChat } from '@/chat/types/chat-message-in'
+import {
+  ChatMessageOut,
+  ChatMessageOutChat,
+} from '@/chat/types/chat-message-out'
 import { useLoadToken } from '@/lib/firebase/use-load-token'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
@@ -12,17 +16,10 @@ export function useChatSocket(): ChatSocket {
   const token = useLoadToken()
 
   const wsRef = useRef<WebSocket | null>(null)
-  const messagesRef = useRef<ChatModeMessage[]>([])
 
-  const [messages, setMessages] = useState<ChatModeMessage[]>([])
-  const [mode, setMode] = useState<ChatMode>(ChatMode.INITIALIZING)
+  const [chatMessages, setChatMessages] = useState<ChatMessageInChat[]>([])
+  const [mode, setMode] = useState<ChatMode>(ChatMode.NULL)
   const [roomId, setRoomId] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (messages.length) {
-      messagesRef.current = messages
-    }
-  }, [messages])
 
   useEffect(() => {
     if (roomId) {
@@ -43,7 +40,7 @@ export function useChatSocket(): ChatSocket {
 
       ws.onopen = () => {}
       ws.onmessage = (event: MessageEvent<any>) => {
-        const newMessage: ChatMessage = JSON.parse(event.data)
+        const newMessage: ChatMessageIn = JSON.parse(event.data)
         console.log('Received message:', newMessage)
         switch (newMessage.mode) {
           case ChatMode.CHAT: {
@@ -101,18 +98,18 @@ export function useChatSocket(): ChatSocket {
   const [isTyping, setIsTyping] = useState<boolean>(false)
   // ----------------------------- Message handlers -----------------------------
 
-  const handleChatMessage = (message: ChatModeMessage) => {
-    setMessages((prev) => [message, ...prev])
+  const handleChatMessage = (message: ChatMessageInChat) => {
+    setChatMessages((prev) => [message, ...prev])
   }
 
   const handleEmptyMessage = () => {
     setNoMessages(true)
   }
 
-  const handleRestoredMessage = (message: ChatMessage) => {
+  const handleRestoredMessage = (message: ChatMessageIn) => {
     if (message.mode === ChatMode.RESTORED) {
       if (!message.messages.length) return setNoMessages(true)
-      setMessages((prev) => [...prev, ...message.messages])
+      setChatMessages((prev) => [...prev, ...message.messages])
       toast(`Restored messages`)
     }
   }
@@ -127,15 +124,14 @@ export function useChatSocket(): ChatSocket {
   }
 
   const handleJoinedMessage = () => {
-    !messages.length &&
+    !chatMessages.length &&
       sendMessage({
         mode: ChatMode.RESTORE,
-        createdAt: new Date().toISOString(),
       })
   }
 
   const handleLeftMessage = () => {
-    setMessages([])
+    setChatMessages([])
   }
 
   const handleTypingMessage = () => {
@@ -148,7 +144,7 @@ export function useChatSocket(): ChatSocket {
 
   // ----------------------------------------------------------------------------
 
-  const sendMessage = (message: ChatMessage): ChatMessage => {
+  const sendMessage = (message: ChatMessageOut): ChatMessageOut => {
     if (wsRef.current) {
       wsRef.current.send(JSON.stringify(message))
       console.log('Message sent:', message)
@@ -156,33 +152,32 @@ export function useChatSocket(): ChatSocket {
     return message
   }
 
-  const sendChat = (text: string) =>
-    setMessages((prev) => [
-      sendMessage({
-        mode: ChatMode.CHAT,
+  const sendChat = (text: string) => {
+    const chat = sendMessage({
+      mode: ChatMode.CHAT,
+      content: text,
+    }) as ChatMessageOutChat
+    setChatMessages((prev) => [
+      {
+        ...chat,
+        tempId: crypto.randomUUID(),
         createdAt: new Date().toISOString(),
-        content: text,
         isMine: true,
-      }) as ChatModeMessage,
+        sent: false,
+        read: false,
+      },
       ...prev,
     ])
-
-  const sendTyping = () => {
-    sendMessage({ mode: ChatMode.TYPING })
   }
 
-  const sendNotTyping = () => {
-    sendMessage({ mode: ChatMode.NOT_TYPING })
-  }
+  const sendTyping = () => sendMessage({ mode: ChatMode.TYPING })
 
-  const sendRestore = () => {
-    console.log(messagesRef.current[messagesRef.current.length-1]);
-    
+  const sendNotTyping = () => sendMessage({ mode: ChatMode.NOT_TYPING })
+
+  const sendRestore = () =>
     sendMessage({
       mode: ChatMode.RESTORE,
-      createdAt: messagesRef.current[messagesRef.current.length-1].createdAt,
     })
-  }
 
   const isChatting = () => (mode && isActiveMode(mode)) ?? false
 
@@ -196,7 +191,7 @@ export function useChatSocket(): ChatSocket {
     isChatting,
     setRoomId,
 
-    messages,
+    chatMessages,
     noMessages,
     isTyping,
   }
