@@ -1,7 +1,7 @@
 'use client'
 
-import { ChatSidebar } from '@/chat/chat-sidebar'
-import ChatWindow from '@/chat/chat-window'
+import { ChatSidebar } from '@/chat/components/chat-sidebar'
+import ChatWindow from '@/chat/components/chat-window'
 import { useChatSocketContext } from '@/chat/providers/chat-socket-provider'
 
 export default function Chat() {

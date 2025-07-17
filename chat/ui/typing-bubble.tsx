@@ -2,7 +2,7 @@ import { useChatSocketContext } from '@/chat/providers/chat-socket-provider';
 import LoadingDots from '@/components/00_common/loading-dots';
 import { cn } from '@/components/shadcn/lib/utils';
 
-export function TypingAnimation() {
+export function TypingBubble() {
   const { isTyping } = useChatSocketContext();
 
   return (

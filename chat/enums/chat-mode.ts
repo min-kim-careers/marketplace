@@ -6,11 +6,11 @@ export const enum ChatMode {
   JOINED = 'joined',
   RESTORED = 'restored',
   LEFT = 'left',
-  EMPTY = 'empty',
   TYPING = 'typing',
   NOT_TYPING = 'not_typing',
   LEAVE = 'leave',
   DISCONNECT = 'disconnect',
+  NO_MESSAGES = 'no_messages',
 
   // Actions
   CHAT = 'chat',

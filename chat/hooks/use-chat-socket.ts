@@ -2,15 +2,29 @@
 
 import { isActiveMode } from '@/chat/constants/active-modes'
 import { ChatMode } from '@/chat/enums/chat-mode'
-import { ChatSocket } from '@/chat/interfaces/chat-socket'
 import { ChatMessageIn, ChatMessageInChat } from '@/chat/types/chat-message-in'
 import {
   ChatMessageOut,
   ChatMessageOutChat,
 } from '@/chat/types/chat-message-out'
 import { useLoadToken } from '@/lib/firebase/use-load-token'
-import { useEffect, useRef, useState } from 'react'
+import { RefObject, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
+
+export interface ChatSocket {
+  senders: {
+    sendChat: (text: string) => void
+    sendTyping: () => void
+    sendNotTyping: () => void
+    sendRestore: () => void
+  }
+  isChatting: () => boolean
+  setRoomId: (roomId: string | null) => void
+
+  chatMessages: ChatMessageInChat[]
+  noMessages: boolean
+  isTyping: boolean
+}
 
 export function useChatSocket(): ChatSocket {
   const token = useLoadToken()
@@ -47,7 +61,7 @@ export function useChatSocket(): ChatSocket {
             handleChatMessage(newMessage)
             break
           }
-          case ChatMode.EMPTY: {
+          case ChatMode.NO_MESSAGES: {
             handleEmptyMessage()
             break
           }
@@ -59,7 +73,6 @@ export function useChatSocket(): ChatSocket {
             handleConnectedMessage()
             break
           }
-
           case ChatMode.JOINED: {
             handleJoinedMessage()
             break
@@ -95,6 +108,7 @@ export function useChatSocket(): ChatSocket {
   }, [token])
 
   const [noMessages, setNoMessages] = useState<boolean>(false)
+
   const [isTyping, setIsTyping] = useState<boolean>(false)
   // ----------------------------- Message handlers -----------------------------
 
@@ -123,12 +137,10 @@ export function useChatSocket(): ChatSocket {
     }
   }
 
-  const handleJoinedMessage = () => {
-    !chatMessages.length &&
-      sendMessage({
-        mode: ChatMode.RESTORE,
-      })
-  }
+  const handleJoinedMessage = () =>
+    sendMessage({
+      mode: ChatMode.RESTORE,
+    })
 
   const handleLeftMessage = () => {
     setChatMessages([])
@@ -175,6 +187,7 @@ export function useChatSocket(): ChatSocket {
   const sendNotTyping = () => sendMessage({ mode: ChatMode.NOT_TYPING })
 
   const sendRestore = () =>
+    !noMessages &&
     sendMessage({
       mode: ChatMode.RESTORE,
     })

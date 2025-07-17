@@ -1,7 +1,7 @@
 'use client'
 
 import { useChatSocket } from '@/chat/hooks/use-chat-socket'
-import { ChatSocket } from '../interfaces/chat-socket'
+import { ChatSocket } from '../hooks/use-chat-socket'
 import {
   createContext,
   ReactNode,

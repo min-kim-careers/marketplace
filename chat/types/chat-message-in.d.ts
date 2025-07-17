@@ -19,11 +19,11 @@ export type ChatMessageInRestored = {
 export type ChatModeEventIn = {
   mode:
     | ChatMode.CONNECTED
-    | ChatMode.EMPTY
     | ChatMode.JOINED
     | ChatMode.LEFT
     | ChatMode.TYPING
     | ChatMode.NOT_TYPING
+    | ChatMode.NO_MESSAGES
 }
 
 export type ChatMessageIn =

@@ -6,6 +6,7 @@ export const ACTIVE_CHAT_MODES = [
   ChatMode.RESTORED,
   ChatMode.TYPING,
   ChatMode.NOT_TYPING,
+  ChatMode.NO_MESSAGES,
 ] as const
 
 export const isActiveMode = (mode: ChatMode) =>
