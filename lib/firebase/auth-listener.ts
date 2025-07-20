@@ -33,7 +33,7 @@ export default function FirebaseAuthListener() {
       if (hasSignedIn) {
         logInfo('signed in')
         setUser(user)
-        if (profile && !(await hasSessionCookie())) await refreshSession(user)
+        if (!await hasSessionCookie()) await refreshSession(user)
       }
 
       if (hasSignedOut) {
