@@ -1,7 +1,3 @@
-[submodule "web"]
-	path = web
-	url = ../marketplace-web.git
-
 [submodule "chat"]
 	path = chat
 	url = ../chat-server.git
@@ -13,3 +9,7 @@
 [submodule "auth"]
 	path = auth
 	url = ../marketplace-auth.git
+
+[submodule "frontend"]
+	path = frontend
+	url = ../marketplace-frontend.git

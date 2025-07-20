@@ -1,5 +1,5 @@
 services:
-  # AUTH
+  # ----------------------------------- AUTH -----------------------------------
   auth-db-service:
     extends:
       file: ./auth/compose.yml
@@ -16,7 +16,7 @@ services:
     depends_on:
       - auth-db-service
 
-  # API
+  # ----------------------------------- API -----------------------------------
   api-db-service:
     extends:
       file: ./api/compose.yml
@@ -34,7 +34,7 @@ services:
     networks:
       - api-network
 
-  # CHAT
+  # ----------------------------------- CHAT -----------------------------------
   chat-cache-service:
     extends:
       file: ./chat/compose.yml
@@ -55,6 +55,7 @@ services:
       service: chat-server-service
     ports:
       - 8080:8080
+      - 8082:8082
     depends_on:
       - chat-db-service
       - chat-cache-service
@@ -62,15 +63,28 @@ services:
       - chat-network
       - auth-network
 
+  # ----------------------------------- GATEWAY -----------------------------------
+  gateway-service:
+    extends:
+      file: ./frontend/gateway/compose.yml
+      service: gateway-service
+    ports:
+      - 3001:3001
+    networks:
+      - gateway-network
+      - api-network
+      - auth-network
+      - chat-network
 
-  # WEB
+  # ----------------------------------- WEB -----------------------------------
   web-service:
     extends:
-      file: ./web/compose.yml
+      file: ./frontend/web/compose.yml
       service: web-service
     ports:
       - 3000:3000
     networks:
+      - gateway-network
       - api-network
       - auth-network
       - chat-network
@@ -85,3 +99,4 @@ networks:
   api-network:
   auth-network:
   chat-network:
+  gateway-network:
