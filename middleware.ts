@@ -1,6 +1,6 @@
 import { logApiError } from '@/_gateway/api/_config/helpers'
-import { FirebaseUser } from './_gateway/auth/firebase/interfaces'
-import { SIGN_OUT, VERIFY_SESSION } from '@/_gateway/auth/firebase/service'
+import { FirebaseUser } from './lib/clients/auth/firebase/interfaces'
+import { SIGN_OUT, VERIFY_SESSION } from '@/lib/clients/auth/firebase/service'
 import { APP_DATA } from './lib/constants/app-data'
 import {
   isFallbackRoute,

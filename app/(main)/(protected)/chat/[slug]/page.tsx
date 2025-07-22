@@ -1,6 +1,6 @@
 'use server'
 
-import * as CHAT_SERVICE from '@/_gateway/chat/rooms/service'
+import * as CHAT_SERVICE from '@/lib/clients/chat/rooms/service'
 import Chat from '@/chat'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { ChatRoom } from '@/chat/interfaces/chat-room'

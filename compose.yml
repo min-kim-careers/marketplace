@@ -4,15 +4,7 @@ services:
     restart: always
     build: .
     environment:
-      - API_URL=http://api-service:8000
-      - API_KEY=REDACTED
-      - API_KEY_HEADER=REDACTED
-
-      - AUTH_URL=http://auth-service:8000
-      - AUTH_KEY=b6c54fe621c6df75a54f0c245956519251adae29c2a0fa1c7f1cc03674f61ce5
-      - AUTH_KEY_HEADER=x-auth-key
-
-      - CHAT_URL=http://chat-service:8081
+      - GATEWAY_URL=http://gateway-service:3001
       
       - NEXT_PUBLIC_CHAT_WS=http://192.168.8.103:8080
     env_file:

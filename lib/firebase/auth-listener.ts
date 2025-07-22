@@ -1,7 +1,7 @@
 'use client'
 
 import { hasSessionCookie } from '@/_gateway/auth/_config/helpers'
-import { SIGN_IN_WITH_GOOGLE } from '@/_gateway/auth/firebase/service'
+import { SIGN_IN_WITH_GOOGLE } from '@/lib/clients/auth/firebase/service'
 import { auth } from '@/lib/firebase/config'
 import { useSignOut } from '@/lib/hooks/use-sign-out'
 import useFirebaseStore from '@/lib/stores/firebase-store'

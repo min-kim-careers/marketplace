@@ -1,4 +1,4 @@
-import { FETCH_ROOM_ID } from '@/_gateway/chat/rooms/service'
+import { FETCH_ROOM_ID } from '@/lib/clients/chat/rooms/service'
 import useLoadingStore from '@/lib/stores/loading-store'
 import { toast } from 'sonner'
 

@@ -23,7 +23,7 @@ import {
   useState,
 } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { HANDLE_EXISTS } from '@/_gateway/api/profile/service'
+import { HANDLE_EXISTS } from '@/lib/clients/api/profile/service'
 import { toast } from 'sonner'
 
 const DefaultButtonNode = () => <>Confirm</>
