@@ -10,6 +10,10 @@
 	path = auth
 	url = ../marketplace-auth.git
 
-[submodule "frontend"]
-	path = frontend
-	url = ../marketplace-frontend.git
+[submodule "gateway"]
+	path = gateway
+	url = ../marketplace-gateway.git
+
+[submodule "web"]
+	path = web
+	url = ../marketplace-web.git

@@ -66,7 +66,7 @@ services:
   # ----------------------------------- GATEWAY -----------------------------------
   gateway-service:
     extends:
-      file: ./frontend/gateway/compose.yml
+      file: ./gateway/compose.yml
       service: gateway-service
     ports:
       - 3001:3001
@@ -79,7 +79,7 @@ services:
   # ----------------------------------- WEB -----------------------------------
   web-service:
     extends:
-      file: ./frontend/web/compose.yml
+      file: ./web/compose.yml
       service: web-service
     ports:
       - 3000:3000
