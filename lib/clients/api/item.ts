@@ -8,7 +8,7 @@ import { ItemStatus } from '@/lib/enums/item-status'
 import {
   GetItemsRequest,
   UpsertItemRequest,
-} from '@shared/src/api/item/requests'
+} from '@gateway/src/services/api/requests'
 
 export const GET_ITEMS = async (
   itemPageParams: ItemPageParams,

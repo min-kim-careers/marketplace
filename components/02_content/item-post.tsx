@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-import { UpsertItemRequest } from '@/lib/clients/api/item/service'
+import { UpsertItemRequest } from '@/lib/clients/api/item'
 import ItemImagePreview from '@/components/00_common/item-image-preview'
 import { ItemFormSchema } from '@/components/00_common/item-form/schema'
 import {

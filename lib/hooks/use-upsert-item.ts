@@ -1,7 +1,7 @@
 import {
   UPSERT_ITEM,
   UpsertItemRequest,
-} from '@/lib/clients/api/item/service'
+} from '@/lib/clients/api/item'
 import { compressedFileFromUrl } from '@/lib/helpers/compress-image-from-url'
 import useLoadingStore from '@/lib/stores/loading-store'
 import { useRouter } from 'next/navigation'

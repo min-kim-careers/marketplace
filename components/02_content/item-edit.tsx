@@ -26,7 +26,7 @@ import {
 import { Form } from '@/components/shadcn/components/ui/form'
 import { useUpsertItem } from '@/lib/hooks/use-upsert-item'
 import { Item } from '@/lib/interfaces/item'
-import { UpsertItemRequest } from '@/lib/clients/api/item/service'
+import { UpsertItemRequest } from '@/lib/clients/api/item'
 import { toast } from 'sonner'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 

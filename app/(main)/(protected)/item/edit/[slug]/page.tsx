@@ -1,7 +1,7 @@
 'use server'
 
-import { GET_USER_ITEM } from '@/lib/clients/api/item/service'
-import { GET_PROFILE_EXTRA } from '@/lib/clients/api/profile/service'
+import { GET_USER_ITEM } from '@/lib/clients/api/item'
+import { GET_PROFILE_EXTRA } from '@/lib/clients/api/profile'
 import ItemEdit from '@/components/02_content/item-edit'
 import { notFound } from 'next/navigation'
 

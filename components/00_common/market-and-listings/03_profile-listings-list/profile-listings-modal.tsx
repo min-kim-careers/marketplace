@@ -1,4 +1,4 @@
-import { DELETE_ITEM } from '@/lib/clients/api/item/service'
+import { DELETE_ITEM } from '@/lib/clients/api/item'
 import ItemImagePreview from '@/components/00_common/item-image-preview'
 import {
   AlertDialog,

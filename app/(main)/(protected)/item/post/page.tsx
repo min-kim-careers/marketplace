@@ -1,6 +1,6 @@
 'use server'
 
-import { GET_PROFILE_EXTRA } from '@/lib/clients/api/profile/service'
+import { GET_PROFILE_EXTRA } from '@/lib/clients/api/profile'
 import ItemPost from '@/components/02_content/item-post'
 
 export default async function Page() {

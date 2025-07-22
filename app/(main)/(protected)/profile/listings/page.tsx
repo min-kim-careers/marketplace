@@ -1,6 +1,6 @@
 'use server'
 
-import { GET_USER_ITEMS } from '@/lib/clients/api/item/service'
+import { GET_USER_ITEMS } from '@/lib/clients/api/item'
 import ProfileListings from '@/components/02_content/profile-listings'
 import { toUrlParams } from '@/lib/helpers/to-url-params'
 import { APP_ROUTES } from '@/lib/constants/app-routes'

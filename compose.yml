@@ -4,9 +4,10 @@ services:
     restart: always
     build: .
     environment:
-      - GATEWAY_URL=http://gateway-service:3001
-      
       - NEXT_PUBLIC_CHAT_WS=http://192.168.8.103:8080
+
+      - GATEWAY_URL=http://gateway-service:3001
+      - SESSION_HEADER=__session
     env_file:
       - .env
     volumes:
