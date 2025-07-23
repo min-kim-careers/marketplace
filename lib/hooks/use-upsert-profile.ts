@@ -1,5 +1,5 @@
-import { UpsertProfileRequest } from '@/lib/clients/api/profile'
-import { UPDATE_PROFILE } from '@/lib/clients/api/profile'
+import { UpsertProfileRequest } from '@/lib/clients/profile'
+import { UPDATE_PROFILE } from '@/lib/clients/profile'
 import useLoadingStore from '@/lib/stores/loading-store'
 import useProfileStore from '@/lib/stores/profile-store'
 import { useRouter } from 'next/navigation'

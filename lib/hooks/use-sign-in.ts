@@ -1,7 +1,7 @@
 import {
   SIGN_IN_WITH_GOOGLE,
   SIGN_OUT,
-} from '@/lib/clients/auth/firebase'
+} from '@/lib/clients/firebase'
 import { auth, provider } from '@/lib/firebase/config'
 import useLoadingStore from '@/lib/stores/loading-store'
 import useProfileStore from '@/lib/stores/profile-store'

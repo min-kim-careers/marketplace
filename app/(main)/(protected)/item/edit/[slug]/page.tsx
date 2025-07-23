@@ -1,7 +1,7 @@
 'use server'
 
-import { GET_USER_ITEM } from '@/lib/clients/api/item'
-import { GET_PROFILE_EXTRA } from '@/lib/clients/api/profile'
+import { getItemByUser } from '@/lib/clients/item'
+import { GET_PROFILE_EXTRA } from '@/lib/clients/profile'
 import ItemEdit from '@/components/02_content/item-edit'
 import { notFound } from 'next/navigation'
 
@@ -13,7 +13,7 @@ export default async function Page({
   const { slug } = await params
   if (!slug) notFound()
 
-  const item = await GET_USER_ITEM(slug)
+  const item = await getItemByUser(slug)
   if (!item) notFound()
 
   const extra = await GET_PROFILE_EXTRA()

@@ -1,6 +1,6 @@
 'use server'
 
-import { GET_USER_ITEMS } from '@/lib/clients/api/item'
+import { getAllUserItems } from '@/lib/clients/item'
 import ProfileListings from '@/components/02_content/profile-listings'
 import { toUrlParams } from '@/lib/helpers/to-url-params'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
@@ -53,7 +53,7 @@ export default async function Page({
 
   const params: ItemPageParams = result.data
 
-  const { items, count } = await GET_USER_ITEMS(params)
+  const { items, count } = await getAllUserItems(params)
 
   return (
     <ItemPageProvider

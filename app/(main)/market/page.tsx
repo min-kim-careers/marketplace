@@ -1,6 +1,6 @@
 'use server'
 
-import { GET_ITEMS } from '@/lib/clients/api/item'
+import { getAllItems } from '@/lib/clients/item'
 import Market from '@/components/02_content/market'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { DEFAULT_MARKET_PARAMS } from '@/lib/constants/market-params'
@@ -52,7 +52,7 @@ export default async function Page({
 
   const params: ItemPageParams = result.data
 
-  const { items, count } = await GET_ITEMS(params)
+  const { items, count } = await getAllItems(params)
 
   return (
     <ItemPageProvider

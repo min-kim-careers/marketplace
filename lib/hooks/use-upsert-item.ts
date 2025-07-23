@@ -1,7 +1,7 @@
 import {
-  UPSERT_ITEM,
+  upsertItem,
   UpsertItemRequest,
-} from '@/lib/clients/api/item'
+} from '@/lib/clients/item'
 import { compressedFileFromUrl } from '@/lib/helpers/compress-image-from-url'
 import useLoadingStore from '@/lib/stores/loading-store'
 import { useRouter } from 'next/navigation'
@@ -42,7 +42,7 @@ export const useUpsertItem = () => {
           request.imageUrls,
         )
 
-      const item = await UPSERT_ITEM(request, itemId)
+      const item = await upsertItem(request, itemId)
       if (!item)
         throw new Error(
           `Failed to ${isUpdate ? 'update' : 'post'} item`,

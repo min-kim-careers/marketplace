@@ -1,4 +1,4 @@
-import { DELETE_ITEM } from '@/lib/clients/api/item'
+import { deleteItem } from '@/lib/clients/item'
 import ItemImagePreview from '@/components/00_common/item-image-preview'
 import {
   AlertDialog,
@@ -179,7 +179,7 @@ const DeleteConfirmDialog = ({
   const handleDelete = async () => {
     try {
       setLoading('Deleting post', true)
-      await DELETE_ITEM(item.id)
+      await deleteItem(item.id)
       router.replace(APP_ROUTES.PROFILE_LISTINGS.href)
       toast('Successfully deleted post')
     } catch (error) {

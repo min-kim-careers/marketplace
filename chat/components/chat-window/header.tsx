@@ -1,4 +1,4 @@
-import { DELETE_ROOM_BY_ID } from '@/lib/clients/chat/rooms'
+import { DELETE_ROOM_BY_ID } from '@/lib/clients/rooms'
 import { useChatPageStore } from '@/chat/providers/chat-page-provider'
 import {
   AlertDialog,
