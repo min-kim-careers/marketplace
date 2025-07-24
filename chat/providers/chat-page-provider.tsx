@@ -35,14 +35,14 @@ export const ChatPageProvider = ({
     })),
   )
 
-  useEffect(() => {
-    setRoomId(props.currentRoom ? props.currentRoom.id : null)
-    storeRef.current.setState({ currentRoom: props.currentRoom })
-  }, [props.currentRoom])
+  // useEffect(() => {
+  //   setRoomId(props.currentRoom ? props.currentRoom.id : null)
+  //   storeRef.current.setState({ currentRoom: props.currentRoom })
+  // }, [props.currentRoom])
 
-  useEffect(() => {
-    storeRef.current.setState({ existingRooms: props.existingRooms })
-  }, [props.existingRooms])
+  // useEffect(() => {
+  //   storeRef.current.setState({ existingRooms: props.existingRooms })
+  // }, [props.existingRooms])
 
   return (
     <ChatPageContext.Provider value={storeRef.current}>

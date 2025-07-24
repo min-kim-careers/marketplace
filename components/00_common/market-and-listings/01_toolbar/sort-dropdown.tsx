@@ -6,52 +6,46 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/shadcn/components/ui/select'
-import { ITEM_SORT_OPTIONS } from '@/lib/constants/item-sort-options'
-import { toUrlParams } from '@/lib/helpers/to-url-params'
-import { ItemSortOption } from '@/lib/interfaces/item-sort-options'
+import {
+  DEFAULT_ITEM_SORT_OPTION,
+  ITEM_SORT_OPTIONS,
+} from '@/lib/constants/item-sort-options'
+import { toSearchParams } from '@/lib/helpers/to-search-params'
 import { ItemPageParams } from '@/lib/interfaces/item-page-params'
+import { ItemSortOption } from '@/lib/interfaces/item-sort-options'
+import { useItemPageStore } from '@/lib/providers/item-page-provider'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { useItemPageStore } from '@/lib/providers/item-page-provider'
 
 export default function SortDropdown() {
-  const sortOptions = ITEM_SORT_OPTIONS
-
-  const params = useItemPageStore((store) => store.params)
-  const route = useItemPageStore((store) => store.route)
+  const { params, route } = useItemPageStore()
 
   const [currentSortOption, setCurrentSortOption] =
-    useState<ItemSortOption | null>(null)
-    
+    useState<ItemSortOption | null>(DEFAULT_ITEM_SORT_OPTION)
+
   const router = useRouter()
 
   useEffect(() => {
-    const defaultSortOption = sortOptions.find(
-      (s) => s.isDefault,
+    const newOption = ITEM_SORT_OPTIONS.find(
+      (s) => s.sortBy === params.sortBy && s.sortOrder === params.sortOrder,
     )
-    if (defaultSortOption)
-      setCurrentSortOption(defaultSortOption)
-  }, [sortOptions])
+    if (!newOption) throw new Error()
+    setCurrentSortOption(newOption)
+  }, [params])
 
   const handleValueChange = (value: string) => {
-    const option = sortOptions.find(
-      (s) => s.label === value,
-    )
-    if (option) {
-      setCurrentSortOption(option)
-      const newParams: ItemPageParams = {
-        ...params,
-        sortBy: option.sortBy,
-        sortOrder: option.sortOrder,
-      }
-      const urlParams = toUrlParams(newParams)
-      router.replace(
-        `${route}?${urlParams}`,
-      )
+    const option = ITEM_SORT_OPTIONS.find((s) => s.label === value)
+    if (!option) return
+
+    const newParams: ItemPageParams = {
+      ...params,
+      sortBy: option.sortBy,
+      sortOrder: option.sortOrder,
     }
+    router.push(`${route}?${toSearchParams(newParams)}`)
   }
 
-  if (!sortOptions.length || !currentSortOption)
+  if (!ITEM_SORT_OPTIONS.length || !currentSortOption)
     return (
       <Select>
         <SelectTrigger className='w-[180px]' disabled>
@@ -61,17 +55,14 @@ export default function SortDropdown() {
     )
 
   return (
-    <Select
-      value={currentSortOption.label}
-      onValueChange={handleValueChange}
-    >
+    <Select value={currentSortOption.label} onValueChange={handleValueChange}>
       <SelectTrigger className='w-[180px]'>
         <span>{`Sorted by ${currentSortOption.label}`}</span>
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          {sortOptions &&
-            sortOptions.map((s, i) => (
+          {ITEM_SORT_OPTIONS &&
+            ITEM_SORT_OPTIONS.map((s, i) => (
               <SelectItem key={i} value={s.label}>
                 {s.label}
               </SelectItem>

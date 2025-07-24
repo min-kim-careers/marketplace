@@ -2,12 +2,7 @@
 
 import { Item } from '@/lib/interfaces/item'
 import { ItemPageParams } from '@/lib/interfaces/item-page-params'
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useRef
-} from 'react'
+import { createContext, ReactNode, useContext, useEffect, useRef } from 'react'
 import { createStore, StoreApi, useStore } from 'zustand'
 
 interface ItemPageProps {
@@ -18,6 +13,7 @@ interface ItemPageProps {
 }
 
 interface ItemPageState extends ItemPageProps {
+  setProps: (p: Partial<ItemPageProps>) => void
   updateItemAtIndex: (index: number, item: Item) => void
 }
 
@@ -33,6 +29,7 @@ export const ItemPageProvider = ({
   const storeRef = useRef(
     createStore<ItemPageState>((set, get) => ({
       ...props,
+      setProps: (p: Partial<ItemPageProps>) => set({ ...p }),
       updateItemAtIndex: (index: number, item: Item) => {
         const newItems = [...get().items]
         newItems[index] = item
@@ -48,8 +45,8 @@ export const ItemPageProvider = ({
   )
 }
 
-export const useItemPageStore = <T,>(selector: (state: ItemPageState) => T) => {
+export const useItemPageStore = () => {
   const store = useContext(ItemPageContext)
   if (!store) throw new Error('Not inside provider')
-  return useStore(store, selector)
+  return useStore(store)
 }

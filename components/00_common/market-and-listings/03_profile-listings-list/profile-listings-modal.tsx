@@ -68,10 +68,7 @@ export default function ProfileListingsModal({
                 <span>{item.name}</span>
               </span>
               <span className='pr-4'>
-                <ItemStatusSelect
-                  item={item}
-                  index={index}
-                />
+                <ItemStatusSelect item={item} index={index} />
               </span>
             </DialogTitle>
             <DialogDescription className='flex gap-2'>
@@ -94,9 +91,7 @@ export default function ProfileListingsModal({
           </span>
 
           <span className='flex flex-row items-center gap-2'>
-            <Link
-              href={`${APP_ROUTES.ITEM_EDIT.href}/${item.id}`}
-            >
+            <Link href={`${APP_ROUTES.ITEM_EDIT.href}/${item.id}`}>
               <Button variant={'outline'}>Edit</Button>
             </Link>
 
@@ -110,15 +105,8 @@ export default function ProfileListingsModal({
   )
 }
 
-const ItemStatusSelect = ({
-  item,
-  index,
-}: {
-  item: Item
-  index: number
-}) => {
-    const updateItemAtIndex = useItemPageStore((store) => store.updateItemAtIndex)
-
+const ItemStatusSelect = ({ item, index }: { item: Item; index: number }) => {
+  const { updateItemAtIndex } = useItemPageStore()
 
   const { handleUpsertItem } = useUpsertItem()
 
@@ -132,34 +120,23 @@ const ItemStatusSelect = ({
 
   return (
     <div>
-      <Select
-        value={item.status}
-        onValueChange={handleStatusChange}
-      >
+      <Select value={item.status} onValueChange={handleStatusChange}>
         <SelectTrigger className='w-32'>
           <SelectValue>
             <span className='flex flex-row items-center gap-2 pr-2'>
               <span>{ITEM_STATUS_LABELS[item.status]}</span>
               <span>
-                <Circle
-                  fill={ITEM_STATUS_COLORS[item.status]}
-                  size={8}
-                />
+                <Circle fill={ITEM_STATUS_COLORS[item.status]} size={8} />
               </span>
             </span>
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
-          {Object.entries(ITEM_STATUS_LABELS).map(
-            ([_status, label]) => (
-              <SelectItem
-                value={_status.toString()}
-                key={_status}
-              >
-                <span>{label}</span>
-              </SelectItem>
-            ),
-          )}
+          {Object.entries(ITEM_STATUS_LABELS).map(([_status, label]) => (
+            <SelectItem value={_status.toString()} key={_status}>
+              <span>{label}</span>
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
     </div>
@@ -191,27 +168,18 @@ const DeleteConfirmDialog = ({
 
   return (
     <AlertDialog>
-      <AlertDialogTrigger asChild>
-        {children}
-      </AlertDialogTrigger>
+      <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>
-            Are you absolutely sure?
-          </AlertDialogTitle>
+          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
             This action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel>
-            No, close this
-          </AlertDialogCancel>
-          <AlertDialogAction
-            onClick={handleDelete}
-            className='bg-red-500'
-          >
+          <AlertDialogCancel>No, close this</AlertDialogCancel>
+          <AlertDialogAction onClick={handleDelete} className='bg-red-500'>
             Yes, I'm sure
           </AlertDialogAction>
         </AlertDialogFooter>

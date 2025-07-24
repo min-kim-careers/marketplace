@@ -6,7 +6,8 @@ import  useLayoutStore  from '@/lib/stores/layout-store'
 
 export default function MarketList() {
   const { itemColumns: columns } = useLayoutStore()
-  const items = useItemPageStore((store) => store.items)
+  const { items } = useItemPageStore()
+
 
   if (!items.length)
     return (

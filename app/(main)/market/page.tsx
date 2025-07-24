@@ -17,17 +17,11 @@ const MarketParamsSchema = z
     page: z.coerce.number().positive(),
     sortBy: z
       .string()
-      .refine((val) =>
-        Object.values(ItemSortBy).includes(
-          val as ItemSortBy,
-        ),
-      ),
+      .refine((val) => Object.values(ItemSortBy).includes(val as ItemSortBy)),
     sortOrder: z
       .string()
       .refine((val) =>
-        Object.values(ItemSortOrder).includes(
-          val as ItemSortOrder,
-        ),
+        Object.values(ItemSortOrder).includes(val as ItemSortOrder),
       ),
     keyword: z.string().trim().optional(),
   })
@@ -45,9 +39,7 @@ export default async function Page({
   const result = MarketParamsSchema.safeParse(urlParams)
 
   if (!result.success) {
-    redirect(
-      `${APP_ROUTES.MARKET.href}?${toUrlParams(DEFAULT_MARKET_PARAMS)}`,
-    )
+    redirect(`${APP_ROUTES.MARKET.href}?${toUrlParams(DEFAULT_MARKET_PARAMS)}`)
   }
 
   const params: ItemPageParams = result.data
@@ -56,6 +48,7 @@ export default async function Page({
 
   return (
     <ItemPageProvider
+      key={toUrlParams(params).toString()}
       props={{
         items,
         count,
@@ -63,7 +56,7 @@ export default async function Page({
         route: APP_ROUTES.MARKET.href,
       }}
     >
-        <Market />
+      <Market />
     </ItemPageProvider>
   )
 }

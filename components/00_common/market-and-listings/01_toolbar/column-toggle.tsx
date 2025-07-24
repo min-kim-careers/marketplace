@@ -8,19 +8,18 @@ import { Grip, Menu } from 'lucide-react'
 const ALLOWED_COLUMNS = new Set([1, 3])
 
 export default function ColumnToggle() {
-  const { itemColumns: columns, setItemColumns: setColumns } = useLayoutStore()
-  
+  const { itemColumns, setItemColumns } = useLayoutStore()
+
   const handleValueChange = (value: string) => {
     const col = +value
-    setColumns(ALLOWED_COLUMNS.has(col) ? col : 1)
+    setItemColumns(ALLOWED_COLUMNS.has(col) ? col : 1)
   }
-
 
   return (
     <ToggleGroup
       type='single'
       onValueChange={handleValueChange}
-      value={columns.toString()}
+      value={itemColumns.toString()}
     >
       <ToggleGroupItem value='1'>
         <Menu />

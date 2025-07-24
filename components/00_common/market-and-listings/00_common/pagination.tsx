@@ -12,9 +12,7 @@ import { notFound } from 'next/navigation'
 import { useItemPageStore } from '@/lib/providers/item-page-provider'
 
 export default function Pagination() {
-  const params = useItemPageStore((store) => store.params)
-  const count = useItemPageStore((store) => store.count)
-  const route = useItemPageStore((store) => store.route)
+  const { count, params, route } = useItemPageStore()
 
   const lastPage = Math.ceil(count / DEFAULT_ITEM_PAGINATION.LIMIT)
 

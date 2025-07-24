@@ -2,11 +2,11 @@ import ProfileListingsCard from '@/components/00_common/market-and-listings/03_p
 import ProfileListingsModal from '@/components/00_common/market-and-listings/03_profile-listings-list/profile-listings-modal'
 import { Item } from '@/lib/interfaces/item'
 import { useItemPageStore } from '@/lib/providers/item-page-provider'
-import  useLayoutStore  from '@/lib/stores/layout-store'
+import useLayoutStore from '@/lib/stores/layout-store'
 
 export default function ProfileListingsList() {
   const { itemColumns: columns } = useLayoutStore()
-  const items = useItemPageStore((store) => store.items)
+  const { items } = useItemPageStore()
 
   if (!items.length)
     return (
@@ -32,10 +32,7 @@ export default function ProfileListingsList() {
       <style jsx>{`
         @media (max-width: 640px) {
           div.grid {
-            grid-template-columns: repeat(
-              1,
-              1fr
-            ) !important;
+            grid-template-columns: repeat(1, 1fr) !important;
           }
         }
       `}</style>

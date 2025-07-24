@@ -3,10 +3,7 @@ import { DEFAULT_ITEM_PAGINATION } from '@/lib/constants/item-pagination'
 import { useItemPageStore } from '@/lib/providers/item-page-provider'
 
 export default function PaginationTop() {
-  const params = useItemPageStore((store) => store.params)
-  const items = useItemPageStore((store) => store.items)
-  const count = useItemPageStore((store) => store.count)
-
+  const { count, items, params } = useItemPageStore()
 
   return (
     <div className='flex w-full items-center justify-between px-2 text-sm'>

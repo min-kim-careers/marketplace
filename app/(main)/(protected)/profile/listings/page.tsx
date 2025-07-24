@@ -57,6 +57,7 @@ export default async function Page({
 
   return (
     <ItemPageProvider
+      key={toUrlParams(params).toString()}
       props={{
         items,
         count,

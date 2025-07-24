@@ -1,22 +1,19 @@
 import { Button } from '@/components/shadcn/components/ui/button'
 import { Input } from '@/components/shadcn/components/ui/input'
 import { toUrlParams } from '@/lib/helpers/to-url-params'
+import { useItemPageStore } from '@/lib/providers/item-page-provider'
 import { Search } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { FormEvent } from 'react'
-import { useItemPageStore } from '@/lib/providers/item-page-provider'
 
 export default function SearchInput() {
   const router = useRouter()
-  const params = useItemPageStore((store) => store.params)
-  const route = useItemPageStore((store) => store.route)
+  const { params, route } = useItemPageStore()
 
-  const handleSearch = async (
-    e: FormEvent<HTMLFormElement>,
-  ) => {
+  const handleSearch = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log(route, params);
-    
+    console.log(route, params)
+
     const formData = new FormData(e.currentTarget)
     const keyword = formData.get('keyword') as string
     const urlParams = toUrlParams(params)

@@ -7,6 +7,7 @@ import { ChatRoom } from '@/chat/interfaces/chat-room'
 import { ChatPageProvider } from '@/chat/providers/chat-page-provider'
 import { notFound } from 'next/navigation'
 import { headers } from 'next/headers'
+import { toUrlParams } from '@/lib/helpers/to-url-params'
 
 export default async function Page({
   params,
@@ -31,7 +32,10 @@ export default async function Page({
   }
 
   return (
-    <ChatPageProvider props={{ currentRoom, existingRooms }}>
+    <ChatPageProvider
+      key={toUrlParams({ ...currentRoom, ...existingRooms }).toString()}
+      props={{ currentRoom, existingRooms }}
+    >
       <Chat />
     </ChatPageProvider>
   )
