@@ -1,6 +1,6 @@
 import { ChatMode } from '@/chat/enums/chat-mode'
 import { ChatMessageIn } from '@/chat/types/chat-message-in'
-import { formatDateFrom } from '@/lib/helpers/format-date-from'
+import { formatChatDate } from '@/lib/helpers/format-chat-date'
 
 
 export function ChatBubble({ message }: { message: ChatMessageIn }) {
@@ -14,7 +14,7 @@ export function ChatBubble({ message }: { message: ChatMessageIn }) {
             <p>{message.content}</p>
             {message.createdAt && (
               <p className='text-sm text-gray-500'>
-                {formatDateFrom(new Date(message.createdAt))}
+                {formatChatDate(message.createdAt)}
               </p>
             )}
           </span>
@@ -29,7 +29,7 @@ export function ChatBubble({ message }: { message: ChatMessageIn }) {
           <p>{message.content}</p>
           {message.createdAt && (
             <p className='text-sm text-gray-500'>
-              {formatDateFrom(new Date(message.createdAt))}
+              {formatChatDate(message.createdAt)}
             </p>
           )}
         </span>

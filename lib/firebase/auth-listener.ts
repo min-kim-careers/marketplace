@@ -1,8 +1,8 @@
 'use client'
 
-import { hasSessionCookie } from '@/_gateway/auth/_config/helpers'
 import { SIGN_IN_WITH_GOOGLE } from '@/lib/clients/firebase'
 import { auth } from '@/lib/firebase/config'
+import { hasSession } from '@/lib/helpers/has-session'
 import { useSignOut } from '@/lib/hooks/use-sign-out'
 import useFirebaseStore from '@/lib/stores/firebase-store'
 import useProfileStore from '@/lib/stores/profile-store'
@@ -33,7 +33,7 @@ export default function FirebaseAuthListener() {
       if (hasSignedIn) {
         logInfo('signed in')
         setUser(user)
-        if (!await hasSessionCookie()) await refreshSession(user)
+        if (!(await hasSession())) await refreshSession(user)
       }
 
       if (hasSignedOut) {

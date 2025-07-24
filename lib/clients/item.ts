@@ -1,17 +1,15 @@
 'use server'
 
 import { ItemStatus } from '@/lib/enums/item-status'
+import { toFormData } from '@/lib/helpers/to-form-data'
+import { toSearchParams } from '@/lib/helpers/to-search-params'
 import { Item } from '@/lib/interfaces/item'
 import { ItemPageParams } from '@/lib/interfaces/item-page-params'
-// import { toFormData } from '@gateway/src/helpers/to-form-data'
-import { toSearchParams } from '@gateway/helpers/to-search-params'
-import { UpsertItemRequest } from '@gateway/services/api/item'
-import { getSession } from '../helpers/get-session'
 import { createClient } from '@/lib/utils/create-client'
 import { envLoader } from '@/lib/utils/env-loader'
-import { toFormData } from '@/lib/helpers/to-form-data'
+import { UpsertItemRequest } from '@gateway/services/api/item'
 
-const client = createClient(envLoader.gatewayUrl)
+const client = await createClient(envLoader.gatewayUrl)
 
 export const getAllItems = async (itemPageParams: ItemPageParams) =>
   await client.get<{ items: Item[]; count: number }>(

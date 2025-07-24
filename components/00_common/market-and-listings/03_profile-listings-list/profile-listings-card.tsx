@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from '@/components/shadcn/components/ui/card'
 import { ITEM_STATUS_COLORS } from '@/lib/constants/item-status-colors'
-import { formatDateFrom } from '@/lib/helpers/format-date-from'
+import { formatItemDate } from '@/lib/helpers/format-item-date'
 import { formatCurrency } from '@/lib/helpers/format-price'
 import { Item } from '@/lib/interfaces/item'
 import { Circle } from 'lucide-react'
@@ -59,7 +59,7 @@ export default function ProfileListingsCard({
           </CardTitle>
           <CardDescription className='line-clamp-1'>
             <div className='flex gap-1'>
-              <span>{`Posted ${formatDateFrom(item.createdAt)} `}</span>
+              <span>{`Posted ${formatItemDate(item.createdAt)} `}</span>
             </div>
           </CardDescription>
         </CardHeader>

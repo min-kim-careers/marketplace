@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/shadcn/components/ui/card'
-import { formatDateFrom } from '@/lib/helpers/format-date-from'
+import { formatItemDate } from '@/lib/helpers/format-item-date'
 import { formatCurrency } from '@/lib/helpers/format-price'
 import { Item } from '@/lib/interfaces/item'
 
@@ -48,7 +48,7 @@ export default function MarketCard({
           </CardTitle>
           <CardDescription className='line-clamp-1'>
             <div className='flex gap-1'>
-              <span>{`${formatDateFrom(item.createdAt)} by `}</span>
+              <span>{`${formatItemDate(item.createdAt)} by `}</span>
               <span>
                 <button className='font-semibold'>
                   {item.profileHandle}

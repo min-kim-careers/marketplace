@@ -17,7 +17,7 @@ import {
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { ITEM_CONDITION_LABELS } from '@/lib/constants/item-condition-labels'
 import { ItemCondition } from '@/lib/enums/item-condition'
-import { formatDateFrom } from '@/lib/helpers/format-date-from'
+import { formatItemDate } from '@/lib/helpers/format-item-date'
 import { formatCurrency } from '@/lib/helpers/format-price'
 import { useFetchRoomId } from '@/lib/hooks/use-fetch-room-id'
 import { Item } from '@/lib/interfaces/item'
@@ -52,7 +52,7 @@ export default function MarketModal({
           </DialogTitle>
           <DialogDescription className='flex gap-2'>
             <span>
-              <span>{`Updated ${formatDateFrom(item.updatedAt)} by `}</span>
+              <span>{`Updated ${formatItemDate(item.updatedAt)} by `}</span>
               <span>
                 <button className='font-semibold'>{item.profileHandle}</button>
               </span>

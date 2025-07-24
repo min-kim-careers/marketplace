@@ -1,4 +1,3 @@
-import { deleteItem } from '@/lib/clients/item'
 import ItemImagePreview from '@/components/00_common/item-image-preview'
 import {
   AlertDialog,
@@ -28,12 +27,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/shadcn/components/ui/select'
+import { deleteItem } from '@/lib/clients/item'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { ITEM_CONDITION_LABELS } from '@/lib/constants/item-condition-labels'
 import { ITEM_STATUS_COLORS } from '@/lib/constants/item-status-colors'
 import { ITEM_STATUS_LABELS } from '@/lib/constants/item-status-labels'
 import { ItemStatus } from '@/lib/enums/item-status'
-import { formatDateFrom } from '@/lib/helpers/format-date-from'
+import { formatItemDate } from '@/lib/helpers/format-item-date'
 import { formatCurrency } from '@/lib/helpers/format-price'
 import { useUpsertItem } from '@/lib/hooks/use-upsert-item'
 import { Item } from '@/lib/interfaces/item'
@@ -75,7 +75,7 @@ export default function ProfileListingsModal({
               </span>
             </DialogTitle>
             <DialogDescription className='flex gap-2'>
-              <span>{`Last update at ${formatDateFrom(item.updatedAt)}`}</span>
+              <span>{`Last update at ${formatItemDate(item.updatedAt)}`}</span>
             </DialogDescription>
           </span>
         </DialogHeader>

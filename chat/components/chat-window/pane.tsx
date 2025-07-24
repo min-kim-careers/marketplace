@@ -1,7 +1,7 @@
 import { ChatBubble } from '@/chat/components/chat-bubble'
 import { useChatSocketContext } from '@/chat/providers/chat-socket-provider'
 import { TypingBubble } from '@/chat/ui/typing-bubble'
-import { formatDate } from '@/lib/helpers/format-date'
+import { formatChatDate } from '@/lib/helpers/format-chat-date'
 import { useRef, useEffect } from 'react'
 
 export function ChatPane() {
@@ -77,10 +77,10 @@ export function ChatPane() {
             currDate.getDate(),
           )
           if (currDayStart.getTime() > prevDayStart.getTime()) {
-            dateDivider = formatDate(currDate)
+            dateDivider = formatChatDate(currDate.toISOString())
           }
         } else if (i === chatMessages.length - 1) {
-          dateDivider = formatDate(new Date(chatMessages[i].createdAt))
+          dateDivider = formatChatDate(chatMessages[i].createdAt)
         }
         return (
           <div key={i}>

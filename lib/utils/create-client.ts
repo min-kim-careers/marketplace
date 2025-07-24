@@ -1,10 +1,10 @@
 'use server'
 
-import { GatewayResponse } from '@/lib/clients/response'
+import { GatewayResponse } from '@/lib/clients/_response'
 import { getSession } from '@/lib/helpers/get-session'
 import { envLoader } from '@/lib/utils/env-loader'
 
-export function createClient(base: string) {
+export async function createClient(base: string) {
   return {
     async request<T>(path: string, init: RequestInit = {}): Promise<T> {
       const url = new URL(path, base).toString()
@@ -24,11 +24,12 @@ export function createClient(base: string) {
       if (!res.ok) {
         throw new Error()
       }
-      const _res = (await res.json()) as GatewayResponse
-      if (!_res) {
-        throw new Error()
-      }
-      return _res.data as T
+
+      const { data, message } = (await res.json()) as GatewayResponse<T>
+      message && console.log({ gatewayResponse: message })
+
+      if (!data) throw new Error('No data')
+      return data as T
     },
     get<T>(path: string, init?: RequestInit) {
       return this.request<T>(path, { ...init, method: 'GET' })

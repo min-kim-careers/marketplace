@@ -1,6 +1,7 @@
 import { isToday, isYesterday } from 'date-fns'
 
-export const formatDate = (d: Date) => {
+export const formatChatDate = (s: string) => {
+  const d = new Date(s)
   if (isToday(d)) {
     return 'Today'
   }

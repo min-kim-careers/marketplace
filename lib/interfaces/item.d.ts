@@ -11,9 +11,9 @@ export interface Item {
   category: ItemCategory
   condition: ItemCondition
   status: ItemStatus
-  createdAt: Date
-  updatedAt: Date
-  expiresAt?: Date
+  createdAt: string
+  updatedAt: string
+  expiresAt?: string
   postcode: string
   suburb: string
   state: string
