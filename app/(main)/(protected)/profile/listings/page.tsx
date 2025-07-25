@@ -2,16 +2,16 @@
 
 import { getAllUserItems } from '@/lib/clients/item'
 import ProfileListings from '@/components/02_content/profile-listings'
-import { toUrlParams } from '@/lib/helpers/to-url-params'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { DEFAULT_ITEM_PAGE_PARAMS } from '@/lib/constants/item-page-params'
 import { ItemSortBy } from '@/lib/enums/item-sort-by'
 import { ItemSortOrder } from '@/lib/enums/item-sort-order'
-import { ItemPageParams } from '@/lib/interfaces/item-page-params'
+import { ItemPageParams } from '@/lib/types/item-page-params'
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
 import { ItemPageProvider } from '@/lib/providers/item-page-provider'
 import { isInConst } from '@/lib/helpers/is-in-const'
+import { toURLSearchParams } from '@/lib/helpers/to-url-search-params'
 
 const ListingsParamsSchema = z
   .object({
@@ -47,7 +47,7 @@ export default async function Page({
 
   if (!result.success) {
     redirect(
-      `${APP_ROUTES.PROFILE_LISTINGS.href}?${toUrlParams(DEFAULT_ITEM_PAGE_PARAMS)}`,
+      `${APP_ROUTES.PROFILE_LISTINGS.href}?${toURLSearchParams(DEFAULT_ITEM_PAGE_PARAMS)}`,
     )
   }
 
@@ -57,7 +57,7 @@ export default async function Page({
 
   return (
     <ItemPageProvider
-      key={toUrlParams(params).toString()}
+      key={toURLSearchParams(params).toString()}
       props={{
         items,
         count,

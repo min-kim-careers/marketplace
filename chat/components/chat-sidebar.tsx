@@ -1,4 +1,4 @@
-import { ChatRoom } from '@/chat/interfaces/chat-room'
+import { ChatRoom } from '@/chat/types/chat-room'
 import { useChatPageStore } from '@/chat/providers/chat-page-provider'
 import {
   AvatarFallback,

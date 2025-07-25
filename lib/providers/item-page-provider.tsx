@@ -1,7 +1,7 @@
 'use client'
 
-import { Item } from '@/lib/interfaces/item'
-import { ItemPageParams } from '@/lib/interfaces/item-page-params'
+import { Item } from '@/lib/types/item'
+import { ItemPageParams } from '@/lib/types/item-page-params'
 import { createContext, ReactNode, useContext, useEffect, useRef } from 'react'
 import { createStore, StoreApi, useStore } from 'zustand'
 

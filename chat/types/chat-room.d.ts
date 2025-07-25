@@ -1,4 +1,4 @@
-import { Item } from '@/lib/interfaces/item'
+import { Item } from '@/lib/types/item'
 
 export type ChatRoom = {
   id: string

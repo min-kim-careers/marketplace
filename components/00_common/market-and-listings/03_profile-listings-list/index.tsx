@@ -1,6 +1,6 @@
 import ProfileListingsCard from '@/components/00_common/market-and-listings/03_profile-listings-list/profile-listings-card'
 import ProfileListingsModal from '@/components/00_common/market-and-listings/03_profile-listings-list/profile-listings-modal'
-import { Item } from '@/lib/interfaces/item'
+import { Item } from '@/lib/types/item'
 import { useItemPageStore } from '@/lib/providers/item-page-provider'
 import useLayoutStore from '@/lib/stores/layout-store'
 

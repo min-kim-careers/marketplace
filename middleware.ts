@@ -1,13 +1,11 @@
-import { logApiError } from '@/_gateway/api/_config/helpers'
-import { FirebaseUser } from './lib/clients/auth/firebase/interfaces'
-import { SIGN_OUT, VERIFY_SESSION } from '@/lib/clients/firebase'
-import { APP_DATA } from './lib/constants/app-data'
+import { SIGN_OUT, VERIFY_SESSION } from '@/lib/clients/auth'
 import {
+  APP_ROUTES,
   isFallbackRoute,
   isProtectedRoute,
   isPublicRoute,
-  APP_ROUTES,
 } from '@/lib/constants/app-routes'
+import { hasSession } from '@/lib/helpers/server/has-session'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
@@ -21,13 +19,13 @@ export async function middleware(req: NextRequest) {
     return nextResponse
   }
 
-  const session = req.cookies.get(APP_DATA.SESSION_HEADER)?.value
+  const session = await hasSession()
   let verified = false
 
   if (session) {
     try {
-      verified = Boolean(await VERIFY_SESSION(session))
-      console.log('Verified');
+      verified = Boolean(await VERIFY_SESSION())
+      console.log('Verified')
     } catch (_) {
       await SIGN_OUT()
       return NextResponse.error()

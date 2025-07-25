@@ -1,55 +1,43 @@
 'use server'
 
 import { ItemStatus } from '@/lib/enums/item-status'
-import { toFormData } from '@/lib/helpers/to-form-data'
-import { toSearchParams } from '@/lib/helpers/to-search-params'
-import { Item } from '@/lib/interfaces/item'
-import { ItemPageParams } from '@/lib/interfaces/item-page-params'
-import { createClient } from '@/lib/utils/create-client'
-import { envLoader } from '@/lib/utils/env-loader'
-import { UpsertItemRequest } from '@gateway/services/api/item'
-
-const client = await createClient(envLoader.gatewayUrl)
+import { buildUpsertItemForm } from '@/lib/helpers/server/build-upsert-item-form'
+import { toURLSearchParams } from '@/lib/helpers/to-url-search-params'
+import { Item } from '@/lib/types/item'
+import { ItemPageParams } from '@/lib/types/item-page-params'
+import { makeClient } from '@/lib/utils/client'
+import { UpsertItemRequest } from '@gateway/api/item'
 
 export const getAllItems = async (itemPageParams: ItemPageParams) =>
-  await client.get<{ items: Item[]; count: number }>(
-    `/get-all-items?${toSearchParams(itemPageParams)}`,
-  )
+  await (await makeClient())
+    .get(`/get-all-items`)
+    .addQuery(itemPageParams)
+    .result<{ items: Item[]; count: number }>({ withSession: true })
 
 export const getAllUserItems = async (itemPageParams: ItemPageParams) =>
-  await client.get<{ items: Item[]; count: number }>(
-    `/get-all-user-items?${toSearchParams(itemPageParams)}`,
-  )
+  await (await makeClient())
+    .get(`/get-all-user-items`)
+    .addQuery(itemPageParams)
+    .result<{
+      items: Item[]
+      count: number
+    }>({ withSession: true })
 
 export const getItemByUser = async (itemSlug: string) =>
-  await client.get<{ item: Item }>(`/get-item-by-user/itemSlug/${itemSlug}`)
-
-const _insertImageUrlsPlaceholders = (imageUrls: string[]) => {
-  let placeholder_index = 0
-  imageUrls.map((url) => {
-    return url.startsWith('blob:') ? `{{${placeholder_index++}}}` : url
-  })
-  return imageUrls
-}
+  await (await makeClient())
+    .get(`/get-item-by-user/itemSlug/${itemSlug}`)
+    .result<{ item: Item }>({ withSession: true })
 
 export const upsertItem = async (
   request: UpsertItemRequest,
   itemSlug?: string,
 ): Promise<{ item: Item }> => {
-  try {
-    if (request.imageUrls) {
-      request.imageUrls = _insertImageUrlsPlaceholders(request.imageUrls)
-    }
-
-    const formData = await toFormData(request)
-
-    return await client.put<{ item: Item }>(
-      `/upsert-item/itemSlug/${itemSlug}`,
-      { body: formData },
-    )
-  } catch (error) {
-    throw new Error()
-  }
+  return await (
+    await makeClient()
+  )
+    .put(`/upsert-item/itemSlug/${itemSlug}`)
+    .addBody(await buildUpsertItemForm(request))
+    .result<{ item: Item }>({ withSession: true })
 }
 
 export const deleteItem = async (itemSlug: string): Promise<boolean> => {

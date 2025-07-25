@@ -1,13 +1,13 @@
 'use server'
 
-import * as CHAT_SERVICE from '@/lib/clients/rooms'
 import Chat from '@/chat'
-import { APP_ROUTES } from '@/lib/constants/app-routes'
-import { ChatRoom } from '@/chat/interfaces/chat-room'
+import { ChatRoom } from '@/chat/types/chat-room'
 import { ChatPageProvider } from '@/chat/providers/chat-page-provider'
-import { notFound } from 'next/navigation'
+import * as CHAT_SERVICE from '@/lib/clients/rooms'
+import { APP_ROUTES } from '@/lib/constants/app-routes'
+import { toURLSearchParams } from '@/lib/helpers/to-url-search-params'
 import { headers } from 'next/headers'
-import { toUrlParams } from '@/lib/helpers/to-url-params'
+import { notFound } from 'next/navigation'
 
 export default async function Page({
   params,
@@ -33,7 +33,7 @@ export default async function Page({
 
   return (
     <ChatPageProvider
-      key={toUrlParams({ ...currentRoom, ...existingRooms }).toString()}
+      key={toURLSearchParams({ ...currentRoom, ...existingRooms }).toString()}
       props={{ currentRoom, existingRooms }}
     >
       <Chat />

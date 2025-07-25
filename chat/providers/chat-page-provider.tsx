@@ -1,6 +1,6 @@
 'use client'
 
-import { ChatRoom } from '@/chat/interfaces/chat-room'
+import { ChatRoom } from '@/chat/types/chat-room'
 import { useChatSocketContext } from '@/chat/providers/chat-socket-provider'
 import { createContext, ReactNode, useContext, useEffect, useRef } from 'react'
 import { createStore, StoreApi, useStore } from 'zustand'

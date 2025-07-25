@@ -1,8 +1,8 @@
 'use server'
 
-import { Profile } from '@/lib/interfaces/profile'
-import { UpsertProfileRequest } from '@shared/src/api/profile/requests'
-import { ProfileExtra } from '@shared/src/api/profile/responses'
+import { Profile } from '@/lib/types/profile'
+import { envLoader } from '@/lib/utils/env-loader'
+import { ProfileExtra, UpsertProfileRequest } from '@gateway/api/profile'
 
 export const UPDATE_PROFILE = async (
   request: UpsertProfileRequest,

@@ -1,6 +1,6 @@
 import { ItemSortBy } from '@/lib/enums/item-sort-by'
 import { ItemSortOrder } from '@/lib/enums/item-sort-order'
-import { ItemSortOption } from '@/lib/interfaces/item-sort-options'
+import { ItemSortOption } from '@/lib/types/item-sort-options'
 
 export const ITEM_SORT_OPTIONS: ItemSortOption[] = [
   {

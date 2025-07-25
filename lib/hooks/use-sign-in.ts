@@ -1,7 +1,4 @@
-import {
-  SIGN_IN_WITH_GOOGLE,
-  SIGN_OUT,
-} from '@/lib/clients/firebase'
+import { SIGN_IN_WITH_GOOGLE, SIGN_OUT } from '@/lib/clients/auth'
 import { auth, provider } from '@/lib/firebase/config'
 import useLoadingStore from '@/lib/stores/loading-store'
 import useProfileStore from '@/lib/stores/profile-store'
@@ -21,8 +18,8 @@ export const useSignIn = () => {
 
       const token = await cred.user.getIdToken()
 
-      const newProfile = await SIGN_IN_WITH_GOOGLE(token)
-      if (newProfile) setProfile(newProfile)
+      const { profile } = await SIGN_IN_WITH_GOOGLE(token)
+      if (profile) setProfile(profile)
 
       router.refresh()
     } catch (error) {

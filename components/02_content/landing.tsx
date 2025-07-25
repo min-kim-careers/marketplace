@@ -1,7 +1,6 @@
 'use client'
 
 import { Button } from '@/components/shadcn/components/ui/button'
-import { toUrlParams } from '@/lib/helpers/to-url-params'
 import { APP_DATA } from '@/lib/constants/app-data'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import useProfileStore from '@/lib/stores/profile-store'

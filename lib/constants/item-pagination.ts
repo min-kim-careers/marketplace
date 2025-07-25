@@ -1,4 +1,4 @@
-import { ItemPagination } from '@/lib/interfaces/item-pagination'
+import { ItemPagination } from '@/lib/types/item-pagination'
 
 export const DEFAULT_ITEM_PAGINATION: ItemPagination = {
   PAGE: 1,

@@ -25,7 +25,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
-      "@gateway/*": ["../gateway/src/*"]
+      "@gateway/*": ["../gateway/src/services/*"]
     },
   },
   "references": [{"path": "../gateway"}],

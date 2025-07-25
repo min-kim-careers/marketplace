@@ -10,7 +10,7 @@ import {
 import { ITEM_STATUS_COLORS } from '@/lib/constants/item-status-colors'
 import { formatItemDate } from '@/lib/helpers/format-item-date'
 import { formatCurrency } from '@/lib/helpers/format-price'
-import { Item } from '@/lib/interfaces/item'
+import { Item } from '@/lib/types/item'
 import { Circle } from 'lucide-react'
 
 export default function ProfileListingsCard({

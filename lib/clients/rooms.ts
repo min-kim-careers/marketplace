@@ -1,6 +1,6 @@
 'use server'
 
-import { ChatRoom } from '@/chat/interfaces/chat-room'
+import { ChatRoom } from '@/chat/types/chat-room'
 
 export const FETCH_ROOM_ID = async (
   itemId: string,

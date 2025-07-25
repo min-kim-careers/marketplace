@@ -9,7 +9,7 @@ import {
 } from '@/components/shadcn/components/ui/card'
 import { formatItemDate } from '@/lib/helpers/format-item-date'
 import { formatCurrency } from '@/lib/helpers/format-price'
-import { Item } from '@/lib/interfaces/item'
+import { Item } from '@/lib/types/item'
 
 export default function MarketCard({
   item,

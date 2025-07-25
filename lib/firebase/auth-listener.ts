@@ -1,8 +1,8 @@
 'use client'
 
-import { SIGN_IN_WITH_GOOGLE } from '@/lib/clients/firebase'
+import { SIGN_IN_WITH_GOOGLE } from '@/lib/clients/auth'
 import { auth } from '@/lib/firebase/config'
-import { hasSession } from '@/lib/helpers/has-session'
+import { hasSession } from '@/lib/helpers/server/has-session'
 import { useSignOut } from '@/lib/hooks/use-sign-out'
 import useFirebaseStore from '@/lib/stores/firebase-store'
 import useProfileStore from '@/lib/stores/profile-store'
@@ -18,8 +18,8 @@ export default function FirebaseAuthListener() {
   const refreshSession = async (user: User) => {
     try {
       const token = await user.getIdToken(true)
-      const newProfile = await SIGN_IN_WITH_GOOGLE(token)
-      if (newProfile) setProfile(newProfile)
+      const { profile } = await SIGN_IN_WITH_GOOGLE(token)
+      if (profile) setProfile(profile)
     } catch (error) {
       await handleSignOut()
     }

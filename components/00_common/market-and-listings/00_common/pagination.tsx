@@ -6,10 +6,10 @@ import {
   PaginationLast,
   PaginationLink,
 } from '@/components/shadcn/components/ui/pagination'
-import { toUrlParams } from '@/lib/helpers/to-url-params'
 import { DEFAULT_ITEM_PAGINATION } from '@/lib/constants/item-pagination'
 import { notFound } from 'next/navigation'
 import { useItemPageStore } from '@/lib/providers/item-page-provider'
+import { toURLSearchParams } from '@/lib/helpers/to-url-search-params'
 
 export default function Pagination() {
   const { count, params, route } = useItemPageStore()
@@ -37,7 +37,7 @@ export default function Pagination() {
       <PaginationContent>
         <PaginationFirst
           disabled={params.page === 1 || !count}
-          href={`${route}?${toUrlParams({ ...params, page: 1 })}`}
+          href={`${route}?${toURLSearchParams({ ...params, page: 1 })}`}
         />
 
         {paginationArray.map(
@@ -47,7 +47,7 @@ export default function Pagination() {
               <PaginationItem key={index}>
                 <PaginationLink
                   isActive={params.page === page}
-                  href={`${route}?${toUrlParams({
+                  href={`${route}?${toURLSearchParams({
                     ...params,
                     page: page,
                   })}`}
@@ -60,7 +60,7 @@ export default function Pagination() {
 
         <PaginationLast
           disabled={params.page === lastPage || !count}
-          href={`${route}?${toUrlParams({
+          href={`${route}?${toURLSearchParams({
             ...params,
             page: lastPage,
           })}`}
