@@ -10,7 +10,7 @@ from app.profile.schemas.outbound import ProfileExtra
 from app.profile.schemas.inbound import ProfileIn
 from app.profile.schemas.outbound import ProfileOut, ProfileResponse
 
-profiles_router = APIRouter()
+profiles_router = APIRouter(prefix="/api/profiles")
 
 
 @profiles_router.get("/user/{user_id}", response_model=ProfileResponse)

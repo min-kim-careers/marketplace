@@ -19,7 +19,7 @@ from app.profile.schemas.outbound import ProfileResponse
 from app.storage.image import remove_image_bulk, store_image_bulk
 from rich import print
 
-items_router = APIRouter()
+items_router = APIRouter(prefix="/api/items")
 
 
 @items_router.get("", response_model=ItemResponse)
@@ -29,11 +29,19 @@ async def get_items(
 ) -> ItemResponse:
     item_count = await ItemRepository.get_all_count(db, query)
     if not item_count:
-        return ItemResponse(data={"items": [], "count": 0})
+        return ItemResponse(
+            data={
+                "items": [],
+                "count": 0,
+            }
+        )
 
     items_db = await ItemRepository.get_all(db, query)
     if not items_db:
-        raise ErrorResponse(status_code=500, message="Error fetching items")
+        raise ErrorResponse(
+            status_code=500,
+            message="Error fetching items",
+        )
 
     return ItemResponse(
         data={
@@ -51,11 +59,19 @@ async def get_user_items(
 ) -> ItemResponse:
     item_count = await ItemRepository.get_all_count_by_user_id(db, user_id, query)
     if not item_count:
-        return ItemResponse(data={"items": [], "count": 0})
+        return ItemResponse(
+            data={
+                "items": [],
+                "count": 0,
+            }
+        )
 
     items_db = await ItemRepository.get_all_by_user_id(db, user_id, query)
     if not items_db:
-        raise ErrorResponse(status_code=500, message="Error fetching user's items")
+        raise ErrorResponse(
+            status_code=500,
+            message="Error fetching user's items",
+        )
 
     return ItemResponse(
         data={
@@ -123,8 +139,8 @@ async def upsert_user_item(
     )
 
 
-@items_router.get("/items/slugs", response_model=ProfileResponse)
-async def get_items_by_ids(
+@items_router.get("/slugs", response_model=ProfileResponse)
+async def get_items_by_slugs(
     item_slugs: List[str] = Query(..., alias="itemSlugs"),
     db: AsyncSession = Depends(get_db),
 ) -> ProfileResponse:
@@ -132,18 +148,17 @@ async def get_items_by_ids(
 
     item_dbs = await ItemRepository.get_by_items_and_user_id(db, item_ids)
 
-    items = [ItemOut.from_db(i) for i in item_dbs]
-    order = [
-        next((idx for idx, item in enumerate(items) if item.id == _id), None)
-        for _id in item_slugs
-    ]
+    items = []
+    for item_id in item_ids:
+        for db_item in item_dbs:
+            if db_item.id == item_id:
+                items += [ItemOut.from_db(db_item)]
 
-    if None in order or len(items) != len(order):
+    if len(items) != len(item_ids):
         raise ErrorResponse(status_code=404, message="Error getting items by ids")
-    
+
     return ProfileResponse(
         data={
             "items": items,
-            "order": order,
         },
     )

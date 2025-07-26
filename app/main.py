@@ -38,8 +38,8 @@ app.add_middleware(
 )
 
 
-app.include_router(items_router, prefix="/api/items", tags=["Items"])
-app.include_router(profiles_router, prefix="/api/profiles", tags=["Profiles"])
+app.include_router(items_router, tags=["Items"])
+app.include_router(profiles_router, tags=["Profiles"])
 
 app.mount("/images", StaticFiles(directory="/code/images"), name="images")
 
