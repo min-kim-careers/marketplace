@@ -1,9 +1,0 @@
-#!/bin/bash
-
-# Delete Migrations/* if exists
-# Restart/Rebuild container after initial migration to mock DB 
-
-rm api/Migrations/*
-docker exec -it api-container bash -c "dotnet ef migrations add InitialCreate"
-docker exec -it api-container bash -c "dotnet ef database update"
-../restart/api

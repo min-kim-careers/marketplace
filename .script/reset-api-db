@@ -1,5 +1,0 @@
-#!/bin/bash
-
-docker exec -it api-db-container bash -c "psql -U apidbuser -d apidb -c 'DROP TABLE profiles cascade;'"
-docker exec -it api-db-container bash -c "psql -U apidbuser -d apidb -c 'DROP TABLE items cascade;'"
-# .script/restart/api
