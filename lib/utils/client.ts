@@ -42,13 +42,13 @@ class MakeClient {
     return this
   }
 
-  private reset(): this {
-    this.method = ''
-    this.path = ''
-    this.body = null
-    this.headers = {}
-    return this
-  }
+  // private reset(): this {
+  //   this.method = ''
+  //   this.path = ''
+  //   this.body = null
+  //   this.headers = {}
+  //   return this
+  // }
 
   get(path: string): this {
     this.path = path
@@ -79,19 +79,19 @@ class MakeClient {
     return this
   }
 
-  addBody(body: any): this {
+  addBody(body: any, isForm: boolean = false): this {
     if (this.method === 'GET') throw new Error('get method cannot have body')
     this.body = body
     this.headers = {
       ...this.headers,
-      'content-type': 'application/json',
+      ...(!isForm && {
+        'content-type': 'application/json',
+      }),
     }
     return this
   }
 
   addQuery(query: any): this {
-    if (this.method !== 'GET')
-      throw new Error('must be GET method to add query')
     this.query = toURLSearchParams(query).toString()
     return this
   }
@@ -105,25 +105,24 @@ class MakeClient {
   }
 
   async result<T>(opts: RequestOpts = defaultOpts): Promise<T> {
-    try {
-      if (opts.withSession) {
-        const session = await getSession()
-        if (session) {
-          this.headers = {
-            ...this.headers,
-            cookie: `${envLoader.sessionHeader}=${session}`,
-          }
+    if (opts.withSession) {
+      const session = await getSession()
+      if (session) {
+        this.headers = {
+          ...this.headers,
+          cookie: `${envLoader.sessionHeader}=${session}`,
         }
       }
+    }
 
-      const url = new URL(this.path, this.base)
-      url.search = this.query
-      const init: RequestInit = {
-        method: this.method,
-        headers: { ...this.headers, ...this.apiKey },
-        ...(this.body && { body: JSON.stringify(this.body) }),
-      }
-
+    const url = new URL(this.path, this.base)
+    if (this.query) url.search = this.query
+    const init: RequestInit = {
+      method: this.method,
+      headers: { ...this.headers, ...this.apiKey },
+      ...(this.body && { body: this.body }),
+    }
+    try {
       console.log(
         '------------------------------ web ------------------------------',
       )
@@ -132,20 +131,16 @@ class MakeClient {
 
       const res = await fetch(url.toString(), init)
       if (!res.ok) {
-        console.error(`${res.status} - ${res.statusText}`)
-        throw new Error()
+        throw new Error(`${res.status} - ${res.statusText}`)
       }
 
       const { data, message } = (await res.json()) as GatewayResponse<T>
       message && console.log({ gatewayResponse: message })
 
-      if (!data) throw new Error('no data')
       return data as T
     } catch (error) {
       console.error(error)
-      throw new Error('error while fetching')
-    } finally {
-      this.reset()
+      throw new Error()
     }
   }
 }

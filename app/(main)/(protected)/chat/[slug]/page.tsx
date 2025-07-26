@@ -1,11 +1,10 @@
 'use server'
 
 import Chat from '@/chat'
-import { ChatRoom } from '@/chat/types/chat-room'
 import { ChatPageProvider } from '@/chat/providers/chat-page-provider'
-import * as CHAT_SERVICE from '@/lib/clients/rooms'
+import { ChatRoom } from '@/chat/types/chat-room'
+import { GET_EXISTING_ROOMS } from '@/lib/clients/rooms'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
-import { toURLSearchParams } from '@/lib/helpers/to-url-search-params'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 
@@ -21,9 +20,7 @@ export default async function Page({
 
   const isIndex = pathname === APP_ROUTES.CHAT.indexHref
 
-  if (!slug && !isIndex) notFound()
-
-  const existingRooms = await CHAT_SERVICE.GET_EXISTING_ROOMS()
+  const { rooms: existingRooms } = await GET_EXISTING_ROOMS()
 
   var currentRoom: ChatRoom | null = null
   if (slug && !isIndex) {
@@ -32,10 +29,7 @@ export default async function Page({
   }
 
   return (
-    <ChatPageProvider
-      key={toURLSearchParams({ ...currentRoom, ...existingRooms }).toString()}
-      props={{ currentRoom, existingRooms }}
-    >
+    <ChatPageProvider props={{ currentRoom, existingRooms }}>
       <Chat />
     </ChatPageProvider>
   )

@@ -1,7 +1,7 @@
-import { UpsertProfileRequest } from '@/lib/clients/profile'
-import { UPDATE_PROFILE } from '@/lib/clients/profile'
+import { UPSERT_PROFILE } from '@/lib/clients/profile'
 import useLoadingStore from '@/lib/stores/loading-store'
 import useProfileStore from '@/lib/stores/profile-store'
+import { UpsertProfileRequest } from '@gateway/api/profile'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
@@ -10,16 +10,11 @@ export const useUpsertProfile = () => {
   const { setLoading } = useLoadingStore()
   const router = useRouter()
 
-  const handleUpsertProfile = async (
-    newProfile: UpsertProfileRequest,
-  ) => {
+  const handleUpsertProfile = async (newProfile: UpsertProfileRequest) => {
     try {
       setLoading('Updating your profile...', true)
 
-      const profile = await UPDATE_PROFILE(newProfile)
-      if (!profile)
-        throw new Error('Failed to update profile')
-
+      const { profile } = await UPSERT_PROFILE(newProfile)
       setProfile(profile)
 
       toast('Your profile was updated successfully!')
@@ -32,5 +27,5 @@ export const useUpsertProfile = () => {
     }
   }
 
-  return { handleUpdateProfile: handleUpsertProfile }
+  return { handleUpsertProfile }
 }

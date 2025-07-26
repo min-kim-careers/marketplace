@@ -27,7 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/shadcn/components/ui/select'
-import { deleteItem } from '@/lib/clients/item'
+import { DELETE_ITEM } from '@/lib/clients/item'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { ITEM_CONDITION_LABELS } from '@/lib/constants/item-condition-labels'
 import { ITEM_STATUS_COLORS } from '@/lib/constants/item-status-colors'
@@ -156,7 +156,9 @@ const DeleteConfirmDialog = ({
   const handleDelete = async () => {
     try {
       setLoading('Deleting post', true)
-      await deleteItem(item.id)
+      const { deleted } = await DELETE_ITEM(item.id)
+      if (!deleted) throw new Error('failed to delete')
+
       router.replace(APP_ROUTES.PROFILE_LISTINGS.href)
       toast('Successfully deleted post')
     } catch (error) {

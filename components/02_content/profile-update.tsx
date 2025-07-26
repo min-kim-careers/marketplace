@@ -25,7 +25,7 @@ export default function ProfileUpdate({
 }) {
   const [handleConfirmed, setHandleConfirmed] =
     useState(false)
-  const { handleUpdateProfile } = useUpsertProfile()
+  const { handleUpsertProfile: handleUpdateProfile } = useUpsertProfile()
 
   const form = useForm<z.infer<typeof ProfileUpdateForm>>({
     resolver: zodResolver(ProfileUpdateForm),

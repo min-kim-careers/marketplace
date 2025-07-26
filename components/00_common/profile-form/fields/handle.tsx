@@ -49,9 +49,7 @@ export default function HandleField({
   const placeholder = profile.handle
 
   const [input, setInput] = useState('')
-  const [buttonNode, setButtonNode] = useState<ReactNode>(
-    <DefaultButtonNode />,
-  )
+  const [buttonNode, setButtonNode] = useState<ReactNode>(<DefaultButtonNode />)
   const handleSchema = ProfileUpdateForm.pick({
     handle: true,
   })
@@ -62,9 +60,7 @@ export default function HandleField({
     clearErrors,
   } = form
 
-  const handleInputChange = (
-    e: ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
     if (confirmed) setConfirmed(false)
     setButtonNode(<DefaultButtonNode />)
@@ -89,15 +85,13 @@ export default function HandleField({
     }
   }
 
-  const handleButtonClick = async (
-    e: MouseEvent<HTMLButtonElement>,
-  ) => {
+  const handleButtonClick = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     try {
       setButtonNode(<Spinner />)
-      const handleExists = await HANDLE_EXISTS(input)
+      const { exists } = await HANDLE_EXISTS(input)
 
-      if (handleExists) {
+      if (exists) {
         setButtonNode(<HandleTakenButtonNode />)
         setConfirmed(false)
         setError(name, {
@@ -137,9 +131,7 @@ export default function HandleField({
               <Button
                 className='w-[100px]'
                 onClick={handleButtonClick}
-                disabled={
-                  confirmed || !input || !!errors.handle
-                }
+                disabled={confirmed || !input || !!errors.handle}
               >
                 {buttonNode}
               </Button>

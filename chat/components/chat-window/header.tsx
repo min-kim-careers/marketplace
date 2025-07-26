@@ -1,4 +1,4 @@
-import { DELETE_ROOM_BY_ID } from '@/lib/clients/rooms'
+import { DELETE_ROOM_BY_SLUG } from '@/lib/clients/rooms'
 import { useChatPageStore } from '@/chat/providers/chat-page-provider'
 import {
   AlertDialog,
@@ -79,7 +79,9 @@ const DeleteConfirmDialog = () => {
 
     try {
       setLoading('Deleting session', true)
-      if (!(await DELETE_ROOM_BY_ID(currentRoom.id))) throw new Error()
+      const { deleted } = await DELETE_ROOM_BY_SLUG(currentRoom.id)
+      if (!deleted) throw new Error('failed to delete')
+        
       router.replace(APP_ROUTES.CHAT.indexHref)
       toast('Successfully deleted post')
     } catch (error) {

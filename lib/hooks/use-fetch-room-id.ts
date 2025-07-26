@@ -12,8 +12,7 @@ export const useFetchRoomId = () => {
     try {
       setLoading('Loading...', true)
 
-      const roomId = await FETCH_ROOM_ID(itemId, handle)
-      if (!roomId) throw new Error()
+      const { roomId } = await FETCH_ROOM_ID(itemId, handle)
 
       return roomId
     } catch (error) {

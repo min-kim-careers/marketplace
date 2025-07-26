@@ -1,28 +1,13 @@
-import {
-  upsertItem,
-  UpsertItemRequest,
-} from '@/lib/clients/item'
-import { compressedFileFromUrl } from '@/lib/helpers/compress-image-from-url'
+import { UPSERT_ITEM } from '@/lib/clients/item'
+import { imageUrlsToFiles } from '@/lib/helpers/image-urls-to-files'
 import useLoadingStore from '@/lib/stores/loading-store'
+import { UpsertItemRequest } from '@gateway/api/item'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
 export const useUpsertItem = () => {
   const { setLoading } = useLoadingStore()
   const router = useRouter()
-
-  const parseImageUrls = async (imageUrls: string[]) =>
-    await Promise.all(
-      imageUrls
-        .filter((url) => url.startsWith('blob:'))
-        .map(async (url) => {
-          try {
-            return await compressedFileFromUrl(url)
-          } catch (error) {
-            throw error
-          }
-        }),
-    )
 
   const handleUpsertItem = async (
     request: UpsertItemRequest,
@@ -32,25 +17,16 @@ export const useUpsertItem = () => {
     const isUpdate = !!itemId
 
     try {
-      setLoading(
-        `${isUpdate ? 'Updating' : 'Posting'} your item`,
-        true,
-      )
+      setLoading(`${isUpdate ? 'Updating' : 'Posting'} your item`, true)
 
       if (request.imageUrls)
-        request.uploadImages = await parseImageUrls(
-          request.imageUrls,
-        )
+        request.uploadImages = await imageUrlsToFiles(request.imageUrls)
 
-      const item = await upsertItem(request, itemId)
-      if (!item)
-        throw new Error(
-          `Failed to ${isUpdate ? 'update' : 'post'} item`,
-        )
+      const { item } = await UPSERT_ITEM(request, { itemId })
+      // if (!item)
+      //   throw new Error(`Failed to ${isUpdate ? 'update' : 'post'} item`)
 
-      toast(
-        `Your item was ${isUpdate ? 'updated' : 'posted'} successfully!`,
-      )
+      toast(`Your item was ${isUpdate ? 'updated' : 'posted'} successfully!`)
 
       if (reroute) router.replace(reroute)
 

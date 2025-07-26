@@ -19,8 +19,7 @@ export const useSignIn = () => {
       const token = await cred.user.getIdToken()
 
       const { profile } = await SIGN_IN_WITH_GOOGLE(token)
-      if (profile) setProfile(profile)
-
+      setProfile(profile)
       router.refresh()
     } catch (error) {
       await auth.signOut()

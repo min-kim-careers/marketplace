@@ -30,19 +30,14 @@ export const ChatPageProvider = ({
     createStore<ChatPageState>((set) => ({
       ...props,
       setCurrentRoom: (currentRoom: ChatRoom) => set({ currentRoom }),
-      setExistingRooms: (existingRooms: ChatRoom[]) =>
-        set({ existingRooms }),
+      setExistingRooms: (existingRooms: ChatRoom[]) => set({ existingRooms }),
     })),
   )
 
-  // useEffect(() => {
-  //   setRoomId(props.currentRoom ? props.currentRoom.id : null)
-  //   storeRef.current.setState({ currentRoom: props.currentRoom })
-  // }, [props.currentRoom])
-
-  // useEffect(() => {
-  //   storeRef.current.setState({ existingRooms: props.existingRooms })
-  // }, [props.existingRooms])
+  useEffect(() => {
+    setRoomId(props.currentRoom ? props.currentRoom.id : null)
+    storeRef.current.setState({ ...props })
+  }, [props])
 
   return (
     <ChatPageContext.Provider value={storeRef.current}>

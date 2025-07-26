@@ -8,11 +8,9 @@ import { makeClient } from '@/lib/utils/client'
 export const SIGN_IN_WITH_GOOGLE = async (
   idToken: string,
 ): Promise<{ profile: Profile }> =>
-  await (
-    await makeClient()
-  )
+  (await makeClient())
     .post('/sign-in-with-google')
-    .addBody({ idToken })
+    .addBody(JSON.stringify({ idToken }))
     .result<{
       profile: Profile
       session: { value: string; expiry: number }
@@ -25,7 +23,7 @@ export const SIGN_IN_WITH_GOOGLE = async (
     )
 
 export const VERIFY_SESSION = async () =>
-  await (await makeClient())
+  (await makeClient())
     .post('/verify-session')
     .result<{ userId: string }>({ withSession: true })
 

@@ -1,17 +1,16 @@
 'use server'
 
-import { getAllUserItems } from '@/lib/clients/item'
 import ProfileListings from '@/components/02_content/profile-listings'
+import { GET_ALL_ITEMS_BY_USER } from '@/lib/clients/item'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { DEFAULT_ITEM_PAGE_PARAMS } from '@/lib/constants/item-page-params'
 import { ItemSortBy } from '@/lib/enums/item-sort-by'
 import { ItemSortOrder } from '@/lib/enums/item-sort-order'
+import { toURLSearchParams } from '@/lib/helpers/to-url-search-params'
+import { ItemPageProvider } from '@/lib/providers/item-page-provider'
 import { ItemPageParams } from '@/lib/types/item-page-params'
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
-import { ItemPageProvider } from '@/lib/providers/item-page-provider'
-import { isInConst } from '@/lib/helpers/is-in-const'
-import { toURLSearchParams } from '@/lib/helpers/to-url-search-params'
 
 const ListingsParamsSchema = z
   .object({
@@ -53,7 +52,7 @@ export default async function Page({
 
   const params: ItemPageParams = result.data
 
-  const { items, count } = await getAllUserItems(params)
+  const { items, count } = await GET_ALL_ITEMS_BY_USER(params)
 
   return (
     <ItemPageProvider

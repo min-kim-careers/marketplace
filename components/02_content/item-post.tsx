@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-import { UpsertItemRequest } from '@/lib/clients/item'
 import ItemImagePreview from '@/components/00_common/item-image-preview'
 import { ItemFormSchema } from '@/components/00_common/item-form/schema'
 import {
@@ -27,17 +26,12 @@ import {
 import { Form } from '@/components/shadcn/components/ui/form'
 import { useUpsertItem } from '@/lib/hooks/use-upsert-item'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
+import { UpsertItemRequest } from '@gateway/api/item'
 
-export default function ItemPost({
-  imageLimit,
-}: {
-  imageLimit: number
-}) {
-  const { handleUpsertItem: handleUpdateItem } =
-    useUpsertItem()
+export default function ItemPost({ imageLimit }: { imageLimit: number }) {
+  const { handleUpsertItem } = useUpsertItem()
 
-  const initImageUrls = () =>
-    Array.from({ length: imageLimit }, (_, i) => null)
+  const initImageUrls = () => Array.from({ length: imageLimit }, (_, i) => null)
 
   const form = useForm<z.infer<typeof ItemFormSchema>>({
     resolver: zodResolver(ItemFormSchema),
@@ -52,9 +46,7 @@ export default function ItemPost({
     },
   })
 
-  async function onSubmit(
-    values: z.infer<typeof ItemFormSchema>,
-  ) {
+  async function onSubmit(values: z.infer<typeof ItemFormSchema>) {
     const { location, imageUrls, ..._values } = values
 
     const request: UpsertItemRequest = {
@@ -63,20 +55,14 @@ export default function ItemPost({
       imageUrls: imageUrls.filter((u) => u !== null),
     }
 
-    await handleUpdateItem(
-      request,
-      undefined,
-      APP_ROUTES.PROFILE_LISTINGS.href,
-    )
+    await handleUpsertItem(request, undefined, APP_ROUTES.PROFILE_LISTINGS.href)
   }
 
   return (
     <Card className='flex w-full flex-col md:min-w-3xl md:flex-row'>
       <div className='flex-1'>
         <CardHeader className='pb-4'>
-          <CardTitle className='text-2xl'>
-            Post your Ad
-          </CardTitle>
+          <CardTitle className='text-2xl'>Post your Ad</CardTitle>
           <CardDescription>
             Fill out the form below to post your ad.
           </CardDescription>
@@ -94,10 +80,7 @@ export default function ItemPost({
                 <CategoryField form={form} />
                 <LocationField form={form} />
 
-                <Button
-                  type='submit'
-                  className='mt-4 w-full'
-                >
+                <Button type='submit' className='mt-4 w-full'>
                   Post Ad
                 </Button>
               </div>
@@ -113,6 +96,23 @@ export default function ItemPost({
             .map((v) => v)}
         />
       </div>
+      <button
+        onClick={async () => {
+          await handleUpsertItem({
+            name: 'AMD Ryzen',
+            description: '123123123123',
+            price: 500,
+            category: 'CPU',
+            state: 'NSW',
+            suburb: 'Sydney',
+            postcode: '2000',
+            condition: 'New',
+            imageUrls: [],
+          })
+        }}
+      >
+        Test
+      </button>
     </Card>
   )
 }
