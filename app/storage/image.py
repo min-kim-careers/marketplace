@@ -17,6 +17,8 @@ async def store_image(image: UploadFile) -> str:
         content = await image.read()
         f.write(content)
 
+    print("----------------------------------", f"/{IMAGE_DIR}/{filename}")
+
     return f"/{IMAGE_DIR}/{filename}"
 
 

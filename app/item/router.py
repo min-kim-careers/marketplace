@@ -19,10 +19,10 @@ from app.profile.schemas.outbound import ProfileResponse
 from app.storage.image import remove_image_bulk, store_image_bulk
 from rich import print
 
-items_router = APIRouter(prefix="/api/items")
+items_router = APIRouter()
 
 
-@items_router.get("", response_model=ItemResponse)
+@items_router.get("/api/items", response_model=ItemResponse)
 async def get_items(
     query: ItemsQuery = Depends(),
     db: AsyncSession = Depends(get_db),
@@ -51,7 +51,7 @@ async def get_items(
     )
 
 
-@items_router.get("/user/{user_id}", response_model=ItemResponse)
+@items_router.get("/api/items/user/{user_id}", response_model=ItemResponse)
 async def get_user_items(
     user_id: UUID = Path(...),
     query: ItemsQuery = Depends(),
@@ -81,7 +81,7 @@ async def get_user_items(
     )
 
 
-@items_router.get("/user/{user_id}/item/{item_slug}", response_model=ProfileResponse)
+@items_router.get("/api/items/user/{user_id}/item/{item_slug}", response_model=ProfileResponse)
 async def get_user_item(
     item_db: ItemDB = Depends(resolve_item),
 ) -> ProfileResponse:
@@ -92,7 +92,7 @@ async def get_user_item(
     )
 
 
-@items_router.delete("/user/{user_id}/item/{item_slug}", response_model=ItemResponse)
+@items_router.delete("/api/items/user/{user_id}/item/{item_slug}", response_model=ItemResponse)
 async def delete_user_item(
     item_db: ItemDB = Depends(resolve_item),
     db: AsyncSession = Depends(get_db),
@@ -106,7 +106,7 @@ async def delete_user_item(
     )
 
 
-@items_router.put("/user/{user_id}", response_model=ItemResponse)
+@items_router.put("/api/items/user/{user_id}", response_model=ItemResponse)
 async def upsert_user_item(
     item_in: Annotated[ItemIn, Form()],
     user_id: UUID = Path(...),
@@ -139,20 +139,20 @@ async def upsert_user_item(
     )
 
 
-@items_router.get("/slugs", response_model=ProfileResponse)
+@items_router.get("/api/items/slugs", response_model=ProfileResponse)
 async def get_items_by_slugs(
     item_slugs: List[str] = Query(..., alias="itemSlugs"),
     db: AsyncSession = Depends(get_db),
 ) -> ProfileResponse:
-    item_ids = [utils.decode_slug(i) for i in set(item_slugs)]
+    item_ids = [utils.decode_slug(i) for i in item_slugs]
 
     item_dbs = await ItemRepository.get_by_items_and_user_id(db, item_ids)
 
     items = []
     for item_id in item_ids:
-        for db_item in item_dbs:
-            if db_item.id == item_id:
-                items += [ItemOut.from_db(db_item)]
+        for item_db in item_dbs:
+            if item_db.id == item_id:
+                items += [ItemOut.from_db(item_db)]
 
     if len(items) != len(item_ids):
         raise ErrorResponse(status_code=404, message="Error getting items by ids")
