@@ -4,17 +4,16 @@ import { User } from 'firebase/auth'
 import { create } from 'zustand'
 
 interface FirebaseState {
-  user: User | null
-  setUser: (user: User | null) => void
-  getToken:  () =>  Promise<string | null>
+  user?: User
+  setUser: (user?: User) => void
+  getToken:  () =>  Promise<string | undefined>
 }
 
 const useFirebaseStore = create<FirebaseState>((set, get) => ({
-  user: null,
-  setUser: (user: User | null) => set({ user }),
+  setUser: (user: User | undefined) => set({ user }),
   getToken: async () => {
     const user = get().user
-    if (!user) return null
+    if (!user) return
     return await user.getIdToken()
   }
 }))

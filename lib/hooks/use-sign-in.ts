@@ -1,4 +1,4 @@
-import { SIGN_IN_WITH_GOOGLE, SIGN_OUT } from '@/lib/clients/auth'
+import { SIGN_IN_WITH_GOOGLE } from '@/lib/clients/auth'
 import { auth, provider } from '@/lib/firebase/config'
 import useLoadingStore from '@/lib/stores/loading-store'
 import useProfileStore from '@/lib/stores/profile-store'
@@ -23,13 +23,12 @@ export const useSignIn = () => {
       router.refresh()
     } catch (error) {
       await auth.signOut()
-      await SIGN_OUT()
-      setProfile(null)
       toast(`Something went wrong.`)
     } finally {
       setLoading(null)
-      if (profile) toast(`Signed in as ${profile.handle}.`)
     }
+
+    profile && toast(`Signed in as ${profile.handle}.`)
   }
 
   return { handleSignIn }

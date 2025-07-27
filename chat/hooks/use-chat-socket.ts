@@ -7,8 +7,7 @@ import {
   ChatMessageOut,
   ChatMessageOutChat,
 } from '@/chat/types/chat-message-out'
-import { useLoadToken } from '@/lib/firebase/use-load-token'
-import { RefObject, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 export interface ChatSocket {
@@ -20,6 +19,7 @@ export interface ChatSocket {
   }
   isChatting: () => boolean
   setRoomId: (roomId: string | null) => void
+  setToken: (token: string | null) => void
 
   chatMessages: ChatMessageInChat[]
   noMessages: boolean
@@ -27,13 +27,12 @@ export interface ChatSocket {
 }
 
 export function useChatSocket(): ChatSocket {
-  const token = useLoadToken()
-
   const wsRef = useRef<WebSocket | null>(null)
 
   const [chatMessages, setChatMessages] = useState<ChatMessageInChat[]>([])
   const [mode, setMode] = useState<ChatMode>(ChatMode.NULL)
   const [roomId, setRoomId] = useState<string | null>(null)
+  const [token, setToken] = useState<string | null>(null)
 
   useEffect(() => {
     if (roomId) {
@@ -203,6 +202,7 @@ export function useChatSocket(): ChatSocket {
     },
     isChatting,
     setRoomId,
+    setToken,
 
     chatMessages,
     noMessages,

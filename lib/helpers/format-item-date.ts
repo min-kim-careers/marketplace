@@ -2,7 +2,7 @@ import { formatDistanceToNow } from 'date-fns'
 
 const oneDayInMs = 24 * 60 * 60 * 1000
 
-export const formatItemDate = async (s: string) => {
+export const formatItemDate = (s: string) => {
   const now = new Date()
   const date = new Date(s)
   

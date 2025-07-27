@@ -96,23 +96,6 @@ export default function ItemPost({ imageLimit }: { imageLimit: number }) {
             .map((v) => v)}
         />
       </div>
-      <button
-        onClick={async () => {
-          await handleUpsertItem({
-            name: 'AMD Ryzen',
-            description: '123123123123',
-            price: 500,
-            category: 'CPU',
-            state: 'NSW',
-            suburb: 'Sydney',
-            postcode: '2000',
-            condition: 'New',
-            imageUrls: [],
-          })
-        }}
-      >
-        Test
-      </button>
     </Card>
   )
 }

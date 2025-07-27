@@ -25,8 +25,9 @@ import {
 import { cn } from '@/components/shadcn/lib/utils'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { ItemFormSchema } from '@/components/00_common/item-form/schema'
-import { ITEM_CONDITION_LABELS } from "@/lib/constants/item-condition-labels"
-import { ItemCondition } from "@/lib/enums/item-condition"
+import { ITEM_CONDITION_LABELS } from '@/lib/constants/item-condition-labels'
+import { ItemCondition } from '@/lib/enums/item-condition'
+import { useState } from 'react'
 
 export default function ConditionField({
   form,
@@ -36,11 +37,19 @@ export default function ConditionField({
   const name = 'condition'
   const label = 'Condition'
   const lookup = ITEM_CONDITION_LABELS
-  const placeholder =
-    'Choose the condition, e.g., New or Used'
+  const placeholder = 'Choose the condition, e.g., New or Used'
+
+  const [openPopover, setOpenPopover] = useState(false)
 
   const handleSearch = (value: string, search: string) =>
     value.startsWith(search) ? 1 : 0
+
+  const handleOnSelect = (value: string) => {
+    form.setValue(name, value, {
+      shouldValidate: true,
+    })
+    setOpenPopover(false)
+  }
 
   return (
     <FormField
@@ -49,7 +58,7 @@ export default function ConditionField({
       render={({ field }) => (
         <FormItem className='flex flex-col gap-2'>
           <FormLabel>{label}</FormLabel>
-          <Popover>
+          <Popover open={openPopover} onOpenChange={setOpenPopover}>
             <PopoverTrigger asChild>
               <FormControl>
                 <Button
@@ -60,8 +69,7 @@ export default function ConditionField({
                     !field.value && 'text-muted-foreground',
                   )}
                 >
-                  {lookup[field.value as ItemCondition] ??
-                    placeholder}
+                  {lookup[field.value as ItemCondition] ?? placeholder}
                   <ChevronsUpDown className='opacity-50' />
                 </Button>
               </FormControl>
@@ -73,27 +81,19 @@ export default function ConditionField({
                   className='h-9'
                 />
                 <CommandList>
-                  <CommandEmpty>
-                    No {name} found.
-                  </CommandEmpty>
+                  <CommandEmpty>No {name} found.</CommandEmpty>
                   <CommandGroup>
                     {Object.keys(lookup).map((key) => (
                       <CommandItem
                         value={key}
                         key={key}
-                        onSelect={(value) => {
-                          form.setValue(name, value, {
-                            shouldValidate: true,
-                          })
-                        }}
+                        onSelect={handleOnSelect}
                       >
                         {lookup[key as ItemCondition]}
                         <Check
                           className={cn(
                             'ml-auto',
-                            key === field.value
-                              ? 'opacity-100'
-                              : 'opacity-0',
+                            key === field.value ? 'opacity-100' : 'opacity-0',
                           )}
                         />
                       </CommandItem>

@@ -2,34 +2,22 @@
 
 import { Profile } from '@/lib/types/profile'
 import { create } from 'zustand'
-import {
-  persist,
-  subscribeWithSelector,
-} from 'zustand/middleware'
+import { persist, subscribeWithSelector } from 'zustand/middleware'
 
 interface ProfileStore {
-  profile: Profile | null
-  getProfile: () => Profile
-  setProfile: (profile: Profile | null) => void
+  profile?: Profile
+  setProfile: (profile?: Profile) => void
 }
 
 const useProfileStore = create(
   subscribeWithSelector(
     persist<ProfileStore>(
-      (set, get) => {
-        return {
-          profile: null,
-          getProfile: () => {
-            const profile = get().profile
-            if (!profile) throw new Error()
-            return profile
-          },
-          setProfile: (profile: Profile | null) =>
-            set({
-              profile,
-            }),
-        }
-      },
+      (set) => ({
+        setProfile: (profile?: Profile) =>
+          set({
+            profile,
+          }),
+      }),
       {
         name: 'profile',
         partialize: (state) =>

@@ -1,45 +1,49 @@
 'use client'
 
-import { SIGN_IN_WITH_GOOGLE } from '@/lib/clients/auth'
+import { SIGN_IN_WITH_GOOGLE, SIGN_OUT } from '@/lib/clients/auth'
 import { auth } from '@/lib/firebase/config'
 import { hasSession } from '@/lib/helpers/server/has-session'
-import { useSignOut } from '@/lib/hooks/use-sign-out'
 import useFirebaseStore from '@/lib/stores/firebase-store'
 import useProfileStore from '@/lib/stores/profile-store'
 import { logInfo } from '@/lib/utils/log'
-import { onIdTokenChanged, User } from 'firebase/auth'
+import { onAuthStateChanged, User } from 'firebase/auth'
 import { useEffect } from 'react'
 
-export default function FirebaseAuthListener() {
+export const AuthManager = () => {
   const { profile, setProfile } = useProfileStore()
-  const { setUser } = useFirebaseStore()
-  const { handleSignOut } = useSignOut()
+  const { user, setUser } = useFirebaseStore()
 
   const refreshSession = async (user: User) => {
     try {
       const token = await user.getIdToken(true)
       const { profile } = await SIGN_IN_WITH_GOOGLE(token)
-      if (profile) setProfile(profile)
+      setProfile(profile)
     } catch (error) {
-      await handleSignOut()
+      await auth.signOut()
     }
   }
 
   useEffect(() => {
-    const unsubscribe = onIdTokenChanged(auth, async (user) => {
-      const hasSignedIn = !!user
-      const hasSignedOut = !user
+    const unsubscribe = onAuthStateChanged(auth, async (_user) => {
+      const hasSignedIn = !!_user
+      const hasSignedOut = !_user
 
       if (hasSignedIn) {
         logInfo('signed in')
-        setUser(user)
-        if (!(await hasSession())) await refreshSession(user)
+        setUser(_user)
+        !(await hasSession()) && (await refreshSession(_user))
       }
 
       if (hasSignedOut) {
         logInfo('signed out')
-        setUser(null)
-        if (profile) setProfile(null)
+
+        user && setUser(undefined)
+        console.log('user unset')
+
+        profile && setProfile(undefined)
+        console.log('profile unset')
+
+        !!(await hasSession()) && (await SIGN_OUT())
       }
     })
 

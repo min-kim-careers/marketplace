@@ -3,7 +3,7 @@ import 'sonner/dist/styles.css';
 import { APP_DATA } from '@/lib/constants/app-data'
 import type { Metadata } from 'next'
 import { Toaster } from 'sonner';
-import FirebaseAuthListener from '@/lib/firebase/auth-listener';
+import { AuthManager } from '@/lib/manager/auth-manager';
 
 export const metadata: Metadata = {
   title: APP_DATA.TITLE,
@@ -17,7 +17,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className={`antialiased`}>
-        <FirebaseAuthListener />
+        <AuthManager />
         <div className='font-[family-name:var(--font-geist-sans)]'>
           {children}
         </div>

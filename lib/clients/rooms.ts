@@ -6,14 +6,14 @@ import { makeClient } from '@/lib/utils/client'
 export const FETCH_ROOM_ID = async (itemSlug: string, handle: string) =>
   (await makeClient())
     .post(`/fetch-room-id/itemSlug/${itemSlug}/handle/${handle}`)
-    .result<{ roomId: string }>({ withSession: true })
+    .parseResult<{ roomId: string }>({ withSession: true })
 
 export const GET_EXISTING_ROOMS = async () =>
   (await makeClient())
     .get(`/get-existing-rooms`)
-    .result<{ rooms: ChatRoom[] }>({ withSession: true })
+    .parseResult<{ rooms: ChatRoom[] }>({ withSession: true })
 
 export const DELETE_ROOM_BY_SLUG = async (roomSlug: string) =>
   (await makeClient())
     .delete(`/delete-room-by-id/roomSlug/${roomSlug}`)
-    .result<{ deleted: boolean }>({ withSession: true })
+    .parseResult<{ deleted: boolean }>({ withSession: true })

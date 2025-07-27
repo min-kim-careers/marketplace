@@ -9,14 +9,14 @@ import { UpsertItemRequest } from '@gateway/api/item'
 export const GET_ALL_ITEMS = async (itemPageParams: ItemPageParams) =>
   (await makeClient())
     .get(`/get-all-items`)
-    .addQuery(itemPageParams)
-    .result<{ items: Item[]; count: number }>({ withSession: true })
+    .setQuery(itemPageParams)
+    .parseResult<{ items: Item[]; count: number }>({ withSession: true })
 
 export const GET_ALL_ITEMS_BY_USER = async (itemPageParams: ItemPageParams) =>
   (await makeClient())
     .get(`/get-all-items-by-user`)
-    .addQuery(itemPageParams)
-    .result<{
+    .setQuery(itemPageParams)
+    .parseResult<{
       items: Item[]
       count: number
     }>({ withSession: true })
@@ -24,7 +24,7 @@ export const GET_ALL_ITEMS_BY_USER = async (itemPageParams: ItemPageParams) =>
 export const GET_ITEM_BY_USER = async (itemId: string) =>
   (await makeClient())
     .get(`/get-item-by-id/itemId/${itemId}`)
-    .result<{ item: Item }>({ withSession: true })
+    .parseResult<{ item: Item }>({ withSession: true })
 
 export const UPSERT_ITEM = async (
   request: UpsertItemRequest,
@@ -32,11 +32,11 @@ export const UPSERT_ITEM = async (
 ): Promise<{ item: Item }> =>
   (await makeClient())
     .put(`/upsert-item`)
-    .addQuery(query)
-    .addBody(await buildUpsertItemForm(request))
-    .result<{ item: Item }>({ withSession: true })
+    .setQuery(query)
+    .setForm(await buildUpsertItemForm(request))
+    .parseResult<{ item: Item }>({ withSession: true })
 
 export const DELETE_ITEM = async (itemId: string) =>
   (await makeClient())
     .delete(`/delete-item/itemId/${itemId}`)
-    .result<{ deleted: boolean }>({ withSession: true })
+    .parseResult<{ deleted: boolean }>({ withSession: true })

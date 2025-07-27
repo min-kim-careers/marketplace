@@ -23,9 +23,6 @@ export const useUpsertItem = () => {
         request.uploadImages = await imageUrlsToFiles(request.imageUrls)
 
       const { item } = await UPSERT_ITEM(request, { itemId })
-      // if (!item)
-      //   throw new Error(`Failed to ${isUpdate ? 'update' : 'post'} item`)
-
       toast(`Your item was ${isUpdate ? 'updated' : 'posted'} successfully!`)
 
       if (reroute) router.replace(reroute)

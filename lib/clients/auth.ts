@@ -10,8 +10,8 @@ export const SIGN_IN_WITH_GOOGLE = async (
 ): Promise<{ profile: Profile }> =>
   (await makeClient())
     .post('/sign-in-with-google')
-    .addBody(JSON.stringify({ idToken }))
-    .result<{
+    .setBody({ idToken })
+    .parseResult<{
       profile: Profile
       session: { value: string; expiry: number }
     }>()
@@ -25,6 +25,11 @@ export const SIGN_IN_WITH_GOOGLE = async (
 export const VERIFY_SESSION = async () =>
   (await makeClient())
     .post('/verify-session')
-    .result<{ userId: string }>({ withSession: true })
+    .parseResult<{ userId: string }>({ withSession: true })
 
-export const SIGN_OUT = async () => await clearSession()
+export const SIGN_OUT = async () =>
+  (await makeClient())
+    .post('/revoke-session')
+    .parseResult({ withSession: true })
+    .then(async () => await clearSession())
+    .then(() => {})

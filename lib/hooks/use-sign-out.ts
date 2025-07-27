@@ -1,4 +1,4 @@
-import { SIGN_OUT } from '@/lib/clients/auth'
+import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { auth } from '@/lib/firebase/config'
 import useLoadingStore from '@/lib/stores/loading-store'
 import useProfileStore from '@/lib/stores/profile-store'
@@ -15,12 +15,10 @@ export const useSignOut = () => {
       setLoading('Signing you out...')
 
       await auth.signOut()
-      await SIGN_OUT()
-      setProfile(null)
 
       toast(`See you again!`)
 
-      router.refresh()
+      router.replace(APP_ROUTES.HOME.href)
     } catch (error) {
       toast(`Something went wrong.`)
     } finally {

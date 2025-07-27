@@ -1,7 +1,6 @@
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
-import Spinner from '@/components/00_common/spinner'
 import { ItemFormSchema } from '@/components/00_common/item-form/schema'
 import { Button } from '@/components/shadcn/components/ui/button'
 import {
@@ -26,10 +25,7 @@ import {
 } from '@/components/shadcn/components/ui/popover'
 import { cn } from '@/components/shadcn/lib/utils'
 import { LocationJSON } from '@/lib/utils/fuse/location-json'
-import {
-  getLocationLabel,
-  searchLocations,
-} from '@/lib/utils/fuse/locations'
+import { getLocationLabel, searchLocations } from '@/lib/utils/fuse/locations'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
@@ -40,15 +36,11 @@ export default function LocationField({
 }) {
   const name = 'location'
   const label = 'Location'
-  const placeholder =
-    'Search for a location, e.g. Sydney or 2000'
+  const placeholder = 'Search for a location, e.g. Sydney or 2000'
 
-  const [loading, setLoading] = useState(false)
-  const [locations, setLocations] = useState<
-    LocationJSON[]
-  >([])
-  const [currentLabel, setCurrentLabel] =
-    useState(placeholder)
+  const [locations, setLocations] = useState<LocationJSON[]>([])
+  const [currentLabel, setCurrentLabel] = useState(placeholder)
+  const [openPopover, setOpenPopover] = useState(false)
 
   useEffect(() => {
     const existingLocation = form.getValues(name)
@@ -74,19 +66,17 @@ export default function LocationField({
     }
   }, [])
 
-  const handleChange = (value: string) => {
-    setLoading(true)
+  const handleSearch = (value: string) => {
     try {
       const locations = searchLocations(value)
       setLocations(locations)
-    } catch (_) {
+    } catch (error) {
+      console.error(error)
       setLocations([])
-    } finally {
-      setLoading(false)
     }
   }
 
-  const handleSelect = (location: LocationJSON) => {
+  const handleOnSelect = (location: LocationJSON) => {
     form.setValue(
       name,
       {
@@ -99,6 +89,7 @@ export default function LocationField({
       },
     )
     setCurrentLabel(location.label)
+    setOpenPopover(false)
   }
 
   return (
@@ -108,7 +99,7 @@ export default function LocationField({
       render={() => (
         <FormItem className='flex flex-col gap-2'>
           <FormLabel>{label}</FormLabel>
-          <Popover>
+          <Popover open={openPopover} onOpenChange={setOpenPopover}>
             <PopoverTrigger asChild>
               <FormControl>
                 <Button
@@ -116,8 +107,7 @@ export default function LocationField({
                   role='combobox'
                   className={cn(
                     'justify-between',
-                    !currentLabel &&
-                      'text-muted-foreground',
+                    !currentLabel && 'text-muted-foreground',
                   )}
                 >
                   {currentLabel || placeholder}
@@ -130,37 +120,30 @@ export default function LocationField({
                 <CommandInput
                   placeholder={`Search ${name}...`}
                   className='h-9'
-                  onValueChange={handleChange}
+                  onValueChange={handleSearch}
                 />
                 <CommandList>
-                  <CommandEmpty>
-                    No {name} found.
-                  </CommandEmpty>
+                  <CommandEmpty>No {name} found.</CommandEmpty>
                   <CommandGroup>
-                    {loading ? (
-                      <Spinner />
-                    ) : (
-                      locations.map((location, i) => (
-                        <CommandItem
-                          value={location.label}
-                          key={i}
-                          onSelect={() =>
-                            handleSelect(location)
-                          }
-                        >
-                          {location.label}
+                    {locations.map((location, i) => (
+                      <CommandItem
+                        value={location.label}
+                        key={i}
+                        onSelect={() => handleOnSelect(location)}
+                      >
+                        <>
+                          <p>{location.label}</p>
                           <Check
                             className={cn(
                               'ml-auto',
-                              location.label ===
-                                currentLabel
+                              location.label === currentLabel
                                 ? 'opacity-100'
                                 : 'opacity-0',
                             )}
                           />
-                        </CommandItem>
-                      ))
-                    )}
+                        </>
+                      </CommandItem>
+                    ))}
                   </CommandGroup>
                 </CommandList>
               </Command>

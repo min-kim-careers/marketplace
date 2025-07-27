@@ -3,9 +3,21 @@
 import { ChatSidebar } from '@/chat/components/chat-sidebar'
 import ChatWindow from '@/chat/components/chat-window'
 import { useChatSocketContext } from '@/chat/providers/chat-socket-provider'
+import useFirebaseStore from '@/lib/stores/firebase-store'
+import { useEffect } from 'react'
 
 export default function Chat() {
-  const { isChatting } = useChatSocketContext()
+  const { isChatting, setToken } = useChatSocketContext()
+  const { getToken } = useFirebaseStore()
+
+  useEffect(() => {
+    const loadToken = async () => {
+      const token = await getToken()
+      token && setToken(token)
+    }
+
+    loadToken()
+  }, [])
 
   return (
     <div className='relative flex max-h-[93vh] w-full flex-1 flex-row rounded-lg border'>

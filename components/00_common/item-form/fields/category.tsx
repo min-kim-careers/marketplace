@@ -23,10 +23,11 @@ import {
   PopoverTrigger,
 } from '@/components/shadcn/components/ui/popover'
 import { cn } from '@/components/shadcn/lib/utils'
-import { ITEM_CATEGORY_LABELS } from "@/lib/constants/item-category-labels"
-import { ItemCategory } from "@/lib/enums/item-category"
+import { ITEM_CATEGORY_LABELS } from '@/lib/constants/item-category-labels'
+import { ItemCategory } from '@/lib/enums/item-category'
 import { ItemFormSchema } from '@/components/00_common/item-form/schema'
 import { Check, ChevronsUpDown } from 'lucide-react'
+import { useState } from 'react'
 
 export default function CategoryField({
   form,
@@ -38,8 +39,17 @@ export default function CategoryField({
   const lookup = ITEM_CATEGORY_LABELS
   const placeholder = 'Select an item category'
 
+  const [openPopover, setOpenPopover] = useState(false)
+
   const handleSearch = (value: string, search: string) =>
     value.startsWith(search) ? 1 : 0
+
+  const handleOnSelect = (value: string) => {
+    form.setValue(name, value, {
+      shouldValidate: true,
+    })
+    setOpenPopover(false)
+  }
 
   return (
     <FormField
@@ -48,7 +58,7 @@ export default function CategoryField({
       render={({ field }) => (
         <FormItem className='flex flex-col gap-2'>
           <FormLabel>{label}</FormLabel>
-          <Popover>
+          <Popover open={openPopover} onOpenChange={setOpenPopover}>
             <PopoverTrigger asChild>
               <FormControl>
                 <Button
@@ -71,27 +81,19 @@ export default function CategoryField({
                   className='h-9'
                 />
                 <CommandList>
-                  <CommandEmpty>
-                    No {name} found.
-                  </CommandEmpty>
+                  <CommandEmpty>No {name} found.</CommandEmpty>
                   <CommandGroup>
                     {Object.keys(lookup).map((key) => (
                       <CommandItem
                         value={key}
                         key={key}
-                        onSelect={(value) => {
-                          form.setValue(name, value, {
-                            shouldValidate: true,
-                          })
-                        }}
+                        onSelect={handleOnSelect}
                       >
                         {lookup[key as ItemCategory]}
                         <Check
                           className={cn(
                             'ml-auto',
-                            key === field.value
-                              ? 'opacity-100'
-                              : 'opacity-0',
+                            key === field.value ? 'opacity-100' : 'opacity-0',
                           )}
                         />
                       </CommandItem>
