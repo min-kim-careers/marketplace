@@ -1,41 +1,15 @@
-import MarketCard from '@/components/00_common/market-and-listings/03_market-list/market-card'
-import MarketModal from '@/components/00_common/market-and-listings/03_market-list/market-modal'
-import { useItemPageStore } from '@/lib/providers/item-page-provider'
-import useLayoutStore from '@/lib/stores/layout-store'
-import { Item } from '@/lib/types/item'
+import { MarketItems } from '@/components/00_common/market-and-listings/03_market-list/market-items'
+import { GET_ALL_ITEMS } from '@/lib/clients/item'
+import { ItemPageParams } from '@/lib/types/item-page-params'
 
-export default function MarketList() {
-  const { itemColumns } = useLayoutStore()
-  const { items } = useItemPageStore()
+export default async function MarketList({
+  params,
+}: {
+  params: ItemPageParams
+}) {
+  const { items, count } = await GET_ALL_ITEMS(params)
 
-  if (!items.length)
-    return (
-      <div className='flex flex-1 items-center justify-center text-black/50'>
-        No results..
-      </div>
-    )
-
-  return (
-    <div
-      className='grid w-full items-start gap-2'
-      style={{
-        gridTemplateColumns: `repeat(${itemColumns}, 1fr)`,
-      }}
-    >
-      {items.map((item: Item, i: number) => (
-        <MarketModal key={i} item={item}>
-          <div className='cursor-pointer'>
-            <MarketCard item={item} columns={itemColumns} />
-          </div>
-        </MarketModal>
-      ))}
-      <style jsx>{`
-        @media (max-width: 640px) {
-          div.grid {
-            grid-template-columns: repeat(1, 1fr) !important;
-          }
-        }
-      `}</style>
-    </div>
-  )
+  return <MarketItems items={items} count={count} />
 }
+
+

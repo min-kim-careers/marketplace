@@ -1,41 +1,13 @@
-import ProfileListingsCard from '@/components/00_common/market-and-listings/03_profile-listings-list/profile-listings-card'
-import ProfileListingsModal from '@/components/00_common/market-and-listings/03_profile-listings-list/profile-listings-modal'
-import { Item } from '@/lib/types/item'
-import { useItemPageStore } from '@/lib/providers/item-page-provider'
-import useLayoutStore from '@/lib/stores/layout-store'
+import { ProfileListingItems } from '@/components/00_common/market-and-listings/03_profile-listings-list/profile-listings-items'
+import { GET_ALL_ITEMS_BY_USER } from '@/lib/clients/item'
+import { ItemPageParams } from '@/lib/types/item-page-params'
 
-export default function ProfileListingsList() {
-  const { itemColumns } = useLayoutStore()
-  const { items } = useItemPageStore()
+export default async function ProfileListingsList({
+  params,
+}: {
+  params: ItemPageParams
+}) {
+  const { items, count } = await GET_ALL_ITEMS_BY_USER(params)
 
-  if (!items.length)
-    return (
-      <div className='flex flex-1 items-center justify-center text-black/50'>
-        No listings..
-      </div>
-    )
-
-  return (
-    <div
-      className='grid w-full items-start gap-2'
-      style={{
-        gridTemplateColumns: `repeat(${itemColumns}, 1fr)`,
-      }}
-    >
-      {items.map((item: Item, i) => (
-        <ProfileListingsModal key={i} item={item} index={i}>
-          <div className='cursor-pointer'>
-            <ProfileListingsCard item={item} columns={itemColumns} />
-          </div>
-        </ProfileListingsModal>
-      ))}
-      <style jsx>{`
-        @media (max-width: 640px) {
-          div.grid {
-            grid-template-columns: repeat(1, 1fr) !important;
-          }
-        }
-      `}</style>
-    </div>
-  )
+  return <ProfileListingItems items={items} count={count} />
 }

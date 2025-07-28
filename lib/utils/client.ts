@@ -1,5 +1,3 @@
-'use server'
-
 import { GatewayResponse } from '@/lib/clients/types'
 import { getSession } from '@/lib/helpers/server/get-session'
 import { toURLSearchParams } from '@/lib/helpers/to-url-search-params'
@@ -102,32 +100,31 @@ class Client {
       withSession: false,
     },
   ): Promise<any> {
-    const { withSession } = opts
-
-    if (withSession) {
-      const session = await getSession()
-      if (session)
-        this.addHeader({ cookie: `${envLoader.sessionHeader}=${session}` })
-    }
-
-    console.log(
-      '------------------------------ web ------------------------------',
-    )
-    console.log(this.url.toString())
-
-    // console.log({
-    //   ...this.init,
-    //   ...(this.init.body && { body: 'redacted' }),
-    //   headers: {
-    //     ...this.init.headers,
-    //     ...((this.init.headers as any).cookie && { cookie: 'redacted' }),
-    //   },
-    // })
-    console.log(
-      '-----------------------------------------------------------------',
-    )
-
     try {
+      const { withSession } = opts
+
+      if (withSession) {
+        const session = await getSession()
+        if (session)
+          this.addHeader({ cookie: `${envLoader.sessionHeader}=${session}` })
+      }
+
+      console.log(
+        '------------------------------ web ------------------------------',
+      )
+      console.log(this.url.toString())
+
+      console.log({
+        ...this.init,
+        // ...(this.init.body && { body: 'redacted' }),
+        headers: {
+          ...this.init.headers,
+          ...((this.init.headers as any).cookie && { cookie: 'redacted' }),
+        },
+      })
+      console.log(
+        '-----------------------------------------------------------------',
+      )
       const resp = await fetch(this.url.toString(), this.init)
       if (!resp.ok) {
         throw new Error(`${resp.status} - ${resp.statusText}`)

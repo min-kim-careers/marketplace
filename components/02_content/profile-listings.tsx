@@ -1,19 +1,29 @@
-'use client'
-
+import ItemPageFallback from '@/components/00_common/market-and-listings/00_common/fallback'
 import Toolbar from '@/components/00_common/market-and-listings/01_toolbar'
 import PaginationTop from '@/components/00_common/market-and-listings/02_pagination-top'
 import ProfileListingsList from '@/components/00_common/market-and-listings/03_profile-listings-list'
 import PaginationBottom from '@/components/00_common/market-and-listings/04_pagination-bottom'
+import { APP_ROUTES } from '@/lib/constants/app-routes'
+import { ItemPageProvider } from '@/lib/providers/item-page-provider'
+import { ItemPageParams } from '@/lib/types/item-page-params'
+import { Suspense } from 'react'
 
-export default function ProfileListing() {
+export default function ProfileListing({ params }: { params: ItemPageParams }) {
   return (
     <div className='flex w-full flex-1 flex-col justify-between gap-2'>
-      <div className='flex w-full flex-1 flex-col gap-2'>
-        <Toolbar />
-        <PaginationTop />
-        <ProfileListingsList />
-      </div>
-      <PaginationBottom />
+      <ItemPageProvider
+        key={Date.now()}
+        props={{ params, route: APP_ROUTES.PROFILE_LISTINGS.href }}
+      >
+        <div className='flex w-full flex-1 flex-col gap-2'>
+          <Toolbar />
+          <PaginationTop />
+          <Suspense fallback={<ItemPageFallback />}>
+            <ProfileListingsList params={params} />
+          </Suspense>
+        </div>
+        <PaginationBottom />
+      </ItemPageProvider>
     </div>
   )
 }

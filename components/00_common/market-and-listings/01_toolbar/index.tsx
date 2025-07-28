@@ -5,12 +5,12 @@ import { Card } from '@/components/shadcn/components/ui/card'
 
 export default function Toolbar() {
   return (
-    <Card className='flex items-center p-2'>
+    <Card className='flex flex-row gap-2 p-2'>
       <span className='hidden flex-1 justify-start sm:flex'>
         <ColumnToggle />
       </span>
 
-      <span className='flex flex-1 justify-center'>
+      <span className='flex flex-[2] justify-center'>
         <SearchInput />
       </span>
 

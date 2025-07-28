@@ -1,5 +1,6 @@
 'use client'
 
+import { DEFAULT_ITEM_PAGE_PARAMS } from '@/lib/constants/item-page-params'
 import { Item } from '@/lib/types/item'
 import { ItemPageParams } from '@/lib/types/item-page-params'
 import { createContext, ReactNode, useContext, useEffect, useRef } from 'react'
@@ -14,6 +15,7 @@ interface ItemPageProps {
 
 interface ItemPageState extends ItemPageProps {
   updateItemAtIndex: (index: number, item: Item) => void
+  setProps: (props: Partial<ItemPageProps>) => void
 }
 
 const ItemPageContext = createContext<StoreApi<ItemPageState> | null>(null)
@@ -23,16 +25,24 @@ export const ItemPageProvider = ({
   props,
 }: {
   children: ReactNode
-  props: ItemPageProps
+  props: Partial<ItemPageProps>
 }) => {
   const storeRef = useRef(
     createStore<ItemPageState>((set, get) => ({
+      count: 0,
+      items: [],
+      params: DEFAULT_ITEM_PAGE_PARAMS,
+      route: '',
       ...props,
       updateItemAtIndex: (index: number, item: Item) => {
         const newItems = [...get().items]
         newItems[index] = item
         set({ items: newItems })
       },
+      setProps: (props: Partial<ItemPageProps>) =>
+        set({
+          ...props,
+        }),
     })),
   )
 

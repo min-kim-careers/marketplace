@@ -57,7 +57,7 @@ export default function ProfileListingsModal({
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className='max-h-[90vh] min-h-[50vh] overflow-auto'>
+      <DialogContent className='max-h-[90vh] overflow-auto'>
         <DialogHeader className='flex-row justify-between'>
           <span className='flex w-full flex-col justify-around'>
             <DialogTitle className='flex w-full flex-row justify-between'>

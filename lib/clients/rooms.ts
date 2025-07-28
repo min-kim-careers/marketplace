@@ -1,5 +1,3 @@
-'use server'
-
 import { ChatRoom } from '@/chat/types/chat-room'
 import { gateway } from '@/lib/utils/client'
 

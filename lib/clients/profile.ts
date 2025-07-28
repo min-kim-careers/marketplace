@@ -1,5 +1,3 @@
-'use server'
-
 import { Profile } from '@/lib/types/profile'
 import { gateway } from '@/lib/utils/client'
 import { ProfileExtra, UpsertProfileRequest } from '@gateway/api/profile'

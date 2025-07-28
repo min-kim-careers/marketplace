@@ -63,8 +63,8 @@ export default function ProfileListingsCard({
             </div>
           </CardDescription>
         </CardHeader>
-        <CardContent className='line-clamp-3 flex-[2]'>
-          <p>{item.description}</p>
+        <CardContent className='flex-[2]'>
+          <p className='line-clamp-2'>{item.description}</p>
         </CardContent>
 
         <CardFooter className='line-clamp-1 flex-1'>

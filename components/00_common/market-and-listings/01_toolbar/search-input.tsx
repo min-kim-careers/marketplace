@@ -1,7 +1,8 @@
+'use client'
+
 import { Button } from '@/components/shadcn/components/ui/button'
 import { Input } from '@/components/shadcn/components/ui/input'
 import { toPath } from '@/lib/helpers/to-path'
-import { toURLSearchParams } from '@/lib/helpers/to-url-search-params'
 import { useItemPageStore } from '@/lib/providers/item-page-provider'
 import { Search } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -19,13 +20,14 @@ export default function SearchInput() {
   }
 
   return (
-    <form className='flex gap-2' onSubmit={handleSearch}>
+    <form className='flex w-full flex-1 gap-2' onSubmit={handleSearch}>
       <Input
+        className='flex-1'
         name='keyword'
         placeholder='Search'
         defaultValue={params.keyword || ''}
       />
-      <Button type='submit'>
+      <Button type='submit' className='w-[48px]'>
         <Search />
       </Button>
     </form>

@@ -1,5 +1,3 @@
-'use server'
-
 import { setSession } from '@/lib/helpers/server/set-session'
 import { Profile } from '@/lib/types/profile'
 import { gateway } from '@/lib/utils/client'

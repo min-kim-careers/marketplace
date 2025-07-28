@@ -9,8 +9,8 @@ export default function MainLayout({
   children: React.ReactNode
 }>) {
   return (
-    <AuthProvider>
-      <LoadingProvider>
+    <LoadingProvider>
+      <AuthProvider>
         <div className='flex flex-col px-2'>
           <div className='flex min-h-screen flex-col items-center'>
             <Header />
@@ -18,7 +18,7 @@ export default function MainLayout({
           </div>
           <Footer />
         </div>
-      </LoadingProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </LoadingProvider>
   )
 }

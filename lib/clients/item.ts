@@ -1,5 +1,3 @@
-'use server'
-
 import { buildUpsertItemForm } from '@/lib/helpers/server/build-upsert-item-form'
 import { Item } from '@/lib/types/item'
 import { ItemPageParams } from '@/lib/types/item-page-params'
@@ -29,7 +27,7 @@ export const GET_ITEM_BY_USER = async (itemId: string) =>
 export const UPSERT_ITEM = async (
   request: UpsertItemRequest,
   query: { itemId?: string },
-) =>
+): Promise<{ item: Item }> =>
   (await gateway())
     .put(`/upsert-item`)
     .setQuery(query)

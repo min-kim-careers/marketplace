@@ -1,13 +1,13 @@
-import 'server-only'
-
 interface EnvLoader {
+  chatWs: string
   gatewayUrl: string
   sessionHeader: string
 }
 
 export const envLoader: EnvLoader = {
-  gatewayUrl: process.env.GATEWAY_URL!,
-  sessionHeader: process.env.SESSION_HEADER!,
+  chatWs: process.env.NEXT_PUBLIC_CHAT_WS!,
+  gatewayUrl: process.env.NEXT_PUBLIC_GATEWAY_URL!,
+  sessionHeader: process.env.NEXT_PUBLIC_SESSION_HEADER!,
 }
 
 const validateEnv = (env: EnvLoader) => {
