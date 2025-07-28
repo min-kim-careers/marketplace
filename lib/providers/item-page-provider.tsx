@@ -13,7 +13,6 @@ interface ItemPageProps {
 }
 
 interface ItemPageState extends ItemPageProps {
-  setProps: (p: Partial<ItemPageProps>) => void
   updateItemAtIndex: (index: number, item: Item) => void
 }
 
@@ -29,7 +28,6 @@ export const ItemPageProvider = ({
   const storeRef = useRef(
     createStore<ItemPageState>((set, get) => ({
       ...props,
-      setProps: (p: Partial<ItemPageProps>) => set({ ...p }),
       updateItemAtIndex: (index: number, item: Item) => {
         const newItems = [...get().items]
         newItems[index] = item
@@ -49,4 +47,12 @@ export const useItemPageStore = () => {
   const store = useContext(ItemPageContext)
   if (!store) throw new Error('Not inside provider')
   return useStore(store)
+}
+
+export const useItemPageSelector = <T,>(
+  selector: (state: ItemPageState) => T,
+) => {
+  const store = useContext(ItemPageContext)
+  if (!store) throw new Error('Not inside provider')
+  return useStore(store, selector)
 }

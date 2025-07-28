@@ -4,7 +4,7 @@ import { useChatSocketContext } from '@/chat/providers/chat-socket-provider'
 import { Button } from '@/components/shadcn/components/ui/button'
 import { Input } from '@/components/shadcn/components/ui/input'
 import { cn } from '@/components/shadcn/lib/utils'
-import { useIsMobile } from '@/lib/hooks/use-is-mobile'
+import { useIsMobile } from '@/lib/hooks/ui/use-is-mobile'
 import useLayoutStore from '@/lib/stores/layout-store'
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react'
 

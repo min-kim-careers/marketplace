@@ -3,12 +3,12 @@
 import Market from '@/components/02_content/market'
 import { GET_ALL_ITEMS } from '@/lib/clients/item'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
-import { DEFAULT_MARKET_PARAMS } from '@/lib/constants/market-params'
+import { DEFAULT_ITEM_PAGE_PARAMS } from '@/lib/constants/item-page-params'
 import { ItemSortBy } from '@/lib/enums/item-sort-by'
 import { ItemSortOrder } from '@/lib/enums/item-sort-order'
-import { toURLSearchParams } from '@/lib/helpers/to-url-search-params'
-import { ItemPageParams } from '@/lib/types/item-page-params'
+import { toPath } from '@/lib/helpers/to-path'
 import { ItemPageProvider } from '@/lib/providers/item-page-provider'
+import { ItemPageParams } from '@/lib/types/item-page-params'
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
 
@@ -39,7 +39,12 @@ export default async function Page({
   const result = MarketParamsSchema.safeParse(urlParams)
 
   if (!result.success) {
-    redirect(`${APP_ROUTES.MARKET.href}?${toURLSearchParams(DEFAULT_MARKET_PARAMS)}`)
+    redirect(
+          toPath(
+            APP_ROUTES.MARKET.href,
+            DEFAULT_ITEM_PAGE_PARAMS,
+          ),
+        )
   }
 
   const params: ItemPageParams = result.data
@@ -48,7 +53,7 @@ export default async function Page({
 
   return (
     <ItemPageProvider
-      key={toURLSearchParams(params).toString()}
+      key={Date.now()}
       props={{
         items,
         count,

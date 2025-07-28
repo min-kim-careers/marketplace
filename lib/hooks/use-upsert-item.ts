@@ -1,6 +1,8 @@
+'use client'
+
 import { UPSERT_ITEM } from '@/lib/clients/item'
 import { imageUrlsToFiles } from '@/lib/helpers/image-urls-to-files'
-import useLoadingStore from '@/lib/stores/loading-store'
+import { useLoadingStore } from '../providers/loading-provider'
 import { UpsertItemRequest } from '@gateway/api/item'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
@@ -19,10 +21,12 @@ export const useUpsertItem = () => {
     try {
       setLoading(`${isUpdate ? 'Updating' : 'Posting'} your item`, true)
 
-      if (request.imageUrls)
+      if (request.imageUrls) {
         request.uploadImages = await imageUrlsToFiles(request.imageUrls)
+      }
 
       const { item } = await UPSERT_ITEM(request, { itemId })
+
       toast(`Your item was ${isUpdate ? 'updated' : 'posted'} successfully!`)
 
       if (reroute) router.replace(reroute)
@@ -35,7 +39,7 @@ export const useUpsertItem = () => {
 
       return false
     } finally {
-      setLoading(null)
+      setLoading()
     }
   }
 

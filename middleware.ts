@@ -1,4 +1,4 @@
-import { SIGN_OUT, VERIFY_SESSION } from '@/lib/clients/auth'
+import { VERIFY_SESSION } from '@/lib/clients/auth'
 import {
   APP_ROUTES,
   isFallbackRoute,
@@ -19,15 +19,16 @@ export async function middleware(req: NextRequest) {
     return nextResponse
   }
 
-  const session = await hasSession()
+  const isSignedIn = await hasSession()
   let verified = false
 
-  if (session) {
+  if (isSignedIn) {
     try {
       verified = Boolean(await VERIFY_SESSION())
     } catch (_) {
-      await SIGN_OUT()
-      return NextResponse.error()
+      return NextResponse.redirect(
+        new URL(APP_ROUTES.NOTFOUND.href, req.nextUrl),
+      )
     }
   }
 

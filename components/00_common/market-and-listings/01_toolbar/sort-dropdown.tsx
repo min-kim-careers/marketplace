@@ -10,10 +10,9 @@ import {
   DEFAULT_ITEM_SORT_OPTION,
   ITEM_SORT_OPTIONS,
 } from '@/lib/constants/item-sort-options'
-import { toURLSearchParams } from '@/lib/helpers/to-url-search-params'
-import { ItemPageParams } from '@/lib/types/item-page-params'
-import { ItemSortOption } from '@/lib/types/item-sort-options'
+import { toPath } from '@/lib/helpers/to-path'
 import { useItemPageStore } from '@/lib/providers/item-page-provider'
+import { ItemSortOption } from '@/lib/types/item-sort-options'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
@@ -37,12 +36,13 @@ export default function SortDropdown() {
     const option = ITEM_SORT_OPTIONS.find((s) => s.label === value)
     if (!option) return
 
-    const newParams: ItemPageParams = {
-      ...params,
-      sortBy: option.sortBy,
-      sortOrder: option.sortOrder,
-    }
-    router.push(`${route}?${toURLSearchParams(newParams)}`)
+    router.push(
+      toPath(route, {
+        ...params,
+        sortBy: option.sortBy,
+        sortOrder: option.sortOrder,
+      }),
+    )
   }
 
   if (!ITEM_SORT_OPTIONS.length || !currentSortOption)

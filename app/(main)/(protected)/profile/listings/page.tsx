@@ -6,7 +6,7 @@ import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { DEFAULT_ITEM_PAGE_PARAMS } from '@/lib/constants/item-page-params'
 import { ItemSortBy } from '@/lib/enums/item-sort-by'
 import { ItemSortOrder } from '@/lib/enums/item-sort-order'
-import { toURLSearchParams } from '@/lib/helpers/to-url-search-params'
+import { toPath } from '@/lib/helpers/to-path'
 import { ItemPageProvider } from '@/lib/providers/item-page-provider'
 import { ItemPageParams } from '@/lib/types/item-page-params'
 import { redirect } from 'next/navigation'
@@ -17,17 +17,11 @@ const ListingsParamsSchema = z
     page: z.coerce.number().positive(),
     sortBy: z
       .string()
-      .refine((val) =>
-        Object.values(ItemSortBy).includes(
-          val as ItemSortBy,
-        ),
-      ),
+      .refine((val) => Object.values(ItemSortBy).includes(val as ItemSortBy)),
     sortOrder: z
       .string()
       .refine((val) =>
-        Object.values(ItemSortOrder).includes(
-          val as ItemSortOrder,
-        ),
+        Object.values(ItemSortOrder).includes(val as ItemSortOrder),
       ),
     keyword: z.string().trim().optional(),
   })
@@ -46,7 +40,10 @@ export default async function Page({
 
   if (!result.success) {
     redirect(
-      `${APP_ROUTES.PROFILE_LISTINGS.href}?${toURLSearchParams(DEFAULT_ITEM_PAGE_PARAMS)}`,
+      toPath(
+        APP_ROUTES.PROFILE_LISTINGS.href,
+        DEFAULT_ITEM_PAGE_PARAMS,
+      ),
     )
   }
 
@@ -56,7 +53,7 @@ export default async function Page({
 
   return (
     <ItemPageProvider
-      key={toURLSearchParams(params).toString()}
+      key={Date.now()}
       props={{
         items,
         count,

@@ -29,7 +29,7 @@ export default async function Page({
   }
 
   return (
-    <ChatPageProvider props={{ currentRoom, existingRooms }}>
+    <ChatPageProvider key={Date.now()} props={{ currentRoom, existingRooms }}>
       <Chat />
     </ChatPageProvider>
   )

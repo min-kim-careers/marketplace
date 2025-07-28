@@ -7,6 +7,7 @@ import {
   ChatMessageOut,
   ChatMessageOutChat,
 } from '@/chat/types/chat-message-out'
+import { toPath } from '@/lib/helpers/to-path'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -46,7 +47,7 @@ export function useChatSocket(): ChatSocket {
     if (!token) return
 
     try {
-      const url = `${process.env.NEXT_PUBLIC_CHAT_WS}?${new URLSearchParams({ token })}`
+      const url = toPath(process.env.NEXT_PUBLIC_CHAT_WS ?? '', { token })
       console.log('Initializing websocket')
       const ws = new WebSocket(url)
       wsRef.current = ws

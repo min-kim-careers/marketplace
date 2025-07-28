@@ -1,6 +1,6 @@
 'use server'
 
-import { GatewayResponse } from '@/lib/clients/_response'
+import { GatewayResponse } from '@/lib/clients/types'
 import { getSession } from '@/lib/helpers/server/get-session'
 import { toURLSearchParams } from '@/lib/helpers/to-url-search-params'
 import { envLoader } from '@/lib/utils/env-loader'
@@ -101,7 +101,7 @@ class Client {
     opts: RequestOpts = {
       withSession: false,
     },
-  ): Promise<Response> {
+  ): Promise<any> {
     const { withSession } = opts
 
     if (withSession) {
@@ -114,6 +114,7 @@ class Client {
       '------------------------------ web ------------------------------',
     )
     console.log(this.url.toString())
+
     // console.log({
     //   ...this.init,
     //   ...(this.init.body && { body: 'redacted' }),
@@ -122,34 +123,36 @@ class Client {
     //     ...((this.init.headers as any).cookie && { cookie: 'redacted' }),
     //   },
     // })
+    console.log(
+      '-----------------------------------------------------------------',
+    )
 
     try {
-      const res = await fetch(this.url.toString(), this.init)
-      if (!res.ok) {
-        throw new Error(`${res.status} - ${res.statusText}`)
+      const resp = await fetch(this.url.toString(), this.init)
+      if (!resp.ok) {
+        throw new Error(`${resp.status} - ${resp.statusText}`)
       }
-      return res
+      return await resp.json()
     } catch (error) {
       console.error(error)
-      throw new Error('raw result error')
+      throw new Error('error fetching response')
     }
   }
 
-  async parseResult<T>(
+  async asResult<T>(
     opts: RequestOpts = {
       withSession: false,
     },
   ): Promise<T> {
     try {
-      const res = await this.result(opts)
-      const { data, message } = (await res.json()) as GatewayResponse<T>
+      const { data, message } = (await this.result(opts)) as GatewayResponse<T>
       message && console.log({ client: message })
       return data as T
     } catch (error) {
       console.error(error)
-      throw new Error('parse result error')
+      throw new Error('error parsing response')
     }
   }
 }
 
-export const makeClient = async () => new Client().setBase(envLoader.gatewayUrl)
+export const gateway = async () => new Client().setBase(envLoader.gatewayUrl)

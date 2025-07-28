@@ -1,13 +1,13 @@
+'use client'
+
 import { APP_ROUTES } from '@/lib/constants/app-routes'
-import { auth } from '@/lib/firebase/config'
-import useLoadingStore from '@/lib/stores/loading-store'
-import useProfileStore from '@/lib/stores/profile-store'
+import { useLoadingStore } from '../providers/loading-provider'
+import { auth } from '@/lib/utils/firebase'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
 export const useSignOut = () => {
   const { setLoading } = useLoadingStore()
-  const { setProfile } = useProfileStore()
   const router = useRouter()
 
   const handleSignOut = async () => {
@@ -22,7 +22,7 @@ export const useSignOut = () => {
     } catch (error) {
       toast(`Something went wrong.`)
     } finally {
-      setLoading(null)
+      setLoading()
     }
   }
 

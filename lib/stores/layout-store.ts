@@ -3,7 +3,7 @@ import { persist, subscribeWithSelector } from 'zustand/middleware'
 
 interface LayoutState {
   itemColumns: number
-  setItemColumns: (columns: number) => void
+  setItemColumns: (itemColumns: number) => void
 
   chatSidebarOpen: boolean
   setChatSidebarOpen: (open: boolean) => void
@@ -15,7 +15,7 @@ const useLayoutStore = create(
       (set) => {
         return {
           itemColumns: 1,
-          setItemColumns: (columns: number) => set({ itemColumns: columns }),
+          setItemColumns: (itemColumns: number) => set({ itemColumns }),
 
           chatSidebarOpen: false,
           setChatSidebarOpen: (open: boolean) => set({ chatSidebarOpen: open }),

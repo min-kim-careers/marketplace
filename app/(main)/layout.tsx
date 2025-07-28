@@ -1,6 +1,7 @@
 import Header from '@/components/01_header'
 import Footer from '@/components/03_footer'
-import LoadingOverlay from '@/components/00_common/loading-overlay'
+import LoadingProvider from '@/lib/providers/loading-provider'
+import { AuthProvider } from '@/lib/providers/auth-provider'
 
 export default function MainLayout({
   children,
@@ -8,13 +9,16 @@ export default function MainLayout({
   children: React.ReactNode
 }>) {
   return (
-    <div className='flex flex-col px-2'>
-      <LoadingOverlay />
-      <div className='flex flex-col items-center min-h-screen'>
-        <Header />
-        {children}
-      </div>
-      <Footer />
-    </div>
+    <AuthProvider>
+      <LoadingProvider>
+        <div className='flex flex-col px-2'>
+          <div className='flex min-h-screen flex-col items-center'>
+            <Header />
+            {children}
+          </div>
+          <Footer />
+        </div>
+      </LoadingProvider>
+    </AuthProvider>
   )
 }

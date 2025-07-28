@@ -19,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/shadcn/components/ui/dropdown-menu'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
-import useLoadingStore from '@/lib/stores/loading-store'
+import { useLoadingStore } from '@/lib/providers/loading-provider'
 import { Ellipsis } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -87,7 +87,7 @@ const DeleteConfirmDialog = () => {
     } catch (error) {
       toast('Something went wrong')
     } finally {
-      setLoading(null)
+      setLoading()
     }
   }
 

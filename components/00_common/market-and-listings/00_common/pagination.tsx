@@ -10,6 +10,7 @@ import { DEFAULT_ITEM_PAGINATION } from '@/lib/constants/item-pagination'
 import { notFound } from 'next/navigation'
 import { useItemPageStore } from '@/lib/providers/item-page-provider'
 import { toURLSearchParams } from '@/lib/helpers/to-url-search-params'
+import { toPath } from '@/lib/helpers/to-path'
 
 export default function Pagination() {
   const { count, params, route } = useItemPageStore()
@@ -37,7 +38,7 @@ export default function Pagination() {
       <PaginationContent>
         <PaginationFirst
           disabled={params.page === 1 || !count}
-          href={`${route}?${toURLSearchParams({ ...params, page: 1 })}`}
+          href={toPath(route, { ...params, page: 1 })}
         />
 
         {paginationArray.map(
@@ -47,10 +48,7 @@ export default function Pagination() {
               <PaginationItem key={index}>
                 <PaginationLink
                   isActive={params.page === page}
-                  href={`${route}?${toURLSearchParams({
-                    ...params,
-                    page: page,
-                  })}`}
+                  href={toPath(route, { ...params, page: page })}
                 >
                   {page}
                 </PaginationLink>
@@ -60,10 +58,7 @@ export default function Pagination() {
 
         <PaginationLast
           disabled={params.page === lastPage || !count}
-          href={`${route}?${toURLSearchParams({
-            ...params,
-            page: lastPage,
-          })}`}
+          href={toPath(route, { ...params, page: lastPage })}
         />
       </PaginationContent>
     </PaginationContainer>

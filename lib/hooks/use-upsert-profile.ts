@@ -1,5 +1,7 @@
+'use client'
+
 import { UPSERT_PROFILE } from '@/lib/clients/profile'
-import useLoadingStore from '@/lib/stores/loading-store'
+import { useLoadingStore } from '../providers/loading-provider'
 import useProfileStore from '@/lib/stores/profile-store'
 import { UpsertProfileRequest } from '@gateway/api/profile'
 import { useRouter } from 'next/navigation'
@@ -23,7 +25,7 @@ export const useUpsertProfile = () => {
     } catch (error) {
       toast(`Something went wrong.`)
     } finally {
-      setLoading(null)
+      setLoading()
     }
   }
 

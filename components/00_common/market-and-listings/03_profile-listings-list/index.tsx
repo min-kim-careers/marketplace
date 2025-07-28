@@ -5,7 +5,7 @@ import { useItemPageStore } from '@/lib/providers/item-page-provider'
 import useLayoutStore from '@/lib/stores/layout-store'
 
 export default function ProfileListingsList() {
-  const { itemColumns: columns } = useLayoutStore()
+  const { itemColumns } = useLayoutStore()
   const { items } = useItemPageStore()
 
   if (!items.length)
@@ -19,13 +19,13 @@ export default function ProfileListingsList() {
     <div
       className='grid w-full items-start gap-2'
       style={{
-        gridTemplateColumns: `repeat(${columns}, 1fr)`,
+        gridTemplateColumns: `repeat(${itemColumns}, 1fr)`,
       }}
     >
       {items.map((item: Item, i) => (
         <ProfileListingsModal key={i} item={item} index={i}>
           <div className='cursor-pointer'>
-            <ProfileListingsCard item={item} columns={columns} />
+            <ProfileListingsCard item={item} columns={itemColumns} />
           </div>
         </ProfileListingsModal>
       ))}

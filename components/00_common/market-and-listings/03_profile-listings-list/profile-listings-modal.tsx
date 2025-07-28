@@ -38,7 +38,7 @@ import { formatCurrency } from '@/lib/helpers/format-price'
 import { useUpsertItem } from '@/lib/hooks/use-upsert-item'
 import { Item } from '@/lib/types/item'
 import { useItemPageStore } from '@/lib/providers/item-page-provider'
-import useLoadingStore from '@/lib/stores/loading-store'
+import { useLoadingStore } from '@/lib/providers/loading-provider'
 import { Circle } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -164,7 +164,7 @@ const DeleteConfirmDialog = ({
     } catch (error) {
       toast('Something went wrong')
     } finally {
-      setLoading(null)
+      setLoading()
     }
   }
 

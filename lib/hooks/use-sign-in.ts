@@ -1,13 +1,16 @@
+'use client'
+
 import { SIGN_IN_WITH_GOOGLE } from '@/lib/clients/auth'
-import { auth, provider } from '@/lib/firebase/config'
-import useLoadingStore from '@/lib/stores/loading-store'
+import { auth, provider } from '@/lib/utils/firebase'
+import { useLoadingStore } from '../providers/loading-provider'
 import useProfileStore from '@/lib/stores/profile-store'
 import { signInWithPopup } from 'firebase/auth'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { FirebaseError } from 'firebase/app'
 
 export const useSignIn = () => {
-  const { profile, setProfile } = useProfileStore()
+  const { setProfile } = useProfileStore()
   const { setLoading } = useLoadingStore()
   const router = useRouter()
 
@@ -19,16 +22,28 @@ export const useSignIn = () => {
       const token = await cred.user.getIdToken()
 
       const { profile } = await SIGN_IN_WITH_GOOGLE(token)
+
       setProfile(profile)
+
+      if (profile) toast(`Signed in as ${profile.handle}.`)
+
       router.refresh()
     } catch (error) {
-      await auth.signOut()
-      toast(`Something went wrong.`)
-    } finally {
-      setLoading(null)
-    }
+      let toastMsg = ''
+      if (error instanceof FirebaseError) {
+        if (error.code === 'auth/popup-closed-by-user') {
+        }
+      } else {
+        toastMsg = `Something went wrong.`
+      }
 
-    profile && toast(`Signed in as ${profile.handle}.`)
+      await auth.signOut()
+      if (toastMsg) {
+        toast(toastMsg)
+      }
+    } finally {
+      setLoading()
+    }
   }
 
   return { handleSignIn }

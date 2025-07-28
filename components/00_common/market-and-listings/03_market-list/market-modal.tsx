@@ -14,12 +14,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/shadcn/components/ui/dialog'
+import { FETCH_ROOM_ID } from '@/lib/clients/rooms'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { ITEM_CONDITION_LABELS } from '@/lib/constants/item-condition-labels'
 import { ItemCondition } from '@/lib/enums/item-condition'
 import { formatItemDate } from '@/lib/helpers/format-item-date'
 import { formatCurrency } from '@/lib/helpers/format-price'
-import { useFetchRoomId } from '@/lib/hooks/use-fetch-room-id'
 import { Item } from '@/lib/types/item'
 import { CircleUserIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -33,11 +33,14 @@ export default function MarketModal({
   item: Item
 }) {
   const router = useRouter()
-  const { handleFetchRoomId } = useFetchRoomId()
 
   const handleChatButton = async () => {
-    const roomId = await handleFetchRoomId(item.id, item.profileHandle)
-    if (roomId) router.replace(`${APP_ROUTES.CHAT.href}/${roomId}`)
+    try {
+      const roomId = await FETCH_ROOM_ID(item.id, item.profileHandle)
+      router.replace(`${APP_ROUTES.CHAT.href}/${roomId}`)
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   const renderContent = () => (

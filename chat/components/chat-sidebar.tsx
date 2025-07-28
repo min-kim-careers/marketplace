@@ -6,7 +6,7 @@ import {
 } from '@/components/shadcn/components/ui/avatar'
 import { cn } from '@/components/shadcn/lib/utils'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
-import { useIsMobile } from '@/lib/hooks/use-is-mobile'
+import { useIsMobile } from '@/lib/hooks/ui/use-is-mobile'
 import useLayoutStore from '@/lib/stores/layout-store'
 import { Avatar } from '@radix-ui/react-avatar'
 import { Menu } from 'lucide-react'

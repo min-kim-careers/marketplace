@@ -1,5 +1,6 @@
 import { Button } from '@/components/shadcn/components/ui/button'
 import { Input } from '@/components/shadcn/components/ui/input'
+import { toPath } from '@/lib/helpers/to-path'
 import { toURLSearchParams } from '@/lib/helpers/to-url-search-params'
 import { useItemPageStore } from '@/lib/providers/item-page-provider'
 import { Search } from 'lucide-react'
@@ -12,17 +13,9 @@ export default function SearchInput() {
 
   const handleSearch = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log(route, params)
-
     const formData = new FormData(e.currentTarget)
     const keyword = formData.get('keyword') as string
-    const newParams = toURLSearchParams(params)
-    if (!!keyword) {
-      newParams.set('keyword', keyword)
-    } else {
-      newParams.delete('keyword')
-    }
-    router.replace(`${route}?${newParams}`)
+    router.push(toPath(route, { ...params, ...(keyword && { keyword }) }))
   }
 
   return (

@@ -1,19 +1,19 @@
 'use server'
 
 import { Profile } from '@/lib/types/profile'
-import { makeClient } from '@/lib/utils/client'
+import { gateway } from '@/lib/utils/client'
 import { ProfileExtra, UpsertProfileRequest } from '@gateway/api/profile'
 
 export const UPSERT_PROFILE = async (request: UpsertProfileRequest) =>
-  (await makeClient())
+  (await gateway())
     .put('/upsert-profile')
     .setBody(request)
-    .parseResult<{ profile: Profile }>({ withSession: true })
+    .asResult<{ profile: Profile }>({ withSession: true })
 
 export const HANDLE_EXISTS = async (handle: string) =>
-  (await makeClient())
+  (await gateway())
     .get(`/exists/handle/${handle}`)
-    .parseResult<{ exists: boolean }>({ withSession: true })
+    .asResult<{ exists: boolean }>({ withSession: true })
 
 // export const GET_USER_ID_BY_HANDLE = async (handle: string) =>
 //   (await makeClient())
@@ -21,6 +21,6 @@ export const HANDLE_EXISTS = async (handle: string) =>
 //     .parsedResult<{ userId: string }>({ withSession: true })
 
 export const GET_PROFILE_EXTRA = async () =>
-  (await makeClient())
+  (await gateway())
     .get(`/get-profile-extra`)
-    .parseResult<{ extra: ProfileExtra }>({ withSession: true })
+    .asResult<{ extra: ProfileExtra }>({ withSession: true })
