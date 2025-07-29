@@ -11,8 +11,8 @@ export default function MainLayout({
   return (
     <LoadingProvider>
       <AuthProvider>
-        <div className='flex flex-col px-2'>
-          <div className='flex min-h-screen flex-col items-center'>
+        <div className='flex flex-col px-4'>
+          <div className='flex min-h-screen flex-col items-center pb-2'>
             <Header />
             {children}
           </div>

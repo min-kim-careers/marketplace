@@ -29,18 +29,18 @@ import { getLocationLabel, searchLocations } from '@/lib/utils/fuse/locations'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
+const name = 'location' as const
+const label = 'Location' as const
+const placeholder = 'Search for a location, e.g. Sydney or 2000' as const
+
 export default function LocationField({
   form,
 }: {
   form: UseFormReturn<z.infer<typeof ItemFormSchema>>
 }) {
-  const name = 'location'
-  const label = 'Location'
-  const placeholder = 'Search for a location, e.g. Sydney or 2000'
-
   const [locations, setLocations] = useState<LocationJSON[]>([])
-  const [currentLabel, setCurrentLabel] = useState(placeholder)
-  const [openPopover, setOpenPopover] = useState(false)
+  const [currentLabel, setCurrentLabel] = useState<string>(placeholder)
+  const [openPopover, setOpenPopover] = useState<boolean>(false)
 
   useEffect(() => {
     const existingLocation = form.getValues(name)
@@ -57,12 +57,6 @@ export default function LocationField({
     })
     if (label) {
       setCurrentLabel(label)
-    } else {
-      // form.setValue(name, {
-      //   postcode: '',
-      //   state: '',
-      //   suburb: '',
-      // })
     }
   }, [])
 
@@ -125,25 +119,26 @@ export default function LocationField({
                 <CommandList>
                   <CommandEmpty>No {name} found.</CommandEmpty>
                   <CommandGroup>
-                    {locations.map((location, i) => (
-                      <CommandItem
-                        value={location.label}
-                        key={i}
-                        onSelect={() => handleOnSelect(location)}
-                      >
-                        <>
-                          <p>{location.label}</p>
-                          <Check
-                            className={cn(
-                              'ml-auto',
-                              location.label === currentLabel
-                                ? 'opacity-100'
-                                : 'opacity-0',
-                            )}
-                          />
-                        </>
-                      </CommandItem>
-                    ))}
+                    {locations
+                      .map((l) => (
+                        <CommandItem
+                          value={l.label}
+                          key={l.label}
+                          onSelect={() => handleOnSelect(l)}
+                        >
+                          <>
+                            <p>{l.label}</p>
+                            <Check
+                              className={cn(
+                                'ml-auto',
+                                l.label === currentLabel
+                                  ? 'opacity-100'
+                                  : 'opacity-0',
+                              )}
+                            />
+                          </>
+                        </CommandItem>
+                      ))}
                   </CommandGroup>
                 </CommandList>
               </Command>

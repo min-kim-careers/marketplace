@@ -40,7 +40,7 @@ export default function ItemEdit({
   const { handleUpsertItem } = useUpsertItem()
 
   const initImageUrls = () =>
-    Array.from({ length: imageLimit }, (_, i) =>
+    Array(imageLimit).map((i) =>
       i < item.imageUrls.length ? item.imageUrls[i] : null,
     )
 

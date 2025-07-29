@@ -13,18 +13,16 @@ import { Menu } from 'lucide-react'
 import Link from 'next/link'
 
 export function ChatSidebar({ className }: { className?: string }) {
-  const { currentRoom, existingRooms } = useChatPageStore()
-
-  const { chatSidebarOpen: open, setChatSidebarOpen: setOpen } =
-    useLayoutStore()
-
   const isMobile = useIsMobile()
+
+  const { currentRoom, existingRooms } = useChatPageStore()
+  const { chatSidebarOpen, setChatSidebarOpen } = useLayoutStore()
 
   return (
     <div
       className={cn(
         'transition-all duration-300 ease-in-out',
-        open ? (isMobile ? 'w-1/2' : 'w-1/3') : 'w-12',
+        chatSidebarOpen ? (isMobile ? 'w-1/2' : 'w-1/3') : 'w-12',
         className,
       )}
     >
@@ -35,7 +33,7 @@ export function ChatSidebar({ className }: { className?: string }) {
       >
         <button
           className='transition-transform duration-200 hover:scale-110'
-          onClick={() => setOpen(!open)}
+          onClick={() => setChatSidebarOpen(!chatSidebarOpen)}
         >
           <Menu size={24} />
         </button>
@@ -43,14 +41,14 @@ export function ChatSidebar({ className }: { className?: string }) {
       <div
         className={cn(
           'flex w-full flex-col gap-2 overflow-y-auto overflow-x-hidden p-2 transition-opacity duration-200 ease-in-out',
-          open ? 'opacity-100' : 'opacity-0',
+          chatSidebarOpen ? 'opacity-100' : 'opacity-0',
         )}
       >
         {existingRooms.map((room, i) => (
           <ChatLink
             key={i}
             isActive={room === currentRoom}
-            open={open}
+            open={chatSidebarOpen}
             room={room}
           />
         ))}
@@ -80,7 +78,7 @@ function ChatLink({
             isActive && 'bg-gray-400',
           )}
         >
-          <div className='flex flex-row items-center gap-2 w-full'>
+          <div className='flex w-full flex-row items-center gap-2'>
             <span className='mr-2'>
               <Avatar>
                 <AvatarImage src={room.item.imageUrls[0]} />
@@ -95,7 +93,11 @@ function ChatLink({
               <p className='font-semibold'>{room.item.profileHandle}</p>
               <p>{room.item.name}</p>
             </span>
-            {isActive && <span className='flex w-full items-center justify-end pr-2 italic text-gray-100'>Joined</span>}
+            {isActive && (
+              <span className='flex w-full items-center justify-end pr-2 italic text-gray-100'>
+                Joined
+              </span>
+            )}
           </div>
         </button>
       </Link>

@@ -35,6 +35,8 @@ class Client {
   }
 
   private setPath(path: string): this {
+    console.log(path);
+    
     this.url = new URL(path, this.base)
     return this
   }
@@ -109,22 +111,16 @@ class Client {
           this.addHeader({ cookie: `${envLoader.sessionHeader}=${session}` })
       }
 
-      console.log(
-        '------------------------------ web ------------------------------',
-      )
-      console.log(this.url.toString())
+      console.log('web ->', this.url.toString())
+      // console.log({
+      //   ...this.init,
+      //   ...(this.init.body && { body: 'redacted' }),
+      //   headers: {
+      //     ...this.init.headers,
+      //     ...((this.init.headers as any).cookie && { cookie: 'redacted' }),
+      //   },
+      // })
 
-      console.log({
-        ...this.init,
-        // ...(this.init.body && { body: 'redacted' }),
-        headers: {
-          ...this.init.headers,
-          ...((this.init.headers as any).cookie && { cookie: 'redacted' }),
-        },
-      })
-      console.log(
-        '-----------------------------------------------------------------',
-      )
       const resp = await fetch(this.url.toString(), this.init)
       if (!resp.ok) {
         throw new Error(`${resp.status} - ${resp.statusText}`)
@@ -152,4 +148,4 @@ class Client {
   }
 }
 
-export const gateway = async () => new Client().setBase(envLoader.gatewayUrl)
+export const client = async () => new Client().setBase(envLoader.gatewayUrl)

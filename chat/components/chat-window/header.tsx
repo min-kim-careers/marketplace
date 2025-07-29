@@ -24,22 +24,42 @@ import { Ellipsis } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import useProfileStore from '@/lib/stores/profile-store'
+import LoadingDots from '@/components/00_common/loading-dots'
 
 export default function ChatWindowHeader() {
   const { currentRoom } = useChatPageStore()
+  const { profile } = useProfileStore()
+
+  const renderTitle = () => {
+    if (!profile || !currentRoom) return <LoadingDots />
+
+    if (profile.handle === currentRoom.item.profileHandle) {
+      return (
+        <span>
+          Chatting about your{' '}
+          <span className='font-semibold'>{currentRoom.item.name}</span>
+        </span>
+      )
+    } else {
+      return (
+        <span>
+          Chatting with{' '}
+          <span className='font-semibold'>
+            {currentRoom.item.profileHandle}
+          </span>{' '}
+          about <span className='font-semibold'>{currentRoom.item.name}</span>
+        </span>
+      )
+    }
+  }
 
   if (!currentRoom) return null
 
   return (
     <div className='flex min-h-8 items-center justify-between rounded-lg border p-1 px-4'>
       <span className='flex flex-row'>
-        <p>
-          Chatting with{' '}
-          <span className='font-semibold'>
-            {currentRoom.item.profileHandle}
-          </span>{' '}
-          about <span className='font-semibold'>{currentRoom.item.name}</span>
-        </p>
+        {renderTitle()}
       </span>
 
       <span className='flex flex-row gap-4'>
@@ -81,7 +101,7 @@ const DeleteConfirmDialog = () => {
       setLoading('Deleting session', true)
       const { deleted } = await DELETE_ROOM_BY_SLUG(currentRoom.id)
       if (!deleted) throw new Error('failed to delete')
-        
+
       router.replace(APP_ROUTES.CHAT.indexHref)
       toast('Successfully deleted post')
     } catch (error) {

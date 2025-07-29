@@ -14,7 +14,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/shadcn/components/ui/dialog'
-import { FETCH_ROOM_ID } from '@/lib/clients/rooms'
+import { GET_ROOM_ID } from '@/lib/clients/rooms'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { ITEM_CONDITION_LABELS } from '@/lib/constants/item-condition-labels'
 import { ItemCondition } from '@/lib/enums/item-condition'
@@ -36,7 +36,7 @@ export default function MarketModal({
 
   const handleChatButton = async () => {
     try {
-      const roomId = await FETCH_ROOM_ID(item.id, item.profileHandle)
+      const { roomId } = await GET_ROOM_ID(item.id, item.profileHandle)
       router.replace(`${APP_ROUTES.CHAT.href}/${roomId}`)
     } catch (error) {
       console.error(error)

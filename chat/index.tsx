@@ -8,16 +8,17 @@ import { useEffect } from 'react'
 
 export default function Chat() {
   const { isChatting, setToken } = useChatSocketContext()
-  const { getToken } = useFirebaseStore()
+  const { user } = useFirebaseStore()
 
   useEffect(() => {
     const loadToken = async () => {
-      const token = await getToken()
-      token && setToken(token)
+      if (!user) return
+      const token = await user.getIdToken()
+      if (token) setToken(token)
     }
 
     loadToken()
-  }, [])
+  }, [user])
 
   return (
     <div className='relative flex max-h-[93vh] w-full flex-1 flex-row rounded-lg border'>

@@ -93,9 +93,9 @@ export function ChatPane() {
           </div>
         )
       })}
-      {noMessages && (
+      {noMessagesRef && (
         <div className='py-2 text-center italic text-gray-500'>
-          No more messages
+          End of messages
         </div>
       )}
     </div>

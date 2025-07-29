@@ -46,6 +46,8 @@ export const ItemPageProvider = ({
     })),
   )
 
+  useEffect(() => storeRef.current.setState({ ...props }), [props])
+
   return (
     <ItemPageContext.Provider value={storeRef.current}>
       {children}

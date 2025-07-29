@@ -1,9 +1,11 @@
+'use server'
+
 import { setSession } from '@/lib/helpers/server/set-session'
 import { Profile } from '@/lib/types/profile'
-import { gateway } from '@/lib/utils/client'
+import { client } from '@/lib/utils/client'
 
 export const SIGN_IN_WITH_GOOGLE = async (idToken: string) =>
-  (await gateway())
+  (await client())
     .post('/sign-in-with-google')
     .setBody({ idToken })
     .asResult<{
@@ -20,12 +22,12 @@ export const SIGN_IN_WITH_GOOGLE = async (idToken: string) =>
     })
 
 export const VERIFY_SESSION = async () =>
-  (await gateway())
+  (await client())
     .post('/verify-session')
     .asResult<{ userId: string }>({ withSession: true })
 
 export const REVOKE_SESSION = async () =>
-  (await gateway())
+  (await client())
     .post('/revoke-session')
     .asResult({ withSession: true })
     .then(() => {})

@@ -1,17 +1,19 @@
-import { ChatRoom } from '@/chat/types/chat-room'
-import { gateway } from '@/lib/utils/client'
+'use server'
 
-export const FETCH_ROOM_ID = async (itemSlug: string, handle: string) =>
-  (await gateway())
-    .post(`/fetch-room-id/itemSlug/${itemSlug}/handle/${handle}`)
+import { ChatRoom } from '@/chat/types/chat-room'
+import { client } from '@/lib/utils/client'
+
+export const GET_ROOM_ID = async (itemSlug: string, handle: string) =>
+  (await client())
+    .post(`/get-room-id/item/${itemSlug}/handle/${handle}`)
     .asResult<{ roomId: string }>({ withSession: true })
 
 export const GET_EXISTING_ROOMS = async () =>
-  (await gateway())
+  (await client())
     .get(`/get-existing-rooms`)
     .asResult<{ rooms: ChatRoom[] }>({ withSession: true })
 
 export const DELETE_ROOM_BY_SLUG = async (roomSlug: string) =>
-  (await gateway())
-    .delete(`/delete-room-by-id/roomSlug/${roomSlug}`)
+  (await client())
+    .delete(`/delete-room-by-id/room/${roomSlug}`)
     .asResult<{ deleted: boolean }>({ withSession: true })

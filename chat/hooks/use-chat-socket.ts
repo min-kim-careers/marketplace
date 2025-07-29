@@ -2,13 +2,16 @@
 
 import { isActiveMode } from '@/chat/constants/active-modes'
 import { ChatMode } from '@/chat/enums/chat-mode'
-import { ChatMessageIn, ChatMessageInChat } from '@/chat/types/chat-message-in'
+import {
+  ChatMessageIn,
+  ChatMessageInChat,
+  ChatMessageInRestored,
+} from '@/chat/types/chat-message-in'
 import {
   ChatMessageOut,
   ChatMessageOutChat,
 } from '@/chat/types/chat-message-out'
 import { toPath } from '@/lib/helpers/to-path'
-import { envLoader } from '@/lib/utils/env-loader'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -45,10 +48,12 @@ export function useChatSocket(): ChatSocket {
   }, [roomId])
 
   useEffect(() => {
-    if (!token) return
-
     try {
-      const url = toPath(envLoader.chatWs, { token })
+      if (!token) return
+
+      const wsPath = process.env.NEXT_PUBLIC_CHAT_WS || ''
+
+      const url = toPath(wsPath, { token })
       console.log('Initializing websocket')
       const ws = new WebSocket(url)
       wsRef.current = ws
@@ -121,12 +126,10 @@ export function useChatSocket(): ChatSocket {
     setNoMessages(true)
   }
 
-  const handleRestoredMessage = (message: ChatMessageIn) => {
-    if (message.mode === ChatMode.RESTORED) {
-      if (!message.messages.length) return setNoMessages(true)
-      setChatMessages((prev) => [...prev, ...message.messages])
-      toast(`Restored messages`)
-    }
+  const handleRestoredMessage = (message: ChatMessageInRestored) => {
+    if (!message.messages.length) return setNoMessages(true)
+    setChatMessages((prev) => [...prev, ...message.messages])
+    toast(`Restored messages`)
   }
 
   const handleConnectedMessage = () => {
@@ -166,19 +169,20 @@ export function useChatSocket(): ChatSocket {
   }
 
   const sendChat = (text: string) => {
-    const chat = sendMessage({
+    const newMessage = sendMessage({
       mode: ChatMode.CHAT,
       content: text,
     }) as ChatMessageOutChat
+
     setChatMessages((prev) => [
       {
-        ...chat,
+        ...newMessage,
         tempId: crypto.randomUUID(),
         createdAt: new Date().toISOString(),
         isMine: true,
         sent: false,
         read: false,
-      },
+      } as ChatMessageInChat,
       ...prev,
     ])
   }
