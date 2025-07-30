@@ -34,35 +34,6 @@ services:
     networks:
       - api-network
 
-  # ----------------------------------- CHAT -----------------------------------
-  chat-cache-service:
-    extends:
-      file: ./chat/compose.yml
-      service: chat-cache-service
-    networks:
-      - chat-network
-
-  chat-db-service:
-    extends:
-      file: ./chat/compose.yml
-      service: chat-db-service
-    networks:
-      - chat-network
-
-  chat-service:
-    extends:
-      file: ./chat/compose.yml
-      service: chat-server-service
-    ports:
-      - 8080:8080
-      - 8082:8082
-    depends_on:
-      - chat-db-service
-      - chat-cache-service
-    networks:
-      - chat-network
-      - auth-network
-
   # ----------------------------------- GATEWAY -----------------------------------
   gateway-service:
     extends:
@@ -74,7 +45,6 @@ services:
       - gateway-network
       - api-network
       - auth-network
-      - chat-network
 
   # ----------------------------------- WEB -----------------------------------
   web-service:
@@ -85,16 +55,12 @@ services:
       - 3000:3000
     networks:
       - gateway-network
-      - chat-network
 
 volumes:
   auth-db-data:
   api-db-data:
-  chat-db-data:
-  chat-cache-data:
 
 networks:
   api-network:
   auth-network:
-  chat-network:
   gateway-network:
