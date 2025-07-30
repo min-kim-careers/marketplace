@@ -15,7 +15,7 @@ export default function ProfileDashboard() {
   const { profile } = useProfileStore()
 
   if (!profile) return <Spinner />
-  
+
   return (
     <div className='flex flex-1 flex-col items-center justify-center gap-4'>
       <Card className='w-full'>
@@ -26,12 +26,19 @@ export default function ProfileDashboard() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className='flex flex-col gap-2'>
-            <p>Email</p>
-            <p>{profile.email}</p>
-            <p>Your Rating</p>
-            <p>{profile.rating}</p>
-            <p>{profile.rating}</p>
+          <div className='flex flex-col gap-4'>
+            <div className='flex flex-col gap-2'>
+              <p>Email</p>
+              <p>{profile.email}</p>
+            </div>
+            <div className='flex flex-col gap-2'>
+              <p>Rating</p>
+              <p>{profile.rating}</p>
+            </div>
+            <div className='flex flex-col gap-2'>
+              <p>Rating count</p>
+              <p>{profile.ratingCount}</p>
+            </div>
           </div>
         </CardContent>
       </Card>

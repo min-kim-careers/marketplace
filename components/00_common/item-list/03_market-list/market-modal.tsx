@@ -14,7 +14,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/shadcn/components/ui/dialog'
-import { GET_ROOM_ID } from '@/lib/clients/rooms'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { ITEM_CONDITION_LABELS } from '@/lib/constants/item-condition-labels'
 import { ItemCondition } from '@/lib/enums/item-condition'
@@ -32,17 +31,6 @@ export default function MarketModal({
   children: ReactNode
   item: Item
 }) {
-  const router = useRouter()
-
-  const handleChatButton = async () => {
-    try {
-      const { roomId } = await GET_ROOM_ID(item.id, item.profileHandle)
-      router.replace(`${APP_ROUTES.CHAT.href}/${roomId}`)
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -92,9 +80,6 @@ export default function MarketModal({
           <span className='font-semibold'>
             Offered at {formatCurrency(item.price.toString())}
           </span>
-          <Button onClick={handleChatButton}>
-            Chat with {item.profileHandle}
-          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

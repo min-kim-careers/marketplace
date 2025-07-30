@@ -24,9 +24,6 @@ export default function NavBar() {
       <Link href={APP_ROUTES.ITEM_POST.href}>
         <Button>Post Ad</Button>
       </Link>
-      <Link href={APP_ROUTES.CHAT.indexHref}>
-        <Button>Chat</Button>
-      </Link>
       <Dropdown />
     </span>
   )

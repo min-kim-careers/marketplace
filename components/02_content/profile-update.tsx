@@ -17,6 +17,7 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useUpsertProfile } from '@/lib/hooks/use-upsert-profile'
 import { toast } from 'sonner'
+import { cn } from '@/components/shadcn/lib/utils'
 
 export default function ProfileUpdate({
   className,
@@ -43,12 +44,7 @@ export default function ProfileUpdate({
   }
 
   return (
-    <Card className={className}>
-      <CardHeader>
-        <CardTitle>Update</CardTitle>
-        <CardDescription></CardDescription>
-      </CardHeader>
-      <CardContent>
+    <div className={cn('border rounded-xl p-6', className)}>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className='flex flex-col gap-4'>
@@ -67,7 +63,6 @@ export default function ProfileUpdate({
             </Button>
           </form>
         </Form>
-      </CardContent>
-    </Card>
+    </div>
   )
 }

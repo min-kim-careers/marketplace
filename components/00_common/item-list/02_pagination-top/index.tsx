@@ -1,6 +1,6 @@
 'use client'
 
-import Pagination from '@/components/00_common/market-and-listings/00_common/pagination'
+import Pagination from '@/components/00_common/item-list/00_common/pagination'
 import { DEFAULT_ITEM_PAGINATION } from '@/lib/constants/item-pagination'
 import { useItemPageStore } from '@/lib/providers/item-page-provider'
 

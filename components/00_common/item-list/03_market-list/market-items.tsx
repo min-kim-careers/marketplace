@@ -1,7 +1,7 @@
 'use client'
 
-import MarketCard from '@/components/00_common/market-and-listings/03_market-list/market-card'
-import MarketModal from '@/components/00_common/market-and-listings/03_market-list/market-modal'
+import MarketCard from '@/components/00_common/item-list/03_market-list/market-card'
+import MarketModal from '@/components/00_common/item-list/03_market-list/market-modal'
 import { useItemPageStore } from '@/lib/providers/item-page-provider'
 import useLayoutStore from '@/lib/stores/layout-store'
 import { Item } from '@/lib/types/item'

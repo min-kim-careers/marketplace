@@ -13,10 +13,10 @@ export default async function Page({
   const { slug } = await params
   if (!slug) notFound()
 
-  const item = await GET_ITEM_BY_USER(slug)
+  const { item } = await GET_ITEM_BY_USER(slug)
   if (!item) notFound()
 
-  const extra = await GET_PROFILE_EXTRA()
+  const { extra } = await GET_PROFILE_EXTRA()
   const imageLimit = extra ? extra.imageLimit : 0
 
   return <ItemEdit item={item} imageLimit={imageLimit} />

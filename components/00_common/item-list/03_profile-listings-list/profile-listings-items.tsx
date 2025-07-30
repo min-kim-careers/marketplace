@@ -1,7 +1,7 @@
 'use client'
 
-import ProfileListingsCard from '@/components/00_common/market-and-listings/03_profile-listings-list/profile-listings-card'
-import ProfileListingsModal from '@/components/00_common/market-and-listings/03_profile-listings-list/profile-listings-modal'
+import ProfileListingsCard from '@/components/00_common/item-list/03_profile-listings-list/profile-listings-card'
+import ProfileListingsModal from '@/components/00_common/item-list/03_profile-listings-list/profile-listings-modal'
 import { useItemPageStore } from '@/lib/providers/item-page-provider'
 import useLayoutStore from '@/lib/stores/layout-store'
 import { Item } from '@/lib/types/item'

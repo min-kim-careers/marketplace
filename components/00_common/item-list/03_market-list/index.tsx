@@ -1,4 +1,4 @@
-import { MarketItems } from '@/components/00_common/market-and-listings/03_market-list/market-items'
+import { MarketItems } from '@/components/00_common/item-list/03_market-list/market-items'
 import { GET_ALL_ITEMS } from '@/lib/clients/item'
 import { ItemPageParams } from '@/lib/types/item-page-params'
 
