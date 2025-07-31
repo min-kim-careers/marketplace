@@ -1,7 +1,7 @@
 'use server'
 
 import ItemPost from '@/components/02_content/item-post'
-import { GET_ITEM_POST_RESTRAINTS } from '@/gateway/profile'
+import { GET_ITEM_POST_RESTRAINTS } from '@/api/profile'
 
 export default async function Page() {
   const { imageLimit, listingLimitExceeded } =

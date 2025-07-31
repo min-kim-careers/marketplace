@@ -1,4 +1,4 @@
-import { GatewayResponse } from '@/gateway/types'
+import { GatewayResponse } from '@/api/types'
 import { getSession } from '@/lib/helpers/server/get-session'
 import { toURLSearchParams } from '@/lib/helpers/to-url-search-params'
 import { envLoader } from '@/lib/utils/env-loader'
@@ -35,8 +35,6 @@ class Client {
   }
 
   private setPath(path: string): this {
-    console.log(path);
-    
     this.url = new URL(path, this.base)
     return this
   }
@@ -111,7 +109,7 @@ class Client {
           this.addHeader({ cookie: `${envLoader.sessionHeader}=${session}` })
       }
 
-      console.log('web ->', this.url.toString())
+      console.log(this.url.toString())
       // console.log({
       //   ...this.init,
       //   ...(this.init.body && { body: 'redacted' }),
@@ -148,4 +146,7 @@ class Client {
   }
 }
 
-export const client = async () => new Client().setBase(envLoader.gatewayUrl)
+export const client = async () =>
+  new Client()
+    .setBase(envLoader.apiUrl)
+    .setApiKey({ header: envLoader.apiKeyHeader, key: envLoader.apiKey })

@@ -1,6 +1,6 @@
 'use client'
 
-import { SIGN_IN_WITH_GOOGLE } from '@/gateway/auth'
+import { SIGN_IN_WITH_GOOGLE } from '@/api/auth'
 import { auth, provider } from '@/lib/utils/firebase'
 import { useLoadingStore } from '../providers/loading-provider'
 import useProfileStore from '@/lib/stores/profile-store'

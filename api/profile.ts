@@ -1,6 +1,6 @@
 'use server'
 
-import { client } from '@/gateway/utils/client'
+import { client } from '@/api/utils/client'
 import { Profile } from '@/lib/types/profile'
 import { UpsertProfileRequest } from '@gateway/api/profile'
 

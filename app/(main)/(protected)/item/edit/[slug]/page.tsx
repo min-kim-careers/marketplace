@@ -1,7 +1,7 @@
 'use server'
 
-import { GET_ITEM_BY_USER } from '@/gateway/item'
-import { GET_ITEM_POST_RESTRAINTS } from '@/gateway/profile'
+import { GET_ITEM_BY_USER } from '@/api/item'
+import { GET_ITEM_POST_RESTRAINTS } from '@/api/profile'
 import ItemEdit from '@/components/02_content/item-edit'
 import { notFound } from 'next/navigation'
 

@@ -4,7 +4,10 @@ services:
     restart: always
     build: .
     environment:
-      - GATEWAY_URL=http://gateway-service:3001
+      - API_URL=http://api-service:8000
+      - API_KEY=REDACTED
+      - API_KEY_HEADER=REDACTED
+      
       - SESSION_HEADER=__session
     env_file:
       - .env

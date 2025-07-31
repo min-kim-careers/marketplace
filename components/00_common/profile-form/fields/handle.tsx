@@ -11,7 +11,7 @@ import {
   FormMessage,
 } from '@/components/shadcn/components/ui/form'
 import { Input } from '@/components/shadcn/components/ui/input'
-import { HANDLE_EXISTS } from '@/gateway/profile'
+import { HANDLE_EXISTS } from '@/api/profile'
 import useProfileStore from '@/lib/stores/profile-store'
 import { CheckCheck, X } from 'lucide-react'
 import {

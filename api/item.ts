@@ -3,7 +3,7 @@
 import { buildUpsertItemForm } from '@/lib/helpers/server/build-upsert-item-form'
 import { Item } from '@/lib/types/item'
 import { ItemPageParams } from '@/lib/types/item-page-params'
-import { client } from '@/gateway/utils/client'
+import { client } from '@/api/utils/client'
 import { UpsertItemRequest } from '@gateway/api/item'
 
 export const GET_ALL_ITEMS = async (itemPageParams: ItemPageParams) =>

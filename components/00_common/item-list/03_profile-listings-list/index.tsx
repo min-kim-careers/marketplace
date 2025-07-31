@@ -1,5 +1,5 @@
 import { ProfileListingItems } from '@/components/00_common/item-list/03_profile-listings-list/profile-listings-items'
-import { GET_ALL_ITEMS_BY_USER } from '@/gateway/item'
+import { GET_ALL_ITEMS_BY_USER } from '@/api/item'
 import { ItemPageParams } from '@/lib/types/item-page-params'
 
 export default async function ProfileListingsList({

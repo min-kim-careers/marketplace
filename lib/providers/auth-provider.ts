@@ -1,6 +1,6 @@
 'use client'
 
-import { REVOKE_SESSION, SIGN_IN_WITH_GOOGLE } from '@/gateway/auth'
+import { REVOKE_SESSION, SIGN_IN_WITH_GOOGLE } from '@/api/auth'
 import { clearSession } from '@/lib/helpers/server/clear-session'
 import { globalSignOut } from '@/lib/helpers/server/global-sign-out'
 import { hasSession } from '@/lib/helpers/server/has-session'

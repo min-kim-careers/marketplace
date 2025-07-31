@@ -9,7 +9,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/shadcn/components/ui/alert-dialog'
-import { DELETE_ITEM } from '@/gateway/item'
+import { DELETE_ITEM } from '@/api/item'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { useLoadingStore } from '@/lib/providers/loading-provider'
 import { Item } from '@/lib/types/item'

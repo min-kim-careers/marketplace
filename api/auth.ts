@@ -2,7 +2,7 @@
 
 import { setSession } from '@/lib/helpers/server/set-session'
 import { Profile } from '@/lib/types/profile'
-import { client } from '@/gateway/utils/client'
+import { client } from '@/api/utils/client'
 
 export const SIGN_IN_WITH_GOOGLE = async (idToken: string) =>
   (await client())
@@ -23,7 +23,7 @@ export const SIGN_IN_WITH_GOOGLE = async (idToken: string) =>
 
 export const VERIFY_SESSION = async () =>
   (await client())
-    .post('/verify-session')
+    .post('/auth/firebase/verify-session')
     .asResult<{ userId: string }>({ withSession: true })
 
 export const REVOKE_SESSION = async () =>
