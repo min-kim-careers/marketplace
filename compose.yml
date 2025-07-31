@@ -39,8 +39,6 @@ services:
     extends:
       file: ./gateway/compose.yml
       service: gateway-service
-    ports:
-      - 3001:3001
     networks:
       - gateway-network
       - api-network
