@@ -2,14 +2,6 @@
 	path = api
 	url = ../marketplace-api.git
 
-[submodule "auth"]
-	path = auth
-	url = ../marketplace-auth.git
-
-[submodule "gateway"]
-	path = gateway
-	url = ../marketplace-gateway.git
-
 [submodule "web"]
 	path = web
 	url = ../marketplace-web.git

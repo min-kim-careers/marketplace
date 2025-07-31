@@ -1,3 +1,0 @@
-#!/bin/bash
-
-docker exec -it auth-db-container bash -c 'psql -U authdbuser -d authdb'

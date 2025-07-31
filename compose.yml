@@ -1,21 +1,4 @@
 services:
-  # ----------------------------------- AUTH -----------------------------------
-  auth-db-service:
-    extends:
-      file: ./auth/compose.yml
-      service: auth-db-service
-    networks:
-      - auth-network
-
-  auth-service:
-    extends:
-      file: ./auth/compose.yml
-      service: auth-service
-    networks:
-      - auth-network
-    depends_on:
-      - auth-db-service
-
   # ----------------------------------- API -----------------------------------
   api-db-service:
     extends:
@@ -31,18 +14,11 @@ services:
     depends_on:
       api-db-service:
         condition: service_healthy
+    ports:
+      - 8000:8000
     networks:
       - api-network
-
-  # ----------------------------------- GATEWAY -----------------------------------
-  gateway-service:
-    extends:
-      file: ./gateway/compose.yml
-      service: gateway-service
-    networks:
-      - gateway-network
-      - api-network
-      - auth-network
+      - web-network
 
   # ----------------------------------- WEB -----------------------------------
   web-service:
@@ -52,13 +28,11 @@ services:
     ports:
       - 3000:3000
     networks:
-      - gateway-network
+      - web-network
 
 volumes:
-  auth-db-data:
   api-db-data:
 
 networks:
   api-network:
-  auth-network:
-  gateway-network:
+  web-network:

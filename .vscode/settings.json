@@ -1,5 +1,0 @@
-{
-  // "python.defaultInterpreterPath": "${workspaceFolder}/auth/.venv/bin/python",
-  // "python.envFile": "${workspaceFolder}/.env",
-  // "explorer.excludeGitIgnore": true
-}
