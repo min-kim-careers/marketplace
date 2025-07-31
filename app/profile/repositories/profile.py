@@ -6,7 +6,7 @@ from sqlalchemy.orm import selectinload
 
 from app.core import utils
 from app.profile.constants.profile_extra import DEFAULT_PROFILE_EXTRA
-from app.profile.models.profile import ProfileDB
+from app.core.db.models.profile import ProfileDB
 from app.profile.schemas.inbound import ProfileIn
 
 

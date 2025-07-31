@@ -2,23 +2,27 @@ import asyncio
 from uuid import UUID, uuid4
 from faker import Faker
 from sqlalchemy import select
+from app.core.db.models.user import UserDB
 from app.core.utils import get_one_by
-from app.db.session import get_db
+from app.core.db.session import get_db
 from app.item.enums import ItemCategory, ItemCondition
-from app.item.models.item import ItemDB
-from app.profile.models.profile import ProfileDB
+from app.core.db.models.item import ItemDB
+from app.core.db.models.profile import ProfileDB
 import random
 
 fake = Faker(locale="en_AU")
 
 
-def au_postcode():
-    return str(random.randint(200, 9999)).zfill(4)
+def create_mock_user() -> UserDB:
+    return UserDB(
+        provider_name="firebase",
+        provider_id=str(uuid4()),
+    )
 
 
-def create_mock_profile() -> ProfileDB:
+def create_mock_profile(user_id: UUID) -> ProfileDB:
     return ProfileDB(
-        user_id=uuid4(),
+        user_id=user_id,
         email=fake.unique.email(),
         handle=fake.unique.user_name(),
         rating=round(random.uniform(1, 5), 2),
@@ -42,7 +46,7 @@ def create_mock_item(user_id: UUID) -> ItemDB:
         postcode=fake.postcode(),
         suburb=fake.city(),
         state=fake.state(),
-        image_urls=[fake.image_url() for _ in range(random.randint(0, 3))],
+        # image_urls=[fake.image_url() for _ in range(random.randint(0, 3))],
     )
 
 
@@ -50,18 +54,22 @@ async def seed_db():
     async for db in get_db():
         res = await db.execute(select(ProfileDB))
         if res.first():
-            # print("Database already seeded.")
             return
 
-        mock_profiles = [create_mock_profile() for _ in range(5)]
-        db.add_all(mock_profiles)
+        mock_users = [create_mock_user() for _ in range(5)]
+        db.add_all(mock_users)
         await db.commit()
 
-        for profile in mock_profiles:
-            items = [create_mock_item(profile.user_id) for _ in range(3)]
+        for user in mock_users:
+            profiles = [create_mock_profile(user.id) for _ in range(3)]
+            db.add_all(profiles)
+            await db.commit()
+
+        for user in mock_users:
+            items = [create_mock_item(user.id) for _ in range(4)]
             db.add_all(items)
+            await db.commit()
 
-        await db.commit()
         print("Seeding complete.")
 
 

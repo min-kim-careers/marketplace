@@ -4,7 +4,7 @@ from uuid import UUID
 
 from fastapi import UploadFile
 from app.core.schemas.error import ErrorResponse
-from app.item.models.item import ItemDB
+from app.core.db.models.item import ItemDB
 from app.item.repositories.item import ItemRepository
 from app.item.schemas.inbound import ItemInDB
 from app.item.schemas.inbound import ItemInForm

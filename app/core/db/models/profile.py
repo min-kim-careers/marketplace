@@ -1,12 +1,15 @@
 from datetime import datetime, timezone
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
-from sqlalchemy import DateTime, UniqueConstraint
+from sqlalchemy import DateTime, ForeignKey, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship, Mapped, mapped_column
-from app.db.base import Base
+from app.core.db.base import Base
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
+
+if TYPE_CHECKING:
+    from app.core.db.models.user import UserDB
 
 
 class ProfileDB(Base):
@@ -16,7 +19,7 @@ class ProfileDB(Base):
         UniqueConstraint("handle"),
     )
 
-    user_id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), primary_key=True)
+    id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), primary_key=True, default=uuid4)
 
     email: Mapped[str] = mapped_column(nullable=False, index=True)
     handle: Mapped[str] = mapped_column(nullable=False, index=True)
@@ -42,3 +45,8 @@ class ProfileDB(Base):
     )
 
     extra: Mapped[dict] = mapped_column(JSONB, default=dict)
+
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
+    user: Mapped["UserDB"] = relationship(
+        "UserDB", lazy="selectin", foreign_keys=[user_id]
+    )

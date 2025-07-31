@@ -4,7 +4,7 @@ from fastapi import APIRouter, Body, Depends, Path
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.schemas.error import ErrorResponse
-from app.db.session import get_db
+from app.core.db.session import get_db
 from app.profile.repositories.profile import ProfileRepository
 from app.profile.schemas.inbound import ProfileIn
 from app.profile.schemas.outbound import ProfileExtra, ProfileOut, ProfileResponse

@@ -3,7 +3,7 @@ from typing import Generic, List, Optional, TypeVar
 
 from app.core.schemas.outbound import OutboundBase
 from app.core.utils import encode_slug
-from app.item.models.item import ItemDB
+from app.core.db.models.item import ItemDB
 from app.item.enums import ItemCategory, ItemCondition, ItemStatus
 
 
@@ -39,7 +39,7 @@ class ItemOut(OutboundBase):
         return cls.model_validate(
             {
                 **item.__dict__,
-                "profile_handle": item.profile.handle,
+                "profile_handle": item.user.handle,
                 "id": encode_slug(item.id),
             },
             from_attributes=True,

@@ -1,7 +1,7 @@
 from typing import Sequence
 from uuid import UUID
 from app.core.utils import get_one_by
-from app.item.models.rating import RatingDB
+from app.core.db.models.rating import RatingDB
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession

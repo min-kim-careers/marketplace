@@ -39,19 +39,15 @@ services:
     container_name: api-container
     restart: always
     build: .
-    ports:
-      - 8000:8000
     environment:
       - PYTHONUNBUFFERED=1
 
-      # Postgres
       - DB_HOST=api-db-service
       - DB_PORT=5432
       - DB_USER=apidbuser
       - DB_PASSWORD=REDACTED
       - DB_NAME=apidb
 
-      # Redis
       # - CACHE_HOST=api-cache-service
       # - CACHE_PORT=6379
       # - CACHE_PASSWORD=redispassword
@@ -59,8 +55,12 @@ services:
 
       - SERVICE_KEY=GIUv6nI8S76oIdVPE3sSe3YvLkF7O6XwqeQp4MOvGUE=
       - SERVICE_KEY_HEADER=x-api-key
+
+      - SESSION_HEADER=__session
+
     env_file:
       - .env
+      - .env.firebase
     volumes:
       - ./app:/code/app
       - ./images:/code/images

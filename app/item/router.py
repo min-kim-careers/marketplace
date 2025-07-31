@@ -9,9 +9,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core import utils
 from app.core.schemas.error import ErrorResponse
-from app.db.session import get_db
+from app.core.db.session import get_db
 from app.item.dependencies import resolve_item, resolve_item_slug
-from app.item.models.item import ItemDB
+from app.core.db.models.item import ItemDB
 from app.item.repositories.item import ItemRepository
 from app.item.schemas.inbound import ItemInForm, ItemsQuery
 from app.item.schemas.outbound import ItemOut, ItemResponse

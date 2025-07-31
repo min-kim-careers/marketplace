@@ -4,13 +4,13 @@ from uuid import UUID, uuid4
 
 from sqlalchemy import String, DateTime, ForeignKey, Enum, ARRAY
 from sqlalchemy.orm import relationship, Mapped, mapped_column
-from app.db.base import Base
+from app.core.db.base import Base
 
 from app.item.enums import ItemCategory, ItemCondition, ItemStatus
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 
 if TYPE_CHECKING:
-    from app.profile.models.profile import ProfileDB
+    from app.core.db.models.user import UserDB
 
 
 class ItemDB(Base):
@@ -18,10 +18,6 @@ class ItemDB(Base):
 
     id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True), primary_key=True, default=uuid4
-    )
-
-    user_id: Mapped[UUID] = mapped_column(
-        ForeignKey("profiles.user_id"), nullable=False
     )
 
     # Required fields
@@ -54,13 +50,12 @@ class ItemDB(Base):
 
     image_urls: Mapped[list[str]] = mapped_column(ARRAY(String), default=list)
 
-    buyer_id: Mapped[UUID] = mapped_column(
-        ForeignKey("profiles.user_id"), nullable=True
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
+    user: Mapped["UserDB"] = relationship(
+        "UserDB", lazy="selectin", foreign_keys=[user_id]
     )
 
-    profile: Mapped["ProfileDB"] = relationship(
-        "ProfileDB", lazy="selectin", foreign_keys=[user_id]
-    )
-    buyer: Mapped["ProfileDB"] = relationship(
-        "ProfileDB", lazy="selectin", foreign_keys=[buyer_id]
+    buyer_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=True)
+    buyer: Mapped["UserDB"] = relationship(
+        "UserDB", lazy="selectin", foreign_keys=[buyer_id]
     )

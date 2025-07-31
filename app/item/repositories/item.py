@@ -8,7 +8,7 @@ from sqlalchemy.orm import selectinload
 from app.core.utils import get_one_by
 from app.item.schemas.inbound import ItemInDB
 from app.item.enums import ItemSortOrder, ItemStatus
-from app.item.models.item import ItemDB
+from app.core.db.models.item import ItemDB
 from app.item.schemas.inbound import (
     ItemsQuery,
 )
@@ -36,7 +36,7 @@ class ItemRepository:
         try:
             stmt = (
                 select(ItemDB)
-                .options(selectinload(ItemDB.profile))
+                .options(selectinload(ItemDB.user))
                 .where(
                     ItemDB.status.in_(
                         [
@@ -102,7 +102,7 @@ class ItemRepository:
         try:
             stmt = (
                 select(ItemDB)
-                .options(selectinload(ItemDB.profile))
+                .options(selectinload(ItemDB.user))
                 .where(ItemDB.user_id == user_id)
             )
 

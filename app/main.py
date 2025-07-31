@@ -5,17 +5,20 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from app.core.mocks import seed_db
+from app.auth.firebase.config import initialize_firebase_admin
+from app.tests.mocks import seed_db
 from app.core.security import verify_service_key
 
-from app.db.session import init_db
+from app.core.db.session import init_db
 from app.item.router import items_router
 from app.profile.router import profiles_router
-
+from app.auth.router import auth_router
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    initialize_firebase_admin()
+    
     await init_db()
     await seed_db()
     yield
@@ -40,6 +43,7 @@ app.add_middleware(
 
 app.include_router(items_router, tags=["Items"])
 app.include_router(profiles_router, tags=["Profiles"])
+app.include_router(auth_router, tags=["Auth"])
 
 app.mount("/images", StaticFiles(directory="/code/images"), name="images")
 

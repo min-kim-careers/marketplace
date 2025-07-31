@@ -8,8 +8,8 @@ from app.core.schemas.error import ErrorResponse
 from app.core.utils import decode_slug
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.item.models.item import ItemDB
-from app.db.session import get_db
+from app.core.db.models.item import ItemDB
+from app.core.db.session import get_db
 from app.item.repositories.item import ItemRepository
 from app.item.schemas.inbound import ItemInForm
 from app.item.service import ItemService

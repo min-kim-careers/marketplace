@@ -15,10 +15,11 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 import uuid
 from datetime import datetime, timezone
 
-from app.db.base import Base
+from app.core.db.base import Base
 
 if TYPE_CHECKING:
-    from app.profile.models.profile import ProfileDB
+    from app.core.db.models.user import UserDB
+    from app.core.db.models.item import ItemDB
 
 
 class RatingDB(Base):
@@ -34,14 +35,26 @@ class RatingDB(Base):
 
     # Required fields
     rater_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("profiles.user_id"), nullable=False
+        UUID(as_uuid=True), ForeignKey("users.id"), nullable=False
     )
+    rater: Mapped["UserDB"] = relationship(
+        "UserDB", lazy="selectin", foreign_keys=[rater_id]
+    )
+
     ratee_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("profiles.user_id"), nullable=False
+        UUID(as_uuid=True), ForeignKey("users.id"), nullable=False
     )
+    ratee: Mapped["UserDB"] = relationship(
+        "UserDB", lazy="selectin", foreign_keys=[ratee_id]
+    )
+
     item_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("items.id"), nullable=False
     )
+    item: Mapped["ItemDB"] = relationship(
+        "ItemDB", lazy="selectin", foreign_keys=[item_id]
+    )
+
     rating: Mapped[int] = mapped_column(Integer, nullable=False)
     comment: Mapped[str] = mapped_column(Text, nullable=True)
 
@@ -55,11 +68,3 @@ class RatingDB(Base):
         default=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
-
-    rater: Mapped["ProfileDB"] = relationship(
-        "ProfileDB", lazy="selectin", foreign_keys=[rater_id]
-    )
-    ratee: Mapped["ProfileDB"] = relationship(
-        "ProfileDB", lazy="selectin", foreign_keys=[ratee_id]
-    )
-    item = relationship("ItemDB", lazy="selectin")
