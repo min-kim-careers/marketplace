@@ -3,11 +3,11 @@ from typing import List
 from uuid import UUID
 
 from fastapi import UploadFile
-from app.common.schemas.error import ErrorResponse
+from app.core.schemas.error import ErrorResponse
 from app.item.models.item import ItemDB
 from app.item.repositories.item import ItemRepository
 from app.item.schemas.inbound import ItemInDB
-from app.item.schemas.inbound import ItemIn
+from app.item.schemas.inbound import ItemInForm
 from app.storage.image import store_image_bulk
 from sqlalchemy.ext.asyncio import AsyncSession
 from rich import print
@@ -31,20 +31,19 @@ class ItemService:
 
     @staticmethod
     async def upsert_item(
-        db: AsyncSession, user_id: UUID, item_in: ItemIn, item_db: ItemDB | None
+        db: AsyncSession, user_id: UUID, item_in: ItemInForm, item_db: ItemDB | None
     ):
         item_in_db = ItemInDB.model_validate(item_in, from_attributes=True)
 
-        print(item_in_db)
-
         new_item_db = None
         if item_db:
-            print('Updating...')
+            print("Updating...")
             new_item_db = await ItemRepository.update(db, item_db, item_in_db)
         else:
-            print('Creating...')
+            print("Creating...")
             new_item_db = await ItemRepository.create(db, user_id, item_in_db)
 
-        print(new_item_db.__dict__)
-
         return new_item_db
+    
+
+    

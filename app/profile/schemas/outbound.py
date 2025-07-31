@@ -1,9 +1,7 @@
 from typing import Generic, Optional, TypeVar
-from uuid import UUID
 
-from app.common.schemas.outbound import OutboundBase
+from app.core.schemas.outbound import OutboundBase
 
-DEFAULT_IMAGE_LIMIT = 3
 
 T = TypeVar("T")
 
@@ -14,7 +12,8 @@ class ProfileResponse(OutboundBase, Generic[T]):
 
 
 class ProfileExtra(OutboundBase):
-    image_limit: Optional[int] = DEFAULT_IMAGE_LIMIT
+    image_limit: int
+    listing_limit: int
 
 
 class ProfileOut(OutboundBase):

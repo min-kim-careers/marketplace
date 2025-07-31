@@ -1,33 +1,33 @@
 import re
 from typing import Annotated, List, Optional
 from uuid import UUID
-from fastapi import APIRouter, Body, Depends, File, Form, Path, Query, UploadFile
+
+from fastapi import (APIRouter, Body, Depends, File, Form, Path, Query,
+                     UploadFile)
+from rich import print
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.common import utils
-from app.item.models.item import ItemDB
+from app.core import utils
+from app.core.schemas.error import ErrorResponse
 from app.db.session import get_db
-from app.common.schemas.error import ErrorResponse
-from app.item.repositories.item import ItemRepository
 from app.item.dependencies import resolve_item, resolve_item_slug
-from app.item.schemas.outbound import ItemOut
-from app.item.schemas.inbound import ItemIn
-from app.item.schemas.inbound import ItemsQuery
-from app.item.schemas.outbound import ItemResponse
+from app.item.models.item import ItemDB
+from app.item.repositories.item import ItemRepository
+from app.item.schemas.inbound import ItemInForm, ItemsQuery
+from app.item.schemas.outbound import ItemOut, ItemResponse
 from app.item.service import ItemService
 from app.profile.schemas.outbound import ProfileResponse
 from app.storage.image import remove_image_bulk, store_image_bulk
-from rich import print
 
-items_router = APIRouter()
+items_router = APIRouter(prefix='/api/items')
 
 
-@items_router.get("/api/items", response_model=ItemResponse)
-async def get_items(
+@items_router.get("", response_model=ItemResponse)
+async def get_all_items(
     query: ItemsQuery = Depends(),
     db: AsyncSession = Depends(get_db),
 ) -> ItemResponse:
-    item_count = await ItemRepository.get_all_count(db, query)
+    item_count = await ItemRepository.get_all_count_paginated(db, query)
     if not item_count:
         return ItemResponse(
             data={
@@ -36,7 +36,7 @@ async def get_items(
             }
         )
 
-    items_db = await ItemRepository.get_all(db, query)
+    items_db = await ItemRepository.get_all_paginated(db, query)
     if not items_db:
         raise ErrorResponse(
             status_code=500,
@@ -51,13 +51,15 @@ async def get_items(
     )
 
 
-@items_router.get("/api/items/user/{user_id}", response_model=ItemResponse)
-async def get_user_items(
+@items_router.get("/user/{user_id}", response_model=ItemResponse)
+async def get_all_user_items(
     user_id: UUID = Path(...),
     query: ItemsQuery = Depends(),
     db: AsyncSession = Depends(get_db),
 ) -> ItemResponse:
-    item_count = await ItemRepository.get_all_count_by_user_id(db, user_id, query)
+    item_count = await ItemRepository.get_all_count_by_user_id_paginated(
+        db, user_id, query
+    )
     if not item_count:
         return ItemResponse(
             data={
@@ -66,7 +68,7 @@ async def get_user_items(
             }
         )
 
-    items_db = await ItemRepository.get_all_by_user_id(db, user_id, query)
+    items_db = await ItemRepository.get_all_by_user_id_paginated(db, user_id, query)
     if not items_db:
         raise ErrorResponse(
             status_code=500,
@@ -81,8 +83,24 @@ async def get_user_items(
     )
 
 
-@items_router.get("/api/items/user/{user_id}/item/{item_slug}", response_model=ProfileResponse)
-async def get_user_item(
+@items_router.get(
+    "/count/user/{user_id}", response_model=ProfileResponse
+)
+async def get_user_items_count(
+    user_id: UUID = Path(...),
+    db: AsyncSession = Depends(get_db),
+) -> ProfileResponse:
+    count = await ItemRepository.get_all_count_by_user_id(db, user_id)
+
+    return ProfileResponse(
+        data={"count": count},
+    )
+
+
+@items_router.get(
+    "/user/{user_id}/item/{item_slug}", response_model=ProfileResponse
+)
+async def get_user_item_by_slug(
     item_db: ItemDB = Depends(resolve_item),
 ) -> ProfileResponse:
     item = ItemOut.from_db(item_db)
@@ -92,8 +110,10 @@ async def get_user_item(
     )
 
 
-@items_router.delete("/api/items/user/{user_id}/item/{item_slug}", response_model=ItemResponse)
-async def delete_user_item(
+@items_router.delete(
+    "/user/{user_id}/item/{item_slug}", response_model=ItemResponse
+)
+async def delete_item_by_slug(
     item_db: ItemDB = Depends(resolve_item),
     db: AsyncSession = Depends(get_db),
 ) -> ItemResponse:
@@ -106,9 +126,9 @@ async def delete_user_item(
     )
 
 
-@items_router.put("/api/items/user/{user_id}", response_model=ItemResponse)
-async def upsert_user_item(
-    item_in: Annotated[ItemIn, Form()],
+@items_router.put("/user/{user_id}", response_model=ItemResponse)
+async def upsert_item(
+    item_in: Annotated[ItemInForm, Form()],
     user_id: UUID = Path(...),
     item_id: UUID | None = Depends(resolve_item_slug),
     db: AsyncSession = Depends(get_db),
@@ -126,7 +146,6 @@ async def upsert_user_item(
             raise ErrorResponse(status_code=404, message="Image upload error")
 
     new_item_db = await ItemService.upsert_item(db, user_id, item_in, item_db)
-
     if not new_item_db:
         if new_image_urls:
             remove_image_bulk(new_image_urls)
@@ -139,7 +158,7 @@ async def upsert_user_item(
     )
 
 
-@items_router.get("/api/items/slugs", response_model=ProfileResponse)
+@items_router.get("/slugs", response_model=ProfileResponse)
 async def get_items_by_slugs(
     item_slugs: List[str] = Query(..., alias="itemSlugs"),
     db: AsyncSession = Depends(get_db),

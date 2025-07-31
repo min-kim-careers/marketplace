@@ -2,7 +2,7 @@ import asyncio
 from uuid import UUID, uuid4
 from faker import Faker
 from sqlalchemy import select
-from app.common.utils import get_one_by
+from app.core.utils import get_one_by
 from app.db.session import get_db
 from app.item.enums import ItemCategory, ItemCondition
 from app.item.models.item import ItemDB

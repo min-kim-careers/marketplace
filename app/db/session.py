@@ -3,7 +3,7 @@ from typing import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from app.common.config import env_loader
+from app.core.config import env_loader
 from app.db.base import Base
 from app.item.models.rating import RatingDB
 

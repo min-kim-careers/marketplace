@@ -1,6 +1,6 @@
 from typing import Sequence
 from uuid import UUID
-from app.common.utils import get_one_by
+from app.core.utils import get_one_by
 from app.item.models.rating import RatingDB
 
 from sqlalchemy import select

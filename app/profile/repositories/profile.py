@@ -4,30 +4,25 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.common import utils
+from app.core import utils
+from app.profile.constants.profile_extra import DEFAULT_PROFILE_EXTRA
 from app.profile.models.profile import ProfileDB
 from app.profile.schemas.inbound import ProfileIn
 
 
 class ProfileRepository:
     @staticmethod
-    async def get_by_user_id(
-        db: AsyncSession, user_id: UUID
-    ) -> ProfileDB | None:
+    async def get_by_user_id(db: AsyncSession, user_id: UUID) -> ProfileDB | None:
         return await utils.get_one_by(db, ProfileDB, user_id=user_id)
 
     @staticmethod
-    async def get_by_handle(
-        db: AsyncSession, handle: str
-    ) -> ProfileDB | None:
+    async def get_by_handle(db: AsyncSession, handle: str) -> ProfileDB | None:
         return await utils.get_one_by(db, ProfileDB, handle=handle)
-    
-    @staticmethod
-    async def exists_by_handle(
-        db: AsyncSession, handle: str
-    ) -> bool:
-        return await utils.get_exists_by(db, ProfileDB, handle=handle)
 
+    @staticmethod
+    async def exists_by_handle(db: AsyncSession, handle: str) -> bool:
+        return await utils.get_exists_by(db, ProfileDB, handle=handle)
+    
     @staticmethod
     async def create(
         db: AsyncSession, user_id: UUID, profile_in: ProfileIn
@@ -35,6 +30,7 @@ class ProfileRepository:
         try:
             profile_db = ProfileDB(
                 user_id=user_id,
+                extra=DEFAULT_PROFILE_EXTRA,
                 **profile_in.model_dump(exclude_unset=True),
             )
 

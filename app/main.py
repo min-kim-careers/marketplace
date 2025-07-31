@@ -5,8 +5,8 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from app.common.mocks import seed_db
-from app.common.security import verify_service_key
+from app.core.mocks import seed_db
+from app.core.security import verify_service_key
 
 from app.db.session import init_db
 from app.item.router import items_router

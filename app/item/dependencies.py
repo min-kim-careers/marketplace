@@ -1,15 +1,21 @@
 import base64
+from typing import Annotated
 from uuid import UUID
 
-from fastapi import Depends, Path, Query
+from fastapi import Depends, Form, Path, Query
 
-from app.common.schemas.error import ErrorResponse
-from app.common.utils import decode_slug
+from app.core.schemas.error import ErrorResponse
+from app.core.utils import decode_slug
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.item.models.item import ItemDB
 from app.db.session import get_db
 from app.item.repositories.item import ItemRepository
+from app.item.schemas.inbound import ItemInForm
+from app.item.service import ItemService
+from app.profile.repositories.profile import ProfileRepository
+from app.profile.schemas.outbound import ProfileExtra, ProfileOut
+from app.profile.service import ProfileService
 
 
 async def resolve_item(
@@ -24,7 +30,27 @@ async def resolve_item(
     return item_db
 
 
-def resolve_item_slug(item_slug: str = Query(None, alias='itemSlug')) -> UUID | None:
+def resolve_item_slug(item_slug: str = Query(None, alias="itemSlug")) -> UUID | None:
     if not item_slug:
         return None
     return decode_slug(item_slug)
+
+
+async def resolve_upsert_item(
+    item_in: Annotated[ItemInForm, Form()],
+    user_id: UUID = Path(...),
+    db: AsyncSession = Depends(get_db),
+):
+    extra = await ProfileService.get_extra(db, user_id)
+    if not extra:
+        raise ErrorResponse(status_code=500, message="No profile extra found")
+
+    user_item_count = await ItemRepository.get_all_count_by_user_id(db, user_id)
+
+    if user_item_count + 1 > extra.listing_limit:
+        raise ErrorResponse(status_code=500, message="Exceeded user item limit")
+    if item_in.image_urls and len(item_in.image_urls) > extra.image_limit:
+        raise ErrorResponse(status_code=500, message="Exceeded item image limit")
+    
+    
+

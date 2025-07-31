@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import Generic, List, Optional, TypeVar
 
-from app.common.schemas.outbound import OutboundBase
-from app.common.utils import encode_slug
+from app.core.schemas.outbound import OutboundBase
+from app.core.utils import encode_slug
 from app.item.models.item import ItemDB
 from app.item.enums import ItemCategory, ItemCondition, ItemStatus
 

@@ -4,7 +4,7 @@ from uuid import UUID
 from fastapi import File, UploadFile
 from pydantic import BaseModel, Field, field_validator, model_validator
 
-from app.common.schemas.inbound import InboundBase
+from app.core.schemas.inbound import InboundBase
 from app.item.enums import (
     ItemCategory,
     ItemCondition,
@@ -38,7 +38,7 @@ class ItemsQuery(InboundBase):
         return v.lower() if v else v
 
 
-class ItemIn(InboundBase):
+class ItemInForm(InboundBase):
     name: Optional[str] = None
     description: Optional[str] = None
     price: Optional[float] = None

@@ -2,9 +2,10 @@ from typing import Optional
 
 from pydantic import EmailStr, Field, conint
 
-from app.common.schemas.inbound import InboundBase
+from app.core.schemas.inbound import InboundBase
 from uuid import UUID
 from typing import Optional
+
 
 class ProfileIn(InboundBase):
     email: Optional[EmailStr] = None
@@ -15,7 +16,6 @@ class ProfileIn(InboundBase):
     suburb: Optional[str] = None
     state: Optional[str] = None
     avatar_url: Optional[str] = None
-
 
 
 class RatingIn(InboundBase):

@@ -1,2 +1,37 @@
+from uuid import UUID
+
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.profile.repositories.profile import ProfileRepository
+from app.profile.schemas.inbound import ProfileIn
+from app.profile.schemas.outbound import ProfileExtra, ProfileOut
+
+
 class ProfileService:
-  pass
+    @staticmethod
+    async def upsert_profile(
+        db: AsyncSession,
+        user_id: UUID,
+        profile_in: ProfileIn,
+    ):
+        profile_db = await ProfileRepository.get_by_user_id(db, user_id)
+        if profile_db:
+            profile_db = await ProfileRepository.update(db, profile_db, profile_in)
+        else:
+            profile_db = await ProfileRepository.create(db, user_id, profile_in)
+
+        if not profile_db:
+            return None
+
+        return ProfileOut.model_validate(profile_db, from_attributes=True)
+
+    @staticmethod
+    async def get_extra(
+        db: AsyncSession,
+        user_id: UUID,
+    ):
+        profile_db = await ProfileRepository.get_by_user_id(db, user_id)
+        if not profile_db:
+            return None
+
+        return ProfileExtra.model_validate(profile_db.extra, from_attributes=True)
