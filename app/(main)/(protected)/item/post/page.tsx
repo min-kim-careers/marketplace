@@ -1,11 +1,14 @@
 'use server'
 
-import { GET_PROFILE_EXTRA } from '@/lib/clients/profile'
 import ItemPost from '@/components/02_content/item-post'
+import { GET_ITEM_POST_RESTRAINTS } from '@/gateway/profile'
 
 export default async function Page() {
-  const { extra } = await GET_PROFILE_EXTRA()
-  const imageLimit = extra ? extra.imageLimit : 0
+  const { imageLimit, listingLimitExceeded } =
+    await GET_ITEM_POST_RESTRAINTS().catch(() => ({
+      imageLimit: 0,
+      listingLimitExceeded: true,
+    }))
 
-  return <ItemPost imageLimit={imageLimit} />
+  return <ItemPost props={{ imageLimit, listingLimitExceeded }} />
 }

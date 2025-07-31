@@ -2,7 +2,7 @@
 
 import { setSession } from '@/lib/helpers/server/set-session'
 import { Profile } from '@/lib/types/profile'
-import { client } from '@/lib/utils/client'
+import { client } from '@/gateway/utils/client'
 
 export const SIGN_IN_WITH_GOOGLE = async (idToken: string) =>
   (await client())

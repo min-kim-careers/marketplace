@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
-import Spinner from '@/components/00_common/spinner'
 import { ProfileUpdateForm } from '@/components/00_common/profile-form/schema'
+import Spinner from '@/components/00_common/spinner'
 import { Button } from '@/components/shadcn/components/ui/button'
 import {
   FormControl,
@@ -11,8 +11,8 @@ import {
   FormMessage,
 } from '@/components/shadcn/components/ui/form'
 import { Input } from '@/components/shadcn/components/ui/input'
+import { HANDLE_EXISTS } from '@/gateway/profile'
 import useProfileStore from '@/lib/stores/profile-store'
-import { logError } from '@/lib/utils/log'
 import { CheckCheck, X } from 'lucide-react'
 import {
   ChangeEvent,
@@ -23,7 +23,6 @@ import {
   useState,
 } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { HANDLE_EXISTS } from '@/lib/clients/profile'
 import { toast } from 'sonner'
 
 const DefaultButtonNode = () => <>Confirm</>
@@ -103,7 +102,7 @@ export default function HandleField({
         toast('Handle is available :)')
       }
     } catch (error) {
-      logError('Error confirming handle')
+      console.error('Error confirming handle')
       setButtonNode(<DefaultButtonNode />)
       setConfirmed(false)
     }

@@ -1,6 +1,6 @@
 'use client'
 
-import { UPSERT_ITEM } from '@/lib/clients/item'
+import { UPSERT_ITEM } from '@/gateway/item'
 import { imageUrlsToFiles } from '@/lib/helpers/image-urls-to-files'
 import { useLoadingStore } from '../providers/loading-provider'
 import { UpsertItemRequest } from '@gateway/api/item'

@@ -28,10 +28,13 @@ import { useUpsertItem } from '@/lib/hooks/use-upsert-item'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { UpsertItemRequest } from '@gateway/api/item'
 
-export default function ItemPost({ imageLimit }: { imageLimit: number }) {
-  const { handleUpsertItem } = useUpsertItem()
+interface ItemPostProps {
+  imageLimit: number
+  listingLimitExceeded: boolean
+}
 
-  const initImageUrls = () => Array.from({ length: imageLimit }, (_, i) => null)
+export default function ItemPost({ props }: { props: ItemPostProps }) {
+  const { handleUpsertItem } = useUpsertItem()
 
   const form = useForm<z.infer<typeof ItemFormSchema>>({
     resolver: zodResolver(ItemFormSchema),
@@ -42,8 +45,9 @@ export default function ItemPost({ imageLimit }: { imageLimit: number }) {
       category: '',
       location: {},
       condition: '',
-      imageUrls: initImageUrls(),
+      imageUrls: Array(props.imageLimit).fill(null),
     },
+    disabled: props.listingLimitExceeded,
   })
 
   async function onSubmit(values: z.infer<typeof ItemFormSchema>) {
@@ -71,7 +75,7 @@ export default function ItemPost({ imageLimit }: { imageLimit: number }) {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <div className='flex flex-col gap-4'>
-                {!!imageLimit && <ImageField form={form} />}
+                {props.imageLimit > 0 && <ImageField form={form} />}
 
                 <NameField form={form} />
                 <PriceField form={form} />

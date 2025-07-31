@@ -1,4 +1,4 @@
-import { VERIFY_SESSION } from '@/lib/clients/auth'
+import { VERIFY_SESSION } from '@/gateway/auth'
 import {
   APP_ROUTES,
   isFallbackRoute,

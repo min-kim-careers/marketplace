@@ -1,8 +1,8 @@
 'use server'
 
+import { client } from '@/gateway/utils/client'
 import { Profile } from '@/lib/types/profile'
-import { client } from '@/lib/utils/client'
-import { ProfileExtra, UpsertProfileRequest } from '@gateway/api/profile'
+import { UpsertProfileRequest } from '@gateway/api/profile'
 
 export const UPSERT_PROFILE = async (request: UpsertProfileRequest) =>
   (await client())
@@ -12,10 +12,10 @@ export const UPSERT_PROFILE = async (request: UpsertProfileRequest) =>
 
 export const HANDLE_EXISTS = async (handle: string) =>
   (await client())
-    .get(`/exists/handle/${handle}`)
+    .get(`/exists-by-handle/${handle}`)
     .asResult<{ exists: boolean }>({ withSession: true })
 
-export const GET_PROFILE_EXTRA = async () =>
+export const GET_ITEM_POST_RESTRAINTS = async () =>
   (await client())
-    .get(`/get-profile-extra`)
-    .asResult<{ extra: ProfileExtra }>({ withSession: true })
+    .get(`/get-item-post-restraints`)
+    .asResult<{ imageLimit: number; listingLimitExceeded: boolean }>({ withSession: true })

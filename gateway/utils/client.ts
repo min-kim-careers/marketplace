@@ -1,4 +1,4 @@
-import { GatewayResponse } from '@/lib/clients/types'
+import { GatewayResponse } from '@/gateway/types'
 import { getSession } from '@/lib/helpers/server/get-session'
 import { toURLSearchParams } from '@/lib/helpers/to-url-search-params'
 import { envLoader } from '@/lib/utils/env-loader'

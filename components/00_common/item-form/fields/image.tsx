@@ -26,9 +26,7 @@ const ImageInput = ({
 
   const watcher = form.watch(name)
 
-  const handleFileChange = async (
-    e: ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
       const url = URL.createObjectURL(file)
@@ -46,7 +44,7 @@ const ImageInput = ({
 
   if (!watcher[index])
     return (
-      <Label className='flex cursor-pointer items-center justify-center rounded bg-gray-200 text-gray-400'>
+      <Label className='flex h-32 w-32 cursor-pointer items-center justify-center rounded bg-gray-200 text-gray-400'>
         <Input
           type='file'
           accept='image/x'
@@ -58,10 +56,8 @@ const ImageInput = ({
     )
 
   return (
-    <div className='relative rounded bg-gray-200'>
-      <div className='relative h-full'>
-        <ImageContainer url={watcher[index]} />
-      </div>
+    <div className='relative h-32 w-32 rounded bg-gray-200'>
+      <ImageContainer url={watcher[index]} className='rounded' />
       <button type='button' onClick={handleDelete}>
         <Trash className='absolute bottom-0 right-0 z-50 m-1 cursor-pointer fill-gray-100 hover:scale-110 active:scale-90' />
       </button>
@@ -85,7 +81,7 @@ export default function ImageField({
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <div className='grid h-[20vh] grid-cols-3 gap-2'>
+            <div className='grid h-32 grid-cols-3 place-items-center gap-2 max-w-2xl'>
               {form.watch(name).map((_, i) => (
                 <ImageInput form={form} index={i} key={i} />
               ))}

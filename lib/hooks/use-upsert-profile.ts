@@ -1,6 +1,6 @@
 'use client'
 
-import { UPSERT_PROFILE } from '@/lib/clients/profile'
+import { UPSERT_PROFILE } from '@/gateway/profile'
 import { useLoadingStore } from '../providers/loading-provider'
 import useProfileStore from '@/lib/stores/profile-store'
 import { UpsertProfileRequest } from '@gateway/api/profile'
