@@ -9,7 +9,7 @@ from app.auth.firebase.config import initialize_firebase_admin
 from app.tests.mocks import seed_db
 from app.core.security import verify_service_key
 
-from app.core.db.session import init_db
+from app.db.session import init_db
 from app.item.router import items_router
 from app.profile.router import profiles_router
 from app.auth.router import auth_router

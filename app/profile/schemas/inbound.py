@@ -1,9 +1,9 @@
 from typing import Optional
+from uuid import UUID
 
-from pydantic import EmailStr, Field, conint
+from pydantic import BaseModel, EmailStr, Field, conint
 
 from app.core.schemas.inbound import InboundBase
-from uuid import UUID
 from typing import Optional
 
 
@@ -18,8 +18,6 @@ class ProfileIn(InboundBase):
     avatar_url: Optional[str] = None
 
 
-class RatingIn(InboundBase):
-    rater_id: Optional[UUID] = None
-    item_id: Optional[UUID] = None
-    rating: Optional[int] = Field(default=None, ge=1, le=5)
-    comment: Optional[str] = None
+class ProfileInDB(BaseModel):
+    email: EmailStr
+    handle: str

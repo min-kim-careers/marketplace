@@ -2,12 +2,12 @@ import asyncio
 from uuid import UUID, uuid4
 from faker import Faker
 from sqlalchemy import select
-from app.core.db.models.user import UserDB
+from app.db.models.user import UserDB
 from app.core.utils import get_one_by
-from app.core.db.session import get_db
+from app.db.session import get_db
 from app.item.enums import ItemCategory, ItemCondition
-from app.core.db.models.item import ItemDB
-from app.core.db.models.profile import ProfileDB
+from app.db.models.item import ItemDB
+from app.db.models.profile import ProfileDB
 import random
 
 fake = Faker(locale="en_AU")

@@ -15,3 +15,9 @@ def get_session_from_request(
             headers={"WWW-Authenticate": "Bearer"},
         )
     return session
+
+
+def get_session_from_request_optional(
+    session: str | None = Cookie(default=None, alias=config.env_loader.SESSION_HEADER)
+) -> str | None:
+    return session

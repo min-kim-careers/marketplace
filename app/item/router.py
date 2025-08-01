@@ -2,140 +2,83 @@ import re
 from typing import Annotated, List, Optional
 from uuid import UUID
 
-from fastapi import (APIRouter, Body, Depends, File, Form, Path, Query,
-                     UploadFile)
+from fastapi import APIRouter, Body, Depends, File, Form, Path, Query, UploadFile
 from rich import print
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.auth.firebase.dependencies import (
+    resolve_firebase_session,
+    resolve_firebase_session_optional,
+)
 from app.core import utils
 from app.core.schemas.error import ErrorResponse
-from app.core.db.session import get_db
+from app.db.models.user import UserDB
+from app.db.session import get_db
 from app.item.dependencies import resolve_item, resolve_item_slug
-from app.core.db.models.item import ItemDB
-from app.item.repositories.item import ItemRepository
+from app.db.models.item import ItemDB
+from app.item.repository import ItemRepository
 from app.item.schemas.inbound import ItemInForm, ItemsQuery
 from app.item.schemas.outbound import ItemOut, ItemResponse
 from app.item.service import ItemService
 from app.profile.schemas.outbound import ProfileResponse
 from app.storage.image import remove_image_bulk, store_image_bulk
 
-items_router = APIRouter(prefix='/api/items')
+items_router = APIRouter(prefix="/api/items")
 
 
 @items_router.get("", response_model=ItemResponse)
-async def get_all_items(
+async def get_items(
+    user: UserDB | None = Depends(resolve_firebase_session_optional),
     query: ItemsQuery = Depends(),
     db: AsyncSession = Depends(get_db),
 ) -> ItemResponse:
-    item_count = await ItemRepository.get_all_count_paginated(db, query)
-    if not item_count:
-        return ItemResponse(
-            data={
-                "items": [],
-                "count": 0,
-            }
-        )
-
-    items_db = await ItemRepository.get_all_paginated(db, query)
-    if not items_db:
-        raise ErrorResponse(
-            status_code=500,
-            message="Error fetching items",
-        )
-
-    return ItemResponse(
-        data={
-            "items": [ItemOut.from_db(item) for item in items_db],
-            "count": item_count,
-        },
-    )
+    return await ItemService.get_items(db, query, user.id if user else None)
 
 
-@items_router.get("/user/{user_id}", response_model=ItemResponse)
-async def get_all_user_items(
-    user_id: UUID = Path(...),
-    query: ItemsQuery = Depends(),
-    db: AsyncSession = Depends(get_db),
-) -> ItemResponse:
-    item_count = await ItemRepository.get_all_count_by_user_id_paginated(
-        db, user_id, query
-    )
-    if not item_count:
-        return ItemResponse(
-            data={
-                "items": [],
-                "count": 0,
-            }
-        )
-
-    items_db = await ItemRepository.get_all_by_user_id_paginated(db, user_id, query)
-    if not items_db:
-        raise ErrorResponse(
-            status_code=500,
-            message="Error fetching user's items",
-        )
-
-    return ItemResponse(
-        data={
-            "items": [ItemOut.from_db(item) for item in items_db],
-            "count": item_count,
-        },
-    )
-
-
-@items_router.get(
-    "/count/user/{user_id}", response_model=ProfileResponse
-)
-async def get_user_items_count(
-    user_id: UUID = Path(...),
+@items_router.get("/count", response_model=ProfileResponse)
+async def get_item_count_for_user(
+    user: UserDB = Depends(resolve_firebase_session),
     db: AsyncSession = Depends(get_db),
 ) -> ProfileResponse:
-    count = await ItemRepository.get_all_count_by_user_id(db, user_id)
-
     return ProfileResponse(
-        data={"count": count},
+        data={
+            "count": await ItemRepository.get_item_count_for_user(db, user.id),
+        },
     )
 
 
-@items_router.get(
-    "/user/{user_id}/item/{item_slug}", response_model=ProfileResponse
-)
+@items_router.get("/item/{item_slug}", response_model=ProfileResponse)
 async def get_user_item_by_slug(
+    _=Depends(resolve_firebase_session),
     item_db: ItemDB = Depends(resolve_item),
 ) -> ProfileResponse:
-    item = ItemOut.from_db(item_db)
-
     return ProfileResponse(
-        data={"item": item},
+        data={"item": ItemOut.from_db(item_db)},
     )
 
 
-@items_router.delete(
-    "/user/{user_id}/item/{item_slug}", response_model=ItemResponse
-)
+@items_router.delete("/item/{item_slug}", response_model=ItemResponse)
 async def delete_item_by_slug(
+    _=Depends(resolve_firebase_session),
     item_db: ItemDB = Depends(resolve_item),
     db: AsyncSession = Depends(get_db),
 ) -> ItemResponse:
-    deleted = await ItemRepository.delete(db, item_db)
-    if not deleted:
+    if not await ItemRepository.delete(db, item_db):
         raise ErrorResponse(status_code=404, message="Failed to delete item")
 
-    return ItemResponse(
-        data={"deleted": deleted},
-    )
+    return ItemResponse(message="Item deleted")
 
 
-@items_router.put("/user/{user_id}", response_model=ItemResponse)
+@items_router.put("", response_model=ItemResponse)
 async def upsert_item(
     item_in: Annotated[ItemInForm, Form()],
-    user_id: UUID = Path(...),
+    user: UserDB = Depends(resolve_firebase_session),
     item_id: UUID | None = Depends(resolve_item_slug),
     db: AsyncSession = Depends(get_db),
 ) -> ItemResponse:
     item_db = None
     if item_id:
-        item_db = await ItemRepository.get_by_item_and_user_id(db, user_id, item_id)
+        item_db = await ItemRepository.get_by_item_and_user_id(db, user.id, item_id)
 
     new_image_urls = []
     if item_in.upload_images and item_in.image_urls:
@@ -145,7 +88,7 @@ async def upsert_item(
         if not new_image_urls:
             raise ErrorResponse(status_code=404, message="Image upload error")
 
-    new_item_db = await ItemService.upsert_item(db, user_id, item_in, item_db)
+    new_item_db = await ItemService.upsert_item(db, user.id, item_in, item_db)
     if not new_item_db:
         if new_image_urls:
             remove_image_bulk(new_image_urls)
@@ -160,6 +103,7 @@ async def upsert_item(
 
 @items_router.get("/slugs", response_model=ProfileResponse)
 async def get_items_by_slugs(
+    _=Depends(resolve_firebase_session),
     item_slugs: List[str] = Query(..., alias="itemSlugs"),
     db: AsyncSession = Depends(get_db),
 ) -> ProfileResponse:

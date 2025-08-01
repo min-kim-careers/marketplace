@@ -3,8 +3,9 @@ from typing import Generic, List, Optional, TypeVar
 
 from app.core.schemas.outbound import OutboundBase
 from app.core.utils import encode_slug
-from app.core.db.models.item import ItemDB
+from app.db.models.item import ItemDB
 from app.item.enums import ItemCategory, ItemCondition, ItemStatus
+from app.item.helpers import format_item_date
 
 
 T = TypeVar("T")
@@ -28,7 +29,9 @@ class ItemOut(OutboundBase):
     suburb: str
     state: str
     created_at: datetime
+    created_at_label: str
     updated_at: datetime
+    updated_at_label: str
     expires_at: Optional[datetime] = None
     image_urls: List[str]
 
@@ -39,8 +42,10 @@ class ItemOut(OutboundBase):
         return cls.model_validate(
             {
                 **item.__dict__,
-                "profile_handle": item.user.handle,
+                "profile_handle": item.user.profile.handle,
                 "id": encode_slug(item.id),
+                "updated_at_label": format_item_date(item.updated_at),
+                "created_at_label": format_item_date(item.created_at),
             },
             from_attributes=True,
         )

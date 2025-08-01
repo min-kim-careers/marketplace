@@ -15,11 +15,11 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 import uuid
 from datetime import datetime, timezone
 
-from app.core.db.base import Base
+from app.db.base import Base
 
 if TYPE_CHECKING:
-    from app.core.db.models.user import UserDB
-    from app.core.db.models.item import ItemDB
+    from app.db.models.user import UserDB
+    from app.db.models.item import ItemDB
 
 
 class RatingDB(Base):

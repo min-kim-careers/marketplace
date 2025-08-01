@@ -7,8 +7,8 @@ from sqlalchemy.orm import selectinload
 
 from app.core.utils import get_one_by
 from app.item.schemas.inbound import ItemInDB
-from app.item.enums import ItemSortOrder, ItemStatus
-from app.core.db.models.item import ItemDB
+from app.item.enums import ItemSortOrder, ItemStatus, ItemUserOption
+from app.db.models.item import ItemDB
 from app.item.schemas.inbound import (
     ItemsQuery,
 )
@@ -16,7 +16,9 @@ from app.item.schemas.inbound import (
 
 class ItemRepository:
     @staticmethod
-    def build_base_query(stmt: Select, query: ItemsQuery):
+    def build_query(
+        stmt: Select, query: ItemsQuery, user_id: Optional[UUID] = None
+    ):
         if query.keyword:
             or_conditions = [
                 func.lower(ItemDB.name).ilike(f"%{query.keyword}%"),
@@ -26,31 +28,37 @@ class ItemRepository:
             stmt = stmt.where(
                 or_(*or_conditions),
             )
+        if user_id:
+            if query.user_option == ItemUserOption.exclude_user:
+                stmt = stmt.where(
+                    ItemDB.user_id != user_id,
+                )
+            elif query.user_option == ItemUserOption.user_only:
+                stmt = stmt.where(
+                    ItemDB.user_id == user_id,
+                )
+        if query.active_only:
+            stmt = stmt.where(
+                ItemDB.status.in_(
+                    [
+                        ItemStatus.available,
+                        ItemStatus.pending,
+                    ]
+                )
+            )
+
         return stmt
 
     @staticmethod
-    async def get_all_paginated(
+    async def get_queried_paginated(
         db: AsyncSession,
         query: ItemsQuery,
+        user_id: Optional[UUID] = None,
     ) -> Sequence[ItemDB] | None:
         try:
-            stmt = (
-                select(ItemDB)
-                .options(selectinload(ItemDB.user))
-                .where(
-                    ItemDB.status.in_(
-                        [
-                            ItemStatus.available,
-                            ItemStatus.pending,
-                        ]
-                    )
-                )
-            )
+            stmt = select(ItemDB).options(selectinload(ItemDB.user))
 
-            if query.exclude_user:
-                stmt = stmt.where(ItemDB.user_id != query.exclude_user)
-
-            stmt = ItemRepository.build_base_query(stmt, query)
+            stmt = ItemRepository.build_query(stmt, query, user_id)
 
             if query.sort_by:
                 sort_column = getattr(ItemDB, query.sort_by.value)
@@ -67,75 +75,15 @@ class ItemRepository:
             return None
 
     @staticmethod
-    async def get_all_count_paginated(db: AsyncSession, query: ItemsQuery) -> int:
-        try:
-            stmt = (
-                select(func.count())
-                .select_from(ItemDB)
-                .where(
-                    ItemDB.status.in_(
-                        [
-                            ItemStatus.available,
-                            ItemStatus.pending,
-                        ]
-                    )
-                )
-            )
-
-            if query.exclude_user:
-                stmt = stmt.where(ItemDB.user_id != query.exclude_user)
-
-            stmt = ItemRepository.build_base_query(stmt, query)
-
-            result = await db.execute(stmt)
-            return result.scalar_one()
-        except Exception as e:
-            print(e)
-            return 0
-
-    @staticmethod
-    async def get_all_by_user_id_paginated(
+    async def get_queried_count(
         db: AsyncSession,
-        user_id: UUID,
         query: ItemsQuery,
-    ) -> Sequence[ItemDB] | None:
-        try:
-            stmt = (
-                select(ItemDB)
-                .options(selectinload(ItemDB.user))
-                .where(ItemDB.user_id == user_id)
-            )
-
-            stmt = ItemRepository.build_base_query(stmt, query)
-
-            if query.sort_by:
-                sort_column = getattr(ItemDB, query.sort_by.value)
-                if query.sort_order == ItemSortOrder.asc:
-                    stmt = stmt.order_by(asc(sort_column))
-                else:
-                    stmt = stmt.order_by(desc(sort_column))
-
-            stmt = stmt.offset(query.offset).limit(query.limit)
-            result = await db.execute(stmt)
-            return result.scalars().all()
-        except Exception as e:
-            print(e)
-            return None
-
-    @staticmethod
-    async def get_all_count_by_user_id_paginated(
-        db: AsyncSession,
-        user_id: UUID,
-        query: ItemsQuery,
+        user_id: Optional[UUID] = None,
     ) -> int:
         try:
-            stmt = (
-                select(func.count())
-                .select_from(ItemDB)
-                .where(ItemDB.user_id == user_id)
-            )
+            stmt = select(func.count()).select_from(ItemDB)
 
-            stmt = ItemRepository.build_base_query(stmt, query)
+            stmt = ItemRepository.build_query(stmt, query, user_id)
 
             result = await db.execute(stmt)
             return result.scalar_one()
@@ -143,8 +91,58 @@ class ItemRepository:
             print(e)
             return 0
 
+    # @staticmethod
+    # async def get_all_by_user_id_paginated(
+    #     db: AsyncSession,
+    #     user_id: UUID,
+    #     query: ItemsQuery,
+    # ) -> Sequence[ItemDB] | None:
+    #     try:
+    #         stmt = (
+    #             select(ItemDB)
+    #             .options(selectinload(ItemDB.user))
+    #             .where(ItemDB.user_id == user_id)
+    #         )
+
+    #         stmt = ItemRepository.build_base_query(stmt, query)
+
+    #         if query.sort_by:
+    #             sort_column = getattr(ItemDB, query.sort_by.value)
+    #             if query.sort_order == ItemSortOrder.asc:
+    #                 stmt = stmt.order_by(asc(sort_column))
+    #             else:
+    #                 stmt = stmt.order_by(desc(sort_column))
+
+    #         stmt = stmt.offset(query.offset).limit(query.limit)
+    #         result = await db.execute(stmt)
+    #         return result.scalars().all()
+    #     except Exception as e:
+    #         print(e)
+    #         return None
+
+    # @staticmethod
+    # async def get_all_count_by_user_id_paginated(
+    #     db: AsyncSession,
+    #     user_id: UUID,
+    #     query: ItemsQuery,
+    # ) -> int:
+    #     try:
+    #         stmt = (
+    #             select(func.count())
+    #             .select_from(ItemDB)
+    #             .where(ItemDB.user_id == user_id)
+    #         )
+
+    #         stmt = ItemRepository.build_base_query(stmt, query)
+
+    #         result = await db.execute(stmt)
+    #         return result.scalar_one()
+    #     except Exception as e:
+    #         print(e)
+    #         return 0
+
     @staticmethod
-    async def get_all_count_by_user_id(
+    async def get_item_count_for_user(
         db: AsyncSession,
         user_id: UUID,
     ) -> int:

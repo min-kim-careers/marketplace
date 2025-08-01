@@ -5,9 +5,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.core import utils
-from app.profile.constants.profile_extra import DEFAULT_PROFILE_EXTRA
-from app.core.db.models.profile import ProfileDB
-from app.profile.schemas.inbound import ProfileIn
+from app.profile.constants.defaults import DEFAULT_PROFILE_EXTRA
+from app.db.models.profile import ProfileDB
+from app.profile.schemas.inbound import ProfileIn, ProfileInDB
 
 
 class ProfileRepository:
@@ -25,7 +25,7 @@ class ProfileRepository:
     
     @staticmethod
     async def create(
-        db: AsyncSession, user_id: UUID, profile_in: ProfileIn
+        db: AsyncSession, user_id: UUID, profile_in: ProfileInDB
     ) -> ProfileDB | None:
         try:
             profile_db = ProfileDB(

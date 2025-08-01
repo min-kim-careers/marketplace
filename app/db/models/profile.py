@@ -5,11 +5,11 @@ from uuid import UUID, uuid4
 from sqlalchemy import DateTime, ForeignKey, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship, Mapped, mapped_column
-from app.core.db.base import Base
+from app.db.base import Base
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 
 if TYPE_CHECKING:
-    from app.core.db.models.user import UserDB
+    from app.db.models.user import UserDB
 
 
 class ProfileDB(Base):

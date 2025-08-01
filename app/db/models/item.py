@@ -4,13 +4,13 @@ from uuid import UUID, uuid4
 
 from sqlalchemy import String, DateTime, ForeignKey, Enum, ARRAY
 from sqlalchemy.orm import relationship, Mapped, mapped_column
-from app.core.db.base import Base
+from app.db.base import Base
 
 from app.item.enums import ItemCategory, ItemCondition, ItemStatus
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 
 if TYPE_CHECKING:
-    from app.core.db.models.user import UserDB
+    from app.db.models.user import UserDB
 
 
 class ItemDB(Base):

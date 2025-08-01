@@ -11,13 +11,9 @@ from app.item.enums import (
     ItemSortBy,
     ItemSortOrder,
     ItemStatus,
+    ItemUserOption,
 )
-
-DEFAULT_PAGINATION_PAGE = 1
-DEFAULT_PAGINATION_LIMIT = 9
-
-DEFAULT_SORT_ORDER = ItemSortOrder.asc
-DEFAULT_SORT_BY = ItemSortBy.created_at
+from app.item.constants.defaults import *
 
 
 class ItemsQuery(InboundBase):
@@ -26,7 +22,8 @@ class ItemsQuery(InboundBase):
     sort_by: Optional[ItemSortBy] = DEFAULT_SORT_BY
     page: int = DEFAULT_PAGINATION_PAGE
     limit: int = DEFAULT_PAGINATION_LIMIT
-    exclude_user: Optional[UUID] = None
+    user_option: Optional[ItemUserOption] = None
+    active_only: Optional[bool] = False
 
     @property
     def offset(self) -> int:

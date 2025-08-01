@@ -1,13 +1,13 @@
 from typing import Sequence
 from uuid import UUID
 from app.core.utils import get_one_by
-from app.core.db.models.rating import RatingDB
+from app.db.models.rating import RatingDB
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.profile.schemas.inbound import RatingIn
+from app.rating.schemas.inbound import RatingIn
 
 
 class RatingRepository:

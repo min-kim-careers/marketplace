@@ -44,3 +44,7 @@ class ItemStatus(str, Enum):
     # API ONLY
     expired = "expired"
 
+class ItemUserOption(str, Enum):
+    exclude_user = "exclude_user"
+    user_only = "user_only"
+    
