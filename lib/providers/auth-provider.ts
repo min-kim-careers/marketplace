@@ -1,7 +1,6 @@
 'use client'
 
-import { REVOKE_SESSION, SIGN_IN_WITH_GOOGLE } from '@/api/auth'
-import { clearSession } from '@/lib/helpers/server/clear-session'
+import { _signInWithGoogle } from '@/api/service/auth'
 import { globalSignOut } from '@/lib/helpers/server/global-sign-out'
 import { hasSession } from '@/lib/helpers/server/has-session'
 import useFirebaseStore from '@/lib/stores/firebase-store'
@@ -19,7 +18,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const refreshSession = async (user: User) => {
     try {
       const token = await user.getIdToken(true)
-      const { profile } = await SIGN_IN_WITH_GOOGLE(token)
+      const profile = await _signInWithGoogle(token)
+      if (!profile) throw new Error('failed to refresh session')
+        
       setProfile(profile)
     } catch (error) {
       await auth.signOut()

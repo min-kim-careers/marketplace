@@ -17,7 +17,7 @@ export function ProfileListingItems({
   const { itemColumns } = useLayoutStore()
   const { setProps } = useItemPageStore()
 
-  useEffect(() => setProps({ items, count }), [])
+  useEffect(() => setProps({ items, count }), [items, count])
 
   if (!items.length)
     return (

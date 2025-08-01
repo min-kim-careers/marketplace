@@ -1,22 +1,23 @@
 'use client'
 
-import { UPSERT_ITEM } from '@/api/item'
+import { _UpsertItemRequest } from '@/api/endpoints/item'
+import { upsertItem } from '@/api/service/item'
 import { imageUrlsToFiles } from '@/lib/helpers/image-urls-to-files'
-import { useLoadingStore } from '../providers/loading-provider'
-import { UpsertItemRequest } from '@gateway/api/item'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { useLoadingStore } from '../providers/loading-provider'
 
 export const useUpsertItem = () => {
   const { setLoading } = useLoadingStore()
   const router = useRouter()
 
   const handleUpsertItem = async (
-    request: UpsertItemRequest,
+    request: _UpsertItemRequest,
     itemId?: string,
-    reroute?: string,
+    rerouteUrl?: string,
   ) => {
     const isUpdate = !!itemId
+    let toastMsg = ''
 
     try {
       setLoading(`${isUpdate ? 'Updating' : 'Posting'} your item`, true)
@@ -25,21 +26,23 @@ export const useUpsertItem = () => {
         request.uploadImages = await imageUrlsToFiles(request.imageUrls)
       }
 
-      const { item } = await UPSERT_ITEM(request, { itemId })
+      if (!(await upsertItem(request, itemId)))
+        throw new Error('failed to upsert')
 
-      toast(`Your item was ${isUpdate ? 'updated' : 'posted'} successfully!`)
+      toastMsg = `Your item was ${isUpdate ? 'updated' : 'posted'} successfully!`
 
-      if (reroute) router.replace(reroute)
+      if (rerouteUrl) router.replace(rerouteUrl)
 
       return true
     } catch (error) {
       console.error(error)
 
-      toast(`Something went wrong.`)
+      toastMsg = `Something went wrong.`
 
       return false
     } finally {
       setLoading()
+      if (toastMsg) toast(toastMsg)
     }
   }
 

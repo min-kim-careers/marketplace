@@ -1,3 +1,5 @@
+import 'server-only'
+
 interface EnvLoader {
   apiUrl: string
   apiKey: string

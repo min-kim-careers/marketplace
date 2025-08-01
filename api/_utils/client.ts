@@ -1,11 +1,9 @@
-import { GatewayResponse } from '@/api/types'
+import 'server-only'
+
+import { APIError, APIResponse } from '@/api/endpoints/types'
 import { getSession } from '@/lib/helpers/server/get-session'
 import { toURLSearchParams } from '@/lib/helpers/to-url-search-params'
 import { envLoader } from '@/lib/utils/env-loader'
-
-type RequestOpts = {
-  withSession?: boolean
-}
 
 type ApiKey = {
   header: string
@@ -15,22 +13,14 @@ type ApiKey = {
 class Client {
   private base!: string
   private url!: URL
+  private useSession: boolean = false
 
-  private init: RequestInit = { headers: { accept: 'application/json' } }
+  private init: Partial<RequestInit> = {
+    headers: { accept: 'application/json' },
+  }
 
   private setMethod(method: string): this {
     this.init = { ...this.init, method }
-    return this
-  }
-
-  private addHeader(header: any): this {
-    this.init = {
-      ...this.init,
-      headers: {
-        ...this.init.headers,
-        ...header,
-      },
-    }
     return this
   }
 
@@ -41,6 +31,17 @@ class Client {
 
   setBase(base: string): this {
     this.base = base
+    return this
+  }
+
+  addHeader(header: any): this {
+    this.init = {
+      ...this.init,
+      headers: {
+        ...this.init.headers,
+        ...header,
+      },
+    }
     return this
   }
 
@@ -95,15 +96,14 @@ class Client {
     return this
   }
 
-  async result(
-    opts: RequestOpts = {
-      withSession: false,
-    },
-  ): Promise<any> {
-    try {
-      const { withSession } = opts
+  withSession(): this {
+    this.useSession = true
+    return this
+  }
 
-      if (withSession) {
+  async result(): Promise<any> {
+    try {
+      if (this.useSession) {
         const session = await getSession()
         if (session)
           this.addHeader({ cookie: `${envLoader.sessionHeader}=${session}` })
@@ -119,25 +119,23 @@ class Client {
       //   },
       // })
 
-      const resp = await fetch(this.url.toString(), this.init)
+      const resp = await fetch(this.url.toString(), this.init as RequestInit)
       if (!resp.ok) {
-        throw new Error(`${resp.status} - ${resp.statusText}`)
+        const err = await resp.text() as APIError
+        console.error(err)
+        throw new Error()
       }
       return await resp.json()
     } catch (error) {
       console.error(error)
-      throw new Error('error fetching response')
+      throw new Error('raw result error')
     }
   }
 
-  async asResult<T>(
-    opts: RequestOpts = {
-      withSession: false,
-    },
-  ): Promise<T> {
+  async asResult<T>(): Promise<T> {
     try {
-      const { data, message } = (await this.result(opts)) as GatewayResponse<T>
-      message && console.log({ client: message })
+      const { data, message } = (await this.result()) as APIResponse<T>
+      message && console.log('API: ', message)
       return data as T
     } catch (error) {
       console.error(error)

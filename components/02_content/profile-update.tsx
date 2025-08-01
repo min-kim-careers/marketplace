@@ -3,21 +3,14 @@
 import { HandleField } from '@/components/00_common/profile-form/fields'
 import { ProfileUpdateForm } from '@/components/00_common/profile-form/schema'
 import { Button } from '@/components/shadcn/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/shadcn/components/ui/card'
 import { Form } from '@/components/shadcn/components/ui/form'
+import { cn } from '@/components/shadcn/lib/utils'
+import { useUpdateProfile } from '@/lib/hooks/use-upsert-profile'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { useUpsertProfile } from '@/lib/hooks/use-upsert-profile'
 import { toast } from 'sonner'
-import { cn } from '@/components/shadcn/lib/utils'
+import { z } from 'zod'
 
 export default function ProfileUpdate({
   className,
@@ -26,7 +19,7 @@ export default function ProfileUpdate({
 }) {
   const [handleConfirmed, setHandleConfirmed] =
     useState(false)
-  const { handleUpsertProfile: handleUpdateProfile } = useUpsertProfile()
+  const { handleUpdateProfile: handleUpdateProfile } = useUpdateProfile()
 
   const form = useForm<z.infer<typeof ProfileUpdateForm>>({
     resolver: zodResolver(ProfileUpdateForm),

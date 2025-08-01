@@ -1,5 +1,6 @@
+import { getItems } from '@/api/service/item'
 import { MarketItems } from '@/components/00_common/item-list/03_market-list/market-items'
-import { GET_ALL_ITEMS } from '@/api/item'
+import { hasSession } from '@/lib/helpers/server/has-session'
 import { ItemPageParams } from '@/lib/types/item-page-params'
 
 export default async function MarketList({
@@ -7,9 +8,7 @@ export default async function MarketList({
 }: {
   params: ItemPageParams
 }) {
-  const { items, count } = await GET_ALL_ITEMS(params)
+  const { items, count } = await getItems(params, await hasSession())
 
   return <MarketItems items={items} count={count} />
 }
-
-

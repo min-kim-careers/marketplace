@@ -1,7 +1,6 @@
 'use server'
 
-import { GET_ITEM_BY_USER } from '@/api/item'
-import { GET_ITEM_POST_RESTRAINTS } from '@/api/profile'
+import { getItemBySlug, getProfileExtra } from '@/api'
 import ItemEdit from '@/components/02_content/item-edit'
 import { notFound } from 'next/navigation'
 
@@ -13,11 +12,10 @@ export default async function Page({
   const { slug } = await params
   if (!slug) notFound()
 
-  const { item } = await GET_ITEM_BY_USER(slug)
+  const item = await getItemBySlug(slug)
   if (!item) notFound()
 
-  const { extra } = await GET_ITEM_POST_RESTRAINTS()
-  const imageLimit = extra ? extra.imageLimit : 0
+  const extra = await getProfileExtra()
 
-  return <ItemEdit item={item} imageLimit={imageLimit} />
+  return <ItemEdit item={item} imageLimit={extra.imageLimit} />
 }

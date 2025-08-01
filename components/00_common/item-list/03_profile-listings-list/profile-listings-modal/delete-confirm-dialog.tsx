@@ -1,3 +1,4 @@
+import { _deleteItem } from '@/api'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -9,7 +10,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/shadcn/components/ui/alert-dialog'
-import { DELETE_ITEM } from '@/api/item'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { useLoadingStore } from '@/lib/providers/loading-provider'
 import { Item } from '@/lib/types/item'
@@ -17,28 +17,29 @@ import { useRouter } from 'next/navigation'
 import { ReactNode } from 'react'
 import { toast } from 'sonner'
 
-export default function DeleteConfirmDialog ({
+export default function DeleteConfirmDialog({
   children,
   item,
 }: {
   children: ReactNode
   item: Item
-})  {
+}) {
   const { setLoading } = useLoadingStore()
   const router = useRouter()
 
   const handleDelete = async () => {
+    let toastMsg = ''
     try {
       setLoading('Deleting post', true)
-      const { deleted } = await DELETE_ITEM(item.id)
-      if (!deleted) throw new Error('failed to delete')
+      if (!(await _deleteItem(item.id))) throw new Error('failed to delete')
 
       router.replace(APP_ROUTES.PROFILE_LISTINGS.href)
-      toast('Successfully deleted post')
+      toastMsg = 'Successfully deleted post'
     } catch (error) {
-      toast('Something went wrong')
+      toastMsg = 'Something went wrong'
     } finally {
       setLoading()
+      if (toastMsg) toast(toastMsg)
     }
   }
 

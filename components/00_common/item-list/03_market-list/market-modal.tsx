@@ -4,7 +4,6 @@ import {
   AvatarFallback,
   AvatarImage,
 } from '@/components/shadcn/components/ui/avatar'
-import { Button } from '@/components/shadcn/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -14,14 +13,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/shadcn/components/ui/dialog'
-import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { ITEM_CONDITION_LABELS } from '@/lib/constants/item-condition-labels'
 import { ItemCondition } from '@/lib/enums/item-condition'
-import { formatItemDate } from '@/lib/helpers/format-item-date'
 import { formatCurrency } from '@/lib/helpers/format-price'
 import { Item } from '@/lib/types/item'
 import { CircleUserIcon } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { ReactNode } from 'react'
 
 export default function MarketModal({
@@ -45,7 +41,7 @@ export default function MarketModal({
             </DialogTitle>
             <DialogDescription className='flex gap-2'>
               <span>
-                <span>{`Updated ${formatItemDate(item.updatedAt)} by `}</span>
+                <span>{`Updated ${item.updatedAtLabel} by `}</span>
                 <span>
                   <button className='font-semibold'>
                     {item.profileHandle}

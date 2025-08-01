@@ -1,4 +1,4 @@
-import { VERIFY_SESSION } from '@/api/auth'
+import { verifySession } from '@/api'
 import {
   APP_ROUTES,
   isFallbackRoute,
@@ -12,7 +12,7 @@ import { NextResponse } from 'next/server'
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname
   const headers = new Headers(req.headers)
-  headers.set('x-current-path', req.nextUrl.pathname)
+  // headers.set('x-current-path', req.nextUrl.pathname)
   const nextResponse = NextResponse.next({ request: { headers } })
 
   if (isFallbackRoute(path) || req.method !== 'GET') {
@@ -24,7 +24,7 @@ export async function middleware(req: NextRequest) {
 
   if (isSignedIn) {
     try {
-      verified = Boolean(await VERIFY_SESSION())
+      verified = await verifySession()
     } catch (_) {
       return NextResponse.redirect(
         new URL(APP_ROUTES.NOTFOUND.href, req.nextUrl),

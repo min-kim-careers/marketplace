@@ -11,18 +11,18 @@ export const useSignOut = () => {
   const router = useRouter()
 
   const handleSignOut = async () => {
+    let toastMsg = ''
+
     try {
       setLoading('Signing you out...')
-
       await auth.signOut()
-
-      toast(`See you again!`)
-
+      toastMsg = `See you again!`
       router.replace(APP_ROUTES.HOME.href)
     } catch (error) {
-      toast(`Something went wrong.`)
+      toastMsg = `Something went wrong.`
     } finally {
       setLoading()
+      if (toastMsg) toast(toastMsg)
     }
   }
 

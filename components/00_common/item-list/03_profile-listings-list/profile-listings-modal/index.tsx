@@ -13,7 +13,6 @@ import {
 } from '@/components/shadcn/components/ui/dialog'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { ITEM_CONDITION_LABELS } from '@/lib/constants/item-condition-labels'
-import { formatItemDate } from '@/lib/helpers/format-item-date'
 import { formatCurrency } from '@/lib/helpers/format-price'
 import { Item } from '@/lib/types/item'
 import Link from 'next/link'
@@ -46,7 +45,7 @@ export default function ProfileListingsModal({
               </span>
             </DialogTitle>
             <DialogDescription className='flex gap-2'>
-              <span>{`Last update at ${formatItemDate(item.updatedAt)}`}</span>
+              <span>{`Last update at ${item.updatedAtLabel}`}</span>
             </DialogDescription>
           </span>
         </DialogHeader>

@@ -12,7 +12,9 @@ export type Item = {
   condition: ItemCondition
   status: ItemStatus
   createdAt: string
+  createdAtLabel: string
   updatedAt: string
+  updatedAtLabel: string
   expiresAt?: string
   postcode: string
   suburb: string

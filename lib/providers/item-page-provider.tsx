@@ -46,7 +46,10 @@ export const ItemPageProvider = ({
     })),
   )
 
-  useEffect(() => storeRef.current.setState({ ...props }), [props])
+  useEffect(
+    () => storeRef.current.setState({ ...props }),
+    [props],
+  )
 
   return (
     <ItemPageContext.Provider value={storeRef.current}>

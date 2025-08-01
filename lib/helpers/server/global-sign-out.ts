@@ -1,11 +1,11 @@
 'use server'
 
-import { REVOKE_SESSION } from '@/api/auth'
+import { _revokeSession } from '@/api/endpoints/auth-firebase'
 import { clearSession } from '@/lib/helpers/server/clear-session'
 
 export const globalSignOut = async () => {
   try {
-    await REVOKE_SESSION()
+    await _revokeSession()
   } catch (error) {
     console.error(error)
   } finally {

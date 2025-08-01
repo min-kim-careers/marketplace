@@ -1,3 +1,5 @@
+'use server'
+
 export const toFormData = async (o: Object) => {
   const formData = new FormData()
   Object.entries(o).forEach(([key, value]) => {

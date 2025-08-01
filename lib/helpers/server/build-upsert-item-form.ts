@@ -1,9 +1,9 @@
 'use server'
 
-import { toFormData } from '@/lib/helpers/to-form-data'
-import { UpsertItemRequest } from '@gateway/api/item'
+import { _UpsertItemRequest } from '@/api/endpoints/item'
+import { toFormData } from '@/lib/helpers/server/to-form-data'
 
-export const buildUpsertItemForm = async (request: UpsertItemRequest) => {
+export const buildUpsertItemForm = async (request: _UpsertItemRequest) => {
   let placeholder_index = 0
   if (request.imageUrls) {
     request.imageUrls.map((url) =>

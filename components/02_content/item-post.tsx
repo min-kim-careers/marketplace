@@ -26,11 +26,10 @@ import {
 import { Form } from '@/components/shadcn/components/ui/form'
 import { useUpsertItem } from '@/lib/hooks/use-upsert-item'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
-import { UpsertItemRequest } from '@gateway/api/item'
+import { _UpsertItemRequest } from '@/api/endpoints/item'
 
 interface ItemPostProps {
   imageLimit: number
-  listingLimitExceeded: boolean
 }
 
 export default function ItemPost({ props }: { props: ItemPostProps }) {
@@ -47,13 +46,12 @@ export default function ItemPost({ props }: { props: ItemPostProps }) {
       condition: '',
       imageUrls: Array(props.imageLimit).fill(null),
     },
-    disabled: props.listingLimitExceeded,
   })
 
   async function onSubmit(values: z.infer<typeof ItemFormSchema>) {
     const { location, imageUrls, ..._values } = values
 
-    const request: UpsertItemRequest = {
+    const request: _UpsertItemRequest = {
       ..._values,
       ...location,
       imageUrls: imageUrls.filter((u) => u !== null),

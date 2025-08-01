@@ -28,7 +28,7 @@ import { useUpsertItem } from '@/lib/hooks/use-upsert-item'
 import { Item } from '@/lib/types/item'
 import { toast } from 'sonner'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
-import { UpsertItemRequest } from '@gateway/api/item'
+import { _UpsertItemRequest } from '@/api/endpoints/item'
 
 export default function ItemEdit({
   item,
@@ -91,7 +91,7 @@ export default function ItemEdit({
 
     const { location, imageUrls, ..._values } = values
 
-    const request: UpsertItemRequest = {
+    const request: _UpsertItemRequest = {
       ..._values,
       ...location,
       imageUrls: imageUrls.filter((u) => u !== null),

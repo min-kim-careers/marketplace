@@ -11,7 +11,6 @@ import {
   FormMessage,
 } from '@/components/shadcn/components/ui/form'
 import { Input } from '@/components/shadcn/components/ui/input'
-import { HANDLE_EXISTS } from '@/api/profile'
 import useProfileStore from '@/lib/stores/profile-store'
 import { CheckCheck, X } from 'lucide-react'
 import {
@@ -24,6 +23,7 @@ import {
 } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
+import { profileHandleExists } from '@/api'
 
 const DefaultButtonNode = () => <>Confirm</>
 const HandleTakenButtonNode = () => <X />
@@ -88,9 +88,8 @@ export default function HandleField({
     e.preventDefault()
     try {
       setButtonNode(<Spinner />)
-      const { exists } = await HANDLE_EXISTS(input)
 
-      if (exists) {
+      if (await profileHandleExists(input)) {
         setButtonNode(<HandleTakenButtonNode />)
         setConfirmed(false)
         setError(name, {

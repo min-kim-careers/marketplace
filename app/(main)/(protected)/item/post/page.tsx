@@ -1,14 +1,11 @@
 'use server'
 
+import { getItemPostRestraints } from '@/api'
 import ItemPost from '@/components/02_content/item-post'
-import { GET_ITEM_POST_RESTRAINTS } from '@/api/profile'
 
 export default async function Page() {
-  const { imageLimit, listingLimitExceeded } =
-    await GET_ITEM_POST_RESTRAINTS().catch(() => ({
-      imageLimit: 0,
-      listingLimitExceeded: true,
-    }))
+  const { imageLimit, exceededListings } = await getItemPostRestraints()
+  if (exceededListings) throw new Error()
 
-  return <ItemPost props={{ imageLimit, listingLimitExceeded }} />
+  return <ItemPost props={{ imageLimit }} />
 }
