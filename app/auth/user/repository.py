@@ -20,20 +20,20 @@ class UserRepository:
     ) -> UserDB | None:
         return await get_one_by(db, UserDB, provider_id=provider_id)
 
-    @staticmethod
-    async def create_user(db: AsyncSession, user_in: UserInDB) -> UserDB | None:
-        try:
-            new_user = UserDB(
-                **user_in.model_dump(exclude_unset=True),
-            )
-            db.add(new_user)
-            await db.commit()
-            await db.refresh(new_user)
-            return new_user
-        except Exception as e:
-            await db.rollback()
-            print(e)
-            return None
+    # @staticmethod
+    # async def create_user(db: AsyncSession, user_in: UserInDB) -> UserDB | None:
+    #     try:
+    #         new_user = UserDB(
+    #             **user_in.model_dump(exclude_unset=True),
+    #         )
+    #         db.add(new_user)
+    #         await db.commit()
+    #         await db.refresh(new_user)
+    #         return new_user
+    #     except Exception as e:
+    #         await db.rollback()
+    #         print(e)
+    #         return None
 
     @staticmethod
     async def create_user_with_profile(
@@ -46,7 +46,7 @@ class UserRepository:
 
             new_profile = ProfileDB(
                 user_id=new_user.id,
-                extra=DEFAULT_PROFILE_EXTRA,
+                extra=DEFAULT_PROFILE_EXTRA.model_dump(),
                 **profile_in.model_dump(exclude_unset=True),
             )
             db.add(new_profile)

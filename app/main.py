@@ -41,9 +41,9 @@ app.add_middleware(
 )
 
 
-app.include_router(items_router, tags=["Items"])
-app.include_router(profiles_router, tags=["Profiles"])
-app.include_router(auth_router, tags=["Auth"])
+app.include_router(items_router)
+app.include_router(profiles_router)
+app.include_router(auth_router)
 
 app.mount("/images", StaticFiles(directory="/code/images"), name="images")
 

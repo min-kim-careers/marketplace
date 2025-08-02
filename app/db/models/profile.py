@@ -19,7 +19,9 @@ class ProfileDB(Base):
         UniqueConstraint("handle"),
     )
 
-    id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), primary_key=True, default=uuid4)
+    id: Mapped[UUID] = mapped_column(
+        PG_UUID(as_uuid=True), primary_key=True, default=uuid4
+    )
 
     email: Mapped[str] = mapped_column(nullable=False, index=True)
     handle: Mapped[str] = mapped_column(nullable=False, index=True)
@@ -46,7 +48,11 @@ class ProfileDB(Base):
 
     extra: Mapped[dict] = mapped_column(JSONB, default=dict)
 
-    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
+    user_id: Mapped[UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        unique=True,
+    )
     user: Mapped["UserDB"] = relationship(
         "UserDB", lazy="selectin", foreign_keys=[user_id]
     )

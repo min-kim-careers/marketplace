@@ -23,7 +23,7 @@ class ItemsQuery(InboundBase):
     page: int = DEFAULT_PAGINATION_PAGE
     limit: int = DEFAULT_PAGINATION_LIMIT
     user_option: Optional[ItemUserOption] = None
-    active_only: Optional[bool] = False
+    active_only: Optional[bool] = True
 
     @property
     def offset(self) -> int:

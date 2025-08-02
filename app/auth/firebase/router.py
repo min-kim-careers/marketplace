@@ -20,7 +20,7 @@ from app.auth.user.schemas.inbound import UserInDB
 from app.auth.firebase.schemas.outbound import FirebaseResponse, FirebaseUser
 from app.profile.schemas.outbound import ProfileOut
 
-firebase_router = APIRouter(prefix="/auth/firebase")
+firebase_router = APIRouter(prefix="/auth/firebase", tags=['Auth - Firebase'])
 
 
 @firebase_router.post("/session")

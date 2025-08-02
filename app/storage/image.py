@@ -1,6 +1,6 @@
 import os
 from typing import List
-import uuid
+from uuid import uuid4
 
 from fastapi import UploadFile
 
@@ -9,23 +9,25 @@ os.makedirs(IMAGE_DIR, exist_ok=True)
 os.chmod(IMAGE_DIR, 0o755)
 
 
-async def store_image(image: UploadFile) -> str:
-    filename = f"{uuid.uuid4().hex}_{image.filename}.jpeg"
-    file_path = os.path.join(IMAGE_DIR, filename)
+async def store_image(image: UploadFile) -> str | None:
+    try:
+        filename = f"{uuid4().hex}_{image.filename}.jpeg"
+        file_path = os.path.join(IMAGE_DIR, filename)
 
-    with open(file_path, "wb") as f:
-        content = await image.read()
-        f.write(content)
+        with open(file_path, "wb") as f:
+            content = await image.read()
+            f.write(content)
+        return f"/{IMAGE_DIR}/{filename}"
+    except Exception as e:
+        print("error storing images:", str(e))
 
-    print("----------------------------------", f"/{IMAGE_DIR}/{filename}")
 
-    return f"/{IMAGE_DIR}/{filename}"
-
-
-async def store_image_bulk(images: List[UploadFile]) -> List[str]:
+async def store_image_bulk(images: List[UploadFile]) -> List[str] | None:
     urls = []
     for image in images:
         url = await store_image(image)
+        if not url:
+            return
         urls += [url]
     return urls
 

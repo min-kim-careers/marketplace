@@ -21,9 +21,9 @@ from app.item.schemas.inbound import ItemInForm, ItemsQuery
 from app.item.schemas.outbound import ItemOut, ItemResponse
 from app.item.service import ItemService
 from app.profile.schemas.outbound import ProfileResponse
-from app.storage.image import remove_image_bulk, store_image_bulk
+from app.storage.image import remove_image_bulk
 
-items_router = APIRouter(prefix="/api/items")
+items_router = APIRouter(prefix="/api/items", tags=["Items"])
 
 
 @items_router.get("", response_model=ItemResponse)
@@ -48,8 +48,7 @@ async def get_item_count_for_user(
 
 
 @items_router.get("/item/{item_slug}", response_model=ProfileResponse)
-async def get_user_item_by_slug(
-    _=Depends(resolve_firebase_session),
+async def get_item_by_slug(
     item_db: ItemDB = Depends(resolve_item),
 ) -> ProfileResponse:
     return ProfileResponse(
@@ -59,7 +58,6 @@ async def get_user_item_by_slug(
 
 @items_router.delete("/item/{item_slug}", response_model=ItemResponse)
 async def delete_item_by_slug(
-    _=Depends(resolve_firebase_session),
     item_db: ItemDB = Depends(resolve_item),
     db: AsyncSession = Depends(get_db),
 ) -> ItemResponse:

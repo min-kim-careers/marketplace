@@ -60,14 +60,13 @@ async def seed_db():
         db.add_all(mock_users)
         await db.commit()
 
-        for user in mock_users:
-            profiles = [create_mock_profile(user.id) for _ in range(3)]
-            db.add_all(profiles)
-            await db.commit()
+        mock_profiles = [create_mock_profile(user.id) for user in mock_users]
+        db.add_all(mock_profiles)
+        await db.commit()
 
         for user in mock_users:
-            items = [create_mock_item(user.id) for _ in range(4)]
-            db.add_all(items)
+            mock_items = [create_mock_item(user.id) for _ in range(4)]
+            db.add_all(mock_items)
             await db.commit()
 
         print("Seeding complete.")

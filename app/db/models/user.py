@@ -24,5 +24,9 @@ class UserDB(Base):
     provider_id: Mapped[str] = mapped_column(nullable=False)
 
     profile: Mapped["ProfileDB"] = relationship(
-        "ProfileDB", lazy="selectin", back_populates="user", uselist=False
+        "ProfileDB",
+        lazy="selectin",
+        back_populates="user",
+        uselist=False,
+        passive_deletes=True,
     )
