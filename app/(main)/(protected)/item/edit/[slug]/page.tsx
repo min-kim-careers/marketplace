@@ -1,6 +1,6 @@
 'use server'
 
-import { getItemBySlug, getProfileExtra } from '@/api'
+import { getItemBySlug, getItemImageLimit } from '@/api'
 import ItemEdit from '@/components/02_content/item-edit'
 import { notFound } from 'next/navigation'
 
@@ -13,9 +13,9 @@ export default async function Page({
   if (!slug) notFound()
 
   const item = await getItemBySlug(slug)
-  if (!item) notFound()
+  if (!item) throw new Error("Item not found")
 
-  const extra = await getProfileExtra()
+  const imageLimit = await getItemImageLimit()
 
-  return <ItemEdit item={item} imageLimit={extra.imageLimit} />
+  return <ItemEdit item={item} imageLimit={imageLimit} />
 }

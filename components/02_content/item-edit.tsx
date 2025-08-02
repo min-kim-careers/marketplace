@@ -40,7 +40,7 @@ export default function ItemEdit({
   const { handleUpsertItem } = useUpsertItem()
 
   const initImageUrls = () =>
-    Array(imageLimit).map((i) =>
+    Array.from({ length: imageLimit }, (_, i) =>
       i < item.imageUrls.length ? item.imageUrls[i] : null,
     )
 
@@ -57,9 +57,7 @@ export default function ItemEdit({
     },
   })
 
-  const formWasUpdated = (
-    values: z.infer<typeof ItemFormSchema>,
-  ) => {
+  const formWasUpdated = (values: z.infer<typeof ItemFormSchema>) => {
     const conditions = [
       item.name === values.name,
       item.description === values.description,
@@ -69,20 +67,14 @@ export default function ItemEdit({
       item.postcode === values.location.postcode,
       item.suburb === values.location.suburb,
       item.state === values.location.state,
-      item.imageUrls.every(
-        (url, i) => url === values.imageUrls[i],
-      ),
+      item.imageUrls.every((url, i) => url === values.imageUrls[i]),
     ]
 
-    return conditions.some(
-      (condition: boolean) => !condition,
-    )
+    return conditions.some((condition: boolean) => !condition)
   }
 
-  async function onSubmit(
-    values: z.infer<typeof ItemFormSchema>,
-  ) {
-    if (!item.id) throw new Error('Item missing Id')
+  async function onSubmit(values: z.infer<typeof ItemFormSchema>) {
+    if (!item.id) throw new Error('missing item id')
 
     if (!formWasUpdated(values)) {
       toast('Please make a change before submitting.')
@@ -97,20 +89,14 @@ export default function ItemEdit({
       imageUrls: imageUrls.filter((u) => u !== null),
     }
 
-    await handleUpsertItem(
-      request,
-      item.id,
-      APP_ROUTES.PROFILE_LISTINGS.href,
-    )
+    await handleUpsertItem(request, item.id, APP_ROUTES.PROFILE_LISTINGS.href)
   }
 
   return (
     <Card className='flex w-full flex-col md:min-w-3xl md:flex-row'>
       <div className='flex-1'>
         <CardHeader className='pb-4'>
-          <CardTitle className='text-2xl'>
-            Edit your Ad
-          </CardTitle>
+          <CardTitle className='text-2xl'>Edit your Ad</CardTitle>
           <CardDescription>
             Fill out the form below to edit your ad.
           </CardDescription>
@@ -128,10 +114,7 @@ export default function ItemEdit({
                 <CategoryField form={form} />
                 <LocationField form={form} />
 
-                <Button
-                  type='submit'
-                  className='mt-4 w-full'
-                >
+                <Button type='submit' className='mt-4 w-full'>
                   Edit Ad
                 </Button>
               </div>
@@ -139,7 +122,7 @@ export default function ItemEdit({
           </Form>
         </CardContent>
       </div>
-      <div className='flex flex-1 items-center justify-center bg-muted rounded-xl'>
+      <div className='flex flex-1 items-center justify-center rounded-xl bg-muted'>
         <ItemImagePreview
           imageUrls={form
             .watch('imageUrls')

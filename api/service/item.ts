@@ -51,8 +51,14 @@ export const _getUserItems = async (params: ItemPageParams) => {
   }
 }
 
-export const getItemBySlug = async (itemSlug: string) =>
-  _getItemBySlug(itemSlug).then((r) => r.item)
+export const getItemBySlug = async (itemSlug: string) => {
+  try {
+    const { item } = await _getItemBySlug(itemSlug)
+    return item
+  } catch (error) {
+    console.error(error)
+  }
+}
 
 export const _deleteItem = async (itemSlug: string) => {
   try {

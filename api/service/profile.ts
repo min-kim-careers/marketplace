@@ -20,5 +20,12 @@ export const upsertProfile = async (request: UpsertProfileRequest) => {
   }
 }
 
-export const getProfileExtra = async () =>
-  _getProfileExtra().then((r) => r.extra)
+export const getItemImageLimit = async () => {
+  try {
+    const { extra } = await _getProfileExtra()
+    return extra.imageLimit
+  } catch (error) {
+    console.error(error)
+    return 0
+  }
+}
