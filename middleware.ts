@@ -5,6 +5,7 @@ import {
   isProtectedRoute,
   isPublicRoute,
 } from '@/lib/constants/app-routes'
+import { globalSignOut } from '@/lib/helpers/server/global-sign-out'
 import { hasSession } from '@/lib/helpers/server/has-session'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
@@ -25,9 +26,12 @@ export async function middleware(req: NextRequest) {
   if (isSignedIn) {
     try {
       verified = await verifySession()
-    } catch (_) {
+      if (!verified) throw new Error('invalid session, signing out...')
+    } catch (error) {
+      console.error(error)
+      await globalSignOut()
       return NextResponse.redirect(
-        new URL(APP_ROUTES.NOTFOUND.href, req.nextUrl),
+        new URL(APP_ROUTES.HOME.href, req.nextUrl),
       )
     }
   }

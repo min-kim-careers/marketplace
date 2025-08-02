@@ -10,7 +10,6 @@ import {
 import { Input } from '@/components/shadcn/components/ui/input'
 import { Label } from '@/components/shadcn/components/ui/label'
 import { Plus, Trash } from 'lucide-react'
-import Image from 'next/image'
 import { ChangeEvent } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
@@ -81,7 +80,7 @@ export default function ImageField({
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <div className='grid h-32 grid-cols-3 place-items-center gap-2 max-w-2xl'>
+            <div className='grid h-32 max-w-2xl grid-cols-3 place-items-center gap-2'>
               {form.watch(name).map((_, i) => (
                 <ImageInput form={form} index={i} key={i} />
               ))}

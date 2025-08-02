@@ -6,7 +6,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/shadcn/components/ui/carousel'
-import Image from 'next/image'
 
 export default function ItemImagePreview({
   imageUrls,

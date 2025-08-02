@@ -12,7 +12,7 @@ export default function MainLayout({
     <LoadingProvider>
       <AuthProvider>
         <div className='flex flex-col px-4'>
-          <div className='flex min-h-screen flex-col items-center py-2'>
+          <div className='flex min-h-screen flex-col items-center py-2 gap-2'>
             <Header />
             {children}
           </div>

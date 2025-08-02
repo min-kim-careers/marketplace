@@ -1,5 +1,5 @@
 import { cn } from '@/components/shadcn/lib/utils'
-import Image from 'next/image'
+import Image from 'next/legacy/image'
 
 export default function ImageContainer({
   url,

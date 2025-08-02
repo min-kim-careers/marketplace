@@ -1,8 +1,8 @@
 'use client'
 
 import { _signInWithGoogle } from '@/api/service/auth'
-import { globalSignOut } from '@/lib/helpers/server/global-sign-out'
 import { hasSession } from '@/lib/helpers/server/has-session'
+import { useSignOut } from '@/lib/hooks/use-sign-out'
 import useFirebaseStore from '@/lib/stores/firebase-store'
 import useProfileStore from '@/lib/stores/profile-store'
 import { auth } from '@/lib/utils/firebase'
@@ -12,6 +12,7 @@ import { ReactNode, useEffect, useState } from 'react'
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { profile, setProfile } = useProfileStore()
   const { user, setUser } = useFirebaseStore()
+  const { handleSignOut } = useSignOut()
 
   const [authChecked, setAuthChecked] = useState<boolean>(false)
 
@@ -20,10 +21,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const token = await user.getIdToken(true)
       const profile = await _signInWithGoogle(token)
       if (!profile) throw new Error('failed to refresh session')
-        
+
       setProfile(profile)
-    } catch (error) {
-      await auth.signOut()
+    } catch (_) {
+      await handleSignOut()
     }
   }
 
@@ -43,7 +44,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (!(await hasSession())) await refreshSession(user)
       } else {
         if (profile) setProfile(undefined)
-        if (await hasSession()) await globalSignOut()
+        if (await hasSession()) await handleSignOut()
       }
     }
 
