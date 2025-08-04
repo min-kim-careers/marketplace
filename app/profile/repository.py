@@ -1,3 +1,4 @@
+from datetime import datetime
 from uuid import UUID
 
 from sqlalchemy import select
@@ -5,9 +6,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.core import utils
-from app.profile.constants.defaults import DEFAULT_PROFILE_EXTRA
 from app.db.models.profile import ProfileDB
-from app.profile.schemas.inbound import ProfileIn, ProfileInDB
+from app.profile.constants.defaults import default_profile_extra_db
+from app.profile.schemas.inbound import ProfileIn, ProfileInCreateDB, ProfileInUpdateDB
 
 
 class ProfileRepository:
@@ -22,15 +23,15 @@ class ProfileRepository:
     @staticmethod
     async def exists_by_handle(db: AsyncSession, handle: str) -> bool:
         return await utils.get_exists_by(db, ProfileDB, handle=handle)
-    
+
     @staticmethod
     async def create(
-        db: AsyncSession, user_id: UUID, profile_in: ProfileInDB
+        db: AsyncSession, user_id: UUID, profile_in: ProfileInCreateDB
     ) -> ProfileDB | None:
         try:
             profile_db = ProfileDB(
                 user_id=user_id,
-                extra=DEFAULT_PROFILE_EXTRA,
+                extra=default_profile_extra_db(datetime.now()),
                 **profile_in.model_dump(exclude_unset=True),
             )
 
@@ -45,7 +46,7 @@ class ProfileRepository:
 
     @staticmethod
     async def update(
-        db: AsyncSession, profile_db: ProfileDB, profile_in: ProfileIn
+        db: AsyncSession, profile_db: ProfileDB, profile_in: ProfileInUpdateDB
     ) -> ProfileDB | None:
         try:
             for field, value in profile_in.model_dump(exclude_unset=True).items():

@@ -7,12 +7,13 @@ from app.auth.firebase.dependencies import resolve_firebase_session
 from app.core.schemas.error import ErrorResponse
 from app.db.models.user import UserDB
 from app.db.session import get_db
+from app.profile.dependencies import resolve_profile_in
 from app.profile.repository import ProfileRepository
 from app.profile.schemas.inbound import ProfileIn
-from app.profile.schemas.outbound import ProfileExtra, ProfileOut, ProfileResponse
+from app.profile.schemas.outbound import ProfileExtraOut, ProfileOut, ProfileResponse
 from app.profile.service import ProfileService
 
-profiles_router = APIRouter(prefix="/api/profiles", tags=['Profiles'])
+profiles_router = APIRouter(prefix="/api/profiles", tags=["Profiles"])
 
 
 @profiles_router.get("", response_model=ProfileResponse)
@@ -35,7 +36,7 @@ async def get_profile(
 
 @profiles_router.put("", response_model=ProfileResponse)
 async def upsert_profile(
-    user: UserDB = Depends(resolve_firebase_session),
+    user: UserDB = Depends(resolve_profile_in),
     profile_in: ProfileIn = Body(...),
     db: AsyncSession = Depends(get_db),
 ) -> ProfileResponse:
@@ -68,9 +69,8 @@ async def exists_by_handle(
 @profiles_router.get("/extra", response_model=ProfileResponse)
 async def get_profile_extra(
     user: UserDB = Depends(resolve_firebase_session),
-    db: AsyncSession = Depends(get_db),
 ) -> ProfileResponse:
-    extra = await ProfileService.get_profile_extra(db, user.id)
+    extra = ProfileExtraOut.model_validate(user.profile.extra)
     if not extra:
         raise ErrorResponse(status_code=404, message="Profile extra not found")
 

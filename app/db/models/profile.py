@@ -3,13 +3,12 @@ from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
 from sqlalchemy import DateTime, ForeignKey, UniqueConstraint
-from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from app.db.base import Base
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 
 if TYPE_CHECKING:
-    from app.db.models.user import UserDB
+    from app.db.models.profile_extra import ProfileExtraDB
 
 
 class ProfileDB(Base):
@@ -20,7 +19,9 @@ class ProfileDB(Base):
     )
 
     id: Mapped[UUID] = mapped_column(
-        PG_UUID(as_uuid=True), primary_key=True, default=uuid4
+        PG_UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid4,
     )
 
     email: Mapped[str] = mapped_column(nullable=False, index=True)
@@ -46,13 +47,15 @@ class ProfileDB(Base):
         nullable=False,
     )
 
-    extra: Mapped[dict] = mapped_column(JSONB, default=dict)
-
     user_id: Mapped[UUID] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
         unique=True,
     )
-    user: Mapped["UserDB"] = relationship(
-        "UserDB", lazy="selectin", foreign_keys=[user_id]
+
+    extra: Mapped["ProfileExtraDB"] = relationship(
+        "ProfileExtraDB",
+        lazy="selectin",
+        uselist=False,
+        passive_deletes=True,
     )

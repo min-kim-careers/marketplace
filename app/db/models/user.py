@@ -1,9 +1,7 @@
-from datetime import datetime, timezone
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
-from sqlalchemy import DateTime, ForeignKey, UniqueConstraint
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from app.db.base import Base
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
@@ -17,7 +15,9 @@ class UserDB(Base):
     __table_args__ = (UniqueConstraint("provider_name", "provider_id"),)
 
     id: Mapped[UUID] = mapped_column(
-        PG_UUID(as_uuid=True), primary_key=True, default=uuid4
+        PG_UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid4,
     )
 
     provider_name: Mapped[str] = mapped_column(nullable=False)
@@ -26,7 +26,6 @@ class UserDB(Base):
     profile: Mapped["ProfileDB"] = relationship(
         "ProfileDB",
         lazy="selectin",
-        back_populates="user",
         uselist=False,
         passive_deletes=True,
     )

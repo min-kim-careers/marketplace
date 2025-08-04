@@ -1,3 +1,4 @@
+from datetime import datetime
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -5,8 +6,8 @@ from app.core.utils import get_one_by
 from app.db.models.profile import ProfileDB
 from app.db.models.user import UserDB
 from app.auth.user.schemas.inbound import UserInDB
-from app.profile.constants.defaults import DEFAULT_PROFILE_EXTRA
-from app.profile.schemas.inbound import ProfileInDB
+from app.profile.constants.defaults import default_profile_extra_db
+from app.profile.schemas.inbound import ProfileInCreateDB
 
 
 class UserRepository:
@@ -37,7 +38,7 @@ class UserRepository:
 
     @staticmethod
     async def create_user_with_profile(
-        db: AsyncSession, user_in: UserInDB, profile_in: ProfileInDB
+        db: AsyncSession, user_in: UserInDB, profile_in: ProfileInCreateDB
     ) -> UserDB | None:
         try:
             new_user = UserDB(**user_in.model_dump(exclude_unset=True))
@@ -46,7 +47,7 @@ class UserRepository:
 
             new_profile = ProfileDB(
                 user_id=new_user.id,
-                extra=DEFAULT_PROFILE_EXTRA.model_dump(),
+                extra=default_profile_extra_db(datetime.now()),
                 **profile_in.model_dump(exclude_unset=True),
             )
             db.add(new_profile)

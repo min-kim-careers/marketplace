@@ -1,7 +1,9 @@
 import asyncio
+from datetime import datetime
 from uuid import UUID, uuid4
 from faker import Faker
 from sqlalchemy import select
+from app.db.models.profile_extra import ProfileExtraDB
 from app.db.models.user import UserDB
 from app.core.utils import get_one_by
 from app.db.session import get_db
@@ -31,6 +33,11 @@ def create_mock_profile(user_id: UUID) -> ProfileDB:
         suburb=fake.city(),
         state=fake.state(),
         avatar_url=fake.image_url(),
+        extra=ProfileExtraDB(
+            image_limit=3,
+            listing_limit=3,
+            next_handle_update=datetime.now(),
+        ),
     )
 
 

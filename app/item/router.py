@@ -14,8 +14,8 @@ from app.core import utils
 from app.core.schemas.error import ErrorResponse
 from app.db.models.user import UserDB
 from app.db.session import get_db
-from app.item.dependencies import resolve_item, resolve_item_slug
 from app.db.models.item import ItemDB
+from app.item.dependencies import resolve_item, resolve_item_slug
 from app.item.repository import ItemRepository
 from app.item.schemas.inbound import ItemInForm, ItemsQuery
 from app.item.schemas.outbound import ItemOut, ItemResponse
@@ -61,8 +61,7 @@ async def delete_item_by_slug(
     item_db: ItemDB = Depends(resolve_item),
     db: AsyncSession = Depends(get_db),
 ) -> ItemResponse:
-    if not await ItemRepository.delete(db, item_db):
-        raise ErrorResponse(status_code=404, message="Failed to delete item")
+    await ItemService.delete_item(db, item_db)
 
     return ItemResponse(message="Item deleted")
 
@@ -85,6 +84,8 @@ async def upsert_item(
         )
         if not new_image_urls:
             raise ErrorResponse(status_code=404, message="Image upload error")
+        else:
+            item_in.image_urls = new_image_urls
 
     new_item_db = await ItemService.upsert_item(db, user.id, item_in, item_db)
     if not new_item_db:

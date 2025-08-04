@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.schemas.error import ErrorResponse
 from app.profile.repository import ProfileRepository
-from app.profile.schemas.inbound import ProfileInDB
+from app.profile.schemas.inbound import ProfileInCreateDB
 
 
 class FirebaseService:
@@ -19,7 +19,7 @@ class FirebaseService:
                 provider_name="firebase",
                 provider_id=firebase_user.uid,
             ),
-            ProfileInDB(
+            ProfileInCreateDB(
                 email=firebase_user.email,
                 handle=create_handle(firebase_user.uid),
             ),

@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Generic, Optional, TypeVar
 
 from app.core.schemas.outbound import OutboundBase
@@ -11,9 +12,10 @@ class ProfileResponse(OutboundBase, Generic[T]):
     data: Optional[T] = None
 
 
-class ProfileExtra(OutboundBase):
+class ProfileExtraOut(OutboundBase):
     image_limit: int
     listing_limit: int
+    next_handle_update: datetime
 
 
 class ProfileOut(OutboundBase):

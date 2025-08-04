@@ -1,7 +1,11 @@
-from app.profile.schemas.outbound import ProfileExtra
+from datetime import datetime
+
+from app.db.models.profile_extra import ProfileExtraDB
 
 
-DEFAULT_PROFILE_EXTRA = ProfileExtra(
-    image_limit=3,
-    listing_limit=3,
-)
+def default_profile_extra_db(handle_update_from: datetime):
+    return ProfileExtraDB(
+        image_limit=3,
+        listing_limit=3,
+        handle_update_from=handle_update_from,
+    )

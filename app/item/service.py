@@ -9,7 +9,7 @@ from app.item.repository import ItemRepository
 from app.item.schemas.inbound import ItemInDB, ItemsQuery
 from app.item.schemas.inbound import ItemInForm
 from app.item.schemas.outbound import ItemOut, ItemResponse
-from app.storage.image import store_image_bulk
+from app.storage.image import remove_image_bulk, store_image_bulk
 from sqlalchemy.ext.asyncio import AsyncSession
 from rich import print
 
@@ -65,10 +65,19 @@ class ItemService:
                 status_code=500,
                 message="Error querying item count",
             )
-        
+
         return ItemResponse(
             data={
                 "items": [ItemOut.from_db(item) for item in items_db],
                 "count": item_count,
             },
         )
+
+    @staticmethod
+    async def delete_item(db: AsyncSession, item_db: ItemDB):
+        image_urls_copy = list(item_db.image_urls)
+
+        if not await ItemRepository.delete(db, item_db):
+            raise ErrorResponse(status_code=404, message="Failed to delete item")
+
+        remove_image_bulk(image_urls_copy)

@@ -32,13 +32,15 @@ async def store_image_bulk(images: List[UploadFile]) -> List[str] | None:
     return urls
 
 
+BASE_DIR = "/app"
+
+
 def remove_image_bulk(paths: List[str]) -> bool:
-    success = True
     for path in paths:
+        abs_path = os.path.join(BASE_DIR, path.lstrip("/"))
         try:
-            os.remove(path)
-        except FileNotFoundError:
-            pass
-        except Exception:
-            success = False
-    return success
+            os.remove(abs_path)
+        except Exception as e:
+            print(e)
+            return False
+    return True

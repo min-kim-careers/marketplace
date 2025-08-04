@@ -1,10 +1,11 @@
+from datetime import datetime, timedelta
 from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.profile.repository import ProfileRepository
-from app.profile.schemas.inbound import ProfileIn, ProfileInDB
-from app.profile.schemas.outbound import ProfileExtra, ProfileOut
+from app.profile.schemas.inbound import ProfileIn, ProfileInCreateDB, ProfileInUpdateDB
+from app.profile.schemas.outbound import ProfileExtraOut, ProfileOut
 
 
 class ProfileService:
@@ -16,10 +17,19 @@ class ProfileService:
     ):
         profile_db = await ProfileRepository.get_by_user_id(db, user_id)
         if profile_db:
-            profile_db = await ProfileRepository.update(db, profile_db, profile_in)
+            if profile_in.handle:
+                profile_db.extra.next_handle_update = datetime.now() + timedelta(days=28)
+
+            profile_db = await ProfileRepository.update(
+                db,
+                profile_db,
+                ProfileInUpdateDB.model_validate(profile_in),
+            )
         else:
             profile_db = await ProfileRepository.create(
-                db, user_id, ProfileInDB.model_validate(profile_in)
+                db,
+                user_id,
+                ProfileInCreateDB.model_validate(profile_in),
             )
 
         if not profile_db:
@@ -35,5 +45,5 @@ class ProfileService:
         profile_db = await ProfileRepository.get_by_user_id(db, user_id)
         if not profile_db:
             return None
-        
-        return ProfileExtra.model_validate(profile_db.extra)
+
+        return ProfileExtraOut.model_validate(profile_db.extra)
