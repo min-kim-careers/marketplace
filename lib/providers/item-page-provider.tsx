@@ -14,7 +14,6 @@ interface ItemPageProps {
 }
 
 interface ItemPageState extends ItemPageProps {
-  updateItemAtIndex: (index: number, item: Item) => void
   setProps: (props: Partial<ItemPageProps>) => void
 }
 
@@ -34,11 +33,6 @@ export const ItemPageProvider = ({
       params: DEFAULT_ITEM_PAGE_PARAMS,
       route: '',
       ...props,
-      updateItemAtIndex: (index: number, item: Item) => {
-        const newItems = [...get().items]
-        newItems[index] = item
-        set({ items: newItems })
-      },
       setProps: (props: Partial<ItemPageProps>) =>
         set({
           ...props,
@@ -46,10 +40,7 @@ export const ItemPageProvider = ({
     })),
   )
 
-  useEffect(
-    () => storeRef.current.setState({ ...props }),
-    [props],
-  )
+  useEffect(() => storeRef.current.setState({ ...props }), [props])
 
   return (
     <ItemPageContext.Provider value={storeRef.current}>

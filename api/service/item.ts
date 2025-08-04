@@ -36,7 +36,7 @@ export const getItems = async (
   }
 }
 
-export const _getUserItems = async (params: ItemPageParams) => {
+export const getUserItems = async (params: ItemPageParams) => {
   try {
     return await _getItems({
       page: params.page,
@@ -60,7 +60,7 @@ export const getItemBySlug = async (itemSlug: string) => {
   }
 }
 
-export const _deleteItem = async (itemSlug: string) => {
+export const deleteItem = async (itemSlug: string) => {
   try {
     await _deleteItemByUser(itemSlug)
     return true

@@ -24,11 +24,12 @@ import {
   CardTitle,
 } from '@/components/shadcn/components/ui/card'
 import { Form } from '@/components/shadcn/components/ui/form'
-import { useUpsertItem } from '@/lib/hooks/use-upsert-item'
+import { useItemHandler } from '@/lib/hooks/use-item-handler'
 import { Item } from '@/lib/types/item'
 import { toast } from 'sonner'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { _UpsertItemRequest } from '@/api/endpoints/item'
+import { useRouter } from 'next/navigation'
 
 export default function ItemEdit({
   item,
@@ -37,7 +38,8 @@ export default function ItemEdit({
   item: Item
   imageLimit: number
 }) {
-  const { handleUpsertItem } = useUpsertItem()
+  const { handleUpsert } = useItemHandler()
+  const router = useRouter()
 
   const initImageUrls = () =>
     Array.from({ length: imageLimit }, (_, i) =>
@@ -89,7 +91,9 @@ export default function ItemEdit({
       imageUrls: imageUrls.filter((u) => u !== null),
     }
 
-    await handleUpsertItem(request, item.id, APP_ROUTES.PROFILE_LISTINGS.href)
+    if (await handleUpsert(request, item.id)) {
+      router.replace(APP_ROUTES.PROFILE_LISTINGS.href)
+    }
   }
 
   return (

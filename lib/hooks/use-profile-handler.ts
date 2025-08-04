@@ -1,19 +1,17 @@
 'use client'
 
-import { upsertProfile, _UpsertProfileRequest } from '@/api/service/profile'
+import { _UpsertProfileRequest } from '@/api/endpoints'
+import { upsertProfile } from '@/api/service/profile'
 import useProfileStore from '@/lib/stores/profile-store'
-import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { useLoadingStore } from '../providers/loading-provider'
 
-export const useUpdateProfile = () => {
+export const useProfileHandler = () => {
   const { setProfile } = useProfileStore()
   const { setLoading } = useLoadingStore()
-  const router = useRouter()
 
-  const handleUpdateProfile = async (newProfile: _UpsertProfileRequest) => {
+  const handleUpsert = async (newProfile: _UpsertProfileRequest) => {
     let toastMsg = ''
-
     try {
       setLoading('Updating your profile...', true)
 
@@ -22,14 +20,16 @@ export const useUpdateProfile = () => {
 
       setProfile(profile)
       toastMsg = 'Your profile was updated successfully!'
-      router.refresh()
     } catch (error) {
+      console.error(error)
       toastMsg = `Something went wrong.`
+      return false
     } finally {
       setLoading()
       if (toastMsg) toast(toastMsg)
     }
+    return true
   }
 
-  return { handleUpdateProfile }
+  return { handleUpsert }
 }

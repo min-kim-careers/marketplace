@@ -5,7 +5,7 @@ import { ProfileUpdateForm } from '@/components/00_common/profile-form/schema'
 import { Button } from '@/components/shadcn/components/ui/button'
 import { Form } from '@/components/shadcn/components/ui/form'
 import { cn } from '@/components/shadcn/lib/utils'
-import { useUpdateProfile } from '@/lib/hooks/use-upsert-profile'
+import { useProfileHandler } from '@/lib/hooks/use-profile-handler'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -19,7 +19,7 @@ export default function ProfileUpdate({
 }) {
   const [handleConfirmed, setHandleConfirmed] =
     useState(false)
-  const { handleUpdateProfile: handleUpdateProfile } = useUpdateProfile()
+  const { handleUpsert } = useProfileHandler()
 
   const form = useForm<z.infer<typeof ProfileUpdateForm>>({
     resolver: zodResolver(ProfileUpdateForm),
@@ -31,7 +31,7 @@ export default function ProfileUpdate({
   async function onSubmit(
     values: z.infer<typeof ProfileUpdateForm>,
   ) {
-    await handleUpdateProfile({ handle: values.handle })
+    await handleUpsert({ handle: values.handle })
 
     toast('Your profile was updated successfully!')
   }

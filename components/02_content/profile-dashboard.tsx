@@ -11,7 +11,11 @@ import {
 } from '@/components/shadcn/components/ui/card'
 import useProfileStore from '@/lib/stores/profile-store'
 
-export default function ProfileDashboard() {
+export default function ProfileDashboard({
+  canUpdateHandle,
+}: {
+  canUpdateHandle: boolean
+}) {
   const { profile } = useProfileStore()
 
   if (!profile) return <Spinner />
@@ -43,7 +47,11 @@ export default function ProfileDashboard() {
         </CardContent>
       </Card>
 
-      <ProfileUpdate className='w-full' />
+      {canUpdateHandle ? (
+        <ProfileUpdate className='w-full' />
+      ) : (
+        <p>Update handle in...</p>
+      )}
     </div>
   )
 }

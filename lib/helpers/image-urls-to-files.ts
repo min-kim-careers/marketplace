@@ -1,3 +1,5 @@
+'use client'
+
 import { compressedFileFromUrl } from "@/lib/helpers/compress-image-from-url"
 
 export const imageUrlsToFiles = async (imageUrls: string[]) =>

@@ -13,6 +13,7 @@ export const _profileHandleExists = async (handle: string) =>
 export interface _ProfileExtra {
   imageLimit: number
   listingLimit: number
+  nextHandleUpdate: Date
 }
 export const _getProfileExtra = async () =>
   (await client()).get(`/api/profiles/extra`).withSession().asResult<{

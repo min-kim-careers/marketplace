@@ -7,8 +7,15 @@ import {
   _upsertProfile,
 } from '@/api/endpoints'
 
-export const profileHandleExists = async (handle: string) =>
-  _profileHandleExists(handle).then((r) => r.exists)
+export const profileHandleExists = async (handle: string) => {
+  try {
+    const { exists } = await _profileHandleExists(handle)
+    return exists
+  } catch (error) {
+    console.error(error)
+    return true
+  }
+}
 
 export type UpsertProfileRequest = _UpsertProfileRequest
 export const upsertProfile = async (request: UpsertProfileRequest) => {
@@ -27,5 +34,15 @@ export const getItemImageLimit = async () => {
   } catch (error) {
     console.error(error)
     return 0
+  }
+}
+
+export const checkCanUpdateHandle = async () => {
+  try {
+    const { extra } = await _getProfileExtra()
+    return extra.nextHandleUpdate < new Date()
+  } catch (error) {
+    console.error(error)
+    return false
   }
 }

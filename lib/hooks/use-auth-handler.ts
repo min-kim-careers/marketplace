@@ -7,11 +7,16 @@ import { signInWithPopup } from 'firebase/auth'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { FirebaseError } from 'firebase/app'
-import { _signInWithGoogle } from '@/api/service/auth'
+import { signInWithGoogle } from '@/api/service/auth'
+import useFirebaseStore from '@/lib/stores/firebase-store'
+import { globalSignOut } from '@/lib/helpers/server/global-sign-out'
+import { APP_ROUTES } from '@/lib/constants/app-routes'
 
-export const useSignIn = () => {
+export const useAuthHandler = () => {
   const { setProfile } = useProfileStore()
   const { setLoading } = useLoadingStore()
+  const { setUser } = useFirebaseStore()
+
   const router = useRouter()
 
   const handleSignIn = async () => {
@@ -23,7 +28,7 @@ export const useSignIn = () => {
 
       const token = await cred.user.getIdToken()
 
-      const profile = await _signInWithGoogle(token)
+      const profile = await signInWithGoogle(token)
       if (!profile) throw new Error()
 
       setProfile(profile)
@@ -43,5 +48,23 @@ export const useSignIn = () => {
     }
   }
 
-  return { handleSignIn }
+  const handleSignOut = async () => {
+    let toastMsg = ''
+
+    try {
+      setLoading('Signing you out...')
+      setUser()
+      await auth.signOut()
+      await globalSignOut()
+      toastMsg = `See you again!`
+      router.replace(APP_ROUTES.HOME.href)
+    } catch (error) {
+      toastMsg = `Something went wrong.`
+    } finally {
+      setLoading()
+      if (toastMsg) toast(toastMsg)
+    }
+  }
+
+  return { handleSignIn, handleSignOut }
 }

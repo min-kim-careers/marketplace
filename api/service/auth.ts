@@ -3,7 +3,7 @@
 import { _getSession, _revokeSession, _verifySession } from '@/api/endpoints'
 import { setSession } from '@/lib/helpers/server/set-session'
 
-export const _signInWithGoogle = async (token: string) => {
+export const signInWithGoogle = async (token: string) => {
   try {
     const { profile, session } = await _getSession(token)
     await setSession(session.value, session.expiry)

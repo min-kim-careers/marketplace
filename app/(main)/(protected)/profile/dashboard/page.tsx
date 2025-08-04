@@ -1,5 +1,8 @@
-import ProfileDashboard from "@/components/02_content/profile-dashboard";
+import { checkCanUpdateHandle } from '@/api'
+import ProfileDashboard from '@/components/02_content/profile-dashboard'
 
-export default function Page() {
-  return <ProfileDashboard />
+export default async function Page() {
+  const canUpdateHandle = await checkCanUpdateHandle()
+
+  return <ProfileDashboard canUpdateHandle={canUpdateHandle} />
 }

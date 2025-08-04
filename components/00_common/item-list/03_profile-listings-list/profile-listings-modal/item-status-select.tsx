@@ -5,31 +5,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/shadcn/components/ui/select'
+import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { ITEM_STATUS_COLORS } from '@/lib/constants/item-status-colors'
 import { ITEM_STATUS_LABELS } from '@/lib/constants/item-status-labels'
 import { ItemStatus } from '@/lib/enums/item-status'
-import { useUpsertItem } from '@/lib/hooks/use-upsert-item'
+import { useItemHandler } from '@/lib/hooks/use-item-handler'
 import { useItemPageStore } from '@/lib/providers/item-page-provider'
 import { Item } from '@/lib/types/item'
 import { Circle } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 export default function ItemStatusSelect({
   item,
-  index,
 }: {
   item: Item
-  index: number
 }) {
-  const { updateItemAtIndex } = useItemPageStore()
-
-  const { handleUpsertItem } = useUpsertItem()
+  const { handleUpsert } = useItemHandler()
+  const router = useRouter()
 
   const handleStatusChange = async (status: ItemStatus) => {
-    if (await handleUpsertItem({ status }, item.id))
-      updateItemAtIndex(index, {
-        ...item,
-        status,
-      })
+    if (await handleUpsert({ status }, item.id)) {
+      router.refresh()
+    }
   }
 
   return (

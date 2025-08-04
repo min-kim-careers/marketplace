@@ -41,7 +41,7 @@ export default function ProfileListingsModal({
                 <span>{item.name}</span>
               </span>
               <span className='pr-4'>
-                <ItemStatusSelect item={item} index={index} />
+                <ItemStatusSelect item={item} />
               </span>
             </DialogTitle>
             <DialogDescription className='flex gap-2'>

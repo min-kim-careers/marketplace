@@ -12,15 +12,15 @@ import {
   DropdownMenuTrigger,
 } from '@/components/shadcn/components/ui/dropdown-menu'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
+import { useAuthHandler } from '@/lib/hooks/use-auth-handler'
 import useProfileStore from '@/lib/stores/profile-store'
+import { CircleUserIcon } from 'lucide-react'
 import Link from 'next/link'
 import Spinner from '../../00_common/spinner'
-import { useSignOut } from '@/lib/hooks/use-sign-out'
-import { CircleUserIcon } from 'lucide-react'
 
 export default function Dropdown({}: {}) {
   const { profile } = useProfileStore()
-  const { handleSignOut } = useSignOut()
+  const { handleSignOut } = useAuthHandler()
 
   return (
     <DropdownMenu>

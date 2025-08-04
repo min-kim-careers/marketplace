@@ -7,6 +7,7 @@ export default {
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
     './chat/**/*.{js,ts,jsx,tsx,mdx}',
+    './lib/providers/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
   	extend: {

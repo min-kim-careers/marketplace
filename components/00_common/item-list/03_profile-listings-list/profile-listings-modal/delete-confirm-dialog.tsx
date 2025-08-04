@@ -1,4 +1,3 @@
-import { _deleteItem } from '@/api'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,12 +9,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/shadcn/components/ui/alert-dialog'
-import { APP_ROUTES } from '@/lib/constants/app-routes'
-import { useLoadingStore } from '@/lib/providers/loading-provider'
+import { useItemHandler } from '@/lib/hooks/use-item-handler'
 import { Item } from '@/lib/types/item'
 import { useRouter } from 'next/navigation'
 import { ReactNode } from 'react'
-import { toast } from 'sonner'
 
 export default function DeleteConfirmDialog({
   children,
@@ -24,22 +21,12 @@ export default function DeleteConfirmDialog({
   children: ReactNode
   item: Item
 }) {
-  const { setLoading } = useLoadingStore()
+  const { handleDelete } = useItemHandler()
   const router = useRouter()
 
-  const handleDelete = async () => {
-    let toastMsg = ''
-    try {
-      setLoading('Deleting post', true)
-      if (!(await _deleteItem(item.id))) throw new Error('failed to delete')
-
-      router.replace(APP_ROUTES.PROFILE_LISTINGS.href)
-      toastMsg = 'Successfully deleted post'
-    } catch (error) {
-      toastMsg = 'Something went wrong'
-    } finally {
-      setLoading()
-      if (toastMsg) toast(toastMsg)
+  const handleClick = async () => {
+    if (await handleDelete(item)) {
+      router.refresh()
     }
   }
 
@@ -56,7 +43,7 @@ export default function DeleteConfirmDialog({
 
         <AlertDialogFooter>
           <AlertDialogCancel>No, close this</AlertDialogCancel>
-          <AlertDialogAction onClick={handleDelete} className='bg-red-500'>
+          <AlertDialogAction onClick={handleClick} className='bg-red-500'>
             Yes, I'm sure
           </AlertDialogAction>
         </AlertDialogFooter>

@@ -1,6 +1,5 @@
 import { APP_ROUTES } from '@/lib/constants/app-routes'
-import { useSignIn } from '@/lib/hooks/use-sign-in'
-import { useSignOut } from '@/lib/hooks/use-sign-out'
+import { useAuthHandler } from '@/lib/hooks/use-auth-handler'
 import useProfileStore from '@/lib/stores/profile-store'
 import Link from 'next/link'
 import { Button } from '../../shadcn/components/ui/button'
@@ -8,8 +7,7 @@ import Dropdown from './dropdown'
 
 export default function NavBar() {
   const { profile } = useProfileStore()
-  const { handleSignIn } = useSignIn()
-  const { handleSignOut } = useSignOut()
+  const { handleSignIn, handleSignOut } = useAuthHandler()
 
   if (!profile)
     return <Button onClick={handleSignIn}>Sign in with Google</Button>
