@@ -46,4 +46,4 @@ class ProfileService:
         if not profile_db:
             return None
 
-        return ProfileExtraOut.model_validate(profile_db.extra)
+        return ProfileExtraOut.model_validate(profile_db.extra, from_attributes=True)

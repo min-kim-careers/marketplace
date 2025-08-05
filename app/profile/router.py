@@ -70,7 +70,7 @@ async def exists_by_handle(
 async def get_profile_extra(
     user: UserDB = Depends(resolve_firebase_session),
 ) -> ProfileResponse:
-    extra = ProfileExtraOut.model_validate(user.profile.extra)
+    extra = ProfileExtraOut.model_validate(user.profile.extra, from_attributes=True)
     if not extra:
         raise ErrorResponse(status_code=404, message="Profile extra not found")
 
