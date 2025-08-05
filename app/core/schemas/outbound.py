@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
 
@@ -9,3 +10,8 @@ class OutboundBase(BaseModel):
         validate_by_alias=True,
         validate_by_name=True,
     )
+
+
+class APIResponse(OutboundBase):
+    message: Optional[str] = None
+    data: Optional[dict] = None

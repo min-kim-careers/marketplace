@@ -18,18 +18,26 @@ class ProfileService:
         profile_db = await ProfileRepository.get_by_user_id(db, user_id)
         if profile_db:
             if profile_in.handle:
-                profile_db.extra.next_handle_update = datetime.now() + timedelta(days=28)
+                profile_db.extra.next_handle_update = datetime.now() + timedelta(
+                    days=28
+                )
 
             profile_db = await ProfileRepository.update(
                 db,
                 profile_db,
-                ProfileInUpdateDB.model_validate(profile_in),
+                ProfileInUpdateDB.model_validate(
+                    profile_in,
+                    from_attributes=True,
+                ),
             )
         else:
             profile_db = await ProfileRepository.create(
                 db,
                 user_id,
-                ProfileInCreateDB.model_validate(profile_in),
+                ProfileInCreateDB.model_validate(
+                    profile_in,
+                    from_attributes=True,
+                ),
             )
 
         if not profile_db:
@@ -46,4 +54,4 @@ class ProfileService:
         if not profile_db:
             return None
 
-        return ProfileExtraOut.model_validate(profile_db.extra, from_attributes=True)
+        return ProfileExtraOut.from_db(profile_db.extra)

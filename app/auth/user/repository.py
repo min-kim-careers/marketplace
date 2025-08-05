@@ -47,7 +47,7 @@ class UserRepository:
 
             new_profile = ProfileDB(
                 user_id=new_user.id,
-                extra=default_profile_extra_db(datetime.now()),
+                extra=default_profile_extra_db(),
                 **profile_in.model_dump(exclude_unset=True),
             )
             db.add(new_profile)

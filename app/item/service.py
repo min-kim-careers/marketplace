@@ -4,11 +4,12 @@ from uuid import UUID
 
 from fastapi import UploadFile
 from app.core.schemas.error import ErrorResponse
+from app.core.schemas.outbound import APIResponse
 from app.db.models.item import ItemDB
 from app.item.repository import ItemRepository
 from app.item.schemas.inbound import ItemInDB, ItemsQuery
 from app.item.schemas.inbound import ItemInForm
-from app.item.schemas.outbound import ItemOut, ItemResponse
+from app.item.schemas.outbound import ItemOut
 from app.storage.image import remove_image_bulk, store_image_bulk
 from sqlalchemy.ext.asyncio import AsyncSession
 from rich import print
@@ -52,7 +53,7 @@ class ItemService:
     ):
         item_count = await ItemRepository.get_queried_count(db, query, user_id)
         if not item_count:
-            return ItemResponse(
+            return APIResponse(
                 data={
                     "items": [],
                     "count": 0,
@@ -66,7 +67,7 @@ class ItemService:
                 message="Error querying item count",
             )
 
-        return ItemResponse(
+        return APIResponse(
             data={
                 "items": [ItemOut.from_db(item) for item in items_db],
                 "count": item_count,

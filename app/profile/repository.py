@@ -31,8 +31,10 @@ class ProfileRepository:
         try:
             profile_db = ProfileDB(
                 user_id=user_id,
-                extra=default_profile_extra_db(datetime.now()),
-                **profile_in.model_dump(exclude_unset=True),
+                extra=default_profile_extra_db(),
+                **profile_in.model_dump(
+                    exclude_unset=True,
+                ),
             )
 
             db.add(profile_db)
@@ -49,7 +51,10 @@ class ProfileRepository:
         db: AsyncSession, profile_db: ProfileDB, profile_in: ProfileInUpdateDB
     ) -> ProfileDB | None:
         try:
-            for field, value in profile_in.model_dump(exclude_unset=True).items():
+            for field, value in profile_in.model_dump(
+                exclude_unset=True,
+                exclude_none=True,
+            ).items():
                 setattr(profile_db, field, value)
 
             await db.commit()

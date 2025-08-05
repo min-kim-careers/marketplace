@@ -18,61 +18,61 @@ from app.db.models.item import ItemDB
 from app.item.dependencies import resolve_item, resolve_item_slug
 from app.item.repository import ItemRepository
 from app.item.schemas.inbound import ItemInForm, ItemsQuery
-from app.item.schemas.outbound import ItemOut, ItemResponse
+from app.item.schemas.outbound import ItemOut
 from app.item.service import ItemService
-from app.profile.schemas.outbound import ProfileResponse
+from app.core.schemas.outbound import APIResponse, APIResponse
 from app.storage.image import remove_image_bulk
 
 items_router = APIRouter(prefix="/api/items", tags=["Items"])
 
 
-@items_router.get("", response_model=ItemResponse)
+@items_router.get("", response_model=APIResponse)
 async def get_items(
     user: UserDB | None = Depends(resolve_firebase_session_optional),
     query: ItemsQuery = Depends(),
     db: AsyncSession = Depends(get_db),
-) -> ItemResponse:
+) -> APIResponse:
     return await ItemService.get_items(db, query, user.id if user else None)
 
 
-@items_router.get("/count", response_model=ProfileResponse)
+@items_router.get("/count", response_model=APIResponse)
 async def get_item_count_for_user(
     user: UserDB = Depends(resolve_firebase_session),
     db: AsyncSession = Depends(get_db),
-) -> ProfileResponse:
-    return ProfileResponse(
+) -> APIResponse:
+    return APIResponse(
         data={
             "count": await ItemRepository.get_item_count_for_user(db, user.id),
         },
     )
 
 
-@items_router.get("/item/{item_slug}", response_model=ProfileResponse)
+@items_router.get("/item/{item_slug}", response_model=APIResponse)
 async def get_item_by_slug(
     item_db: ItemDB = Depends(resolve_item),
-) -> ProfileResponse:
-    return ProfileResponse(
+) -> APIResponse:
+    return APIResponse(
         data={"item": ItemOut.from_db(item_db)},
     )
 
 
-@items_router.delete("/item/{item_slug}", response_model=ItemResponse)
+@items_router.delete("/item/{item_slug}", response_model=APIResponse)
 async def delete_item_by_slug(
     item_db: ItemDB = Depends(resolve_item),
     db: AsyncSession = Depends(get_db),
-) -> ItemResponse:
+) -> APIResponse:
     await ItemService.delete_item(db, item_db)
 
-    return ItemResponse(message="Item deleted")
+    return APIResponse(message="Item deleted")
 
 
-@items_router.put("", response_model=ItemResponse)
+@items_router.put("", response_model=APIResponse)
 async def upsert_item(
     item_in: Annotated[ItemInForm, Form()],
     user: UserDB = Depends(resolve_firebase_session),
     item_id: UUID | None = Depends(resolve_item_slug),
     db: AsyncSession = Depends(get_db),
-) -> ItemResponse:
+) -> APIResponse:
     item_db = None
     if item_id:
         item_db = await ItemRepository.get_by_item_and_user_id(db, user.id, item_id)
@@ -95,17 +95,17 @@ async def upsert_item(
 
     item = ItemOut.from_db(new_item_db)
 
-    return ItemResponse(
+    return APIResponse(
         data={"item": item},
     )
 
 
-@items_router.get("/slugs", response_model=ProfileResponse)
+@items_router.get("/slugs", response_model=APIResponse)
 async def get_items_by_slugs(
     _=Depends(resolve_firebase_session),
     item_slugs: List[str] = Query(..., alias="itemSlugs"),
     db: AsyncSession = Depends(get_db),
-) -> ProfileResponse:
+) -> APIResponse:
     item_ids = [utils.decode_slug(i) for i in item_slugs]
 
     item_dbs = await ItemRepository.get_by_items_and_user_id(db, item_ids)
@@ -119,7 +119,7 @@ async def get_items_by_slugs(
     if len(items) != len(item_ids):
         raise ErrorResponse(status_code=404, message="Error getting items by ids")
 
-    return ProfileResponse(
+    return APIResponse(
         data={
             "items": items,
         },

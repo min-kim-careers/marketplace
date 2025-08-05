@@ -1,19 +1,11 @@
 from datetime import datetime
-from typing import Generic, List, Optional, TypeVar
+from typing import List, Optional
 
 from app.core.schemas.outbound import OutboundBase
 from app.core.utils import encode_slug
 from app.db.models.item import ItemDB
 from app.item.enums import ItemCategory, ItemCondition, ItemStatus
 from app.item.helpers import format_item_date
-
-
-T = TypeVar("T")
-
-
-class ItemResponse(OutboundBase, Generic[T]):
-    message: Optional[str] = None
-    data: Optional[T] = None
 
 
 class ItemOut(OutboundBase):

@@ -17,7 +17,7 @@ def resolve_profile_in(
 ):
     if profile_in.handle:
         extra = user.profile.extra
-        if extra.next_handle_update < datetime.now():
+        if extra.next_handle_update > datetime.now():
             raise ErrorResponse(
                 status_code=404,
                 message=f"Handle cannot be updated until {extra.next_handle_update}",
