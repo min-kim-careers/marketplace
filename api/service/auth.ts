@@ -13,12 +13,22 @@ export const signInWithGoogle = async (token: string) => {
   }
 }
 
-export const verifySession = async () =>
-  _verifySession()
-    .then(() => true)
-    .catch(() => false)
+export const verifySession = async () => {
+  try {
+    _verifySession()
+    return true
+  } catch (error) {
+    console.error(error)
+    return false
+  }
+}
 
-export const revokeSession = async () =>
-  _revokeSession()
-    .then(() => true)
-    .catch(() => false)
+export const revokeSession = async () => {
+  try {
+    _revokeSession()
+    return true
+  } catch (error) {
+    console.error(error)
+    return false
+  }
+}

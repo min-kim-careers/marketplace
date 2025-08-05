@@ -3,15 +3,14 @@
 import { client } from '@/api/_utils/client'
 import { Profile } from '@/lib/types/profile'
 
-export type _GetSessionResponse = {
-  profile: Profile
-  session: { value: string; expiry: number }
-}
 export const _getSession = async (idToken: string) =>
   (await client())
     .post(`/auth/firebase/session`)
     .setBody({ idToken })
-    .asResult<_GetSessionResponse>()
+    .asResult<{
+      profile: Profile
+      session: { value: string; expiry: number }
+    }>()
 
 export const _verifySession = async () =>
   (await client())

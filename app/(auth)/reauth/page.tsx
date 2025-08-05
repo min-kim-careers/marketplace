@@ -1,5 +1,6 @@
 import Reauth from '@/components/02_content/reauth'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
+import { AuthProvider } from '@/lib/providers/auth-provider'
 
 export default async function Page({
   searchParams,
@@ -10,5 +11,9 @@ export default async function Page({
 }) {
   const next = (await searchParams).redirect || APP_ROUTES.HOME.href
 
-  return <Reauth next={next} />
+  return (
+    <AuthProvider>
+      <Reauth next={next} />
+    </AuthProvider>
+  )
 }

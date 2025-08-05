@@ -1,37 +1,38 @@
 import { verifySession } from '@/api'
 import {
   APP_ROUTES,
+  isAuthRoute,
   isFallbackRoute,
   isProtectedRoute,
   isPublicRoute,
 } from '@/lib/constants/app-routes'
-import { globalSignOut } from '@/lib/helpers/server/global-sign-out'
 import { hasSession } from '@/lib/helpers/server/has-session'
+import { toPath } from '@/lib/helpers/to-path'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname
   const headers = new Headers(req.headers)
-  // headers.set('x-current-path', req.nextUrl.pathname)
   const nextResponse = NextResponse.next({ request: { headers } })
 
   if (isFallbackRoute(path) || req.method !== 'GET') {
     return nextResponse
   }
 
-  const isSignedIn = await hasSession()
   let verified = false
+  if (await hasSession()) {
+    console.log('has session')
 
-  if (isSignedIn) {
     try {
       verified = await verifySession()
-      if (!verified) throw new Error('invalid session, signing out...')
     } catch (error) {
       console.error(error)
-      await globalSignOut()
       return NextResponse.redirect(
-        new URL(APP_ROUTES.HOME.href, req.nextUrl),
+        new URL(
+          toPath(APP_ROUTES.REAUTH.href, { redirect: path }),
+          req.nextUrl,
+        ),
       )
     }
   }
@@ -39,6 +40,10 @@ export async function middleware(req: NextRequest) {
   const isAuthenticated = !!verified
 
   if (isAuthenticated) {
+    if (isAuthRoute(path)) {
+      return NextResponse.redirect(new URL(APP_ROUTES.HOME.href, req.nextUrl))
+    }
+
     if (isProtectedRoute(path)) {
       return nextResponse
     }
@@ -49,8 +54,17 @@ export async function middleware(req: NextRequest) {
   }
 
   if (!isAuthenticated) {
+    if (isAuthRoute(path)) {
+      return nextResponse
+    }
+
     if (isProtectedRoute(path)) {
-      return NextResponse.redirect(new URL(APP_ROUTES.HOME.href, req.nextUrl))
+      return NextResponse.redirect(
+        new URL(
+          toPath(APP_ROUTES.REAUTH.href, { redirect: path }),
+          req.nextUrl,
+        ),
+      )
     }
 
     if (isPublicRoute(path)) {

@@ -3,8 +3,8 @@
 import { APP_DATA } from '@/lib/constants/app-data'
 import {
   APP_ROUTES,
-  getPathLabel,
 } from '@/lib/constants/app-routes'
+import { getPathLabel } from '@/lib/helpers/get-path-label'
 import Link from 'next/link'
 import NavBar from './nav-bar'
 import { usePathname } from 'next/navigation'
