@@ -22,8 +22,6 @@ export async function middleware(req: NextRequest) {
 
   let verified = false
   if (await hasSession()) {
-    console.log('has session')
-
     try {
       verified = await verifySession()
     } catch (error) {

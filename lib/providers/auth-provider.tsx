@@ -1,15 +1,14 @@
 'use client'
 
+import { getProfile } from '@/api'
 import { signInWithGoogle } from '@/api/service/auth'
-import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { hasSession } from '@/lib/helpers/server/has-session'
-import { toPath } from '@/lib/helpers/to-path'
 import { useAuthHandler } from '@/lib/hooks/use-auth-handler'
 import useFirebaseStore from '@/lib/stores/firebase-store'
 import useProfileStore from '@/lib/stores/profile-store'
 import { auth } from '@/lib/utils/firebase'
 import { onAuthStateChanged, User } from 'firebase/auth'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import {
   createContext,
   ReactNode,
@@ -61,6 +60,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (user) {
         if (!(await hasSession())) {
           await refreshSession(user)
+        }
+        if (!profile) {
+          setProfile(await getProfile())
         }
       }
 

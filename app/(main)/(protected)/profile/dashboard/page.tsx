@@ -1,8 +1,13 @@
-import { checkCanUpdateHandle } from '@/api'
-import ProfileDashboard from '@/components/02_content/profile-dashboard'
+import { getProfileDashboardConstraints } from '@/api'
+import ProfileDashboard from '@/components/02_page/profile-dashboard'
 
 export default async function Page() {
-  const canUpdateHandle = await checkCanUpdateHandle()
+  const constraints = await getProfileDashboardConstraints()
+  if (!constraints) throw new Error('Something went wrong...')
 
-  return <ProfileDashboard canUpdateHandle={canUpdateHandle} />
+  return (
+    <ProfileDashboard
+      constraints={constraints}
+    />
+  )
 }

@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
-import { ProfileUpdateForm } from '@/components/00_common/profile-form/schema'
+import { profileHandleExists } from '@/api'
+import LoadingDots from '@/components/00_common/loading-dots'
 import Spinner from '@/components/00_common/spinner'
 import { Button } from '@/components/shadcn/components/ui/button'
 import {
@@ -13,69 +14,60 @@ import {
 import { Input } from '@/components/shadcn/components/ui/input'
 import useProfileStore from '@/lib/stores/profile-store'
 import { CheckCheck, X } from 'lucide-react'
-import {
-  ChangeEvent,
-  Dispatch,
-  MouseEvent,
-  ReactNode,
-  SetStateAction,
-  useState,
-} from 'react'
+import { ChangeEvent, MouseEvent, ReactNode, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { toast } from 'sonner'
-import { profileHandleExists } from '@/api'
+import { ProfileUpdateFormSchema } from '@/components/00_common/profile-update-form/schema'
 
 const DefaultButtonNode = () => <>Confirm</>
 const HandleTakenButtonNode = () => <X />
 const ConfirmedButtonNode = () => <CheckCheck />
 
 export default function HandleField({
-  confirmed,
-  setConfirmed,
   form,
 }: {
-  confirmed: boolean
-  setConfirmed: Dispatch<SetStateAction<boolean>>
-  form: UseFormReturn<z.infer<typeof ProfileUpdateForm>>
+  form: UseFormReturn<z.infer<typeof ProfileUpdateFormSchema>>
 }) {
   const { profile } = useProfileStore()
 
-  if (!profile) return <Spinner />
+  if (!profile) return <LoadingDots />
 
-  const name = 'handle'
+  const name = 'handle.value'
   const label = 'Handle'
   const type = 'text'
   const placeholder = profile.handle
 
   const [input, setInput] = useState('')
   const [buttonNode, setButtonNode] = useState<ReactNode>(<DefaultButtonNode />)
-  const handleSchema = ProfileUpdateForm.pick({
-    handle: true,
-  })
 
   const {
+    setValue,
     setError,
     formState: { errors },
     clearErrors,
   } = form
+
+  const [confirmed, setConfirmed] = [
+    form.watch().handle.confirmed,
+    (c: boolean) => setValue('handle.confirmed', c),
+  ]
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
     if (confirmed) setConfirmed(false)
     setButtonNode(<DefaultButtonNode />)
 
-    const newInput = e.target.value.trim()
-    setInput(newInput)
+    const input = e.target.value.trim()
+    setInput(input)
 
-    const { success, error } = handleSchema.safeParse({
-      handle: newInput,
+    const { success, error } = ProfileUpdateFormSchema.safeParse({
+      handle: input,
     })
 
     if (!success && error) {
       setError(name, {
         message: error.errors[0]?.message,
       })
-    } else if (newInput === profile.handle) {
+    } else if (input === profile.handle) {
       setError(name, {
         message: 'Handle is unchanged',
       })
@@ -98,7 +90,6 @@ export default function HandleField({
       } else {
         setButtonNode(<ConfirmedButtonNode />)
         setConfirmed(true)
-        toast('Handle is available :)')
       }
     } catch (error) {
       console.error('Error confirming handle')

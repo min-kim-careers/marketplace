@@ -1,3 +1,4 @@
+import LoadingDots from '@/components/00_common/loading-dots'
 import {
   Avatar,
   AvatarFallback,
@@ -16,7 +17,6 @@ import { useAuthHandler } from '@/lib/hooks/use-auth-handler'
 import useProfileStore from '@/lib/stores/profile-store'
 import { CircleUserIcon } from 'lucide-react'
 import Link from 'next/link'
-import Spinner from '../../00_common/spinner'
 
 export default function Dropdown({}: {}) {
   const { profile } = useProfileStore()
@@ -31,14 +31,14 @@ export default function Dropdown({}: {}) {
             {profile ? (
               <CircleUserIcon className='h-full w-full' />
             ) : (
-              <Spinner />
+              <LoadingDots />
             )}
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent side='bottom' align='end'>
         <DropdownMenuLabel>
-          {profile ? profile.handle : <Spinner />}
+          {profile ? profile.handle : <LoadingDots />}
         </DropdownMenuLabel>
 
         <DropdownMenuSeparator />

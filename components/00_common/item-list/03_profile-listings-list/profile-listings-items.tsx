@@ -34,7 +34,7 @@ export function ProfileListingItems({
       }}
     >
       {items.map((item: Item, i) => (
-        <ProfileListingsModal key={i} item={item} index={i}>
+        <ProfileListingsModal key={i} item={item}>
           <div className='cursor-pointer'>
             <ProfileListingsCard item={item} columns={itemColumns} />
           </div>

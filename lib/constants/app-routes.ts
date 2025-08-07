@@ -12,11 +12,11 @@ export const APP_ROUTES = {
 
   PROFILE_DASHBOARD: {
     href: '/profile/dashboard',
-    label: 'My Profile',
+    label: 'Dashboard',
   },
   PROFILE_LISTINGS: {
     href: '/profile/listings',
-    label: 'My Listings',
+    label: 'Listings',
   },
 
   NOTFOUND: { href: '/404', label: 'Not Found' },

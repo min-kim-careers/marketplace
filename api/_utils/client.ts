@@ -4,6 +4,7 @@ import { APIError, APIResponse } from '@/api/endpoints/types'
 import { getSession } from '@/lib/helpers/server/get-session'
 import { toURLSearchParams } from '@/lib/helpers/to-url-search-params'
 import { envLoader } from '@/lib/utils/env-loader'
+import { cleanObject } from '@/lib/helpers/clean-object'
 
 type ApiKey = {
   header: string
@@ -46,9 +47,13 @@ class Client {
   }
 
   setBody(body: any): this {
+    const obj = cleanObject(body)
+    if (Object.keys(obj).length === 0) {
+      throw new Error("empty body")
+    }
     this.init = {
       ...this.init,
-      body: JSON.stringify(body),
+      body: JSON.stringify(cleanObject(body)),
     }
     this.addHeader({ 'content-type': 'application/json' })
     return this

@@ -21,11 +21,9 @@ import { ReactNode } from 'react'
 export default function ProfileListingsModal({
   children,
   item,
-  index,
 }: {
   children: ReactNode
   item: Item
-  index: number
 }) {
   return (
     <Dialog>
@@ -59,9 +57,11 @@ export default function ProfileListingsModal({
         </div>
 
         <DialogFooter className='items-center sm:justify-between'>
-          <span className='font-semibold'>
-            {formatCurrency(item.price.toString())}
-          </span>
+          <div className='flex items-center'>
+            <span className='rounded-lg border p-2 font-semibold'>
+              {formatCurrency(item.price.toString())}
+            </span>
+          </div>
 
           <span className='flex flex-row items-center gap-2'>
             <Link href={`${APP_ROUTES.ITEM_EDIT.href}/${item.id}`}>

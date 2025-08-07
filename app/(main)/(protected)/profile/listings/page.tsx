@@ -1,6 +1,6 @@
 'use server'
 
-import ProfileListings from '@/components/02_content/profile-listings'
+import ProfileListings from '@/components/02_page/profile-listings'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { DEFAULT_ITEM_PAGE_PARAMS } from '@/lib/constants/item-page-params'
 import { ItemSortBy } from '@/lib/enums/item-sort-by'

@@ -1,4 +1,4 @@
-import Market from '@/components/02_content/market'
+import Market from '@/components/02_page/market'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { DEFAULT_ITEM_PAGE_PARAMS } from '@/lib/constants/item-page-params'
 import { ItemSortBy } from '@/lib/enums/item-sort-by'

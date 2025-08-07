@@ -1,4 +1,4 @@
-import Reauth from '@/components/02_content/reauth'
+import Reauth from '@/components/02_page/reauth'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { AuthProvider } from '@/lib/providers/auth-provider'
 
