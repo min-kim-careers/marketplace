@@ -91,56 +91,6 @@ class ItemRepository:
             print(e)
             return 0
 
-    # @staticmethod
-    # async def get_all_by_user_id_paginated(
-    #     db: AsyncSession,
-    #     user_id: UUID,
-    #     query: ItemsQuery,
-    # ) -> Sequence[ItemDB] | None:
-    #     try:
-    #         stmt = (
-    #             select(ItemDB)
-    #             .options(selectinload(ItemDB.user))
-    #             .where(ItemDB.user_id == user_id)
-    #         )
-
-    #         stmt = ItemRepository.build_base_query(stmt, query)
-
-    #         if query.sort_by:
-    #             sort_column = getattr(ItemDB, query.sort_by.value)
-    #             if query.sort_order == ItemSortOrder.asc:
-    #                 stmt = stmt.order_by(asc(sort_column))
-    #             else:
-    #                 stmt = stmt.order_by(desc(sort_column))
-
-    #         stmt = stmt.offset(query.offset).limit(query.limit)
-    #         result = await db.execute(stmt)
-    #         return result.scalars().all()
-    #     except Exception as e:
-    #         print(e)
-    #         return None
-
-    # @staticmethod
-    # async def get_all_count_by_user_id_paginated(
-    #     db: AsyncSession,
-    #     user_id: UUID,
-    #     query: ItemsQuery,
-    # ) -> int:
-    #     try:
-    #         stmt = (
-    #             select(func.count())
-    #             .select_from(ItemDB)
-    #             .where(ItemDB.user_id == user_id)
-    #         )
-
-    #         stmt = ItemRepository.build_base_query(stmt, query)
-
-    #         result = await db.execute(stmt)
-    #         return result.scalar_one()
-    #     except Exception as e:
-    #         print(e)
-    #         return 0
-
     @staticmethod
     async def get_item_count_for_user(
         db: AsyncSession,

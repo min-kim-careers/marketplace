@@ -39,9 +39,7 @@ async def upsert_profile(
     profile_in: ProfileIn = Body(...),
     db: AsyncSession = Depends(get_db),
 ) -> APIResponse:
-    profile = await ProfileService.upsert_profile(db, user.id, profile_in)
-    if not profile:
-        raise ErrorResponse(status_code=404, message="Profile upsert error")
+    profile = await ProfileService.upsert_profile(db, user.profile, profile_in)
 
     return APIResponse(
         data={
@@ -56,11 +54,22 @@ async def exists_by_handle(
     handle: str = Path(...),
     db: AsyncSession = Depends(get_db),
 ) -> APIResponse:
-    exists = await ProfileRepository.exists_by_handle(db, handle)
-
     return APIResponse(
         data={
-            "exists": exists,
+            "exists": await ProfileRepository.exists_by_handle(db, handle),
+        },
+    )
+
+
+@profiles_router.get("/email/{email}", response_model=APIResponse)
+async def exists_by_email(
+    _=Depends(resolve_firebase_session),
+    email: str = Path(...),
+    db: AsyncSession = Depends(get_db),
+) -> APIResponse:
+    return APIResponse(
+        data={
+            "exists": await ProfileRepository.exists_by_email(db, email),
         },
     )
 

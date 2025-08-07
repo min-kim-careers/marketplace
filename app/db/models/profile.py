@@ -7,6 +7,7 @@ from sqlalchemy.orm import relationship, Mapped, mapped_column
 from app.db.base import Base
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 
+
 if TYPE_CHECKING:
     from app.db.models.profile_extra import ProfileExtraDB
 

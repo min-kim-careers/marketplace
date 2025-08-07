@@ -1,8 +1,15 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+from typing import Optional
 from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.schemas.error import ErrorResponse
+from app.db.models.profile import ProfileDB
+from app.profile.constants.defaults import (
+    DEFAULT_EMAIL_UPDATE_INTERVAL_IN_DAYS,
+    DEFAULT_HANDLE_UPDATE_INTERVAL_IN_DAYS,
+)
 from app.profile.repository import ProfileRepository
 from app.profile.schemas.inbound import ProfileIn, ProfileInCreateDB, ProfileInUpdateDB
 from app.profile.schemas.outbound import ProfileExtraOut, ProfileOut
@@ -12,17 +19,22 @@ class ProfileService:
     @staticmethod
     async def upsert_profile(
         db: AsyncSession,
-        user_id: UUID,
+        profile_db: ProfileDB,
         profile_in: ProfileIn,
+        user_id: Optional[UUID] = None,
     ):
-        profile_db = await ProfileRepository.get_by_user_id(db, user_id)
-        if profile_db:
+        new_profile_db = None
+        if not user_id:
             if profile_in.handle:
-                profile_db.extra.next_handle_update = datetime.now() + timedelta(
-                    days=28
-                )
+                profile_db.extra.next_handle_update = datetime.now(
+                    timezone.utc
+                ) + timedelta(days=DEFAULT_HANDLE_UPDATE_INTERVAL_IN_DAYS)
+            if profile_in.email:
+                profile_db.extra.next_email_update = datetime.now(
+                    timezone.utc
+                ) + timedelta(days=DEFAULT_EMAIL_UPDATE_INTERVAL_IN_DAYS)
 
-            profile_db = await ProfileRepository.update(
+            new_profile_db = await ProfileRepository.update(
                 db,
                 profile_db,
                 ProfileInUpdateDB.model_validate(
@@ -31,7 +43,7 @@ class ProfileService:
                 ),
             )
         else:
-            profile_db = await ProfileRepository.create(
+            new_profile_db = await ProfileRepository.create(
                 db,
                 user_id,
                 ProfileInCreateDB.model_validate(
@@ -40,8 +52,8 @@ class ProfileService:
                 ),
             )
 
-        if not profile_db:
-            return None
+        if not new_profile_db:
+            raise ErrorResponse(status_code=500, message="Failed to upsert profile")
 
         return ProfileOut.model_validate(profile_db, from_attributes=True)
 

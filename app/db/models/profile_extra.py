@@ -1,12 +1,12 @@
 from app.db.base import Base
 
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
 
-from datetime import datetime
+from datetime import datetime, timezone
 from uuid import UUID
 
 
@@ -21,4 +21,14 @@ class ProfileExtraDB(Base):
 
     image_limit: Mapped[int] = mapped_column(nullable=False)
     listing_limit: Mapped[int] = mapped_column(nullable=False)
-    next_handle_update: Mapped[datetime] = mapped_column(nullable=False)
+    
+    next_handle_update: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+    next_email_update: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )

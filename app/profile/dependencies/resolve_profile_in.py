@@ -8,18 +8,30 @@ from app.profile.schemas.outbound import ProfileExtraOut
 from fastapi import Body, Depends
 
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 def resolve_profile_in(
     user: UserDB = Depends(resolve_firebase_session),
     profile_in: ProfileIn = Body(...),
 ):
-    if profile_in.handle:
-        extra = user.profile.extra
-        if extra.next_handle_update > datetime.now():
-            raise ErrorResponse(
-                status_code=404,
-                message=f"Handle cannot be updated until {extra.next_handle_update}",
-            )
+    if not profile_in.model_fields_set:
+        raise ErrorResponse(
+            status_code=404,
+            message=f"Request body was empty",
+        )
+
+    extra = user.profile.extra
+
+    if profile_in.handle and extra.next_handle_update > datetime.now(timezone.utc):
+        raise ErrorResponse(
+            status_code=404,
+            message=f"Handle cannot be updated until {extra.next_handle_update}",
+        )
+
+    if profile_in.email and extra.next_email_update > datetime.now(timezone.utc):
+        raise ErrorResponse(
+            status_code=404,
+            message=f"Email cannot be updated until {extra.next_email_update}",
+        )
     return user
