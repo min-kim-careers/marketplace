@@ -66,7 +66,7 @@ class ItemService:
                 status_code=500,
                 message="Error querying item count",
             )
-
+        
         return APIResponse(
             data={
                 "items": [ItemOut.from_db(item) for item in items_db],

@@ -59,4 +59,4 @@ class ProfileOut(OutboundBase):
     # postcode: Optional[str] = None
     # suburb: Optional[str] = None
     # state: Optional[str] = None
-    # avatar_url: Optional[str] = None
+    avatar_url: Optional[str] = None
