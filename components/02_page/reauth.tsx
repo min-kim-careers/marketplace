@@ -31,7 +31,7 @@ export default function Reauth({ next }: { next: string }) {
     return (
       <div className='flex h-screen w-screen flex-1 items-center justify-center'>
         <div className='flex flex-col gap-4'>
-          <p>Reauthenticating...</p>
+          <p>Verifying...</p>
           <LoadingDots />
         </div>
       </div>

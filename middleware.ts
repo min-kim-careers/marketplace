@@ -25,7 +25,7 @@ export async function middleware(req: NextRequest) {
     try {
       verified = await verifySession()
     } catch (error) {
-      console.error(error)
+      console.error(`Middleware: ${error}`)
       return NextResponse.redirect(
         new URL(
           toPath(APP_ROUTES.REAUTH.href, { redirect: path }),

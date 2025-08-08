@@ -16,7 +16,7 @@ import { CircleUserIcon } from 'lucide-react'
 
 export default function DetailSection({ item }: { item: Item }) {
   return (
-    <div>
+    <div className='flex flex-col gap-2'>
       <div className='flex flex-row'>
         <span className='flex flex-[9] flex-col gap-3'>
           <DialogTitle className='space-x-2'>
@@ -29,7 +29,7 @@ export default function DetailSection({ item }: { item: Item }) {
             <span>
               <span>{`Updated ${item.updatedAtLabel} by `}</span>
               <span>
-                <button className='font-semibold'>{item.profileHandle}</button>
+                <button className='font-semibold'>{item.profile.handle}</button>
               </span>
             </span>
             <button className='text-sm italic text-black/40'>
@@ -37,21 +37,24 @@ export default function DetailSection({ item }: { item: Item }) {
             </button>
           </DialogDescription>
         </span>
+        
         <span className='flex flex-1 items-start justify-center pr-2'>
           <Avatar>
-            <AvatarImage src={''} />
+            <AvatarImage src={item.profile.avatarUrl} />
             <AvatarFallback>
               <CircleUserIcon className='h-full w-full' />
             </AvatarFallback>
           </Avatar>
         </span>
       </div>
+
       <div className='flex flex-1 flex-col gap-4'>
         <div className='flex-1'>{item.description}</div>
         <div className='relative flex-1 rounded'>
           <ItemImagePreview imageUrls={item.imageUrls} />
         </div>
       </div>
+
       <div className='flex items-center justify-end'>
         <span className='font-semibold border rounded-lg p-2'>
           Offered at {formatCurrency(item.price.toString())}

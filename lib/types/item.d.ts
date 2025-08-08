@@ -1,6 +1,7 @@
 import { ItemCategory } from '@/lib/enums/item-category'
 import { ItemCondition } from '@/lib/enums/item-condition'
 import { ItemStatus } from '@/lib/enums/item-status'
+import { Profile } from '@/lib/types/profile'
 
 export type Item = {
   id: string
@@ -21,5 +22,5 @@ export type Item = {
   state: string
   imageUrls: string[]
 
-  profileHandle: str
+  profile: Profile
 }

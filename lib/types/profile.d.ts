@@ -6,5 +6,5 @@ export type Profile = {
   // postcode: string
   // suburb: string
   // state: string
-  avatarUrl: string
+  avatarUrl?: string
 }

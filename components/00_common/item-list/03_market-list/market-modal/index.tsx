@@ -19,7 +19,7 @@ export default function MarketModal({
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className='max-h-[90vh] min-w-2xl overflow-auto'>
+      <DialogContent className='max-h-[90vh] overflow-auto'>
         <DetailSection item={item} />
       </DialogContent>
     </Dialog>

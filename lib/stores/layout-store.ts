@@ -5,8 +5,8 @@ interface LayoutState {
   itemColumns: number
   setItemColumns: (itemColumns: number) => void
 
-  chatSidebarOpen: boolean
-  setChatSidebarOpen: (open: boolean) => void
+  sidebarOpen: boolean
+  setSidebarOpen: (open: boolean) => void
 }
 
 const useLayoutStore = create(
@@ -17,8 +17,9 @@ const useLayoutStore = create(
           itemColumns: 1,
           setItemColumns: (itemColumns: number) => set({ itemColumns }),
 
-          chatSidebarOpen: false,
-          setChatSidebarOpen: (open: boolean) => set({ chatSidebarOpen: open }),
+          sidebarOpen: false,
+          setSidebarOpen: (open: boolean) =>
+            set({ sidebarOpen: open }),
         }
       },
       {
@@ -26,7 +27,7 @@ const useLayoutStore = create(
         partialize: (state) =>
           ({
             itemColumns: state.itemColumns,
-            chatSidebarOpen: state.chatSidebarOpen,
+            sidebarOpen: state.sidebarOpen,
           }) as LayoutState,
       },
     ),

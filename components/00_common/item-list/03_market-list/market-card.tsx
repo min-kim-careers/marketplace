@@ -50,9 +50,7 @@ export default function MarketCard({
             <div className='flex gap-1'>
               <span>{`Posted ${item.createdAtLabel} by `}</span>
               <span>
-                <button className='font-semibold'>
-                  {item.profileHandle}
-                </button>
+                <button className='font-semibold'>{item.profile.handle}</button>
               </span>
             </div>
           </CardDescription>
@@ -66,9 +64,7 @@ export default function MarketCard({
         </CardFooter>
       </div>
       {columns === 1 && (
-        <div className='flex min-w-3xs sm:min-w-xs'>
-          {renderCardImage()}
-        </div>
+        <div className='flex min-w-3xs sm:min-w-xs'>{renderCardImage()}</div>
       )}
     </Card>
   )

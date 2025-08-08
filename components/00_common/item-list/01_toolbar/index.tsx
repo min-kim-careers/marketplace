@@ -4,19 +4,19 @@ import SortDropdown from '@/components/00_common/item-list/01_toolbar/sort-dropd
 
 export default function Toolbar() {
   return (
-    <div className='flex flex-row gap-2 pt-4 pb-2'>
+    <div className='flex flex-row gap-2 pb-2 pt-4'>
       <span className='hidden flex-1 justify-start sm:flex'>
         <ColumnToggle />
       </span>
 
-      <span className='flex flex-[2] justify-center'>
+      <span className='flex flex-[1.5] justify-center'>
         <SearchInput />
       </span>
+
 
       <span className='flex flex-1 justify-end'>
         <SortDropdown />
       </span>
-
     </div>
   )
 }
