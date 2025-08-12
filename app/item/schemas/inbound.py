@@ -1,7 +1,7 @@
 from typing import List, Optional
 from uuid import UUID
 
-from fastapi import File, UploadFile
+from fastapi import File, Query, UploadFile
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 from app.core.schemas.inbound import InboundBase
@@ -17,11 +17,13 @@ from app.item.constants.defaults import *
 
 
 class ItemsQuery(InboundBase):
+    page: int = DEFAULT_PAGINATION_PAGE
+    limit: int = DEFAULT_PAGINATION_LIMIT
+
     keyword: Optional[str] = None
     sort_order: Optional[ItemSortOrder] = DEFAULT_SORT_ORDER
     sort_by: Optional[ItemSortBy] = DEFAULT_SORT_BY
-    page: int = DEFAULT_PAGINATION_PAGE
-    limit: int = DEFAULT_PAGINATION_LIMIT
+    categories: Optional[List[ItemCategory]] = Query(default=None)
     user_option: Optional[ItemUserOption] = None
     active_only: Optional[bool] = True
 

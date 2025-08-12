@@ -16,9 +16,7 @@ from app.item.schemas.inbound import (
 
 class ItemRepository:
     @staticmethod
-    def build_query(
-        stmt: Select, query: ItemsQuery, user_id: Optional[UUID] = None
-    ):
+    def build_query(stmt: Select, query: ItemsQuery, user_id: Optional[UUID] = None):
         if query.keyword:
             or_conditions = [
                 func.lower(ItemDB.name).ilike(f"%{query.keyword}%"),
@@ -45,6 +43,10 @@ class ItemRepository:
                         ItemStatus.pending,
                     ]
                 )
+            )
+        if query.categories:
+            stmt = stmt.where(
+                ItemDB.category.in_(query.categories)
             )
 
         return stmt

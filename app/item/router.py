@@ -28,8 +28,8 @@ items_router = APIRouter(prefix="/api/items", tags=["Items"])
 
 @items_router.get("", response_model=APIResponse)
 async def get_items(
+    query: Annotated[ItemsQuery, Query()],
     user: UserDB | None = Depends(resolve_firebase_session_optional),
-    query: ItemsQuery = Depends(),
     db: AsyncSession = Depends(get_db),
 ) -> APIResponse:
     return await ItemService.get_items(db, query, user.id if user else None)
