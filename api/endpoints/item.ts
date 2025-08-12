@@ -8,6 +8,7 @@ export interface _GetItemsRequest {
   keyword?: string
   sortBy?: string
   sortOrder?: string
+  categories?: string[]
   limit?: number
   userOption?: 'exclude_user' | 'user_only'
   activeOnly?: boolean

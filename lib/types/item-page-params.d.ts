@@ -3,4 +3,5 @@ export type ItemPageParams = {
   sortBy: string
   sortOrder: string
   keyword?: string
+  categories?: string[]
 }

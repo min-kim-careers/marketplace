@@ -15,7 +15,7 @@ export const signInWithGoogle = async (token: string) => {
 
 export const verifySession = async () => {
   try {
-    _verifySession()
+    await _verifySession()
     return true
   } catch (error) {
     console.error(error)
@@ -25,7 +25,7 @@ export const verifySession = async () => {
 
 export const revokeSession = async () => {
   try {
-    _revokeSession()
+    await _revokeSession()
     return true
   } catch (error) {
     console.error(error)

@@ -14,7 +14,7 @@ export default function Market({ params }: { params: ItemPageParams }) {
       <ItemPageProvider props={{ params, route: APP_ROUTES.MARKET.href }}>
         <div className='flex w-full flex-1 flex-col gap-2'>
           <Toolbar />
-          
+
           <div className='-mx-4 border-b' />
 
           <PaginationTop />

@@ -127,13 +127,12 @@ class Client {
       const resp = await fetch(this.url.toString(), this.init as RequestInit)
       if (!resp.ok) {
         const err = await resp.text() as APIError
-        console.error(err)
+        console.log(err)
         throw new Error()
       }
       return await resp.json()
     } catch (error) {
-      console.error(error)
-      throw new Error('raw result error')
+      throw new Error()
     }
   }
 
@@ -143,8 +142,7 @@ class Client {
       message && console.log('API: ', message)
       return data as T
     } catch (error) {
-      console.error(error)
-      throw new Error('error parsing response')
+      throw new Error()
     }
   }
 }

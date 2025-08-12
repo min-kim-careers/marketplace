@@ -8,12 +8,12 @@ import { Item } from '@/lib/types/item'
 import { useEffect } from 'react'
 
 export function ProfileListingItems({
-  items,
-  count,
+  props,
 }: {
-  items: Item[]
-  count: number
+  props: { items: Item[]; count: number }
 }) {
+  const { items, count } = props
+  
   const { itemColumns } = useLayoutStore()
   const { setProps } = useItemPageStore()
 

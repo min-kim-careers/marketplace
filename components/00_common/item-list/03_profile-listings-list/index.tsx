@@ -9,11 +9,5 @@ export default async function ProfileListingsList({
 }) {
   const { items, count } = await getUserItems(params)
 
-  // items.forEach((i) => {
-  //   i.imageUrls = [`/images/5eac1a2ade364be5b918b13b7a62eeeb_b6814cd7-8fcd-4693-b47e-e1d37f91d52d.jpeg`]
-  // })
-
-  // items.forEach((i) => console.log(i.imageUrls))
-
-  return <ProfileListingItems items={items} count={count} />
+  return <ProfileListingItems props={{ items, count }} />
 }

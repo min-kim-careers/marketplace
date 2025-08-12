@@ -1,7 +1,7 @@
 'use client'
 
 import { getProfile } from '@/api'
-import { signInWithGoogle } from '@/api/service/auth'
+import { signInWithGoogle, verifySession } from '@/api/service/auth'
 import { hasSession } from '@/lib/helpers/server/has-session'
 import { useAuthHandler } from '@/lib/hooks/use-auth-handler'
 import useFirebaseStore from '@/lib/stores/firebase-store'
@@ -18,7 +18,7 @@ import {
 } from 'react'
 
 interface AuthState {
-  authenticated: boolean
+  isAuthenticated: () => Promise<boolean>
   authReady: boolean
 }
 
@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const token = await user.getIdToken(true)
       const profile = await signInWithGoogle(token)
-      if (!profile) throw new Error('failed to refresh session')
+      if (!profile) throw new Error('Failed to refresh session')
 
       setProfile(profile)
     } catch (error) {
@@ -82,7 +82,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   return (
     <AuthContext.Provider
       value={{
-        authenticated: Boolean(authReady && user && profile),
+        isAuthenticated: async () =>
+          Boolean(authReady && user && profile && (await verifySession())),
         authReady,
       }}
     >

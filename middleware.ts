@@ -3,7 +3,6 @@ import {
   APP_ROUTES,
   isAuthRoute,
   isFallbackRoute,
-  isProtectedRoute,
   isPublicRoute,
 } from '@/lib/constants/app-routes'
 import { hasSession } from '@/lib/helpers/server/has-session'
@@ -16,47 +15,12 @@ export async function middleware(req: NextRequest) {
   const headers = new Headers(req.headers)
   const nextResponse = NextResponse.next({ request: { headers } })
 
-  if (isFallbackRoute(path) || req.method !== 'GET') {
+  if (isFallbackRoute(path) || req.method !== 'GET' || isAuthRoute(path)) {
     return nextResponse
   }
 
-  let verified = false
   if (await hasSession()) {
-    try {
-      verified = await verifySession()
-    } catch (error) {
-      console.error(`Middleware: ${error}`)
-      return NextResponse.redirect(
-        new URL(
-          toPath(APP_ROUTES.REAUTH.href, { redirect: path }),
-          req.nextUrl,
-        ),
-      )
-    }
-  }
-
-  const isAuthenticated = !!verified
-
-  if (isAuthenticated) {
-    if (isAuthRoute(path)) {
-      return NextResponse.redirect(new URL(APP_ROUTES.HOME.href, req.nextUrl))
-    }
-
-    if (isProtectedRoute(path)) {
-      return nextResponse
-    }
-
-    if (isPublicRoute(path)) {
-      return nextResponse
-    }
-  }
-
-  if (!isAuthenticated) {
-    if (isAuthRoute(path)) {
-      return nextResponse
-    }
-
-    if (isProtectedRoute(path)) {
+    if (!(await verifySession())) {
       return NextResponse.redirect(
         new URL(
           toPath(APP_ROUTES.REAUTH.href, { redirect: path }),
@@ -65,9 +29,11 @@ export async function middleware(req: NextRequest) {
       )
     }
 
-    if (isPublicRoute(path)) {
-      return nextResponse
-    }
+    return nextResponse
+  }
+
+  if (isPublicRoute(path)) {
+    return nextResponse
   }
 
   return NextResponse.redirect(new URL(APP_ROUTES.NOTFOUND.href, req.nextUrl))

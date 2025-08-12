@@ -1,5 +1,6 @@
 'use client'
 
+import RuleTextRule from '@/components/00_common/rule-text-rule'
 import { Button } from '@/components/shadcn/components/ui/button'
 import {
   Form,
@@ -16,11 +17,11 @@ import {
 import { cn } from '@/components/shadcn/lib/utils'
 import { ITEM_CATEGORY_LABELS } from '@/lib/constants/item-category-labels'
 import { ItemCategory } from '@/lib/enums/item-category'
+import { toPath } from '@/lib/helpers/to-path'
 import { useItemPageStore } from '@/lib/providers/item-page-provider'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Search } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -37,35 +38,29 @@ const SearchInputSchema = z.object({
 
 export default function SearchInput() {
   const router = useRouter()
-  const { params, route, setProps } = useItemPageStore()
-  const [open, setOpen] = useState(false)
-
-  const [results, setResults] = useState([])
+  const { params, route } = useItemPageStore()
 
   const form = useForm<z.infer<typeof SearchInputSchema>>({
     resolver: zodResolver(SearchInputSchema),
     defaultValues: {
       keyword: '',
-      categories: [],
+      categories: params.categories ?? [],
     },
   })
 
   const watcher = form.watch()
 
-  // const handleOnChange = () => {
-  //   setOpen(true)
-  // }
-
   const onSubmit = async (values: z.infer<typeof SearchInputSchema>) => {
-    console.log(values)
-
-    // e.preventDefault()
-    // const formData = new FormData(e.currentTarget)
-    // const keyword = formData.get('keyword') as string
-    // if (!keyword) {
-    //   delete params['keyword']
-    // }
-    // router.push(toPath(route, { ...params, keyword }))
+    const { keyword, categories } = values
+    console.log(values);
+    
+    if (!keyword) {
+      delete params.keyword
+    }
+    if (!categories) {
+      delete params.categories
+    }
+    router.push(toPath(route, { ...params, keyword, categories }))
   }
 
   return (
@@ -92,11 +87,9 @@ export default function SearchInput() {
             onOpenAutoFocus={(e) => e.preventDefault()}
             className='flex flex-col gap-4'
           >
-            <div>No results...</div>
+            <RuleTextRule text={`${watcher.categories.length} selected`} />
 
-            <div className='border-b' />
-
-            <div className='flex flex-wrap gap-2'>
+            <div className='flex flex-wrap items-center justify-center gap-2'>
               {Object.entries(ITEM_CATEGORY_LABELS).map(([k, v], i) => (
                 <button
                   className={cn(

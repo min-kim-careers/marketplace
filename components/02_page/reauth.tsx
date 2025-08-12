@@ -1,31 +1,34 @@
 'use client'
 
+import { verifySession } from '@/api'
 import LoadingDots from '@/components/00_common/loading-dots'
-import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { delay } from '@/lib/helpers/delay'
 import { useAuthContext } from '@/lib/providers/auth-provider'
+import { auth } from '@/lib/utils/firebase'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function Reauth({ next }: { next: string }) {
   const router = useRouter()
-  const { authenticated, authReady } = useAuthContext()
+  const { isAuthenticated, authReady } = useAuthContext()
+  const [authenticated, setAuthenticated] = useState(false)
 
   useEffect(() => {
     const handleAuth = async () => {
       if (!next || !authReady) return
 
-      if (authenticated) {
+      if (await isAuthenticated()) {
+        setAuthenticated(true)
         await delay(2000)
         router.replace(next)
       } else {
         await delay(2000)
-        router.replace(APP_ROUTES.HOME.href)
+        await auth.signOut()
       }
     }
 
     handleAuth()
-  }, [next, authenticated, authReady])
+  }, [next, authReady])
 
   if (!authReady)
     return (
