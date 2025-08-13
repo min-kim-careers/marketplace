@@ -1,0 +1,21 @@
+services:
+  synapse-db-service:
+    container_name: synapse-db-container
+    image: postgres:16-alpine
+    env_file: .postgres.env
+    volumes:
+      - synapse-db-data:/var/lib/postgresql/data
+
+  synapse-service:
+    container_name: synapse-container
+    image: matrixdotorg/synapse:latest
+    env_file: .synapse.env
+    depends_on:
+      - synapse-db-service
+    ports:
+      - 8008:8008
+    volumes:
+      - ./synapse-data:/data
+
+volumes:
+  synapse-db-data:

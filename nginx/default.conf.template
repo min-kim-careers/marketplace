@@ -1,0 +1,34 @@
+server {
+  listen 80;
+
+  server_name ${DOMAIN};
+
+  location / {
+    proxy_pass http://${WEB_SERVICE};
+    proxy_set_header Host $host;
+  }
+
+  location /api {
+    proxy_pass http://${API_SERVICE};
+    proxy_set_header Host $host;
+  }
+
+  location /api/chat {
+    proxy_pass http://${API_SERVICE};
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "Upgrade";
+  }
+
+  location /images {
+    alias /app/images/;
+    add_header Access-Control-Allow-Origin *;
+  }
+
+  location /_matrix {
+    proxy_pass http://${SYNAPSE_SERVICE};
+    proxy_set_header Host $host;
+  }
+
+
+}

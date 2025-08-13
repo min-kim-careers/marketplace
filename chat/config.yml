@@ -1,0 +1,9 @@
+services:
+  synapse-generate:
+    image: matrixdotorg/synapse:latest
+    command: generate
+    env_file: .synapse.env
+    volumes:
+      - ./synapse-data:/data
+    stdin_open: true
+    tty: true
