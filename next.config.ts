@@ -16,16 +16,12 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'placekitten.com'
+      },
+      {
+        protocol: 'http',
+        hostname: '192.168.8.103'
       }
     ],
-  },
-  async rewrites() {
-    return [
-      {
-        source: '/images/:path*',
-        destination: 'http://api-service:8000/images/:path*',
-      },
-    ];
   },
 }
 
