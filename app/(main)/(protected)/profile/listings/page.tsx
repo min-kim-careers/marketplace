@@ -1,7 +1,7 @@
 'use server'
 
 import { ItemPageParamsSchema } from '@/lib/schemas/item-page-params-schema'
-import ProfileListings from '@/components/02_page/profile-listings'
+import ProfileListings from '@/app/(main)/(protected)/profile/listings'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { DEFAULT_ITEM_PAGE_PARAMS } from '@/lib/constants/item-page-params'
 import { toPath } from '@/lib/helpers/to-path'

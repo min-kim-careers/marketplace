@@ -1,7 +1,7 @@
 'use server'
 
 import { getItemPostRestraints } from '@/api'
-import ItemPost from '@/components/02_page/item-post'
+import ItemPost from '@/app/(main)/(protected)/item/post'
 
 export default async function Page() {
   const { imageLimit, exceededListings } = await getItemPostRestraints()

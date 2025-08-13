@@ -1,6 +1,6 @@
 'use client'
 
-import LoadingDots from '@/components/00_common/loading-dots'
+import LoadingDots from '@/components/loading-dots'
 import { cn } from '@/components/shadcn/lib/utils'
 import { PropsWithChildren } from 'react'
 import { create } from 'zustand'

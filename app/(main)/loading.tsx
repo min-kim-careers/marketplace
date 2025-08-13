@@ -1,4 +1,4 @@
-import PageFallback from "@/components/00_common/page-fallback";
+import PageFallback from "@/components/page-fallback";
 
 export default function Loading() {
   return <PageFallback />

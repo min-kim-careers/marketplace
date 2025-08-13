@@ -1,5 +1,5 @@
-import Header from '@/components/01_header'
-import Footer from '@/components/03_footer'
+import Header from '@/components/header'
+import Footer from '@/components/footer'
 import LoadingProvider from '@/lib/providers/loading-provider'
 import { AuthProvider } from '@/lib/providers/auth-provider'
 

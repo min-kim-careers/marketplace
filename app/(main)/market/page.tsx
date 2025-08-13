@@ -1,4 +1,4 @@
-import Market from '@/components/02_page/market'
+import Market from '@/app/(main)/market'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { DEFAULT_ITEM_PAGE_PARAMS } from '@/lib/constants/item-page-params'
 import { toPath } from '@/lib/helpers/to-path'

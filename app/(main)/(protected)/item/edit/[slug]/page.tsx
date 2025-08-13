@@ -1,7 +1,7 @@
 'use server'
 
 import { getItemBySlug, getItemImageLimit } from '@/api'
-import ItemEdit from '@/components/02_page/item-edit'
+import ItemEdit from '@/app/(main)/(protected)/item/edit/[slug]'
 import { notFound } from 'next/navigation'
 
 export default async function Page({
