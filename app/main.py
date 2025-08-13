@@ -13,12 +13,13 @@ from app.db.session import init_db
 from app.item.router import items_router
 from app.profile.router import profiles_router
 from app.auth.router import auth_router
+from app.chat.router import chat_router
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     initialize_firebase_admin()
-    
+
     await init_db()
     await seed_db()
     yield
@@ -44,8 +45,9 @@ app.add_middleware(
 app.include_router(items_router)
 app.include_router(profiles_router)
 app.include_router(auth_router)
+app.include_router(chat_router)
 
-app.mount("/images", StaticFiles(directory="/code/images"), name="images")
+# app.mount("/images", StaticFiles(directory="/code/images"), name="images")
 
 
 @app.exception_handler(RequestValidationError)

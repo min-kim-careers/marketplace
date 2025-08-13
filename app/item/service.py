@@ -66,10 +66,19 @@ class ItemService:
                 status_code=500,
                 message="Error querying item count",
             )
-        
+
+        items = [ItemOut.from_db(item) for item in items_db]
+
+        # Combine db image urls with hostname
+        for i in items:
+            urls_with_host = []
+            for url in i.image_urls:
+                urls_with_host += [f"http://192.168.8.103{url}"]
+            i.image_urls = urls_with_host
+
         return APIResponse(
             data={
-                "items": [ItemOut.from_db(item) for item in items_db],
+                "items": items,
                 "count": item_count,
             },
         )
