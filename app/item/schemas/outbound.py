@@ -22,9 +22,7 @@ class ItemOut(OutboundBase):
     suburb: str
     state: str
     created_at: datetime
-    created_at_label: str
     updated_at: datetime
-    updated_at_label: str
     expires_at: Optional[datetime] = None
     image_urls: List[str]
 
@@ -39,8 +37,6 @@ class ItemOut(OutboundBase):
                     item.user.profile, from_attributes=True
                 ),
                 "id": encode_slug(item.id),
-                "updated_at_label": format_item_date(item.updated_at),
-                "created_at_label": format_item_date(item.created_at),
             },
             from_attributes=True,
         )
