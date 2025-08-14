@@ -3,7 +3,9 @@ server {
 
   server_name ${DOMAIN};
 
+
   location / {
+    access_log off;
     proxy_pass http://${WEB_SERVICE};
     proxy_set_header Host $host;
   }
@@ -13,8 +15,8 @@ server {
     proxy_set_header Host $host;
   }
 
-  location /api/chat {
-    proxy_pass http://${API_SERVICE};
+  location /chat/ws {
+    proxy_pass http://${API_SERVICE}/api/chat/ws;
     proxy_http_version 1.1;
     proxy_set_header Upgrade $http_upgrade;
     proxy_set_header Connection "Upgrade";
@@ -30,5 +32,16 @@ server {
     proxy_set_header Host $host;
   }
 
+  location /__/auth/ {
+    add_header Cross-Origin-Opener-Policy "same-origin-allow-popups";
 
+    proxy_pass https://${FIREBASE_APP}.firebaseapp.com/__/auth/;
+  }
+
+  location /_next/webpack-hmr {
+    proxy_pass http://${WEB_SERVICE}/_next/webpack-hmr;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+  }
 }
