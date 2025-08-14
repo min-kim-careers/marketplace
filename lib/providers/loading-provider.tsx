@@ -28,7 +28,7 @@ export default function LoadingProvider({ children }: PropsWithChildren) {
     <div
       className={cn(
         'fixed inset-0 z-[100] flex h-full w-screen flex-col items-center justify-center gap-2 bg-white transition-all duration-200 ease-in-out',
-        isOpaque && 'bg-black bg-opacity-75 text-white',
+        isOpaque && 'bg-black bg-opacity-50 text-white',
       )}
     >
       {message && <p>{message}</p>}

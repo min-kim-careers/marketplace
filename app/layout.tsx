@@ -1,8 +1,8 @@
 import '@/app/globals.css'
-import 'sonner/dist/styles.css';
 import { APP_DATA } from '@/lib/constants/app-data'
 import type { Metadata } from 'next'
-import { Toaster } from 'sonner';
+import { Toaster } from 'sonner'
+import 'sonner/dist/styles.css'
 
 export const metadata: Metadata = {
   title: APP_DATA.TITLE,
@@ -19,7 +19,7 @@ export default function RootLayout({
         <div className='font-[family-name:var(--font-geist-sans)]'>
           {children}
         </div>
-        <Toaster position='top-center'/>
+        <Toaster position='top-center' />
       </body>
     </html>
   )

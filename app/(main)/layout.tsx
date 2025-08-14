@@ -1,7 +1,9 @@
-import Header from '@/components/header'
+import Chat from '@/components/chat'
 import Footer from '@/components/footer'
-import LoadingProvider from '@/lib/providers/loading-provider'
+import Header from '@/components/header'
 import { AuthProvider } from '@/lib/providers/auth-provider'
+import { ChatProvider } from '@/lib/providers/chat-provider'
+import LoadingProvider from '@/lib/providers/loading-provider'
 
 export default function MainLayout({
   children,
@@ -12,12 +14,15 @@ export default function MainLayout({
     <LoadingProvider>
       <AuthProvider>
         <div className='flex flex-col px-4'>
-          <div className='flex min-h-screen flex-col items-center py-2 gap-2'>
+          <div className='flex min-h-screen flex-col gap-2 py-2'>
             <Header />
             {children}
           </div>
           <Footer />
         </div>
+        <ChatProvider>
+          <Chat />
+        </ChatProvider>
       </AuthProvider>
     </LoadingProvider>
   )

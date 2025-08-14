@@ -1,4 +1,4 @@
-'use server'
+import 'server-only'
 
 import { client } from '@/api/_utils/client'
 import { Profile } from '@/lib/types/profile'

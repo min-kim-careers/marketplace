@@ -11,9 +11,5 @@ export default async function MarketList({
 }) {
   const { items, count } = await getItems(params, await hasSession())
 
-  return (
-    <ChatProvider>
-      <MarketItems props={{ items, count }} />
-    </ChatProvider>
-  )
+  return <MarketItems props={{ items, count }} />
 }
