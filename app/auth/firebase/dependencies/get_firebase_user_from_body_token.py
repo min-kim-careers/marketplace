@@ -7,7 +7,7 @@ from firebase_admin import auth
 from firebase_admin.exceptions import FirebaseError
 
 
-async def get_firebase_user_from_token(
+async def get_firebase_user_from_body_token(
     id_token: str | None = Body(default=None, embed=True, alias="idToken"),
 ) -> FirebaseUser:
     if not id_token:

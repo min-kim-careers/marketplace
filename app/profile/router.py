@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.auth.firebase.dependencies import resolve_firebase_session
 from app.core.schemas.error import ErrorResponse
 from app.core.schemas.outbound import APIResponse
+from app.core.security import verify_service_key
 from app.db.models.user import UserDB
 from app.db.session import get_db
 from app.profile.dependencies import resolve_profile_in
@@ -12,7 +13,11 @@ from app.profile.schemas.inbound import ProfileIn
 from app.profile.schemas.outbound import ProfileExtraOut, ProfileOut
 from app.profile.service import ProfileService
 
-profiles_router = APIRouter(prefix="/api/profiles", tags=["Profiles"])
+profiles_router = APIRouter(
+    prefix="/api/profiles",
+    tags=["Profiles"],
+    dependencies=[Depends(verify_service_key)],
+)
 
 
 @profiles_router.get("", response_model=APIResponse)

@@ -12,6 +12,7 @@ from app.auth.firebase.dependencies import (
 )
 from app.core import utils
 from app.core.schemas.error import ErrorResponse
+from app.core.security import verify_service_key
 from app.db.models.user import UserDB
 from app.db.session import get_db
 from app.db.models.item import ItemDB
@@ -23,7 +24,11 @@ from app.item.service import ItemService
 from app.core.schemas.outbound import APIResponse, APIResponse
 from app.storage.image import remove_image_bulk
 
-items_router = APIRouter(prefix="/api/items", tags=["Items"])
+items_router = APIRouter(
+    prefix="/api/items",
+    tags=["Items"],
+    dependencies=[Depends(verify_service_key)],
+)
 
 
 @items_router.get("", response_model=APIResponse)

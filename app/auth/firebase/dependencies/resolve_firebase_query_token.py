@@ -1,4 +1,4 @@
-from app.auth.firebase.dependencies.get_firebase_user_from_token import get_firebase_user_from_token
+from app.auth.firebase.dependencies import get_firebase_user_from_query_token
 from app.auth.firebase.schemas.outbound import FirebaseUser
 from app.auth.user.repository import UserRepository
 from app.core.schemas.error import ErrorResponse
@@ -10,8 +10,8 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-async def resolve_firebase_token(
-    firebase_user: FirebaseUser = Depends(get_firebase_user_from_token),
+async def resolve_firebase_query_token(
+    firebase_user: FirebaseUser = Depends(get_firebase_user_from_query_token),
     db: AsyncSession = Depends(get_db),
 ) -> UserDB:
     user = await UserRepository.get_user_by_provider_id(db, firebase_user.uid)

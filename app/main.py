@@ -7,7 +7,6 @@ from fastapi.staticfiles import StaticFiles
 
 from app.auth.firebase.config import initialize_firebase_admin
 from app.tests.mocks import seed_db
-from app.core.security import verify_service_key
 
 from app.db.session import init_db
 from app.item.router import items_router
@@ -28,7 +27,6 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     lifespan=lifespan,
     debug=False,
-    dependencies=[Depends(verify_service_key)],
 )
 
 app.add_middleware(

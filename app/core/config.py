@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -24,6 +25,9 @@ class EnvLoader(BaseSettings):
     SERVICE_KEY_HEADER: str
 
     SESSION_HEADER: str
+
+    SYNAPSE_URL: str
+    SYNAPSE_SHARED_SECRET: str
 
     model_config = SettingsConfigDict(
         env_file=".env",

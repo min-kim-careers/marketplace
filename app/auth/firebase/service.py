@@ -5,6 +5,7 @@ from app.auth.user.schemas.inbound import UserInDB
 from firebase_admin import auth
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.chat.service import ChatService
 from app.core.schemas.error import ErrorResponse
 from app.profile.repository import ProfileRepository
 from app.profile.schemas.inbound import ProfileInCreateDB
@@ -24,8 +25,22 @@ class FirebaseService:
                 handle=create_handle(firebase_user.uid),
             ),
         )
+
         if not new_user:
             auth.delete_user(firebase_user.uid)
-            raise ErrorResponse(status_code=500, message="Error creating new user with profile")
+            raise ErrorResponse(
+                status_code=500, message="Error creating new user with profile"
+            )
+
+        chat_user = await ChatService.register_user(
+            str(new_user.id),
+            str(new_user.id),
+        )
+
+        if not chat_user:
+            auth.delete_user(firebase_user.uid)
+            raise ErrorResponse(
+                status_code=500, message="Error creating chat user"
+            )
 
         return new_user

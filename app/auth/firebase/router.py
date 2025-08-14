@@ -7,11 +7,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth.firebase.dependencies import (
     get_firebase_user_from_session,
-    get_firebase_user_from_token,
+    get_firebase_user_from_body_token,
     resolve_firebase_session,
-    resolve_firebase_token,
+    resolve_firebase_body_token,
 )
 from app.auth.firebase.service import FirebaseService
+from app.chat.service import ChatService
 from app.core.schemas.error import ErrorResponse
 from app.core.schemas.outbound import APIResponse
 from app.db.session import get_db
@@ -21,13 +22,13 @@ from app.auth.user.schemas.inbound import UserInDB
 from app.auth.firebase.schemas.outbound import FirebaseUser
 from app.profile.schemas.outbound import ProfileOut
 
-firebase_router = APIRouter(prefix="/auth/firebase", tags=['Auth - Firebase'])
+firebase_router = APIRouter(prefix="/auth/firebase", tags=["Auth - Firebase"])
 
 
 @firebase_router.post("/session")
 async def get_session(
     id_token: str = Body(..., embed=True, alias="idToken"),
-    firebase_user: FirebaseUser = Depends(get_firebase_user_from_token),
+    firebase_user: FirebaseUser = Depends(get_firebase_user_from_body_token),
     db: AsyncSession = Depends(get_db),
 ) -> APIResponse:
     user = await UserRepository.get_user_by_provider_id(db, firebase_user.uid)
@@ -69,6 +70,6 @@ async def revoke_session(
 
 @firebase_router.post("/token/verify")
 async def verify_token(
-    _=Depends(resolve_firebase_token),
+    _=Depends(resolve_firebase_body_token),
 ) -> APIResponse:
     return APIResponse(message="Token verified")

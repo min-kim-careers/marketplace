@@ -58,6 +58,9 @@ services:
 
       - SESSION_HEADER=__session
 
+      - SYNAPSE_URL=http://synapse-service:8008
+      - SYNAPSE_SHARED_SECRET=REDACTED
+
     env_file:
       - .env
       - .env.firebase
