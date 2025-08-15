@@ -5,7 +5,6 @@ services:
     environment:
       - SYNAPSE_SERVER_NAME=localhost
       - SYNAPSE_REPORT_STATS=no
-      - SYNAPSE_LOG_LEVEL=WARNING
     ports:
       - 8008:8008
     volumes:

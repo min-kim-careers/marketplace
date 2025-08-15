@@ -39,6 +39,8 @@ server {
   }
 
   location /_next/webpack-hmr {
+    access_log off;
+
     proxy_pass http://${WEB_SERVICE}/_next/webpack-hmr;
     proxy_http_version 1.1;
     proxy_set_header Upgrade $http_upgrade;

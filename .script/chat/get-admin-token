@@ -1,0 +1,9 @@
+#!/bin/bash
+
+docker exec -it synapse-container -c 'curl -X POST "http://localhost:8008/_matrix/client/r0/login" \
+  -H "Content-Type: application/json" \
+  -d '{ \
+    "type": "m.login.password", \
+    "user": "admin", \
+    "password": "admin" \
+  }'
