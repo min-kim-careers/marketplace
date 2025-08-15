@@ -11,20 +11,9 @@ import {
   useState,
 } from 'react'
 
-interface ChatState {
-  socket: WebSocket | null
-  messages: any[]
-  send: (message: string) => void
-}
-
-const ChatContext = createContext<ChatState | null>(null)
-
-export const ChatProvider = ({ children }: { children: ReactNode }) => {
-  const wsRef = useRef<WebSocket | null>(null)
-  const [token, setToken] = useState<string | null>(null)
+const useLoadToken = () => {
   const { user } = useFirebaseStore()
-  const [messages, setMessages] = useState<any[]>([])
-
+  const [token, setToken] = useState<string | null>(null)
   useEffect(() => {
     const loadToken = async () => {
       if (!token && user) {
@@ -36,18 +25,42 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     loadToken()
   }, [user])
 
+  return { token }
+}
+
+interface ChatState {
+  socket: WebSocket | null
+  messages: any[]
+  send: (message: string) => void
+  setRoomId: (id: string) => void
+}
+
+const ChatContext = createContext<ChatState | null>(null)
+
+export const ChatProvider = ({ children }: { children: ReactNode }) => {
+  const token = useLoadToken()
+  const [roomId, setRoomId] = useState<string | null>(null)
+
+  const wsRef = useRef<WebSocket | null>(null)
+  const [messages, setMessages] = useState<any[]>([])
+
   useEffect(() => {
-    if (token) {
-      wsRef.current = new WebSocket(toPath('ws://localhost/chat/ws', { token }))
+    if (token && roomId) {
+      wsRef.current = new WebSocket(
+        toPath('ws://localhost/chat/ws', { token, roomId }),
+      )
       const ws = wsRef.current
 
       ws.onopen = () => console.log('Connected to WebSocket')
       ws.onclose = () => console.log('Disconnected from WebSocket')
-      ws.onmessage = (e) => setMessages((prev) => [...prev, JSON.parse(e.data)])
+      ws.onmessage = (e) => {
+        setMessages((prev) => [...prev, JSON.parse(e.data)])
+        console.log('Restored messages')
+      }
     }
 
     return () => wsRef.current?.close()
-  }, [token])
+  }, [token, roomId])
 
   return (
     <ChatContext.Provider
@@ -55,9 +68,10 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         socket: wsRef.current,
         messages,
         send: (message: string) => wsRef.current?.send(JSON.stringify(message)),
+        setRoomId
       }}
     >
-      {children}
+      {wsRef.current && children}
     </ChatContext.Provider>
   )
 }

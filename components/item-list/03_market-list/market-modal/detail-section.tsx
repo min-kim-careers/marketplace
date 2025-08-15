@@ -1,21 +1,43 @@
+import { getRoomSlug } from '@/api/service/chat'
 import ItemImagePreview from '@/components/item-image-preview'
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from '@/components/shadcn/components/ui/avatar'
+import { Button } from '@/components/shadcn/components/ui/button'
 import {
   DialogDescription,
-  DialogTitle
+  DialogTitle,
 } from '@/components/shadcn/components/ui/dialog'
 import { ITEM_CONDITION_LABELS } from '@/lib/constants/item-condition-labels'
 import { ItemCondition } from '@/lib/enums/item-condition'
 import { formatDate } from '@/lib/helpers/format-date'
 import { formatCurrency } from '@/lib/helpers/format-price'
+import { useChatContext } from '@/lib/providers/chat-provider'
+import { useLoadingStore } from '@/lib/providers/loading-provider'
 import { Item } from '@/lib/types/item'
 import { CircleUserIcon } from 'lucide-react'
+import { toast } from 'sonner'
 
 export default function DetailSection({ item }: { item: Item }) {
+  const { setRoomId } = useChatContext()
+  const { setLoading } = useLoadingStore()
+
+  const handleChatButton = async () => {
+    try {
+      setLoading('Connecting to chat room', true)
+      const roomSlug = await getRoomSlug(item.profile.handle)
+      if (!roomSlug) throw new Error()
+
+      setRoomId(roomSlug)
+    } catch (error) {
+      toast('Something went wrong')
+    } finally {
+      setLoading()
+    }
+  }
+
   return (
     <div className='flex flex-col gap-2'>
       <div className='flex flex-row'>
@@ -38,7 +60,7 @@ export default function DetailSection({ item }: { item: Item }) {
             </button> */}
           </DialogDescription>
         </span>
-        
+
         <span className='flex flex-1 items-start justify-center pr-2'>
           <Avatar>
             <AvatarImage src={item.profile.avatarUrl} />
@@ -56,8 +78,10 @@ export default function DetailSection({ item }: { item: Item }) {
         </div>
       </div>
 
-      <div className='flex items-center justify-end'>
-        <span className='font-semibold border rounded-lg p-2'>
+      <div className='flex items-center justify-between gap-2'>
+        <Button onClick={handleChatButton}>Chat</Button>
+
+        <span className='rounded-lg border p-2 font-semibold'>
           Offered at {formatCurrency(item.price.toString())}
         </span>
       </div>

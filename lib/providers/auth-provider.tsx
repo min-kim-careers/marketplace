@@ -77,7 +77,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     handleAuth()
-  }, [authReady, user, profile, pathname])
+  }, [authReady, user, pathname])
 
   return (
     <AuthContext.Provider
