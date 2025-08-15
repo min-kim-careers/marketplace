@@ -12,7 +12,8 @@ from app.db.models.item import ItemDB
 from app.db.models.profile import ProfileDB
 import random
 
-from app.profile.constants.defaults import DEFAULT_PROFILE_EXTRA
+from app.profile.constants.defaults import default_profile_extra
+
 
 fake = Faker(locale="en_AU")
 
@@ -35,7 +36,7 @@ def create_mock_profile(user_id: UUID) -> ProfileDB:
         suburb=fake.city(),
         state=fake.state(),
         avatar_url=fake.image_url(),
-        extra=DEFAULT_PROFILE_EXTRA,
+        extra=default_profile_extra(),
     )
 
 
@@ -54,6 +55,7 @@ def create_mock_item(user_id: UUID) -> ItemDB:
         # image_urls=[fake.image_url() for _ in range(random.randint(0, 3))],
     )
 
+
 async def seed_extras():
     async for db in get_db():
         profiles = list((await db.execute(select(ProfileDB))).scalars().all())
@@ -71,13 +73,11 @@ async def seed_extras():
         print("Extra seeding complete.")
 
 
-
 async def seed_db():
     async for db in get_db():
         res = await db.execute(select(ProfileDB))
         if res.first():
             return
-
 
         mock_users = [create_mock_user() for _ in range(5)]
         db.add_all(mock_users)

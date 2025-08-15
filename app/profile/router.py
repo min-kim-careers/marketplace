@@ -12,6 +12,7 @@ from app.profile.repository import ProfileRepository
 from app.profile.schemas.inbound import ProfileIn
 from app.profile.schemas.outbound import ProfileExtraOut, ProfileOut
 from app.profile.service import ProfileService
+from rich import print
 
 profiles_router = APIRouter(
     prefix="/api/profiles",

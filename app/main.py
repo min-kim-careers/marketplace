@@ -13,6 +13,7 @@ from app.item.router import items_router
 from app.profile.router import profiles_router
 from app.auth.router import auth_router
 from app.chat.router import chat_router
+from app.chat.websocket import chat_ws_router
 
 
 @asynccontextmanager
@@ -44,6 +45,7 @@ app.include_router(items_router)
 app.include_router(profiles_router)
 app.include_router(auth_router)
 app.include_router(chat_router)
+app.include_router(chat_ws_router)
 
 # app.mount("/images", StaticFiles(directory="/code/images"), name="images")
 

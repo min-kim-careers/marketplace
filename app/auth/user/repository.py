@@ -6,7 +6,7 @@ from app.core.utils import get_one_by
 from app.db.models.profile import ProfileDB
 from app.db.models.user import UserDB
 from app.auth.user.schemas.inbound import UserInDB
-from app.profile.constants.defaults import DEFAULT_PROFILE_EXTRA
+from app.profile.constants.defaults import default_profile_extra
 from app.profile.schemas.inbound import ProfileInCreateDB
 
 
@@ -46,9 +46,9 @@ class UserRepository:
             await db.flush()
 
             new_profile = ProfileDB(
-                user_id=new_user.id,
-                extra=DEFAULT_PROFILE_EXTRA,
                 **profile_in.model_dump(exclude_unset=True),
+                user_id=new_user.id,
+                extra=default_profile_extra(),
             )
             db.add(new_profile)
 

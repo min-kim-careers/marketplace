@@ -7,7 +7,8 @@ from sqlalchemy.orm import selectinload
 
 from app.core import utils
 from app.db.models.profile import ProfileDB
-from app.profile.constants.defaults import DEFAULT_PROFILE_EXTRA
+from app.db.models.profile_extra import ProfileExtraDB
+from app.profile.constants.defaults import default_profile_extra
 from app.profile.schemas.inbound import ProfileIn, ProfileInCreateDB, ProfileInUpdateDB
 
 
@@ -23,7 +24,7 @@ class ProfileRepository:
     @staticmethod
     async def exists_by_handle(db: AsyncSession, handle: str) -> bool:
         return await utils.get_exists_by(db, ProfileDB, handle=handle)
-    
+
     @staticmethod
     async def exists_by_email(db: AsyncSession, email: str) -> bool:
         return await utils.get_exists_by(db, ProfileDB, email=email)
@@ -34,11 +35,11 @@ class ProfileRepository:
     ) -> ProfileDB | None:
         try:
             profile_db = ProfileDB(
-                user_id=user_id,
-                extra=DEFAULT_PROFILE_EXTRA,
                 **profile_in.model_dump(
                     exclude_unset=True,
                 ),
+                user_id=user_id,
+                extra=default_profile_extra()
             )
 
             db.add(profile_db)
