@@ -5,7 +5,7 @@ import {
   DialogTrigger,
 } from '@/components/shadcn/components/ui/dialog'
 import { Item } from '@/lib/types/item'
-import { ReactNode, useState } from 'react'
+import { ReactNode } from 'react'
 
 export default function MarketModal({
   children,
@@ -14,8 +14,6 @@ export default function MarketModal({
   children: ReactNode
   item: Item
 }) {
-  const [open, setOpen] = useState(false)
-
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>

@@ -1,4 +1,5 @@
-import { getRoomSlug } from '@/api/service/chat'
+import { getRoomId } from '@/api/service/chat'
+import DateFormatter from '@/components/date-formatter'
 import ItemImagePreview from '@/components/item-image-preview'
 import {
   Avatar,
@@ -12,7 +13,6 @@ import {
 } from '@/components/shadcn/components/ui/dialog'
 import { ITEM_CONDITION_LABELS } from '@/lib/constants/item-condition-labels'
 import { ItemCondition } from '@/lib/enums/item-condition'
-import { formatDate } from '@/lib/helpers/format-date'
 import { formatCurrency } from '@/lib/helpers/format-price'
 import { useChatContext } from '@/lib/providers/chat-provider'
 import { useLoadingStore } from '@/lib/providers/loading-provider'
@@ -26,11 +26,10 @@ export default function DetailSection({ item }: { item: Item }) {
 
   const handleChatButton = async () => {
     try {
-      setLoading('Connecting to chat room', true)
-      const roomSlug = await getRoomSlug(item.profile.handle)
-      if (!roomSlug) throw new Error()
-
-      setRoomId(roomSlug)
+      setLoading('Loading chat room...')
+      const roomId = await getRoomId(item.profile.handle, item.id)
+      if (!roomId) throw new Error()
+      setRoomId(roomId)
     } catch (error) {
       toast('Something went wrong')
     } finally {
@@ -50,14 +49,11 @@ export default function DetailSection({ item }: { item: Item }) {
           </DialogTitle>
           <DialogDescription className='flex gap-2'>
             <span>
-              <span>{`Updated ${formatDate(item.updatedAt)} by `}</span>
               <span>
+                Updated <DateFormatter date={item.updatedAt} /> by{' '}
                 <button className='font-semibold'>{item.profile.handle}</button>
               </span>
             </span>
-            {/* <button className='text-sm italic text-black/40'>
-              Report this user
-            </button> */}
           </DialogDescription>
         </span>
 

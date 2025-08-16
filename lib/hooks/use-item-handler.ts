@@ -23,7 +23,7 @@ export const useItemHandler = (): ItemHandlerState => {
     let toastMsg = ''
 
     try {
-      setLoading(`${isUpdate ? 'Updating' : 'Posting'} your item`, true)
+      setLoading(`${isUpdate ? 'Updating' : 'Posting'} your item`)
 
       if (request.imageUrls) {
         request.uploadImages = await imageUrlsToFiles(request.imageUrls)
@@ -48,7 +48,7 @@ export const useItemHandler = (): ItemHandlerState => {
   const handleDelete = async (item: Item) => {
     let toastMsg = ''
     try {
-      setLoading('Deleting post', true)
+      setLoading('Deleting post')
 
       if (!(await deleteItem(item.id))) {
         throw new Error('failed to delete')

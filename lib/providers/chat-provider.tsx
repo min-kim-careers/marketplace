@@ -1,10 +1,16 @@
 'use client'
 
+import Chat from '@/components/chat'
+import { handleChatPayload } from '@/lib/handlers/chat-message-handlers'
 import { toPath } from '@/lib/helpers/to-path'
 import useFirebaseStore from '@/lib/stores/firebase-store'
+import { ChatMessage } from '@/lib/types/chat-message'
+import { ChatPayload } from '@/lib/types/chat-payload'
 import {
   createContext,
+  Dispatch,
   ReactNode,
+  SetStateAction,
   useContext,
   useEffect,
   useRef,
@@ -25,14 +31,14 @@ const useLoadToken = () => {
     loadToken()
   }, [user])
 
-  return { token }
+  return token
 }
 
 interface ChatState {
   socket: WebSocket | null
-  messages: any[]
+  messages: ChatMessage[]
   send: (message: string) => void
-  setRoomId: (id: string) => void
+  setRoomId: Dispatch<SetStateAction<string | null>>
 }
 
 const ChatContext = createContext<ChatState | null>(null)
@@ -42,20 +48,22 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const [roomId, setRoomId] = useState<string | null>(null)
 
   const wsRef = useRef<WebSocket | null>(null)
-  const [messages, setMessages] = useState<any[]>([])
+  const [messages, setMessages] = useState<ChatMessage[]>([])
 
   useEffect(() => {
     if (token && roomId) {
       wsRef.current = new WebSocket(
         toPath('ws://localhost/chat/ws', { token, roomId }),
       )
-      const ws = wsRef.current
 
+      const ws = wsRef.current
       ws.onopen = () => console.log('Connected to WebSocket')
       ws.onclose = () => console.log('Disconnected from WebSocket')
       ws.onmessage = (e) => {
-        setMessages((prev) => [...prev, JSON.parse(e.data)])
-        console.log('Restored messages')
+        const payload = JSON.parse(e.data) as ChatPayload
+        console.log(payload)
+
+        handleChatPayload(payload, { setMessages })
       }
     }
 
@@ -68,10 +76,11 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         socket: wsRef.current,
         messages,
         send: (message: string) => wsRef.current?.send(JSON.stringify(message)),
-        setRoomId
+        setRoomId,
       }}
     >
-      {wsRef.current && children}
+      {children}
+      {token && roomId && <Chat />}
     </ChatContext.Provider>
   )
 }

@@ -7,32 +7,31 @@ import { create } from 'zustand'
 
 interface LoadingState {
   message?: string
-  isOpaque: boolean
   isLoading: () => boolean
-  setLoading: (message?: string, isOpaque?: boolean) => void
+  setLoading: (message?: string) => void
 }
 
 export const useLoadingStore = create<LoadingState>((set, get) => ({
-  isOpaque: false,
   isLoading: () => Boolean(get().message),
-  setLoading: (message?: string, isOpaque: boolean = false) =>
-    set({ message, isOpaque }),
+  setLoading: (message?: string) => set({ message }),
 }))
 
 export default function LoadingProvider({ children }: PropsWithChildren) {
-  const { message, isOpaque } = useLoadingStore()
-
-  if (!message) return children
+  const { message } = useLoadingStore()
 
   return (
-    <div
-      className={cn(
-        'fixed inset-0 z-[100] flex h-full w-screen flex-col items-center justify-center gap-2 bg-white transition-all duration-200 ease-in-out',
-        isOpaque && 'bg-black bg-opacity-50 text-white',
+    <>
+      {message && (
+        <div
+          className={cn(
+            'fixed inset-0 z-[100] flex h-full w-screen flex-col items-center justify-center gap-2 bg-white/50 transition-all duration-200 ease-in-out',
+          )}
+        >
+          {message && <p>{message}</p>}
+          <LoadingDots />
+        </div>
       )}
-    >
-      {message && <p>{message}</p>}
-      <LoadingDots className={cn(isOpaque && 'bg-white')} />
-    </div>
+      {children}
+    </>
   )
 }

@@ -1,3 +1,4 @@
+import DateFormatter from '@/components/date-formatter'
 import ImageContainer from '@/components/image-container'
 import {
   Card,
@@ -8,7 +9,6 @@ import {
   CardTitle,
 } from '@/components/shadcn/components/ui/card'
 import { ITEM_STATUS_COLORS } from '@/lib/constants/item-status-colors'
-import { formatDate } from '@/lib/helpers/format-date'
 import { formatCurrency } from '@/lib/helpers/format-price'
 import { Item } from '@/lib/types/item'
 import { Circle } from 'lucide-react'
@@ -54,7 +54,9 @@ export default function ProfileListingsCard({
           </CardTitle>
           <CardDescription className='line-clamp-1'>
             <div className='flex gap-1'>
-              <span>{`Posted ${formatDate(item.createdAt)} `}</span>
+              <span>
+                Posted <DateFormatter date={item.createdAt} />
+              </span>
             </div>
           </CardDescription>
         </CardHeader>

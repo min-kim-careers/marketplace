@@ -13,7 +13,7 @@ export const useProfileHandler = () => {
   const handleUpsert = async (newProfile: _UpsertProfileRequest) => {
     let toastMsg = ''
     try {
-      setLoading('Updating your profile...', true)
+      setLoading('Updating your profile...')
 
       const profile = await upsertProfile(newProfile)
       if (!profile) throw new Error('error updating profile')

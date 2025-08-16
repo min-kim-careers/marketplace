@@ -17,25 +17,15 @@ import { useAuthHandler } from '@/lib/hooks/use-auth-handler'
 import useProfileStore from '@/lib/stores/profile-store'
 import { CircleUserIcon } from 'lucide-react'
 import Link from 'next/link'
+import { PropsWithChildren } from 'react'
 
-export default function Dropdown({}: {}) {
+export default function Dropdown({ children }: PropsWithChildren) {
   const { profile } = useProfileStore()
   const { handleSignOut } = useAuthHandler()
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        <Avatar>
-          <AvatarImage src={profile?.avatarUrl} />
-          <AvatarFallback>
-            {profile ? (
-              <CircleUserIcon className='h-full w-full' />
-            ) : (
-              <LoadingDots />
-            )}
-          </AvatarFallback>
-        </Avatar>
-      </DropdownMenuTrigger>
+      <DropdownMenuTrigger>{children}</DropdownMenuTrigger>
       <DropdownMenuContent side='bottom' align='end'>
         <DropdownMenuLabel>
           {profile ? profile.handle : <LoadingDots />}
@@ -51,9 +41,7 @@ export default function Dropdown({}: {}) {
           <Link href={APP_ROUTES.PROFILE_LISTINGS.href}>Listings</Link>
         </DropdownMenuItem>
 
-        <DropdownMenuItem onClick={handleSignOut}>
-          Sign Out
-        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleSignOut}>Sign Out</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )

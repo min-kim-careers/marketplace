@@ -13,15 +13,14 @@ export default function MainLayout({
   return (
     <LoadingProvider>
       <AuthProvider>
-        <div className='flex flex-col px-4'>
-          <div className='flex min-h-screen flex-col gap-2 py-2'>
-            <Header />
-            {children}
-          </div>
-          <Footer />
-        </div>
         <ChatProvider>
-          <Chat />
+          <div className='flex flex-col px-4'>
+            <div className='flex min-h-screen flex-col gap-2 py-2'>
+              <Header />
+              {children}
+            </div>
+            <Footer />
+          </div>
         </ChatProvider>
       </AuthProvider>
     </LoadingProvider>

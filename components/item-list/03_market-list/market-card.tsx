@@ -1,3 +1,4 @@
+import DateFormatter from '@/components/date-formatter'
 import ImageContainer from '@/components/image-container'
 import {
   Card,
@@ -7,7 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/shadcn/components/ui/card'
-import { formatDate } from '@/lib/helpers/format-date'
 import { formatCurrency } from '@/lib/helpers/format-price'
 import { Item } from '@/lib/types/item'
 
@@ -49,8 +49,8 @@ export default function MarketCard({
           </CardTitle>
           <CardDescription className='line-clamp-1'>
             <div className='flex gap-1'>
-              <span>{`Posted ${formatDate(item.createdAt)} by `}</span>
               <span>
+                Posted <DateFormatter date={item.createdAt} /> by{' '}
                 <button className='font-semibold'>{item.profile.handle}</button>
               </span>
             </div>
