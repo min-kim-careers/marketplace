@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.auth.firebase.config import initialize_firebase_admin
+from app.core import logger
 from app.tests.mocks import seed_db
 
 from app.db.session import init_db
@@ -52,8 +53,8 @@ app.include_router(chat_ws_router)
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
-    print(request.url)
-    print(exc.errors())  # prints full error list including loc arrays
+    logger.info(request.url)
+    logger.info(exc.errors())  # prints full error list including loc arrays
     # return ErrorResponse(
     #     status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
     #     message=exc.errors()

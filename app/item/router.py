@@ -16,7 +16,7 @@ from app.core.security import verify_service_key
 from app.db.models.user import UserDB
 from app.db.session import get_db
 from app.db.models.item import ItemDB
-from app.item.dependencies import resolve_item, resolve_item_slug
+from app.item.dependencies import resolve_item, resolve_item_slug_query
 from app.item.repository import ItemRepository
 from app.item.schemas.inbound import ItemInForm, ItemsQuery
 from app.item.schemas.outbound import ItemOut
@@ -75,7 +75,7 @@ async def delete_item_by_slug(
 async def upsert_item(
     item_in: Annotated[ItemInForm, Form()],
     user: UserDB = Depends(resolve_firebase_session),
-    item_id: UUID | None = Depends(resolve_item_slug),
+    item_id: UUID | None = Depends(resolve_item_slug_query),
     db: AsyncSession = Depends(get_db),
 ) -> APIResponse:
     item_db = None

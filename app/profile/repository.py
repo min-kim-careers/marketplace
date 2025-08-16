@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.core import utils
+from app.core import logger, utils
 from app.db.models.profile import ProfileDB
 from app.db.models.profile_extra import ProfileExtraDB
 from app.profile.constants.defaults import default_profile_extra
@@ -48,7 +48,7 @@ class ProfileRepository:
             return profile_db
         except Exception as e:
             await db.rollback()
-            print(e)
+            logger.info(e)
             return None
 
     @staticmethod
@@ -67,5 +67,5 @@ class ProfileRepository:
             return profile_db
         except Exception as e:
             await db.rollback()
-            print(e)
+            logger.info(e)
             return None

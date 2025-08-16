@@ -1,4 +1,5 @@
 from app.auth.firebase.schemas.outbound import FirebaseUser
+from app.core import logger
 from app.core.schemas.error import ErrorResponse
 
 
@@ -24,17 +25,17 @@ async def get_firebase_user_from_body_token(
             picture=token_data["picture"],
         )
 
-        # print(f"UID: {firebase_user.uid} verified, Email: {firebase_user.email}")
+        # logger.info(f"UID: {firebase_user.uid} verified, Email: {firebase_user.email}")
 
         return firebase_user
     except FirebaseError as e:
-        print(f"Id token verification failed: {e}")
+        logger.info(f"Id token verification failed: {e}")
         raise ErrorResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,
             message=f"Invalid or expired id token: {e}",
         )
     except Exception as e:
-        print(f"Unexpected error during id token verification: {e}")
+        logger.info(f"Unexpected error during id token verification: {e}")
         raise ErrorResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             message="Internal server error during authentication.",

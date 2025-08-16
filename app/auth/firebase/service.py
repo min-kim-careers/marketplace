@@ -32,15 +32,12 @@ class FirebaseService:
                 status_code=500, message="Error creating new user with profile"
             )
 
-        chat_user = await ChatService.register_user(
-            str(new_user.id),
-            str(new_user.id),
+        chat_user = await ChatService.register_new_user(
+            new_user.id,
         )
 
         if not chat_user:
             auth.delete_user(firebase_user.uid)
-            raise ErrorResponse(
-                status_code=500, message="Error creating chat user"
-            )
+            raise ErrorResponse(status_code=500, message="Error creating chat user")
 
         return new_user

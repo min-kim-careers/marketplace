@@ -3,6 +3,7 @@ from typing import List, Optional
 from uuid import UUID
 
 from fastapi import UploadFile
+from app.core import logger
 from app.core.schemas.error import ErrorResponse
 from app.core.schemas.outbound import APIResponse
 from app.db.models.item import ItemDB
@@ -39,10 +40,10 @@ class ItemService:
 
         new_item_db = None
         if item_db:
-            print("Updating...")
+            logger.info("Updating...")
             new_item_db = await ItemRepository.update(db, item_db, item_in_db)
         else:
-            print("Creating...")
+            logger.info("Creating...")
             new_item_db = await ItemRepository.create(db, user_id, item_in_db)
 
         return new_item_db

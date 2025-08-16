@@ -1,21 +1,31 @@
 from typing import Dict, List
-from fastapi import APIRouter, Depends, Path
-import httpx
+from uuid import UUID
 
-from app.auth.firebase.dependencies import resolve_firebase_query_token
+import httpx
+from app.auth.firebase.dependencies import (
+    resolve_firebase_query_token,
+    resolve_firebase_session,
+)
+from app.chat.dependencies.resolve_peer_user import resolve_peer_user
 from app.chat.repository import ChatRepository
+from app.chat.schemas.inbound import ChatRoomInDB
 from app.chat.service import ChatService
+from app.chat.websocket import chat_ws_router
+from app.core import logger
 from app.core.config import env_loader
 from app.core.schemas.error import ErrorResponse
 from app.core.schemas.outbound import APIResponse
 from app.core.security import verify_service_key
 from app.core.utils import encode_slug
+from app.db.models.profile import ProfileDB
 from app.db.models.user import UserDB
-from app.chat.websocket import chat_ws_router
 from app.db.session import get_db
-from app.profile.repository import ProfileRepository
+from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+from rich import print
 
+from app.item.dependencies import resolve_item_slug_query
+from app.item.dependencies.resolve_item_path import resolve_item_slug_path
 
 chat_router = APIRouter(
     prefix="/api/chat",
@@ -23,60 +33,57 @@ chat_router = APIRouter(
     dependencies=[Depends(verify_service_key)],
 )
 
-# class ConnectionManager:
-#     def __init__(self) -> None:
-#         self.rooms: Dict[str, List[WebSocket]] = {}
 
-#     async def connect(self, room_id: str, websocket: WebSocket):
-#         await websocket.accept()
-#         self.rooms.setdefault(room_id, []).append(websocket)
-
-#     def disconnect(self, room_id: str, websocket: WebSocket):
-#         self.rooms[room_id].remove(websocket)
-#         if not self.rooms[room_id]:
-#             del self.rooms[room_id]
-
-#     async def broadcast(self, room_id: str, message: str):
-#         for conn in self.rooms.get(room_id, []):
-#             await conn.send_text(message)
-
-
-# manager = ConnectionManager()
-
-
-async def resolve_peer_user(
-    peer_handle: str = Path(..., alias="peerHandle"),
-    db: AsyncSession = Depends(get_db),
-):
-    peer = await ProfileRepository.get_by_handle(db, peer_handle)
-    if not peer:
-        raise ErrorResponse(status_code=401, message="peer handle not found")
-    return peer
-
-
-@chat_router.post("/peerHandle/{peerHandle}")
+@chat_router.post("/peer/{peerHandle}/item/{itemSlug}")
 async def get_room_slug(
-    user: UserDB = Depends(resolve_firebase_query_token),
-    peer: UserDB = Depends(resolve_peer_user),
+    user: UserDB = Depends(resolve_firebase_session),
+    peer_id: UUID = Depends(resolve_peer_user),
+    item_id: UUID = Depends(resolve_item_slug_path),
     db: AsyncSession = Depends(get_db),
 ):
-    room = await ChatRepository.get_room_by_user_and_peer(db, user.id, peer.id)
+    room = await ChatRepository.get_room_by_user_and_peer(db, user.id, peer_id)
 
     room_slug = None
     if not room:
-        access_token = await ChatService.get_access_token(str(user.id), str(user.id))
-        room_id = await ChatService.create_room(access_token)
+        room_id = await ChatService.create_room_with_users(user.id, peer_id)
         if not room_id:
-            raise ErrorResponse(message="failed to get room id")
-        room = await ChatRepository.create(db, room_id, user_ids=[user.id, peer.id])
+            raise ErrorResponse(message="failed to create room with users")
+
+        room = await ChatRepository.create(
+            db,
+            ChatRoomInDB(
+                room_id=room_id,
+                item_id=item_id,
+                user_ids=[user.id, peer_id],
+            ),
+        )
+
         if not room:
             delete_id = await ChatService.delete_room(room_id)
             raise ErrorResponse(
                 message=(
                     "failed to create db room"
-                    + ("" if delete_id else "and delete synapse room")
+                    + ("" if delete_id else " and delete synapse room")
                 )
             )
+        logger.info(f"Room {room_id} added to DB")
 
     room_slug = encode_slug(room.id)
     return APIResponse(data={"roomSlug": room_slug})
+
+
+@chat_router.get("/messages/unread/count")
+async def get_unread_messages_count(
+    user: UserDB = Depends(resolve_firebase_session),
+):
+    access_token = await ChatService.get_access_token(user.id)
+    if not access_token:
+        raise ErrorResponse(message="failed to get access token")
+    sync_data = await ChatService.sync_data(access_token)
+    if not sync_data:
+        raise ErrorResponse(message="failed to get sync data")
+    total_unread = sum(
+        room["unread_notifications"]["notification_count"]
+        for room in sync_data["rooms"]["join"].values()
+    )
+    return APIResponse(data={"count": total_unread})

@@ -1,5 +1,6 @@
 from typing import Sequence
 from uuid import UUID
+from app.core import logger
 from app.core.utils import get_one_by
 from app.db.models.rating import RatingDB
 
@@ -37,7 +38,7 @@ class RatingRepository:
             return result.scalars().all()
         except Exception as e:
             await db.rollback()
-            print(e)
+            logger.info(e)
             return None
 
     @staticmethod
@@ -56,7 +57,7 @@ class RatingRepository:
             return rating_db
         except Exception as e:
             await db.rollback()
-            print(e)
+            logger.info(e)
             return None
 
     @staticmethod
@@ -72,5 +73,5 @@ class RatingRepository:
             return rating_db
         except Exception as e:
             await db.rollback()
-            print(e)
+            logger.info(e)
             return None

@@ -5,6 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_
 from fastapi import Path
 
+from app.core import logger
+
 
 async def get_one_by(db: AsyncSession, model, **filters) -> Any | None:
     try:
@@ -14,7 +16,7 @@ async def get_one_by(db: AsyncSession, model, **filters) -> Any | None:
         result = await db.execute(stmt)
         return result.scalar_one_or_none()
     except Exception as e:
-        print(e)
+        logger.info(e)
         return None
     
 async def get_exists_by(db: AsyncSession, model, **filters) -> bool:
@@ -25,7 +27,7 @@ async def get_exists_by(db: AsyncSession, model, **filters) -> bool:
         result = await db.execute(stmt)
         return result.scalar_one_or_none() is not None
     except Exception as e:
-        print(e)
+        logger.info(e)
         return False
 
 def encode_slug(u: UUID) -> str:

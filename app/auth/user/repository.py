@@ -2,6 +2,7 @@ from datetime import datetime
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core import logger
 from app.core.utils import get_one_by
 from app.db.models.profile import ProfileDB
 from app.db.models.user import UserDB
@@ -33,7 +34,7 @@ class UserRepository:
     #         return new_user
     #     except Exception as e:
     #         await db.rollback()
-    #         print(e)
+    #         logger.info(e)
     #         return None
 
     @staticmethod
@@ -57,7 +58,7 @@ class UserRepository:
             return new_user
         except Exception as e:
             await db.rollback()
-            print(e)
+            logger.info(e)
             return None
 
     @staticmethod
@@ -68,5 +69,5 @@ class UserRepository:
             return True
         except Exception as e:
             await db.rollback()
-            print(e)
+            logger.info(e)
             return False

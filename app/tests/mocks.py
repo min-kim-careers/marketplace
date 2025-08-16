@@ -3,6 +3,7 @@ from datetime import datetime
 from uuid import UUID, uuid4
 from faker import Faker
 from sqlalchemy import select
+from app.core import logger
 from app.db.models.profile_extra import ProfileExtraDB
 from app.db.models.user import UserDB
 from app.core.utils import get_one_by
@@ -70,7 +71,7 @@ async def seed_extras():
         db.add_all(extras)
         await db.commit()
 
-        print("Extra seeding complete.")
+        logger.info("Extra seeding complete.")
 
 
 async def seed_db():
@@ -92,7 +93,7 @@ async def seed_db():
             db.add_all(mock_items)
             await db.commit()
 
-        print("Seeding complete.")
+        logger.info("Seeding complete.")
 
 
 async def seed_user_items(email, count):
@@ -108,7 +109,7 @@ async def seed_user_items(email, count):
         ]
         db.add_all(items)
         await db.commit()
-        print("User items seeded.")
+        logger.info("User items seeded.")
 
 
 if __name__ == "__main__":

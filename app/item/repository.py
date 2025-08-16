@@ -5,6 +5,7 @@ from sqlalchemy import Select, String, and_, asc, cast, desc, func, or_, select,
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.core import logger
 from app.core.utils import get_one_by
 from app.item.schemas.inbound import ItemInDB
 from app.item.enums import ItemSortOrder, ItemStatus, ItemUserOption
@@ -73,7 +74,7 @@ class ItemRepository:
             result = await db.execute(stmt)
             return result.scalars().all()
         except Exception as e:
-            print(e)
+            logger.info(e)
             return None
 
     @staticmethod
@@ -90,7 +91,7 @@ class ItemRepository:
             result = await db.execute(stmt)
             return result.scalar_one()
         except Exception as e:
-            print(e)
+            logger.info(e)
             return 0
 
     @staticmethod
@@ -108,7 +109,7 @@ class ItemRepository:
             result = await db.execute(stmt)
             return result.scalar_one()
         except Exception as e:
-            print(e)
+            logger.info(e)
             return 0
 
     @staticmethod
@@ -138,7 +139,7 @@ class ItemRepository:
             result = await db.execute(stmt)
             return result.scalars().all()
         except Exception as e:
-            print(e)
+            logger.info(e)
             return []
 
     @staticmethod
@@ -159,7 +160,7 @@ class ItemRepository:
             return item_db
         except Exception as e:
             await db.rollback()
-            print(e)
+            logger.info(e)
             return None
 
     @staticmethod
@@ -180,7 +181,7 @@ class ItemRepository:
             return item_db
         except Exception as e:
             await db.rollback()
-            print(e)
+            logger.info(e)
             return None
 
     @staticmethod
@@ -194,5 +195,5 @@ class ItemRepository:
             return True
         except Exception as e:
             await db.rollback()
-            print(e)
+            logger.info(e)
             return False

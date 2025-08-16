@@ -7,7 +7,7 @@ from fastapi import Query
 from uuid import UUID
 
 
-def resolve_item_slug(
+def resolve_item_slug_query(
     item_slug: str = Query(None, alias="itemSlug"),
 ) -> UUID | None:
     if not item_slug:
