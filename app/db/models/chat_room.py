@@ -33,25 +33,25 @@ class ChatRoomDB(Base):
     item_id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True), ForeignKey("items.id"), nullable=False
     )
+    user_1_id: Mapped[UUID] = mapped_column(
+        PG_UUID(as_uuid=True), ForeignKey("users.id"), nullable=False
+    )
+
+    user_2_id: Mapped[UUID] = mapped_column(
+        PG_UUID(as_uuid=True), ForeignKey("users.id"), nullable=False
+    )
+
     item: Mapped["ItemDB"] = relationship(
         "ItemDB",
         foreign_keys=[item_id],
         lazy="selectin",
         uselist=False,
     )
-
-    user_1_id: Mapped[UUID] = mapped_column(
-        PG_UUID(as_uuid=True), ForeignKey("users.id"), nullable=False
-    )
     user_1: Mapped["UserDB"] = relationship(
         "UserDB",
         foreign_keys=[user_1_id],
         lazy="selectin",
         uselist=False,
-    )
-
-    user_2_id: Mapped[UUID] = mapped_column(
-        PG_UUID(as_uuid=True), ForeignKey("users.id"), nullable=False
     )
     user_2: Mapped["UserDB"] = relationship(
         "UserDB",

@@ -12,7 +12,7 @@ from app.chat.schemas.inbound import ChatRoomInDB
 from app.chat.service import ChatService
 from app.chat.websocket import chat_ws_router
 from app.core import logger
-from app.core.config import env_loader
+from app.core import env_loader
 from app.core.schemas.error import ErrorResponse
 from app.core.schemas.outbound import APIResponse
 from app.core.security import verify_service_key
@@ -76,14 +76,17 @@ async def get_room_slug(
 async def get_unread_messages_count(
     user: UserDB = Depends(resolve_firebase_session),
 ):
-    access_token = await ChatService.get_access_token(user.id)
+    access_token = await ChatService.access_token(user.id)
     if not access_token:
         raise ErrorResponse(message="failed to get access token")
+    
     sync_data = await ChatService.sync_data(access_token)
     if not sync_data:
         raise ErrorResponse(message="failed to get sync data")
+    
     total_unread = sum(
         room["unread_notifications"]["notification_count"]
         for room in sync_data["rooms"]["join"].values()
     )
+    
     return APIResponse(data={"count": total_unread})

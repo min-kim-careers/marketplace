@@ -4,11 +4,12 @@ from typing import Any, Literal
 from uuid import UUID
 
 from app.auth.firebase.dependencies import resolve_firebase_query_token
-from app.chat.dependencies.resolve_matrix_room_id import resolve_synapse_room_id
-from app.chat.schemas.outbound import ChatResponse, ResponseType
+from app.chat.dependencies.resolve_chat_room import resolve_chat_room
+from app.chat.schemas.outbound import ChatResponse, MessageOut, ResponseType
 from app.chat.service import ChatService
 from app.core import logger
 from app.core.schemas.error import ErrorResponse
+from app.db.models.chat_room import ChatRoomDB
 from app.db.models.user import UserDB
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 
@@ -20,8 +21,17 @@ chat_ws_router = APIRouter(prefix="/api/chat/ws")
 async def websocket(
     websocket: WebSocket,
     user: UserDB = Depends(resolve_firebase_query_token),
-    matrix_room_id: str = Depends(resolve_synapse_room_id),
+    chat_room: ChatRoomDB = Depends(resolve_chat_room),
 ):
+    await websocket.accept()
+
+    access_token = await ChatService.access_token(user.id)
+    if not access_token:
+        await websocket.close(code=1008, reason="failed to get access token")
+        return
+    logger.info(f"User {user.id} connected.")
+    room_id = chat_room.room_id
+
     async def send_response(type: ResponseType, data: Any):
         try:
             await websocket.send_json(
@@ -31,46 +41,66 @@ async def websocket(
                 ).model_dump(by_alias=True),
             )
         except Exception as e:
-            logger.info(f"failed to send response: {e}")
+            logger.error(f"failed to send response: {e}")
 
-    await websocket.accept()
+    async def receiver():
+        try:
+            while True:
+                msg = await websocket.receive_json()
+                await ChatService.send_message(access_token, room_id, msg)
+        except WebSocketDisconnect as e:
+            logger.info(e)
+            return
+        except asyncio.CancelledError as e:
+            logger.error(e)
+            return
+        except Exception as e:
+            logger.error(e)
+            return
 
-    access_token = await ChatService.get_access_token(user.id)
-    if not access_token:
-        await websocket.close(code=1008, reason="failed to get access token")
-        return
+    async def sender():
+        try:
+            since = None
+            while True:
+                sync_data = await ChatService.sync_data(access_token, since)
+                if sync_data:
+                    room = sync_data.get("rooms", {}).get("join", {}).get(room_id)
 
-    logger.info(f"User {user.id} connected.")
+                    if room:
+                        messages = room.get("timeline", {}).get("events", [])
+                        state_events = room.get("state", {}).get("events", [])
+                        ephemeral = room.get("ephemeral", {}).get("events", [])
 
-    history = await ChatService.fetch_room_history(access_token, matrix_room_id)
-    if history:
-        await send_response("history", history)
+                        if messages:
+                            await send_response(
+                                "messages",
+                                [
+                                    MessageOut.parse_matrix_data(
+                                        m, user.chat_id
+                                    ).model_dump(by_alias=True)
+                                    for m in messages
+                                    if m["type"] == "m.room.message"
+                                ],
+                            )
+                        since = sync_data.get("next_batch", since)
+        except WebSocketDisconnect as e:
+            logger.info(e)
+            return
+        except asyncio.CancelledError as e:
+            logger.error(e)
+            return
+        except Exception as e:
+            logger.error(e)
+            return
 
-    sync_task = ws_task = since = None
+    recv_task = asyncio.create_task(receiver())
+    send_task = asyncio.create_task(sender())
+
     try:
-        while True:
-            sync_task = asyncio.create_task(ChatService.sync_data(access_token, since))
-            ws_task = asyncio.create_task(websocket.receive_json())
-            done, _ = await asyncio.wait(
-                [sync_task, ws_task],
-                return_when=asyncio.FIRST_COMPLETED,
-            )
-
-            if ws_task in done:
-                message = ws_task.result()
-                await ChatService.send_message(access_token, matrix_room_id, message)
-                sync_task.cancel()
-            else:
-                data = sync_task.result()
-                if data:
-                    since = data.get("next_batch", since)
-                    # logger.info(data)
-                ws_task.cancel()
-    except WebSocketDisconnect:
-        pass
+        await asyncio.wait({recv_task, send_task}, return_when=asyncio.FIRST_COMPLETED)
     finally:
-        for task in (sync_task, ws_task):
-            if task:
-                task.cancel()
-                with suppress(asyncio.CancelledError):
-                    await task
+        for t in (recv_task, send_task):
+            with suppress(asyncio.CancelledError, WebSocketDisconnect):
+                t.cancel()
+        with suppress(Exception):
+            await websocket.close()

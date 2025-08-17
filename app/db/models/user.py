@@ -30,3 +30,5 @@ class UserDB(Base):
         uselist=False,
         passive_deletes=True,
     )
+
+    chat_id: Mapped[str] = mapped_column(nullable=True)

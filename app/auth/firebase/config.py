@@ -1,7 +1,7 @@
 import firebase_admin
 from firebase_admin import credentials
 from app.core import logger
-from app.core.config import env_loader
+from app.core import env_loader
 
 
 def initialize_firebase_admin():
@@ -23,6 +23,6 @@ def initialize_firebase_admin():
                 }
             )
             firebase_admin.initialize_app(cred)
-            logger.info("Firebase Admin SDK initialized successfully!")
+            logger.info("Firebase Admin SDK initialized")
         except Exception as e:
             logger.info(f"Error initializing Firebase Admin SDK: {e}")

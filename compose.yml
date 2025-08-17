@@ -19,23 +19,24 @@ services:
       timeout: 3s
       retries: 3
 
-  # api-cache-service:
-  #   container_name: api-cache-container
-  #   restart: always
-  #   image: redis:latest
-  #   environment:
-  #     - REDIS_HOST=api-cache-service
-  #     - REDIS_PORT=6379
-  #     - REDIS_PASSWORD=redispassword
-  #   command: [ '/bin/sh', '-c', 'redis-server --save 20 1 --loglevel warning --requirepass $$REDIS_PASSWORD' ]
-  #   volumes:
-  #     - api-cache-data:/data
+  api-cache-service:
+    container_name: api-cache-container
+    restart: always
+    image: redis:latest
+    environment:
+      - REDIS_HOST=api-cache-service
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=REDACTED
+    command: [ '/bin/sh', '-c', 'redis-server --save 20 1 --loglevel warning --requirepass $$REDIS_PASSWORD' ]
+    volumes:
+      - api-cache-data:/data
 
   api-service:
     depends_on:
       api-db-service:
         condition: service_healthy
-      # - api-cache-service
+      api-cache-service:
+        condition: service_started
     container_name: api-container
     restart: always
     build: .
@@ -48,10 +49,10 @@ services:
       - DB_PASSWORD=REDACTED
       - DB_NAME=apidb
 
-      # - CACHE_HOST=api-cache-service
-      # - CACHE_PORT=6379
-      # - CACHE_PASSWORD=redispassword
-      # - CACHE_DB=0
+      - CACHE_HOST=api-cache-service
+      - CACHE_PORT=6379
+      - CACHE_PASSWORD=REDACTED
+      - CACHE_DB=0
 
       - SERVICE_KEY=GIUv6nI8S76oIdVPE3sSe3YvLkF7O6XwqeQp4MOvGUE=
       - SERVICE_KEY_HEADER=x-api-key
@@ -71,6 +72,6 @@ services:
 
 volumes:
   api-db-data:
-  # api-cache-data:
+  api-cache-data:
 
 

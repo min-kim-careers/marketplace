@@ -1,8 +1,9 @@
+from datetime import datetime, timezone
 from typing import Any, Literal
 from app.core.schemas.outbound import OutboundBase
-from app.core.utils import encode_slug
 
-ResponseType = Literal["history", "message"]
+ResponseType = Literal["previous", "messages"]
+
 
 class ChatResponse(OutboundBase):
     type: ResponseType
@@ -11,17 +12,17 @@ class ChatResponse(OutboundBase):
 
 class MessageOut(OutboundBase):
     id: str
-    room_id: str
-    sender: str
+    is_me: bool
     content: str
-    timestamp: int
+    timestamp: str
 
     @classmethod
-    def from_synapse(cls, event: dict) -> "MessageOut":
+    def parse_matrix_data(cls, event: dict, chat_id: str) -> "MessageOut":
         return MessageOut(
             id=event["event_id"],
-            room_id=event["room_id"],
-            sender=event["sender"],
+            is_me=event["sender"] == chat_id,
             content=event["content"]["body"],
-            timestamp=event["origin_server_ts"],
+            timestamp=datetime.fromtimestamp(
+                event["origin_server_ts"] / 1000, tz=timezone.utc
+            ).isoformat(),
         )

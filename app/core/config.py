@@ -9,6 +9,11 @@ class EnvLoader(BaseSettings):
     DB_PASSWORD: str
     DB_NAME: str
 
+    CACHE_HOST: str
+    CACHE_PORT: str
+    CACHE_PASSWORD: str
+    CACHE_DB: str
+
     FIREBASE_TYPE: str
     FIREBASE_PROJECT_ID: str
     FIREBASE_PRIVATE_KEY_ID: str

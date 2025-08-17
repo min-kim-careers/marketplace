@@ -2,7 +2,7 @@ from fastapi import Security
 from fastapi.security import APIKeyHeader
 
 from app.core.schemas.error import ErrorResponse
-from app.core.config import env_loader
+from app.core import env_loader
 
 service_key_header = APIKeyHeader(name=env_loader.SERVICE_KEY_HEADER, auto_error=False)
 

@@ -11,3 +11,4 @@ class ChatRoomInDB(BaseModel):
     def sort_user_ids(self):
         self.user_ids = sorted(self.user_ids)
         return self
+
