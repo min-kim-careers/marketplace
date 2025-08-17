@@ -1,5 +1,5 @@
-import { ChatMessage } from "@/lib/types/chat-message";
+import { ChatMessage } from '@/lib/types/chat-message'
 
-
-export type ChatPayload = { type: 'history'; data: ChatMessage[]; } |
-{ type: 'message'; data: ChatMessage; };
+export type ChatPayload =
+  | { type: 'previous'; data: ChatMessage[] }
+  | { type: 'messages'; data: ChatMessage[] }

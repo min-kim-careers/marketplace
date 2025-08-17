@@ -1,7 +1,6 @@
 export type ChatMessage = {
   id: string
-  roomId: string
-  sender: string
+  isMe: boolean
   content: string
-  timestamp: int
+  timestamp: string
 }

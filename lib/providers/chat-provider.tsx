@@ -16,6 +16,8 @@ import {
   useRef,
   useState,
 } from 'react'
+import useWebSocket from 'react-use-websocket'
+import { WebSocketHook } from 'react-use-websocket/dist/lib/types'
 
 const useLoadToken = () => {
   const { user } = useFirebaseStore()
@@ -35,9 +37,8 @@ const useLoadToken = () => {
 }
 
 interface ChatState {
-  socket: WebSocket | null
+  hook: WebSocketHook
   messages: ChatMessage[]
-  send: (message: string) => void
   setRoomId: Dispatch<SetStateAction<string | null>>
 }
 
@@ -46,41 +47,39 @@ const ChatContext = createContext<ChatState | null>(null)
 export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const token = useLoadToken()
   const [roomId, setRoomId] = useState<string | null>(null)
-
-  const wsRef = useRef<WebSocket | null>(null)
   const [messages, setMessages] = useState<ChatMessage[]>([])
+  const [url, setUrl] = useState<string | null>(null)
+
+  const ws = useWebSocket(url, {
+    onOpen: () => console.log('Connected to WebSocket'),
+    onMessage: (e) => {
+      const payload = JSON.parse(e.data) as ChatPayload
+      console.log(payload)
+      handleChatPayload(payload, { setMessages })
+    },
+    onClose: () => {
+      setRoomId(null)
+      setMessages([])
+      setUrl(null)
+    },
+  })
 
   useEffect(() => {
     if (token && roomId) {
-      wsRef.current = new WebSocket(
-        toPath('ws://localhost/chat/ws', { token, roomId }),
-      )
-
-      const ws = wsRef.current
-      ws.onopen = () => console.log('Connected to WebSocket')
-      ws.onclose = () => console.log('Disconnected from WebSocket')
-      ws.onmessage = (e) => {
-        const payload = JSON.parse(e.data) as ChatPayload
-        console.log(payload)
-
-        handleChatPayload(payload, { setMessages })
-      }
+      setUrl(toPath('ws://localhost/chat/ws', { token, roomId }))
     }
-
-    return () => wsRef.current?.close()
   }, [token, roomId])
 
   return (
     <ChatContext.Provider
       value={{
-        socket: wsRef.current,
+        hook: ws,
         messages,
-        send: (message: string) => wsRef.current?.send(JSON.stringify(message)),
         setRoomId,
       }}
     >
       {children}
-      {token && roomId && <Chat />}
+      {url && <Chat />}
     </ChatContext.Provider>
   )
 }

@@ -9,15 +9,14 @@ export const handleChatPayload = (
   const { setMessages } = handlers
 
   switch (payload.type) {
-    case 'history':
-      setMessages((prev) => [...prev, ...payload.data])
-      console.log('set messages');
-      
+    case 'messages':
+      setMessages((prev) => [...payload.data.reverse(), ...prev])
       break
 
-    case 'message':
-      setMessages((prev) => [...prev, payload.data])
+    case 'previous':
+      setMessages((prev) => [...prev, ...payload.data.reverse()])
       break
+
 
     default:
       break
