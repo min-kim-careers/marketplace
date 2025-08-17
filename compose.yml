@@ -1,36 +1,20 @@
 services:
-  nginx-service:
-    container_name: nginx-container
-    image: nginx:latest
-    ports:
-      - 80:80
-    environment:
-      - DOMAIN=localhost
-      - WEB_SERVICE=web-service:3000
-      - API_SERVICE=api-service:8000
-      - SYNAPSE_SERVICE=synapse-service:8008
-      - FIREBASE_APP=market-by-kibon
-    volumes:
-      - ./nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
-      - ./api/images:/app/images:ro
-    depends_on:
-      - synapse-service
-      - api-service
-      - web-service
-
   # ----------------------------------- CHAT -----------------------------------
   synapse-service:
     extends:
       file: ./chat/compose.yml
       service: synapse-service
-    ports:
-      - 8008:8008
 
   # ----------------------------------- API -----------------------------------
   api-db-service:
     extends:
       file: ./api/compose.yml
       service: api-db-service
+
+  api-cache-service:
+    extends:
+      file: ./api/compose.yml
+      service: api-cache-service
 
   api-service:
     extends:
@@ -39,6 +23,8 @@ services:
     depends_on:
       api-db-service:
         condition: service_healthy
+      api-cache-service:
+        condition: service_started
     ports:
       - 8000:8000
 
@@ -47,8 +33,17 @@ services:
     extends:
       file: ./web/compose.yml
       service: web-service
-    ports:
-      - 3000:3000
+
+  # ----------------------------------- GATEWAY -----------------------------------
+  nginx-service:
+    extends:
+      file: ./nginx/compose.yml
+      service: nginx-service
+    depends_on:
+      - synapse-service
+      - api-service
+      - web-service
 
 volumes:
   api-db-data:
+  api-cache-data:

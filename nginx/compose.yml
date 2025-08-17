@@ -1,0 +1,15 @@
+services:
+  nginx-service:
+    container_name: nginx-container
+    image: nginx:latest
+    ports:
+      - 80:80
+    environment:
+      - DOMAIN=localhost
+      - WEB_SERVICE=web-service:3000
+      - API_SERVICE=api-service:8000
+      - SYNAPSE_SERVICE=synapse-service:8008
+      - FIREBASE_APP=market-by-kibon
+    volumes:
+      - ./default.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ../api/images:/app/images:ro
