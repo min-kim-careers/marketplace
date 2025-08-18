@@ -1,4 +1,6 @@
+from typing import Optional
 from app.core.schemas.error import ErrorResponse
+from app.db.models.user import UserDB
 from app.db.session import get_db
 from app.profile.repository import ProfileRepository
 
@@ -13,8 +15,8 @@ from uuid import UUID
 async def resolve_peer_user(
     peer_handle: str = Path(..., alias="peerHandle"),
     db: AsyncSession = Depends(get_db),
-) -> UUID:
+) -> Optional[UserDB]:
     peer = await ProfileRepository.get_by_handle(db, peer_handle)
     if not peer:
         raise ErrorResponse(status_code=401, message="peer handle not found")
-    return peer.user_id
+    return peer.user

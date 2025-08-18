@@ -57,22 +57,6 @@ def create_mock_item(user_id: UUID) -> ItemDB:
     )
 
 
-async def seed_extras():
-    async for db in get_db():
-        profiles = list((await db.execute(select(ProfileDB))).scalars().all())
-        extras = [
-            ProfileExtraDB(
-                profile_id=p.id,
-                image_limit=3,
-                listing_limit=3,
-            )
-            for p in profiles
-        ]
-        db.add_all(extras)
-        await db.commit()
-
-        logger.info("Extra seeding complete.")
-
 
 async def seed_db():
     async for db in get_db():
@@ -116,6 +100,12 @@ if __name__ == "__main__":
     asyncio.run(
         seed_user_items(
             "user1@example.com",
-            10,
-        )
+            3,
+        ),
+    )
+    asyncio.run(
+        seed_user_items(
+            "user2@example.com",
+            3,
+        ),
     )

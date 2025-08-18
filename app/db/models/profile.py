@@ -9,6 +9,7 @@ from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 
 
 if TYPE_CHECKING:
+    from app.db.models.user import UserDB
     from app.db.models.profile_extra import ProfileExtraDB
 
 
@@ -54,6 +55,13 @@ class ProfileDB(Base):
         unique=True,
     )
 
+    user: Mapped["UserDB"] = relationship(
+        "UserDB",
+        lazy="selectin",
+        uselist=False,
+        passive_deletes=True,
+        back_populates='profile'
+    )
     extra: Mapped["ProfileExtraDB"] = relationship(
         "ProfileExtraDB",
         lazy="selectin",

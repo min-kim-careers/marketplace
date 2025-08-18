@@ -29,6 +29,7 @@ class UserDB(Base):
         lazy="selectin",
         uselist=False,
         passive_deletes=True,
+        back_populates='user',
     )
 
     chat_id: Mapped[str] = mapped_column(nullable=True)

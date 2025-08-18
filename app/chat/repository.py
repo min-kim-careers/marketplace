@@ -60,13 +60,7 @@ class ChatRepository:
         room_in: ChatRoomInDB,
     ) -> ChatRoomDB | None:
         try:
-            chat_room = ChatRoomDB(
-                room_id=room_in.room_id,
-                item_id=room_in.item_id,
-                user_1_id=room_in.user_ids[0],
-                user_2_id=room_in.user_ids[1],
-            )
-
+            chat_room = ChatRoomDB(**room_in.model_dump())
             db.add(chat_room)
             await db.commit()
             await db.refresh(chat_room)

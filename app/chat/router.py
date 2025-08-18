@@ -10,7 +10,7 @@ from app.chat.dependencies.resolve_peer_user import resolve_peer_user
 from app.chat.repository import ChatRepository
 from app.chat.schemas.inbound import ChatRoomInDB
 from app.chat.service import ChatService
-from app.chat.websocket import chat_ws_router
+from app.chat.websocket.websocket import chat_ws_router
 from app.core import logger
 from app.core import env_loader
 from app.core.schemas.error import ErrorResponse
@@ -37,24 +37,28 @@ chat_router = APIRouter(
 @chat_router.post("/peer/{peerHandle}/item/{itemSlug}")
 async def get_room_slug(
     user: UserDB = Depends(resolve_firebase_session),
-    peer_id: UUID = Depends(resolve_peer_user),
+    peer: UserDB = Depends(resolve_peer_user),
     item_id: UUID = Depends(resolve_item_slug_path),
     db: AsyncSession = Depends(get_db),
 ):
-    room = await ChatRepository.get_room_by_user_and_peer(db, user.id, peer_id)
+    room = await ChatRepository.get_room_by_user_and_peer(db, user.id, peer.id)
 
     room_slug = None
     if not room:
-        room_id = await ChatService.create_room_with_users(user.id, peer_id)
-        if not room_id:
+        res = await ChatService.create_room_with_users(user, peer)
+        if not res:
             raise ErrorResponse(message="failed to create room with users")
-
+        
+        room_id = res['room_id']
         room = await ChatRepository.create(
             db,
             ChatRoomInDB(
                 room_id=room_id,
                 item_id=item_id,
-                user_ids=[user.id, peer_id],
+                user_1_id=user.id,
+                user_1_filter=res['user_1_filter'],
+                user_2_id=peer.id,
+                user_2_filter=res['user_2_filter'],
             ),
         )
 
@@ -79,14 +83,14 @@ async def get_unread_messages_count(
     access_token = await ChatService.access_token(user.id)
     if not access_token:
         raise ErrorResponse(message="failed to get access token")
-    
+
     sync_data = await ChatService.sync_data(access_token)
     if not sync_data:
         raise ErrorResponse(message="failed to get sync data")
-    
+
     total_unread = sum(
         room["unread_notifications"]["notification_count"]
-        for room in sync_data["rooms"]["join"].values()
+        for room in sync_data.get("rooms", {}).get("join", {}).values()
     )
-    
+
     return APIResponse(data={"count": total_unread})

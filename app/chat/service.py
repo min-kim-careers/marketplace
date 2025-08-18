@@ -9,8 +9,10 @@ from app.chat.schemas.synapse.inbound import SynapseLoginResponse
 from app.core import logger
 from app.core import env_loader
 from app.chat.schemas.outbound import MessageOut
+from app.db.models.user import UserDB
 
 SYNAPSE_URL = env_loader.SYNAPSE_URL
+
 
 class ChatService:
     @staticmethod
@@ -44,7 +46,7 @@ class ChatService:
         try:
             async with httpx.AsyncClient() as client:
                 r = await client.post(
-                    f"{SYNAPSE_URL}/_matrix/client/r0/login",
+                    f"{SYNAPSE_URL}/_matrix/client/v3/login",
                     json={
                         "type": "m.login.password",
                         "user": str(user_id),
@@ -71,7 +73,7 @@ class ChatService:
         try:
             async with httpx.AsyncClient() as client:
                 r = await client.post(
-                    f"{SYNAPSE_URL}/_matrix/client/r0/refresh",
+                    f"{SYNAPSE_URL}/_matrix/client/v3/refresh",
                     headers={"Authorization": f"Bearer {access_token}"},
                     json={"refresh_token": refresh_token},
                 )
@@ -84,12 +86,15 @@ class ChatService:
     async def sync_data(access_token: str, since=None):
         try:
             async with httpx.AsyncClient() as client:
-                params = {"access_token": access_token, "timeout": 30000}
+                params = {
+                    "access_token": access_token,
+                    "timeout": 30000,
+                }
                 if since:
                     params["since"] = since
 
                 r = await client.get(
-                    f"{SYNAPSE_URL}/_matrix/client/r0/sync",
+                    f"{SYNAPSE_URL}/_matrix/client/v3/sync",
                     params=params,
                 )
                 r.raise_for_status()
@@ -105,7 +110,7 @@ class ChatService:
             async with httpx.AsyncClient() as client:
                 txn_id = str(uuid.uuid4())  # unique transaction ID
                 r = await client.put(
-                    f"{SYNAPSE_URL}/_matrix/client/r0/rooms/{room_id}/send/m.room.message/{txn_id}",
+                    f"{SYNAPSE_URL}/_matrix/client/v3/rooms/{room_id}/send/m.room.message/{txn_id}",
                     headers={"Authorization": f"Bearer {access_token}"},
                     json={"msgtype": "m.text", "body": message},
                 )
@@ -124,7 +129,7 @@ class ChatService:
 
             async with httpx.AsyncClient() as client:
                 r = await client.post(
-                    f"{SYNAPSE_URL}/_matrix/client/r0/createRoom",
+                    f"{SYNAPSE_URL}/_matrix/client/v3/createRoom",
                     headers=(
                         {"Authorization": f"Bearer {env_loader.SYNAPSE_ADMIN_TOKEN}"}
                     ),
@@ -132,7 +137,7 @@ class ChatService:
                 )
                 r.raise_for_status()
                 return r.json()["room_id"]
-        
+
         except Exception as e:
             logger.error(e)
 
@@ -141,7 +146,7 @@ class ChatService:
         try:
             async with httpx.AsyncClient() as client:
                 r = await client.post(
-                    f"{SYNAPSE_URL}/_matrix/client/r0/join/{room_id}",
+                    f"{SYNAPSE_URL}/_matrix/client/v3/join/{room_id}",
                     headers=({"Authorization": f"Bearer {access_token}"}),
                     json={},
                 )
@@ -152,39 +157,81 @@ class ChatService:
 
     @staticmethod
     async def create_room_with_users(
-        user_1: uuid.UUID,
-        user_2: uuid.UUID,
-    ) -> str | None:
-        _user_1, _user_2 = await asyncio.gather(
-            ChatService.login(user_1),
-            ChatService.login(user_2),
-        )
+        user_1_db: UserDB,
+        user_2_db: UserDB,
+    ):
+        room_id = None
+        try:
 
-        if not _user_1 or not _user_2:
-            logger.error(f"failed to get login a user")
-            return
+            async def create_room():
+                room_id = await ChatService.create_room(
+                    invite=[
+                        user_1_db.chat_id,
+                        user_2_db.chat_id,
+                    ]
+                )
+                return room_id
 
-        room_id = await ChatService.create_room(
-            invite=[
-                _user_1.user_id,
-                _user_2.user_id,
-            ]
-        )
-        if not room_id:
-            logger.error("failed to create room")
-            return
+            async def get_access_tokens():
+                access_token_1, access_token_2 = token_store.get_token(
+                    user_1_db.id
+                ), token_store.get_token(user_2_db.id)
+                return access_token_1, access_token_2
 
-        res = await asyncio.gather(
-            ChatService.join_room(_user_1.access_token, room_id),
-            ChatService.join_room(_user_2.access_token, room_id),
-        )
-        if None in res:
-            logger.error("failed to join room")
-            return
+            async def join_rooms(access_token_1, access_token_2, room_id):
+                room_id_1, room_id_2 = await asyncio.gather(
+                    ChatService.join_room(access_token_1, room_id),
+                    ChatService.join_room(access_token_2, room_id),
+                )
+                if room_id_1 and room_id_2:
+                    return room_id
 
-        room_id = res[0]
+            async def create_filters(
+                access_token_1: str,
+                user_id_1: str,
+                access_token_2: str,
+                user_id_2,
+                room_id: str,
+            ):
+                user_1_filter, user_2_filter = await asyncio.gather(
+                    ChatService.create_room_filter(access_token_1, user_id_1, room_id),
+                    ChatService.create_room_filter(access_token_2, user_id_2, room_id),
+                )
+                return user_1_filter, user_2_filter
 
-        return room_id
+            room_id = await create_room()
+            if not room_id:
+                raise Exception("failed to create room")
+
+            access_token_1, access_token_2 = await get_access_tokens()
+            if not access_token_1 or not access_token_2:
+                raise Exception("failed to get access tokens for users")
+
+            room_id = await join_rooms(access_token_1, access_token_2, room_id)
+            if not room_id:
+                raise Exception("failed to join room")
+
+            user_1_filter, user_2_filter = await create_filters(
+                access_token_1,
+                user_1_db.chat_id,
+                access_token_2,
+                user_2_db.chat_id,
+                room_id,
+            )
+            if not user_1_filter or not user_2_filter:
+                raise Exception("failed to create room filters")
+
+            return {
+                "room_id": room_id,
+                "user_1_filter": user_1_filter,
+                "user_2_filter": user_2_filter,
+            }
+        except Exception as e:
+            logger.error(e)
+            if room_id:
+                delete_id = await ChatService.delete_room(room_id)
+                if not delete_id:
+                    logger.error('failed to delete room')
 
     @staticmethod
     async def delete_room(room_id: str) -> str | None:
@@ -201,28 +248,52 @@ class ChatService:
         except Exception as e:
             logger.error(e)
 
+    # @staticmethod
+    # async def room_history(access_token: str, room_id: str, chat_id: str):
+    #     try:
+    #         url = f"{SYNAPSE_URL}/_matrix/client/v3/rooms/{room_id}/messages"
+    #         headers = {"Authorization": f"Bearer {access_token}"}
+    #         params = {
+    #             "dir": "b",
+    #             "limit": 50,
+    #         }
+    #         async with httpx.AsyncClient() as client:
+    #             resp = await client.get(
+    #                 url,
+    #                 headers=headers,
+    #                 params=params,
+    #             )
+    #             resp.raise_for_status()
+    #             print()
+    #             data = resp.json()["chunk"]
+    #             return [
+    #                 MessageOut.parse_matrix_data(e, chat_id).model_dump()
+    #                 for e in data
+    #                 if e["type"] == "m.room.message"
+    #             ]
+    #     except Exception as e:
+    #         logger.error(e)
+
     @staticmethod
-    async def room_history(access_token: str, room_id: str, chat_id: str):
+    async def create_room_filter(access_token: str, user_id: str, room_id: str):
         try:
-            url = f"{SYNAPSE_URL}/_matrix/client/r0/rooms/{room_id}/messages"
+            url = f"{SYNAPSE_URL}/_matrix/client/v3/user/{user_id}/filter"
             headers = {"Authorization": f"Bearer {access_token}"}
-            params = {
-                "dir": "b",
-                "limit": 50,
+            payload = {
+                "room": {
+                    "rooms": [room_id],
+                    "timeline": {"types": ["m.room.message"]},
+                    "ephemeral": {"types": ["m.typing", "m.receipt"]},
+                    # "state": {"types": ["m.room.member", "m.room.topic"]},
+                }
             }
             async with httpx.AsyncClient() as client:
-                resp = await client.get(
+                resp = await client.post(
                     url,
                     headers=headers,
-                    params=params,
+                    json=payload,
                 )
                 resp.raise_for_status()
-                print()
-                data = resp.json()["chunk"]
-                return [
-                    MessageOut.parse_matrix_data(e, chat_id).model_dump()
-                    for e in data
-                    if e["type"] == "m.room.message"
-                ]
+                return resp.json()["filter_id"]
         except Exception as e:
             logger.error(e)
