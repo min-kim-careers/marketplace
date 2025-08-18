@@ -1,7 +1,31 @@
 services:
+  synapse-db-service:
+    container_name: synapse-db-container
+    restart: always
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=synapsedbuser
+      - POSTGRES_PASSWORD=REDACTED
+      - POSTGRES_DB=synapsedb
+      - POSTGRES_INITDB_ARGS=--encoding=UTF8 --locale=C
+
+    volumes:
+      - synapse-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB} -h localhost",
+        ]
+      interval: 3s
+      timeout: 3s
+      retries: 3
+
   synapse-service:
     container_name: synapse-container
     image: matrixdotorg/synapse:latest
+    depends_on:
+      - synapse-db-service
     environment:
       - SYNAPSE_SERVER_NAME=localhost
       - SYNAPSE_REPORT_STATS=no
@@ -9,3 +33,6 @@ services:
       - 8008:8008
     volumes:
       - ./synapse-data:/data
+
+volumes:
+  synapse-db-data:

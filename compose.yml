@@ -1,5 +1,10 @@
 services:
   # ----------------------------------- CHAT -----------------------------------
+  synapse-db-service:
+    extends:
+      file: ./chat/compose.yml
+      service: synapse-db-service
+
   synapse-service:
     extends:
       file: ./chat/compose.yml
@@ -47,3 +52,4 @@ services:
 volumes:
   api-db-data:
   api-cache-data:
+  synapse-db-data:

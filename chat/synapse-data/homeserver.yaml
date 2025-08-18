@@ -1,0 +1,51 @@
+# Configuration file for Synapse.
+#
+# This is a YAML file: see [1] for a quick introduction. Note in particular
+# that *indentation is important*: all the elements of a list or dictionary
+# should have the same indentation.
+#
+# [1] https://docs.ansible.com/ansible/latest/reference_appendices/YAMLSyntax.html
+#
+# For more information on how to configure Synapse, including a complete accounting of
+# each option, go to docs/usage/configuration/config_documentation.md or
+# https://element-hq.github.io/synapse/latest/usage/configuration/config_documentation.html
+server_name: "localhost"
+
+pid_file: /data/homeserver.pid
+
+listeners:
+  - port: 8008
+    tls: false
+    type: http
+    x_forwarded: true
+    resources:
+      - names: [client]
+        compress: false
+
+database:
+  name: psycopg2
+  args:
+    user: synapsedbuser
+    password: synapsedbpassword
+    database: synapsedb
+    host: synapse-db-service
+    port: 5432
+    cp_min: 5
+    cp_max: 10
+    keepalives_idle: 10
+    keepalives_interval: 10
+    keepalives_count: 3
+
+log_config: "/data/localhost.log.config"
+media_store_path: /data/media_store
+registration_shared_secret: "~B^CC*yCqMh*x4H0-.1Y_.Kbwl..Cp,l9^HotqF#9d0x,Bdz6H"
+report_stats: false
+macaroon_secret_key: ";;u,R1b6wVm1Qi.eKkZo^iKjlByBH^g0YLM*rDKDUI+gk5ol&#"
+form_secret: "*QzMxwQkky,E+4KbDkW0WyiL8atXsId+td83pez2*Yi@345lN="
+signing_key_path: "/data/localhost.signing.key"
+trusted_key_servers: []
+federation_domain_whitelist: []
+enable_federation: false
+federation_port: null
+
+# vim:ft=yaml
