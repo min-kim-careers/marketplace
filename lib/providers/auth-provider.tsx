@@ -18,7 +18,7 @@ import {
 } from 'react'
 
 interface AuthState {
-  isAuthenticated: () => Promise<boolean>
+  isAuthenticated: boolean
   authReady: boolean
 }
 
@@ -31,18 +31,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const pathname = usePathname()
 
   const [authReady, setAuthReady] = useState<boolean>(false)
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
 
   const refreshSession = async (user: User) => {
-    try {
-      const token = await user.getIdToken(true)
-      const profile = await signInWithGoogle(token)
-      if (!profile) throw new Error('Failed to refresh session')
+    const token = await user.getIdToken(true)
+    const profile = await signInWithGoogle(token)
+    if (!profile) throw new Error('Failed to refresh session')
+    setProfile(profile)
+  }
 
-      setProfile(profile)
-    } catch (error) {
-      console.error(error)
-      await handleSignOut()
-    }
+  const fetchProfile = async () => {
+    const profile = await getProfile()
+    if (!profile) throw new Error('failed to get profile')
+    setProfile(profile)
   }
 
   useEffect(() => {
@@ -57,22 +58,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const handleAuth = async () => {
       if (!authReady) return
 
-      if (user) {
-        if (!(await hasSession())) {
-          await refreshSession(user)
+      try {
+        if (user) {
+          if (await hasSession()) {
+            if (!(await verifySession())) throw new Error('invalid session')
+          } else {
+            await refreshSession(user)
+          }
+          if (!profile) await fetchProfile()
+          setIsAuthenticated(true)
+        } else {
+          if (profile) setProfile()
+          if (await hasSession()) throw new Error('session should not exist')
         }
-        if (!profile) {
-          setProfile(await getProfile())
-        }
-      }
-
-      if (!user) {
-        if (profile) {
-          setProfile()
-        }
-        if (await hasSession()) {
-          await handleSignOut()
-        }
+      } catch (error) {
+        console.error(error)
+        await handleSignOut()
       }
     }
 
@@ -82,9 +83,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   return (
     <AuthContext.Provider
       value={{
-        isAuthenticated: async () =>
-          Boolean(authReady && user && profile && (await verifySession())),
         authReady,
+        isAuthenticated,
       }}
     >
       {children}

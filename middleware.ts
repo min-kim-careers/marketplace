@@ -15,7 +15,7 @@ export async function middleware(req: NextRequest) {
   const headers = new Headers(req.headers)
   const nextResponse = NextResponse.next({ request: { headers } })
 
-  if (isFallbackRoute(path) || req.method !== 'GET' || isAuthRoute(path)) {
+  if (isFallbackRoute(path) || isAuthRoute(path) || req.method !== 'GET') {
     return nextResponse
   }
 

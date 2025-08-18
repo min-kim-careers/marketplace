@@ -3,7 +3,9 @@
 import { Button } from '@/components/shadcn/components/ui/button'
 import { Input } from '@/components/shadcn/components/ui/input'
 import { cn } from '@/components/shadcn/lib/utils'
+import { formatDate } from '@/lib/helpers/format-date'
 import { useChatContext } from '@/lib/providers/chat-provider'
+import { ChatMessage } from '@/lib/types/chat-message'
 import { Minus } from 'lucide-react'
 import { FormEvent, useEffect, useRef, useState } from 'react'
 
@@ -42,7 +44,7 @@ export default function Chat() {
   return (
     <div
       className={cn(
-        'fixed bottom-0 right-0 z-[75] m-2 flex rounded border bg-background transition-all duration-300',
+        'fixed bottom-0 right-0 z-[75] m-2 flex rounded border-2 shadow bg-background transition-all duration-300',
         open ? 'h-[36rem] max-h-[95vh] w-96' : 'h-16 w-16',
       )}
     >
@@ -64,9 +66,7 @@ export default function Chat() {
                 className='flex-end flex h-full flex-col-reverse gap-1 overflow-y-auto p-1'
               >
                 {messages.map((m, i) => (
-                  <div key={i} className='rounded-2xl border p-2'>
-                    {m.content}
-                  </div>
+                  <MessageBubble key={i} message={m} />
                 ))}
               </div>
             </div>
@@ -90,6 +90,22 @@ export default function Chat() {
       ) : (
         <button onClick={() => setOpen(true)} className='h-full w-full' />
       )}
+    </div>
+  )
+}
+
+function MessageBubble({ message }: { message: ChatMessage }) {
+  return (
+    <div
+      className={cn(
+        'flex items-center',
+        message.isMe ? 'justify-end' : 'justify-start',
+      )}
+    >
+      <div className='rounded-2xl border gap-1 flex p-2 items-baseline'>
+        <span>{message.content}</span>
+        <span className='text-xs'>{formatDate(message.timestamp)}</span>
+      </div>
     </div>
   )
 }

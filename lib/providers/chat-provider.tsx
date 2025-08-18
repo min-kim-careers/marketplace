@@ -1,7 +1,7 @@
 'use client'
 
 import Chat from '@/components/chat'
-import { handleChatPayload } from '@/lib/handlers/chat-message-handlers'
+import { handleChatPayload } from '@/lib/handlers/chat-handlers'
 import { toPath } from '@/lib/helpers/to-path'
 import useFirebaseStore from '@/lib/stores/firebase-store'
 import { ChatMessage } from '@/lib/types/chat-message'
@@ -13,8 +13,7 @@ import {
   SetStateAction,
   useContext,
   useEffect,
-  useRef,
-  useState,
+  useState
 } from 'react'
 import useWebSocket from 'react-use-websocket'
 import { WebSocketHook } from 'react-use-websocket/dist/lib/types'
@@ -58,9 +57,9 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
       handleChatPayload(payload, { setMessages })
     },
     onClose: () => {
-      setRoomId(null)
-      setMessages([])
-      setUrl(null)
+      // setRoomId(null)
+      // setMessages([])
+      // setUrl(null)
     },
   })
 

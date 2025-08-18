@@ -24,11 +24,11 @@ export default function LoadingProvider({ children }: PropsWithChildren) {
       {message && (
         <div
           className={cn(
-            'fixed inset-0 z-[100] flex h-full w-screen flex-col items-center justify-center gap-2 bg-white/50 transition-all duration-200 ease-in-out',
+            'fixed inset-0 z-[100] flex h-full w-screen flex-col items-center justify-center gap-2 bg-black/80 transition-all duration-200 ease-in-out text-white',
           )}
         >
           {message && <p>{message}</p>}
-          <LoadingDots />
+          <LoadingDots className='bg-white' />
         </div>
       )}
       {children}

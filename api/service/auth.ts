@@ -1,6 +1,7 @@
 'use server'
 
 import { _getSession, _revokeSession, _verifySession } from '@/api/endpoints'
+import { hasSession } from '@/lib/helpers/server/has-session'
 import { setSession } from '@/lib/helpers/server/set-session'
 
 export const signInWithGoogle = async (token: string) => {
@@ -15,6 +16,9 @@ export const signInWithGoogle = async (token: string) => {
 
 export const verifySession = async () => {
   try {
+    if (!(await hasSession())) {
+      return false
+    }
     await _verifySession()
     return true
   } catch (error) {
@@ -25,6 +29,9 @@ export const verifySession = async () => {
 
 export const revokeSession = async () => {
   try {
+    if (!(await hasSession())) {
+      return false
+    }
     await _revokeSession()
     return true
   } catch (error) {

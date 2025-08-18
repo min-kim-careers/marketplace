@@ -15,6 +15,7 @@ export default function Header() {
 
   return (
     <div className='flex w-full items-center justify-between'>
+      {/* title */}
       <span className='space-x-2'>
         <span>
           <Link
@@ -30,6 +31,7 @@ export default function Header() {
           </span>
         )}
       </span>
+
       <span className='flex min-w-[10rem] items-center justify-end'>
         <NavBar />
       </span>
