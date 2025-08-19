@@ -172,10 +172,11 @@ class ChatService:
                 )
                 return room_id
 
-            async def get_access_tokens():
-                access_token_1, access_token_2 = token_store.get_token(
-                    user_1_db.id
-                ), token_store.get_token(user_2_db.id)
+            async def get_access_tokens(user_1_id: uuid.UUID, user_2_id: uuid.UUID):
+                access_token_1, access_token_2 = await asyncio.gather(
+                    ChatService.access_token(user_1_id),
+                    ChatService.access_token(user_2_id),
+                )
                 return access_token_1, access_token_2
 
             async def join_rooms(access_token_1, access_token_2, room_id):
@@ -203,7 +204,9 @@ class ChatService:
             if not room_id:
                 raise Exception("failed to create room")
 
-            access_token_1, access_token_2 = await get_access_tokens()
+            access_token_1, access_token_2 = await get_access_tokens(
+                user_1_db.id, user_2_db.id
+            )
             if not access_token_1 or not access_token_2:
                 raise Exception("failed to get access tokens for users")
 
@@ -229,9 +232,8 @@ class ChatService:
         except Exception as e:
             logger.error(e)
             if room_id:
-                delete_id = await ChatService.delete_room(room_id)
-                if not delete_id:
-                    logger.error('failed to delete room')
+                if not await ChatService.delete_room(room_id):
+                    logger.error("failed to delete room")
 
     @staticmethod
     async def delete_room(room_id: str) -> str | None:

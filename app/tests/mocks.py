@@ -57,7 +57,6 @@ def create_mock_item(user_id: UUID) -> ItemDB:
     )
 
 
-
 async def seed_db():
     async for db in get_db():
         res = await db.execute(select(ProfileDB))
@@ -97,15 +96,15 @@ async def seed_user_items(email, count):
 
 
 if __name__ == "__main__":
-    asyncio.run(
-        seed_user_items(
-            "user1@example.com",
-            3,
-        ),
-    )
-    asyncio.run(
-        seed_user_items(
-            "user2@example.com",
-            3,
-        ),
+    asyncio.gather(
+        *(
+            seed_user_items(
+                email,
+                random.randint(1, 3),
+            )
+            for email in [
+                "user1@example.com",
+                "user2@example.com",
+            ]
+        )
     )
