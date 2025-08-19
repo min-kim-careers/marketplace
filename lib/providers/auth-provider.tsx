@@ -1,90 +1,65 @@
 'use client'
 
-import { getProfile } from '@/api'
-import { signInWithGoogle, verifySession } from '@/api/service/auth'
-import { hasSession } from '@/lib/helpers/server/has-session'
-import { useAuthHandler } from '@/lib/hooks/use-auth-handler'
-import useFirebaseStore from '@/lib/stores/firebase-store'
-import useProfileStore from '@/lib/stores/profile-store'
-import { auth } from '@/lib/utils/firebase'
-import { onAuthStateChanged, User } from 'firebase/auth'
+import { verifySession } from '@/api/service/auth'
+import { useAuthHandler } from '@/lib/hooks/auth/use-auth-handler'
+import { useAuthStatus } from '@/lib/hooks/auth/use-auth-status'
+import { useAuthClient } from '@/lib/hooks/auth/use-auth-client'
+import { ProfileLoader } from '@/components/profile-loader'
 import { usePathname } from 'next/navigation'
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from 'react'
+import { createContext, ReactNode, useContext, useEffect } from 'react'
 
-interface AuthState {
+export type AuthStatus = 'loading' | 'authenticated' | 'unauthenticated'
+
+export interface AuthState {
+  status: {
+    client: AuthStatus
+    server: AuthStatus
+  }
   isAuthenticated: boolean
-  authReady: boolean
+  isLoading: boolean
 }
 
 const AuthContext = createContext<AuthState | null>(null)
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const { profile, setProfile } = useProfileStore()
-  const { user, setUser } = useFirebaseStore()
-  const { handleSignOut } = useAuthHandler()
+  const { handleSignOut, refreshSession } = useAuthHandler()
+
+  const { status, setStatus, isAuthenticated, isLoading } = useAuthStatus()
+
+  const { user } = useAuthClient(setStatus)
+
   const pathname = usePathname()
 
-  const [authReady, setAuthReady] = useState<boolean>(false)
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
-
-  const refreshSession = async (user: User) => {
-    const token = await user.getIdToken(true)
-    const profile = await signInWithGoogle(token)
-    if (!profile) throw new Error('Failed to refresh session')
-    setProfile(profile)
-  }
-
-  const fetchProfile = async () => {
-    const profile = await getProfile()
-    if (!profile) throw new Error('failed to get profile')
-    setProfile(profile)
-  }
-
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      user ? setUser(user) : setUser()
-      setAuthReady(true)
-    })
-    return () => unsubscribe()
-  }, [])
-
-  useEffect(() => {
-    const handleAuth = async () => {
-      if (!authReady) return
+    const authenticateServer = async () => {
+      if (status.client !== 'authenticated') return
 
       try {
-        if (user) {
-          if (await hasSession()) {
-            if (!(await verifySession())) throw new Error('invalid session')
-          } else {
-            await refreshSession(user)
+        const authenticated = await verifySession()
+        if (!authenticated && user) {
+          console.log('invalid session')
+          const refreshed = await refreshSession(user)
+          if (!refreshed) {
+            throw new Error('session refresh failed')
           }
-          if (!profile) await fetchProfile()
-          setIsAuthenticated(true)
-        } else {
-          if (profile) setProfile()
-          if (await hasSession()) throw new Error('session should not exist')
         }
+        setStatus((p) => ({ ...p, server: 'authenticated' }))
       } catch (error) {
         console.error(error)
+        setStatus((p) => ({ ...p, server: 'unauthenticated' }))
         await handleSignOut()
       }
     }
 
-    handleAuth()
-  }, [authReady, user, pathname])
+    authenticateServer()
+  }, [status.client, pathname])
 
   return (
     <AuthContext.Provider
       value={{
-        authReady,
+        status,
         isAuthenticated,
+        isLoading,
       }}
     >
       {children}

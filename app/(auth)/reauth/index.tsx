@@ -10,11 +10,11 @@ import { useEffect } from 'react'
 
 export default function Reauth({ next }: { next: string }) {
   const router = useRouter()
-  const { isAuthenticated, authReady } = useAuthContext()
+  const { isAuthenticated, isLoading } = useAuthContext()
 
   useEffect(() => {
-    const handleAuth = async () => {
-      if (!next || !authReady) return
+    const handleReauth = async () => {
+      if (!next || isLoading) return
 
       if (isAuthenticated) {
         await verifySession()
@@ -26,14 +26,14 @@ export default function Reauth({ next }: { next: string }) {
       }
     }
 
-    handleAuth()
-  }, [next, authReady, isAuthenticated])
+    handleReauth()
+  }, [next, isLoading, isAuthenticated])
 
-  if (!authReady)
+  if (isLoading)
     return (
       <div className='flex h-screen w-screen flex-1 items-center justify-center'>
         <div className='flex flex-col gap-4'>
-          <p>Verifying...</p>
+          <p>Reauthenticating...</p>
           <LoadingDots />
         </div>
       </div>

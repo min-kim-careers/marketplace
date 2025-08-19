@@ -7,7 +7,7 @@ import {
   AvatarImage,
 } from '@/components/shadcn/components/ui/avatar'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
-import { useAuthHandler } from '@/lib/hooks/use-auth-handler'
+import { useAuthHandler } from '@/lib/hooks/auth/use-auth-handler'
 import { useAuthContext } from '@/lib/providers/auth-provider'
 import useProfileStore from '@/lib/stores/profile-store'
 import { CircleUserIcon } from 'lucide-react'
@@ -15,8 +15,6 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { Button } from '../../shadcn/components/ui/button'
 import Dropdown from './dropdown'
-import { hasSession } from '@/lib/helpers/server/has-session'
-import useFirebaseStore from '@/lib/stores/firebase-store'
 
 const useNotificationCount = () => {
   const [count, setCount] = useState<number>(0)
@@ -37,13 +35,22 @@ export default function NavBar() {
   const notificationCount = useNotificationCount()
 
   const { profile } = useProfileStore()
-  const { isAuthenticated } = useAuthContext()
+  const { isLoading, isAuthenticated } = useAuthContext()
   const { handleSignIn } = useAuthHandler()
 
-  if (!isAuthenticated)
-    return <Button onClick={handleSignIn}>Sign in with Google</Button>
+  if (isLoading) {
+    return (
+      <div className='flex-1'>
+        <LoadingDots className='h-2 w-2' />
+      </div>
+    )
+  }
 
-  return (
+  const unauthenticated = () => (
+    <Button onClick={handleSignIn}>Sign in with Google</Button>
+  )
+
+  const authenticated = () => (
     <span className='flex items-center justify-between gap-4'>
       <Link href={`${APP_ROUTES.MARKET.href}`} passHref>
         <Button>Browse</Button>
@@ -70,4 +77,6 @@ export default function NavBar() {
       </Dropdown>
     </span>
   )
+
+  return isAuthenticated ? authenticated() : unauthenticated()
 }

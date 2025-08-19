@@ -6,16 +6,16 @@ import useFirebaseStore from '@/lib/stores/firebase-store'
 import useProfileStore from '@/lib/stores/profile-store'
 import { auth, provider } from '@/lib/utils/firebase'
 import { FirebaseError } from 'firebase/app'
-import { signInWithPopup } from 'firebase/auth'
+import { signInWithPopup, User } from 'firebase/auth'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { useLoadingStore } from '../providers/loading-provider'
+import { useLoadingStore } from '../../providers/loading-provider'
 import { clearSession } from '@/lib/helpers/server/clear-session'
 
 export const useAuthHandler = () => {
   const { setLoading } = useLoadingStore()
   const { setProfile } = useProfileStore()
-  const { setUser } = useFirebaseStore()
+  const { user, setUser } = useFirebaseStore()
 
   const router = useRouter()
 
@@ -63,6 +63,19 @@ export const useAuthHandler = () => {
     }
   }
 
+  const refreshSession = async (user: User) => {
+    try {
+      const token = await user.getIdToken(true)
+      const profile = await signInWithGoogle(token)
+      if (!profile) return false
+      setProfile(profile)
+      return true
+    } catch (error) {
+      console.log(error)
+      return false
+    }
+  }
+
   const globalSignOut = async () => {
     try {
       auth.signOut()
@@ -75,5 +88,5 @@ export const useAuthHandler = () => {
     }
   }
 
-  return { handleSignIn, handleSignOut }
+  return { handleSignIn, handleSignOut, refreshSession }
 }
