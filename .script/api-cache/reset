@@ -1,0 +1,3 @@
+#!/bin/bash
+
+docker exec -it api-cache-container redis-cli -a redispassword FLUSHALL
