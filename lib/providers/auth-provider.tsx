@@ -22,13 +22,15 @@ export interface AuthState {
 const AuthContext = createContext<AuthState | null>(null)
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const pathname = usePathname()
+
   const { handleSignOut, refreshSession } = useAuthHandler()
 
   const { status, setStatus, isAuthenticated, isLoading } = useAuthStatus()
 
-  const { user } = useAuthClient(setStatus)
-
-  const pathname = usePathname()
+  const { user } = useAuthClient((s: AuthStatus) =>
+    setStatus((p) => ({ ...p, client: s })),
+  )
 
   useEffect(() => {
     const authenticateServer = async () => {

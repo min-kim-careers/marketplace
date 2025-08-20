@@ -26,7 +26,7 @@ const useNotificationCount = () => {
     }
 
     getCount()
-  }, [])
+  }, [isAuthenticated])
 
   return count
 }
