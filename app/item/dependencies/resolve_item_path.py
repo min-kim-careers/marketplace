@@ -1,4 +1,4 @@
-from app.core.utils import decode_slug
+from app.core.helpers import decode_slug
 
 
 from fastapi import Path, Query

@@ -7,14 +7,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.chat.schemas.inbound import ChatRoomInDB
-from app.core import logger, utils
+from app.core import helpers, logger
 from app.db.models.chat_room import ChatRoomDB
 
 
 class ChatRepository:
     @staticmethod
     async def get_room_by_id(db: AsyncSession, room_id: UUID) -> ChatRoomDB | None:
-        return await utils.get_one_by(db, ChatRoomDB, id=room_id)
+        return await helpers.get_one_by(db, ChatRoomDB, id=room_id)
 
     @staticmethod
     async def get_all_rooms_by_user(

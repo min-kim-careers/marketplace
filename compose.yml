@@ -61,11 +61,10 @@ services:
 
       - SYNAPSE_URL=http://synapse-service:8008
       - SYNAPSE_SHARED_SECRET=REDACTED
-      - SYNAPSE_ADMIN_TOKEN=REDACTED
-
     env_file:
       - .env
       - .env.firebase
+      - .env.synapse
     volumes:
       - ./app:/code/app
       - ./images:/code/images

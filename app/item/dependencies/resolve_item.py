@@ -1,6 +1,6 @@
 from app.auth.firebase.dependencies import resolve_firebase_session
 from app.core.schemas.error import ErrorResponse
-from app.core.utils import decode_slug
+from app.core.helpers import decode_slug
 from app.db.models.item import ItemDB
 from app.db.models.user import UserDB
 from app.db.session import get_db

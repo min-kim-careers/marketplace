@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.core import logger, utils
+from app.core import helpers, logger
 from app.db.models.profile import ProfileDB
 from app.db.models.profile_extra import ProfileExtraDB
 from app.profile.constants.defaults import default_profile_extra
@@ -15,19 +15,19 @@ from app.profile.schemas.inbound import ProfileIn, ProfileInCreateDB, ProfileInU
 class ProfileRepository:
     @staticmethod
     async def get_by_user_id(db: AsyncSession, user_id: UUID) -> ProfileDB | None:
-        return await utils.get_one_by(db, ProfileDB, user_id=user_id)
+        return await helpers.get_one_by(db, ProfileDB, user_id=user_id)
 
     @staticmethod
     async def get_by_handle(db: AsyncSession, handle: str) -> ProfileDB | None:
-        return await utils.get_one_by(db, ProfileDB, handle=handle)
+        return await helpers.get_one_by(db, ProfileDB, handle=handle)
 
     @staticmethod
     async def exists_by_handle(db: AsyncSession, handle: str) -> bool:
-        return await utils.get_exists_by(db, ProfileDB, handle=handle)
+        return await helpers.get_exists_by(db, ProfileDB, handle=handle)
 
     @staticmethod
     async def exists_by_email(db: AsyncSession, email: str) -> bool:
-        return await utils.get_exists_by(db, ProfileDB, email=email)
+        return await helpers.get_exists_by(db, ProfileDB, email=email)
 
     @staticmethod
     async def create(

@@ -1,3 +1,4 @@
+import json
 from typing import Dict, List
 from uuid import UUID
 
@@ -16,15 +17,14 @@ from app.core import env_loader
 from app.core.schemas.error import ErrorResponse
 from app.core.schemas.outbound import APIResponse
 from app.core.security import verify_service_key
-from app.core.utils import encode_slug
+from app.core.helpers import encode_slug, json_print
 from app.db.models.profile import ProfileDB
 from app.db.models.user import UserDB
 from app.db.session import get_db
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from rich import print
+from rich import print, print_json
 
-from app.item.dependencies import resolve_item_slug_query
 from app.item.dependencies.resolve_item_path import resolve_item_slug_path
 
 chat_router = APIRouter(
@@ -53,12 +53,10 @@ async def get_room_slug(
         room = await ChatRepository.create(
             db,
             ChatRoomInDB(
-                room_id=room_id,
+                **res,
                 item_id=item_id,
                 user_1_id=user.id,
-                user_1_filter=res['user_1_filter'],
                 user_2_id=peer.id,
-                user_2_filter=res['user_2_filter'],
             ),
         )
 
@@ -67,7 +65,7 @@ async def get_room_slug(
             raise ErrorResponse(
                 message=(
                     "failed to create db room"
-                    + ("" if delete_id else " and delete synapse room")
+                    + ("" if delete_id else " and clean up synapse room")
                 )
             )
         logger.info(f"Room {room_id} added to DB")

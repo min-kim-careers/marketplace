@@ -3,7 +3,7 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core import logger
-from app.core.utils import get_one_by
+from app.core.helpers import get_one_by
 from app.db.models.profile import ProfileDB
 from app.db.models.user import UserDB
 from app.auth.user.schemas.inbound import UserInDB

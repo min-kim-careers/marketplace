@@ -1,6 +1,6 @@
 from typing import Optional
 from app.chat.repository import ChatRepository
-from app.core.utils import decode_slug
+from app.core.helpers import decode_slug
 from app.db.models.chat_room import ChatRoomDB
 from app.db.session import get_db
 

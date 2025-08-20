@@ -10,7 +10,7 @@ from app.auth.firebase.dependencies import (
     resolve_firebase_session,
     resolve_firebase_session_optional,
 )
-from app.core import utils
+from app.core import helpers
 from app.core.schemas.error import ErrorResponse
 from app.core.security import verify_service_key
 from app.db.models.user import UserDB
@@ -111,7 +111,7 @@ async def get_items_by_slugs(
     item_slugs: List[str] = Query(..., alias="itemSlugs"),
     db: AsyncSession = Depends(get_db),
 ) -> APIResponse:
-    item_ids = [utils.decode_slug(i) for i in item_slugs]
+    item_ids = [helpers.decode_slug(i) for i in item_slugs]
 
     item_dbs = await ItemRepository.get_by_items_and_user_id(db, item_ids)
 

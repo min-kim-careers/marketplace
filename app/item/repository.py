@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.core import logger
-from app.core.utils import get_one_by
+from app.core.helpers import get_one_by
 from app.item.schemas.inbound import ItemInDB
 from app.item.enums import ItemSortOrder, ItemStatus, ItemUserOption
 from app.db.models.item import ItemDB

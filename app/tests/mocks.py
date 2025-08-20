@@ -6,7 +6,7 @@ from sqlalchemy import select
 from app.core import logger
 from app.db.models.profile_extra import ProfileExtraDB
 from app.db.models.user import UserDB
-from app.core.utils import get_one_by
+from app.core.helpers import get_one_by
 from app.db.session import get_db
 from app.item.enums import ItemCategory, ItemCondition
 from app.db.models.item import ItemDB
@@ -95,8 +95,8 @@ async def seed_user_items(email, count):
         logger.info("User items seeded.")
 
 
-if __name__ == "__main__":
-    asyncio.gather(
+async def main():
+    await asyncio.gather(
         *(
             seed_user_items(
                 email,
@@ -108,3 +108,7 @@ if __name__ == "__main__":
             ]
         )
     )
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
