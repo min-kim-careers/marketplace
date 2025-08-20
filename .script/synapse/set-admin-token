@@ -1,0 +1,29 @@
+#!/bin/bash
+
+DIR=./api
+
+response=$(docker exec synapse-container curl -s -w "\n%{http_code}" -X POST \
+  "http://localhost:8008/_matrix/client/v3/login" \
+  -H "Content-Type: application/json" \
+  -d '{"type":"m.login.password","user":"admin","password":"admin"}')
+
+# Split response body and status
+body=$(echo "$response" | head -n -1)
+status=$(echo "$response" | tail -n1)
+
+# Check HTTP status
+if [ "$status" -ne 200 ]; then
+  echo "❌ curl failed with HTTP $status"
+  echo "Response: $body"
+  exit 1
+fi
+
+# Extract token
+TOKEN=REDACTED "$body" | jq -r '.access_token')
+
+if [ -n "$TOKEN" ] && [ "$TOKEN" != "null" ]; then
+  echo "SYNAPSE_ADMIN_TOKEN=$TOKEN" > "$DIR/.env.synapse"
+  echo "Token saved to $DIR/.env.synapse"
+else
+  echo "❌ Failed to get access_token"
+fi
