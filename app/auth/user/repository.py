@@ -17,10 +17,10 @@ class UserRepository:
         return await get_one_by(db, UserDB, user_id=user_id)
 
     @staticmethod
-    async def get_user_by_provider_id(
-        db: AsyncSession, provider_id: str
+    async def get_user_by_provider_user_id(
+        db: AsyncSession, provider_user_id: str
     ) -> UserDB | None:
-        return await get_one_by(db, UserDB, provider_id=provider_id)
+        return await get_one_by(db, UserDB, provider_user_id=provider_user_id)
 
     # @staticmethod
     # async def create_user(db: AsyncSession, user_in: UserInDB) -> UserDB | None:

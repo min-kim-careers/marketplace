@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 class UserDB(Base):
     __tablename__ = "users"
-    __table_args__ = (UniqueConstraint("provider_name", "provider_id"),)
+    __table_args__ = (UniqueConstraint("provider_name", "provider_user_id"),)
 
     id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
@@ -22,14 +22,15 @@ class UserDB(Base):
     )
 
     provider_name: Mapped[str] = mapped_column(nullable=False)
-    provider_id: Mapped[str] = mapped_column(nullable=False)
+    provider_user_id: Mapped[str] = mapped_column(nullable=False, unique=True)
+    chat_user_id: Mapped[str] = mapped_column(nullable=True, unique=True)
 
     profile: Mapped["ProfileDB"] = relationship(
         "ProfileDB",
         lazy="selectin",
         uselist=False,
         passive_deletes=True,
+        cascade="all, delete",
         back_populates='user',
     )
 
-    chat_id: Mapped[str] = mapped_column(nullable=True)

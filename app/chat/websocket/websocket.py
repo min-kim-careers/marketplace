@@ -61,7 +61,7 @@ async def websocket(
                     await handle_sync_data(
                         sync_data,
                         chat_room_id,
-                        user.chat_id,
+                        user.chat_user_id,
                         send_response,
                     )
                     since = sync_data.get("next_batch", since)

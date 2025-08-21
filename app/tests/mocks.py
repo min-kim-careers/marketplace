@@ -22,7 +22,7 @@ fake = Faker(locale="en_AU")
 def create_mock_user() -> UserDB:
     return UserDB(
         provider_name="firebase",
-        provider_id=str(uuid4()),
+        provider_user_id=str(uuid4()),
     )
 
 

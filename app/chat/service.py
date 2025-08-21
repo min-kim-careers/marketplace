@@ -3,7 +3,7 @@ from typing import Any, Callable, Optional
 import uuid
 import httpx
 from app.chat.helpers.handle_raise_for_status import handle_raise_for_status
-from app.chat.utils import token_store, notification_store
+from app.cache.stores import admin_token_store, token_store, notification_store
 from app.chat.helpers.create_mac import create_mac
 from app.chat.helpers.get_nonce import get_nonce
 from app.chat.schemas.synapse.inbound import (
@@ -16,18 +16,17 @@ from app.chat.schemas.outbound import MessageOut
 from app.db.models.user import UserDB
 
 SYNAPSE_URL = env_loader.SYNAPSE_URL
-SYNAPSE_ADMIN_TOKEN = env_loader.SYNAPSE_ADMIN_TOKEN
 
 
 class ChatService:
     @staticmethod
     async def register_new_user(
-        user_id: uuid.UUID, admin=False
+        user_id: str, admin=False
     ) -> Optional[SynapseRegisterResponse]:
         new_user = None
 
         try:
-            username = password = str(user_id)
+            username = password = user_id
 
             nonce = await get_nonce()
             mac = create_mac(nonce, username, password, admin)
@@ -58,23 +57,25 @@ class ChatService:
         try:
             async with httpx.AsyncClient() as client:
                 await client.post(
-                    f"{SYNAPSE_URL}/_synapse/admin/v1/deactivate/{user_id}?erase=true",
-                    headers={"Authorization": "Bearer {SYNAPSE_ADMIN_TOKEN}"},
+                    f"{SYNAPSE_URL}/_synapse/admin/v1/deactivate/{user_id}",
+                    headers={
+                        "Authorization": f"Bearer {admin_token_store.get_admin_token()}"
+                    },
+                    json={"erase": True},
                 )
-                pass
         except Exception as e:
             logger.error(e)
 
     @staticmethod
-    async def login(user_id: uuid.UUID) -> Optional[SynapseLoginResponse]:
+    async def login(user_id: str) -> Optional[SynapseLoginResponse]:
         try:
             async with httpx.AsyncClient() as client:
                 r = await client.post(
                     f"{SYNAPSE_URL}/_matrix/client/v3/login",
                     json={
                         "type": "m.login.password",
-                        "user": str(user_id),
-                        "password": str(user_id),
+                        "user": user_id,
+                        "password": user_id,
                     },
                 )
                 return SynapseLoginResponse.model_validate(r.json())
@@ -83,13 +84,14 @@ class ChatService:
 
     @staticmethod
     async def access_token(user_id: uuid.UUID):
-        token = token_store.get_token(user_id)
+        _user_id = str(user_id)
+        token = token_store.get_token(_user_id)
         if token:
             return token
-        data = await ChatService.login(user_id)
+        data = await ChatService.login(_user_id)
         if data:
             token = data.access_token
-            token_store.set_token(user_id, token)
+            token_store.set_token(_user_id, token)
             return token
 
     @staticmethod
@@ -140,7 +142,9 @@ class ChatService:
             async with httpx.AsyncClient() as client:
                 r = await client.post(
                     f"{SYNAPSE_URL}/_matrix/client/v3/createRoom",
-                    headers={"Authorization": f"Bearer {SYNAPSE_ADMIN_TOKEN}"},
+                    headers={
+                        "Authorization": f"Bearer {admin_token_store.get_admin_token()}"
+                    },
                     json=payload,
                 )
                 handle_raise_for_status(r)
@@ -174,8 +178,8 @@ class ChatService:
             async def create_room():
                 room_id = await ChatService.create_room(
                     invite=[
-                        user_1_db.chat_id,
-                        user_2_db.chat_id,
+                        user_1_db.chat_user_id,
+                        user_2_db.chat_user_id,
                     ]
                 )
                 return room_id
@@ -224,9 +228,9 @@ class ChatService:
 
             user_1_filter, user_2_filter = await create_filters(
                 access_token_1,
-                user_1_db.chat_id,
+                user_1_db.chat_user_id,
                 access_token_2,
-                user_2_db.chat_id,
+                user_2_db.chat_user_id,
                 room_id,
             )
             if not user_1_filter or not user_2_filter:
@@ -251,7 +255,7 @@ class ChatService:
                     "DELETE",
                     f"{SYNAPSE_URL}/_synapse/admin/v1/rooms/{room_id}",
                     headers={
-                        "Authorization": f"Bearer {env_loader.SYNAPSE_ADMIN_TOKEN}"
+                        "Authorization": f"Bearer {admin_token_store.get_admin_token()}"
                     },
                     json={},
                 )
@@ -283,41 +287,3 @@ class ChatService:
                 return r.json()["filter_id"]
         except Exception as e:
             logger.error(e)
-
-    # @staticmethod
-    # async def create_user_push_rule(access_token: str):
-    #     scope = "global"
-    #     kind = "content"
-    #     rule_id = "notify_text_messages_only"
-
-    #     try:
-    #         url = f"{SYNAPSE_URL}/_matrix/client/v3/pushrules/{scope}/{kind}/{rule_id}"
-    #         headers = {"Authorization": f"Bearer {access_token}"}
-    #         payload = {
-    #             "conditions": [
-    #                 {
-    #                     "kind": "event_match",
-    #                     "key": "type",
-    #                     "value": "m.room.message",
-    #                 },
-    #                 {
-    #                     "kind": "event_match",
-    #                     "key": "content.msgtype",
-    #                     "value": "m.text",
-    #                 },
-    #             ],
-    #             "actions": [
-    #                 {
-    #                     "notify": True,
-    #                 }
-    #             ],
-    #         }
-    #         async with httpx.AsyncClient() as client:
-    #             r = await client.put(
-    #                 url,
-    #                 headers=headers,
-    #                 json=payload,
-    #             )
-    #             handle_raise_for_status(r)
-    #     except Exception as e:
-    #         logger.error(e)

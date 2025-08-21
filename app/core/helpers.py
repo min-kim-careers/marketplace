@@ -1,13 +1,13 @@
 import base64
 import json
-from typing import Any
+from typing import Any, Iterable
 from uuid import UUID
-from rich import print_json
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_
-from fastapi import Path
 
 from app.core import logger
+from fastapi import Path
+from rich import print_json
+from sqlalchemy import and_, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def get_one_by(db: AsyncSession, model, **filters) -> Any | None:
@@ -50,3 +50,12 @@ def decode_slug(s: str) -> UUID:
 
 def json_print(data: dict):
     print_json(json.dumps(data))
+
+
+def deep_get(d: dict, keys: Iterable, default: Any = None) -> Any:
+    for k in keys:
+        if isinstance(d, dict):
+            d = d.get(k, default)
+        else:
+            return default
+    return d

@@ -7,6 +7,8 @@ from app.auth.firebase.dependencies import (
     resolve_firebase_query_token,
     resolve_firebase_session,
 )
+from app.cache.stores import notification_store
+from app.cache.stores.unread_count_store import UnreadCountStore
 from app.chat.dependencies.resolve_peer_user import resolve_peer_user
 from app.chat.repository import ChatRepository
 from app.chat.schemas.inbound import ChatRoomInDB
@@ -48,8 +50,8 @@ async def get_room_slug(
         res = await ChatService.create_room_with_users(user, peer)
         if not res:
             raise ErrorResponse(message="failed to create room with users")
-        
-        room_id = res['room_id']
+
+        room_id = res["room_id"]
         room = await ChatRepository.create(
             db,
             ChatRoomInDB(
@@ -86,9 +88,6 @@ async def get_unread_messages_count(
     if not sync_data:
         raise ErrorResponse(message="failed to get sync data")
 
-    total_unread = sum(
-        room["unread_notifications"]["notification_count"]
-        for room in sync_data.get("rooms", {}).get("join", {}).values()
-    )
+    unread_count = notification_store.unread_count(user, sync_data)
 
-    return APIResponse(data={"count": total_unread})
+    return APIResponse(data={"count": unread_count})

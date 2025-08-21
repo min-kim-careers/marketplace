@@ -6,5 +6,5 @@ from app.core.schemas.outbound import OutboundBase
 class UserInDB(OutboundBase):
     id: Optional[UUID] = None
     provider_name: str
-    provider_id: str
-    chat_id: str
+    provider_user_id: str
+    chat_user_id: str

@@ -31,7 +31,7 @@ async def get_session(
     firebase_user: FirebaseUser = Depends(get_firebase_user_from_body_token),
     db: AsyncSession = Depends(get_db),
 ) -> APIResponse:
-    user = await UserRepository.get_user_by_provider_id(db, firebase_user.uid)
+    user = await UserRepository.get_user_by_provider_user_id(db, firebase_user.uid)
     if not user:
         user = await FirebaseService.handle_new_user(db, firebase_user)
 

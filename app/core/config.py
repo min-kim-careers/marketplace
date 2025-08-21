@@ -33,7 +33,7 @@ class EnvLoader(BaseSettings):
 
     SYNAPSE_URL: str
     SYNAPSE_SHARED_SECRET: str
-    SYNAPSE_ADMIN_TOKEN: str
+    SYNAPSE_ADMIN_USER: str
 
     model_config = SettingsConfigDict(
         env_file=".env",

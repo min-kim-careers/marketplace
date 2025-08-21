@@ -59,12 +59,12 @@ class ProfileDB(Base):
         "UserDB",
         lazy="selectin",
         uselist=False,
-        passive_deletes=True,
         back_populates='profile'
     )
     extra: Mapped["ProfileExtraDB"] = relationship(
         "ProfileExtraDB",
         lazy="selectin",
         uselist=False,
+        cascade="all, delete",
         passive_deletes=True,
     )

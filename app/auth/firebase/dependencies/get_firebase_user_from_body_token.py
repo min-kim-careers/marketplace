@@ -25,8 +25,6 @@ async def get_firebase_user_from_body_token(
             picture=token_data["picture"],
         )
 
-        # logger.info(f"UID: {firebase_user.uid} verified, Email: {firebase_user.email}")
-
         return firebase_user
     except FirebaseError as e:
         logger.info(f"Id token verification failed: {e}")

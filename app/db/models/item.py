@@ -50,12 +50,22 @@ class ItemDB(Base):
 
     image_urls: Mapped[list[str]] = mapped_column(ARRAY(String), default=list)
 
-    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
+    user_id: Mapped[UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+    )
     user: Mapped["UserDB"] = relationship(
-        "UserDB", lazy="selectin", foreign_keys=[user_id]
+        "UserDB",
+        lazy="selectin",
+        foreign_keys=[user_id],
     )
 
-    buyer_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=True)
+    buyer_id: Mapped[UUID] = mapped_column(
+        ForeignKey("users.id"),
+        nullable=True,
+    )
     buyer: Mapped["UserDB"] = relationship(
-        "UserDB", lazy="selectin", foreign_keys=[buyer_id]
+        "UserDB",
+        lazy="selectin",
+        foreign_keys=[buyer_id],
     )

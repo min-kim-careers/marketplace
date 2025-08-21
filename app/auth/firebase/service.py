@@ -8,7 +8,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.chat.service import ChatService
 from app.core.schemas.error import ErrorResponse
-from app.profile.repository import ProfileRepository
 from app.profile.schemas.inbound import ProfileInCreateDB
 
 
@@ -17,7 +16,7 @@ class FirebaseService:
     async def handle_new_user(db: AsyncSession, firebase_user: FirebaseUser):
         new_user_id = uuid.uuid4()
 
-        chat_user = await ChatService.register_new_user(new_user_id)
+        chat_user = await ChatService.register_new_user(str(new_user_id))
         if not chat_user:
             raise ErrorResponse(status_code=500, message="Error creating chat user")
 
@@ -26,8 +25,8 @@ class FirebaseService:
             UserInDB(
                 id=new_user_id,
                 provider_name="firebase",
-                provider_id=firebase_user.uid,
-                chat_id=chat_user.user_id,
+                provider_user_id=firebase_user.uid,
+                chat_user_id=chat_user.user_id,
             ),
             ProfileInCreateDB(
                 email=firebase_user.email,
@@ -36,7 +35,7 @@ class FirebaseService:
         )
 
         if not new_user:
-            auth.delete_user(firebase_user.uid)
+            # auth.delete_user(firebase_user.uid)
 
             if chat_user:
                 await ChatService.delete_user(chat_user.user_id)
