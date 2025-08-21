@@ -24,7 +24,6 @@ const useNotificationCount = () => {
     const getCount = async () => {
       if (isAuthenticated) setCount(await getUnreadMessagesCount())
     }
-
     getCount()
   }, [isAuthenticated])
 

@@ -1,10 +1,9 @@
 'use client'
 
 import { verifySession } from '@/api/service/auth'
+import { useAuthClient } from '@/lib/hooks/auth/use-auth-client'
 import { useAuthHandler } from '@/lib/hooks/auth/use-auth-handler'
 import { useAuthStatus } from '@/lib/hooks/auth/use-auth-status'
-import { useAuthClient } from '@/lib/hooks/auth/use-auth-client'
-import { ProfileLoader } from '@/components/profile-loader'
 import { usePathname } from 'next/navigation'
 import { createContext, ReactNode, useContext, useEffect } from 'react'
 
@@ -39,9 +38,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       try {
         const authenticated = await verifySession()
         if (!authenticated && user) {
-          console.log('invalid session')
+          console.log('invalid or missing session, refreshing...')
           const refreshed = await refreshSession(user)
           if (!refreshed) {
+            await handleSignOut()
             throw new Error('session refresh failed')
           }
         }
@@ -49,7 +49,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } catch (error) {
         console.error(error)
         setStatus((p) => ({ ...p, server: 'unauthenticated' }))
-        await handleSignOut()
       }
     }
 

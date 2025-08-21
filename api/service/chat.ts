@@ -1,7 +1,6 @@
 'use server'
 
 import { _getRoomSlug, _getUnreadMessagesCount } from '@/api/endpoints'
-import { hasSession } from '@/lib/helpers/server/has-session'
 
 export const getRoomId = async (peerHandle: string, itemId: string) => {
   try {

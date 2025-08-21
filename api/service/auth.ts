@@ -17,6 +17,7 @@ export const signInWithGoogle = async (token: string) => {
 export const verifySession = async () => {
   try {
     if (!(await hasSession())) {
+      console.log('session missing')
       return false
     }
     await _verifySession()
@@ -30,6 +31,7 @@ export const verifySession = async () => {
 export const revokeSession = async () => {
   try {
     if (!(await hasSession())) {
+      console.log('session missing')
       return false
     }
     await _revokeSession()
