@@ -1,0 +1,4 @@
+#!/bin/bash
+
+docker exec -it synapse-db-container psql -U synapsedbuser -d synapsedb -c 'drop schema public cascade;'
+docker exec -it synapse-db-container psql -U synapsedbuser -d synapsedb -c 'create schema public;'
