@@ -92,7 +92,7 @@ async def seed_user_items(email, count):
         ]
         db.add_all(items)
         await db.commit()
-        logger.info("User items seeded.")
+        logger.info(f"User {email} items seeded.")
 
 
 async def main():

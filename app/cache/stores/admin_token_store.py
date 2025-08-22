@@ -13,9 +13,6 @@ class AdminTokenStore:
         return self.store.set(access_token)
 
     def get_admin_token(self) -> Optional[str]:
-        token = self.store.get()
-        if token:
-            return str(token)
-
+        return self.store.get()
 
 admin_token_store = AdminTokenStore()

@@ -3,7 +3,6 @@ from uuid import UUID
 
 from sqlalchemy import Select, String, and_, asc, cast, desc, func, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 
 from app.core import logger
 from app.core.helpers import get_one_by
@@ -46,9 +45,7 @@ class ItemRepository:
                 )
             )
         if query.categories:
-            stmt = stmt.where(
-                ItemDB.category.in_(query.categories)
-            )
+            stmt = stmt.where(ItemDB.category.in_(query.categories))
 
         return stmt
 
@@ -59,7 +56,7 @@ class ItemRepository:
         user_id: Optional[UUID] = None,
     ) -> Sequence[ItemDB] | None:
         try:
-            stmt = select(ItemDB).options(selectinload(ItemDB.user))
+            stmt = select(ItemDB)
 
             stmt = ItemRepository.build_query(stmt, query, user_id)
 

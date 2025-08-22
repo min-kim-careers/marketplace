@@ -3,7 +3,7 @@ from typing import Any, Callable, Optional
 import uuid
 import httpx
 from app.chat.helpers.handle_raise_for_status import handle_raise_for_status
-from app.cache.stores import admin_token_store, token_store, notification_store
+from app.cache.stores import admin_token_store, token_store
 from app.chat.helpers.create_mac import create_mac
 from app.chat.helpers.get_nonce import get_nonce
 from app.chat.schemas.synapse.inbound import (
@@ -54,12 +54,14 @@ class ChatService:
 
     @staticmethod
     async def delete_user(user_id: str):
+        admin_token = await ChatService.admin_access_token()
+
         try:
             async with httpx.AsyncClient() as client:
                 await client.post(
                     f"{SYNAPSE_URL}/_synapse/admin/v1/deactivate/{user_id}",
                     headers={
-                        "Authorization": f"Bearer {admin_token_store.get_admin_token()}"
+                        "Authorization": f"Bearer {admin_token}"
                     },
                     json={"erase": True},
                 )
@@ -83,15 +85,25 @@ class ChatService:
             logger.error(e)
 
     @staticmethod
-    async def access_token(user_id: uuid.UUID):
-        _user_id = str(user_id)
-        token = token_store.get_token(_user_id)
+    async def access_token(user_id: str):
+        token = token_store.get_token(user_id)
         if token:
             return token
-        data = await ChatService.login(_user_id)
+        data = await ChatService.login(user_id)
         if data:
             token = data.access_token
-            token_store.set_token(_user_id, token)
+            token_store.set_token(user_id, token)
+            return token
+
+    @staticmethod
+    async def admin_access_token():
+        token = admin_token_store.get_admin_token()
+        if token:
+            return token
+        data = await ChatService.login(admin_token_store.admin_user)
+        if data:
+            token = data.access_token
+            admin_token_store.set_admin_token(token)
             return token
 
     @staticmethod
@@ -134,6 +146,8 @@ class ChatService:
 
     @staticmethod
     async def create_room(invite: Optional[list[str]] = None) -> str | None:
+        admin_token = await ChatService.admin_access_token()
+
         try:
             payload = {}
             if invite:
@@ -143,7 +157,7 @@ class ChatService:
                 r = await client.post(
                     f"{SYNAPSE_URL}/_matrix/client/v3/createRoom",
                     headers={
-                        "Authorization": f"Bearer {admin_token_store.get_admin_token()}"
+                        "Authorization": f"Bearer {admin_token}"
                     },
                     json=payload,
                 )
@@ -186,8 +200,8 @@ class ChatService:
 
             async def get_access_tokens(user_1_id: uuid.UUID, user_2_id: uuid.UUID):
                 access_token_1, access_token_2 = await asyncio.gather(
-                    ChatService.access_token(user_1_id),
-                    ChatService.access_token(user_2_id),
+                    ChatService.access_token(str(user_1_id)),
+                    ChatService.access_token(str(user_2_id)),
                 )
                 return access_token_1, access_token_2
 
@@ -249,13 +263,15 @@ class ChatService:
 
     @staticmethod
     async def delete_room(room_id: str) -> str | None:
+        admin_token = await ChatService.admin_access_token()
+
         try:
             async with httpx.AsyncClient() as client:
                 r = await client.request(
                     "DELETE",
                     f"{SYNAPSE_URL}/_synapse/admin/v1/rooms/{room_id}",
                     headers={
-                        "Authorization": f"Bearer {admin_token_store.get_admin_token()}"
+                        "Authorization": f"Bearer {admin_token}"
                     },
                     json={},
                 )

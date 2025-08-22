@@ -1,15 +1,11 @@
-from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 
 from app.core import helpers, logger
 from app.db.models.profile import ProfileDB
-from app.db.models.profile_extra import ProfileExtraDB
 from app.profile.constants.defaults import default_profile_extra
-from app.profile.schemas.inbound import ProfileIn, ProfileInCreateDB, ProfileInUpdateDB
+from app.profile.schemas.inbound import ProfileInCreateDB, ProfileInUpdateDB
 
 
 class ProfileRepository:

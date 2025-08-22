@@ -4,7 +4,6 @@ from uuid import UUID
 
 from sqlalchemy import and_, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 
 from app.chat.schemas.inbound import ChatRoomInDB
 from app.core import helpers, logger

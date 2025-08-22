@@ -6,7 +6,6 @@ from app.db.models.rating import RatingDB
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 
 from app.rating.schemas.inbound import RatingIn
 

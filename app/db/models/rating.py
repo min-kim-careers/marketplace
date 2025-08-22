@@ -38,21 +38,27 @@ class RatingDB(Base):
         UUID(as_uuid=True), ForeignKey("users.id"), nullable=False
     )
     rater: Mapped["UserDB"] = relationship(
-        "UserDB", lazy="selectin", foreign_keys=[rater_id]
+        "UserDB",
+        lazy="selectin",
+        foreign_keys=[rater_id],
     )
 
     ratee_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("users.id"), nullable=False
     )
     ratee: Mapped["UserDB"] = relationship(
-        "UserDB", lazy="selectin", foreign_keys=[ratee_id]
+        "UserDB",
+        lazy="selectin",
+        foreign_keys=[ratee_id],
     )
 
     item_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("items.id"), nullable=False
     )
     item: Mapped["ItemDB"] = relationship(
-        "ItemDB", lazy="selectin", foreign_keys=[item_id]
+        "ItemDB",
+        lazy="selectin",
+        foreign_keys=[item_id],
     )
 
     rating: Mapped[int] = mapped_column(Integer, nullable=False)

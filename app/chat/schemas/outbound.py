@@ -1,6 +1,8 @@
 from datetime import datetime, timezone
 from typing import Any, Literal
+from uuid import UUID
 from app.core.schemas.outbound import OutboundBase
+from app.item.schemas.outbound import ItemOut
 
 ResponseType = Literal["previous", "messages"]
 
@@ -26,3 +28,7 @@ class MessageOut(OutboundBase):
                 event["origin_server_ts"] / 1000, tz=timezone.utc
             ).isoformat(),
         )
+    
+class ChatRoomOut(OutboundBase):
+    id: UUID
+    item: ItemOut
