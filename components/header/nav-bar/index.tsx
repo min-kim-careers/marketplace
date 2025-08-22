@@ -1,6 +1,6 @@
 import { getUnreadMessagesCount } from '@/api/service/chat'
 import LoadingDots from '@/components/loading-dots'
-import NotificationCountBadge from '@/components/notification-count-badge'
+import UnreadCountBadge from '@/components/unread-count-badge'
 import {
   Avatar,
   AvatarFallback,
@@ -15,24 +15,9 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { Button } from '../../shadcn/components/ui/button'
 import Dropdown from './dropdown'
-
-const useNotificationCount = () => {
-  const [count, setCount] = useState<number>(0)
-  const { isAuthenticated } = useAuthContext()
-
-  useEffect(() => {
-    const getCount = async () => {
-      if (isAuthenticated) setCount(await getUnreadMessagesCount())
-    }
-    getCount()
-  }, [isAuthenticated])
-
-  return count
-}
+import ChatOverlay from '@/components/chat/chat-overlay'
 
 export default function NavBar() {
-  const notificationCount = useNotificationCount()
-
   const { profile } = useProfileStore()
   const { isLoading, isAuthenticated } = useAuthContext()
   const { handleSignIn } = useAuthHandler()
@@ -59,9 +44,16 @@ export default function NavBar() {
         <Button>Post Ad</Button>
       </Link>
 
+      <div className='relative'>
+        <ChatOverlay>
+          <Button>Chat</Button>
+        </ChatOverlay>
+        <UnreadCountBadge />
+      </div>
+
       <Dropdown>
         <div>
-          <Avatar className='relative'>
+          <Avatar>
             <AvatarImage src={profile!.avatarUrl} />
             <AvatarFallback>
               {profile ? (
@@ -71,7 +63,6 @@ export default function NavBar() {
               )}
             </AvatarFallback>
           </Avatar>
-          <NotificationCountBadge count={notificationCount} />
         </div>
       </Dropdown>
     </span>

@@ -1,6 +1,6 @@
 'use client'
 
-import Chat from '@/components/chat'
+import ChatWindow from '@/components/chat/chat-window'
 import { handleChatPayload } from '@/lib/handlers/chat-handlers'
 import { toPath } from '@/lib/helpers/to-path'
 import useFirebaseStore from '@/lib/stores/firebase-store'
@@ -78,7 +78,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
       }}
     >
       {children}
-      {url && <Chat />}
+      {url && <ChatWindow />}
     </ChatContext.Provider>
   )
 }

@@ -1,10 +1,5 @@
 import LoadingDots from '@/components/loading-dots'
 import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@/components/shadcn/components/ui/avatar'
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -15,7 +10,6 @@ import {
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { useAuthHandler } from '@/lib/hooks/auth/use-auth-handler'
 import useProfileStore from '@/lib/stores/profile-store'
-import { CircleUserIcon } from 'lucide-react'
 import Link from 'next/link'
 import { PropsWithChildren } from 'react'
 

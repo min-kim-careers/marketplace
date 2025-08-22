@@ -27,8 +27,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const { status, setStatus, isAuthenticated, isLoading } = useAuthStatus()
 
-  const { user } = useAuthClient((s: AuthStatus) =>
-    setStatus((p) => ({ ...p, client: s })),
+  const { user } = useAuthClient((client: AuthStatus) =>
+    setStatus((p) => ({
+      ...p,
+      client,
+      ...(client === 'unauthenticated' && { server: 'unauthenticated' }),
+    })),
   )
 
   useEffect(() => {
@@ -48,7 +52,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setStatus((p) => ({ ...p, server: 'authenticated' }))
       } catch (error) {
         console.error(error)
-        setStatus((p) => ({ ...p, server: 'unauthenticated' }))
+        setStatus((p) => ({
+          ...p,
+          server: 'unauthenticated',
+          client: 'unauthenticated',
+        }))
       }
     }
 

@@ -1,4 +1,4 @@
-import Chat from '@/components/chat'
+import ChatWindow from '@/components/chat/chat-window'
 import Footer from '@/components/footer'
 import Header from '@/components/header'
 import { AuthProvider } from '@/lib/providers/auth-provider'

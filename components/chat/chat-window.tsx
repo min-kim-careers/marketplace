@@ -9,7 +9,7 @@ import { ChatMessage } from '@/lib/types/chat-message'
 import { Minus } from 'lucide-react'
 import { FormEvent, useEffect, useRef, useState } from 'react'
 
-export default function Chat() {
+export default function ChatWindow() {
   const [open, setOpen] = useState<boolean>(true)
   const containerRef = useRef<HTMLDivElement>(null)
 
