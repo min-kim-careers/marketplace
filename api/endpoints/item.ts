@@ -26,15 +26,15 @@ export const _getItemsCountForUser = async () =>
     .withSession()
     .asResult<{ count: number }>()
 
-export const _getItemBySlug = async (itemSlug: string) =>
+export const _getItemByAlias = async (itemAlias: string) =>
   (await client())
-    .get(`/api/items/item/${itemSlug}`)
+    .get(`/api/items/item/${itemAlias}`)
     .withSession()
     .asResult<{ item: Item }>()
 
-export const _deleteItemByUser = async (itemSlug: string) =>
+export const _deleteItemByUser = async (itemAlias: string) =>
   (await client())
-    .delete(`/api/items/item/${itemSlug}`)
+    .delete(`/api/items/item/${itemAlias}`)
     .withSession()
     .asResult<{ deleted: boolean }>()
 
@@ -53,7 +53,7 @@ export interface _UpsertItemRequest {
 }
 export const _upsertItem = async (
   form: FormData,
-  query: { itemSlug?: string },
+  query: { itemAlias?: string },
 ) =>
   (await client())
     .put(`/api/items`)

@@ -1,11 +1,15 @@
 'use server'
 
-import { _getRooms, _getRoomSlug, _getUnreadMessagesCount } from '@/api/endpoints'
+import {
+  _getRooms,
+  _getRoom,
+  _getUnreadMessagesCount,
+} from '@/api/endpoints'
 
-export const getRoomId = async (peerHandle: string, itemId: string) => {
+export const getRoom = async (peerHandle: string, itemId: string) => {
   try {
-    const { roomSlug } = await _getRoomSlug(peerHandle, itemId)
-    return roomSlug
+    const { room } = await _getRoom(peerHandle, itemId)
+    return room
   } catch (error) {
     console.error(error)
   }
@@ -13,13 +17,12 @@ export const getRoomId = async (peerHandle: string, itemId: string) => {
 
 export const getRooms = async () => {
   try {
-    const {  } = await _getRooms()
-    // return roomSlug
+    const { rooms } = await _getRooms()
+    return rooms
   } catch (error) {
     console.error(error)
   }
 }
-
 
 export const getUnreadMessagesCount = async () => {
   try {

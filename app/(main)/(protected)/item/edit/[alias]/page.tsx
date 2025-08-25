@@ -1,18 +1,18 @@
 'use server'
 
-import { getItemBySlug, getItemImageLimit } from '@/api'
-import ItemEdit from '@/app/(main)/(protected)/item/edit/[slug]'
+import { getItemByAlias, getItemImageLimit } from '@/api'
+import ItemEdit from '@/app/(main)/(protected)/item/edit/[alias]'
 import { notFound } from 'next/navigation'
 
 export default async function Page({
   params,
 }: {
-  params: Promise<{ slug: string }>
+  params: Promise<{ alias: string }>
 }) {
-  const { slug } = await params
-  if (!slug) notFound()
+  const { alias } = await params
+  if (!alias) notFound()
 
-  const item = await getItemBySlug(slug)
+  const item = await getItemByAlias(alias)
   if (!item) throw new Error("Item not found")
 
   const imageLimit = await getItemImageLimit()

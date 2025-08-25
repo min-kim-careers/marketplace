@@ -6,6 +6,7 @@ import { toPath } from '@/lib/helpers/to-path'
 import useFirebaseStore from '@/lib/stores/firebase-store'
 import { ChatMessage } from '@/lib/types/chat-message'
 import { ChatPayload } from '@/lib/types/chat-payload'
+import { ChatRoom } from '@/lib/types/chat-room'
 import {
   createContext,
   Dispatch,
@@ -13,7 +14,7 @@ import {
   SetStateAction,
   useContext,
   useEffect,
-  useState
+  useState,
 } from 'react'
 import useWebSocket from 'react-use-websocket'
 import { WebSocketHook } from 'react-use-websocket/dist/lib/types'
@@ -38,14 +39,15 @@ const useLoadToken = () => {
 interface ChatState {
   hook: WebSocketHook
   messages: ChatMessage[]
-  setRoomId: Dispatch<SetStateAction<string | null>>
+  room: ChatRoom | null
+  setRoom: Dispatch<SetStateAction<ChatRoom | null>>
 }
 
 const ChatContext = createContext<ChatState | null>(null)
 
 export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const token = useLoadToken()
-  const [roomId, setRoomId] = useState<string | null>(null)
+  const [room, setRoom] = useState<ChatRoom | null>(null)
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [url, setUrl] = useState<string | null>(null)
 
@@ -57,24 +59,25 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
       handleChatPayload(payload, { setMessages })
     },
     onClose: () => {
-      // setRoomId(null)
-      // setMessages([])
-      // setUrl(null)
+      setRoom(null)
+      setMessages([])
+      setUrl(null)
     },
   })
 
   useEffect(() => {
-    if (token && roomId) {
-      setUrl(toPath('ws://localhost/chat/ws', { token, roomId }))
+    if (token && room) {
+      setUrl(toPath('ws://localhost/chat/ws', { token, roomAlias: room.id }))
     }
-  }, [token, roomId])
+  }, [token, room])
 
   return (
     <ChatContext.Provider
       value={{
         hook: ws,
         messages,
-        setRoomId,
+        room,
+        setRoom,
       }}
     >
       {children}

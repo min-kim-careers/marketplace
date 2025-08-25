@@ -1,21 +1,19 @@
-import { getUnreadMessagesCount } from '@/api/service/chat'
+import ChatRoomsModal from '@/components/chat/chat-rooms-modal'
 import LoadingDots from '@/components/loading-dots'
-import UnreadCountBadge from '@/components/unread-count-badge'
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from '@/components/shadcn/components/ui/avatar'
+import UnreadCountBadge from '@/components/unread-count-badge'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { useAuthHandler } from '@/lib/hooks/auth/use-auth-handler'
 import { useAuthContext } from '@/lib/providers/auth-provider'
 import useProfileStore from '@/lib/stores/profile-store'
 import { CircleUserIcon } from 'lucide-react'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
 import { Button } from '../../shadcn/components/ui/button'
 import Dropdown from './dropdown'
-import ChatOverlay from '@/components/chat/chat-overlay'
 
 export default function NavBar() {
   const { profile } = useProfileStore()
@@ -45,9 +43,9 @@ export default function NavBar() {
       </Link>
 
       <div className='relative'>
-        <ChatOverlay>
+        <ChatRoomsModal>
           <Button>Chat</Button>
-        </ChatOverlay>
+        </ChatRoomsModal>
         <UnreadCountBadge />
       </div>
 

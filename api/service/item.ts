@@ -2,7 +2,7 @@
 
 import {
   _deleteItemByUser,
-  _getItemBySlug,
+  _getItemByAlias,
   _getItems,
   _getItemsCountForUser,
   _getProfileExtra,
@@ -53,18 +53,18 @@ export const getUserItems = async (params: ItemPageParams) => {
   }
 }
 
-export const getItemBySlug = async (itemSlug: string) => {
+export const getItemByAlias = async (itemAlias: string) => {
   try {
-    const { item } = await _getItemBySlug(itemSlug)
+    const { item } = await _getItemByAlias(itemAlias)
     return item
   } catch (error) {
     console.error(error)
   }
 }
 
-export const deleteItem = async (itemSlug: string) => {
+export const deleteItem = async (itemAlias: string) => {
   try {
-    await _deleteItemByUser(itemSlug)
+    await _deleteItemByUser(itemAlias)
     return true
   } catch (error) {
     console.error(error)
@@ -79,7 +79,7 @@ export const upsertItem = async (
 ) => {
   try {
     const form = await toFormData(request)
-    const res = await _upsertItem(form, { itemSlug: itemId })
+    const res = await _upsertItem(form, { itemAlias: itemId })
     return res.item
   } catch (error) {
     console.error(error)

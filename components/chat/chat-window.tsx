@@ -3,25 +3,29 @@
 import { Button } from '@/components/shadcn/components/ui/button'
 import { Input } from '@/components/shadcn/components/ui/input'
 import { cn } from '@/components/shadcn/lib/utils'
+import Spinner from '@/components/spinner'
 import { formatDate } from '@/lib/helpers/format-date'
 import { useChatContext } from '@/lib/providers/chat-provider'
+import useProfileStore from '@/lib/stores/profile-store'
 import { ChatMessage } from '@/lib/types/chat-message'
-import { Minus } from 'lucide-react'
+import { Minus, X } from 'lucide-react'
 import { FormEvent, useEffect, useRef, useState } from 'react'
 
 export default function ChatWindow() {
   const [open, setOpen] = useState<boolean>(true)
   const containerRef = useRef<HTMLDivElement>(null)
+  const { profile } = useProfileStore()
 
   const {
     hook: {
-      // getWebSocket,
+      getWebSocket,
       // lastJsonMessage,
       // lastMessage,
       readyState,
       sendJsonMessage,
     },
     messages,
+    room,
   } = useChatContext()
 
   useEffect(() => {
@@ -44,17 +48,31 @@ export default function ChatWindow() {
   return (
     <div
       className={cn(
-        'fixed bottom-0 right-0 z-[75] m-2 flex rounded border-2 shadow bg-background transition-all duration-300',
-        open ? 'h-[36rem] max-h-[95vh] w-96' : 'h-16 w-16',
+        'fixed bottom-0 right-0 z-40 m-2 flex rounded border bg-background shadow transition-all duration-300',
+        open
+          ? 'h-[36rem] max-h-[95vh] w-96'
+          : 'h-16 w-32 rounded-xl hover:scale-105',
       )}
     >
-      {open ? (
+      {open && room && profile ? (
         <div className='relative flex flex-1 flex-col gap-2 p-2'>
           {/* header */}
-          <div className='flex items-center justify-end'>
-            <button onClick={() => setOpen(false)}>
-              <Minus />
-            </button>
+          <div className='flex items-center justify-between'>
+            <span>
+              <span className='font-semibold'>{room.item.name}</span>
+              {room.item.profile.handle === profile.handle && (
+                <span> - {room.item.profile.handle}</span>
+              )}
+            </span>
+
+            <span className='space-x-2'>
+              <button onClick={() => setOpen(false)}>
+                <Minus />
+              </button>
+              <button onClick={() => getWebSocket()?.close()}>
+                <X />
+              </button>
+            </span>
           </div>
 
           {/* main */}
@@ -87,8 +105,15 @@ export default function ChatWindow() {
             </form>
           </div>
         </div>
+      ) : room ? (
+        <button
+          onClick={() => setOpen(true)}
+          className='flex flex-1 items-center justify-center p-2'
+        >
+          {room.item.name}
+        </button>
       ) : (
-        <button onClick={() => setOpen(true)} className='h-full w-full' />
+        <Spinner />
       )}
     </div>
   )
@@ -102,7 +127,12 @@ function MessageBubble({ message }: { message: ChatMessage }) {
         message.isMe ? 'justify-end' : 'justify-start',
       )}
     >
-      <div className='rounded-2xl border gap-1 flex p-2 items-baseline'>
+      <div
+        className={cn(
+          'flex items-center gap-1 rounded-2xl border p-2',
+          message.isMe ? '' : 'bg-secondary',
+        )}
+      >
         <span>{message.content}</span>
         <span className='text-xs'>{formatDate(message.timestamp)}</span>
       </div>

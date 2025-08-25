@@ -1,4 +1,4 @@
-import { getRoomId } from '@/api/service/chat'
+import { getRoom } from '@/api/service/chat'
 import DateFormatter from '@/components/date-formatter'
 import ItemImagePreview from '@/components/item-image-preview'
 import {
@@ -21,15 +21,15 @@ import { CircleUserIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
 export default function DetailSection({ item }: { item: Item }) {
-  const { setRoomId } = useChatContext()
+  const { setRoom } = useChatContext()
   const { setLoading } = useLoadingStore()
 
   const handleChatButton = async () => {
     try {
       setLoading('Loading chat room...')
-      const roomId = await getRoomId(item.profile.handle, item.id)
-      if (!roomId) throw new Error()
-      setRoomId(roomId)
+      const room = await getRoom(item.profile.handle, item.id)
+      if (!room) throw new Error()
+      setRoom(room)
     } catch (error) {
       toast('Something went wrong')
     } finally {
