@@ -15,7 +15,7 @@ from uuid import UUID
 
 async def resolve_upsert_item(
     item_in: Annotated[ItemInForm, Form()],
-    user_id: UUID = Path(...),
+    user_id: UUID = Path(alias='userId'),
     db: AsyncSession = Depends(get_db),
 ):
     extra = await ProfileService.get_profile_extra(db, user_id)

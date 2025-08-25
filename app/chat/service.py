@@ -132,7 +132,7 @@ class ChatService:
     async def send_message(access_token: str, room_id: str, message: str):
         try:
             async with httpx.AsyncClient() as client:
-                txn_id = str(uuid.uuid4())  # unique transaction ID
+                txn_id = str(uuid.uuid4())
                 r = await client.put(
                     f"{SYNAPSE_URL}/_matrix/client/v3/rooms/{room_id}/send/m.room.message/{txn_id}",
                     headers={"Authorization": f"Bearer {access_token}"},

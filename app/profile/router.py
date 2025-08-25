@@ -57,7 +57,7 @@ async def upsert_profile(
 @profiles_router.get("/handle/{handle}", response_model=APIResponse)
 async def exists_by_handle(
     _=Depends(resolve_firebase_session),
-    handle: str = Path(...),
+    handle: str = Path(alias="handle"),
     db: AsyncSession = Depends(get_db),
 ) -> APIResponse:
     return APIResponse(
@@ -70,7 +70,7 @@ async def exists_by_handle(
 @profiles_router.get("/email/{email}", response_model=APIResponse)
 async def exists_by_email(
     _=Depends(resolve_firebase_session),
-    email: str = Path(...),
+    email: str = Path(alias="email"),
     db: AsyncSession = Depends(get_db),
 ) -> APIResponse:
     return APIResponse(

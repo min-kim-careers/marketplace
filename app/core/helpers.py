@@ -36,13 +36,13 @@ async def get_exists_by(db: AsyncSession, model, **filters) -> bool:
         return False
 
 
-def encode_slug(u: UUID) -> str:
+def encode_alias(u: UUID) -> str:
     b = u.bytes
-    slug = base64.urlsafe_b64encode(b).rstrip(b"=").decode()
-    return slug
+    alias = base64.urlsafe_b64encode(b).rstrip(b"=").decode()
+    return alias
 
 
-def decode_slug(s: str) -> UUID:
+def decode_alias(s: str) -> UUID:
     padding = "=" * (-len(s) % 4)
     b = base64.urlsafe_b64decode(s + padding)
     return UUID(bytes=b)

@@ -6,7 +6,7 @@ from uuid import UUID
 from app.auth.firebase.dependencies import resolve_firebase_query_token
 from app.cache.stores import unread_count_store
 from app.chat.dependencies.resolve_websocket import (
-    resolve_websocket,
+    resolve_websocket_connection,
 )
 from app.chat.schemas.outbound import ChatResponse, MessageOut, ResponseType
 from app.chat.service import ChatService
@@ -23,7 +23,7 @@ chat_ws_router = APIRouter(prefix="/api/chat/ws")
 @chat_ws_router.websocket("")
 async def websocket(
     websocket: WebSocket,
-    result: dict = Depends(resolve_websocket),
+    result: dict = Depends(resolve_websocket_connection),
 ):
     await websocket.accept()
 
@@ -56,8 +56,7 @@ async def websocket(
         try:
             while True:
                 msg = await websocket.receive_json()
-                r = await ChatService.send_message(access_token, peer_id, msg)
-                if r:
+                if await ChatService.send_message(access_token, room_id, msg):
                     unread_count_store.incr(peer_id)
         except Exception as e:
             logger.error(f"receiver task error: {e}")

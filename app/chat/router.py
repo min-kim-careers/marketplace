@@ -9,12 +9,13 @@ from app.cache.stores.unread_count_store import UnreadCountStore
 from app.chat.dependencies.resolve_peer_user import resolve_peer_user
 from app.chat.repository import ChatRepository
 from app.chat.schemas.inbound import ChatRoomInDB
+from app.chat.schemas.outbound import ChatRoomOut
 from app.chat.service import ChatService
 from app.core import logger
 from app.core.schemas.error import ErrorResponse
 from app.core.schemas.outbound import APIResponse
 from app.core.security import verify_service_key
-from app.core.helpers import encode_slug, json_print
+from app.core.helpers import encode_alias, json_print
 from app.db.models.profile import ProfileDB
 from app.db.models.user import UserDB
 from app.db.session import get_db
@@ -22,7 +23,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from rich import print
 
-from app.item.dependencies.resolve_item_path import resolve_item_slug_path
+from app.item.dependencies.resolve_item_path import resolve_item_alias_path
 
 chat_router = APIRouter(
     prefix="/api/chat",
@@ -31,23 +32,23 @@ chat_router = APIRouter(
 )
 
 
-@chat_router.post("/rooms/peer/{peerHandle}/item/{itemSlug}")
-async def get_room_slug(
+@chat_router.post("/rooms/peer/{peerHandle}/item/{itemAlias}")
+async def get_room(
     user: UserDB = Depends(resolve_firebase_session),
     peer: UserDB = Depends(resolve_peer_user),
-    item_id: UUID = Depends(resolve_item_slug_path),
+    item_id: UUID = Depends(resolve_item_alias_path),
     db: AsyncSession = Depends(get_db),
 ):
-    room = await ChatRepository.get_room_by_user_and_peer(db, user.id, peer.id)
+    room_db = await ChatRepository.get_room_by_user_and_peer(db, user.id, peer.id)
 
-    room_slug = None
-    if not room:
+    room = None
+    if not room_db:
         res = await ChatService.create_room_with_users(user, peer)
         if not res:
             raise ErrorResponse(message="failed to create room with users")
 
         room_id = res["room_id"]
-        room = await ChatRepository.create(
+        room_db = await ChatRepository.create(
             db,
             ChatRoomInDB(
                 **res,
@@ -57,7 +58,7 @@ async def get_room_slug(
             ),
         )
 
-        if not room:
+        if not room_db:
             delete_id = await ChatService.delete_room(room_id)
             raise ErrorResponse(
                 message=(
@@ -67,8 +68,8 @@ async def get_room_slug(
             )
         logger.info(f"Room {room_id} added to DB")
 
-    room_slug = encode_slug(room.id)
-    return APIResponse(data={"roomSlug": room_slug})
+    room = ChatRoomOut.from_db(room_db)
+    return APIResponse(data={"room": room})
 
 
 @chat_router.get("/messages/unread/count")
@@ -96,6 +97,9 @@ async def get_rooms(
     db: AsyncSession = Depends(get_db),
 ):
     rooms_db = await ChatRepository.get_all_rooms_by_user(db, user.id)
-    print(rooms_db)
-    
+    if not rooms_db:
+        raise ErrorResponse(message="error fetching rooms")
 
+    rooms = [ChatRoomOut.from_db(r) for r in rooms_db]
+
+    return APIResponse(data={"rooms": rooms})

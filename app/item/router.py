@@ -16,7 +16,7 @@ from app.core.security import verify_service_key
 from app.db.models.user import UserDB
 from app.db.session import get_db
 from app.db.models.item import ItemDB
-from app.item.dependencies import resolve_item, resolve_item_slug_query
+from app.item.dependencies import resolve_item, resolve_item_alias_query
 from app.item.repository import ItemRepository
 from app.item.schemas.inbound import ItemInForm, ItemsQuery
 from app.item.schemas.outbound import ItemOut
@@ -52,8 +52,8 @@ async def get_item_count_for_user(
     )
 
 
-@items_router.get("/item/{item_slug}", response_model=APIResponse)
-async def get_item_by_slug(
+@items_router.get("/item/{itemAlias}", response_model=APIResponse)
+async def get_item_by_alias(
     item_db: ItemDB = Depends(resolve_item),
 ) -> APIResponse:
     return APIResponse(
@@ -61,8 +61,8 @@ async def get_item_by_slug(
     )
 
 
-@items_router.delete("/item/{item_slug}", response_model=APIResponse)
-async def delete_item_by_slug(
+@items_router.delete("/item/{itemAlias}", response_model=APIResponse)
+async def delete_item_by_alias(
     item_db: ItemDB = Depends(resolve_item),
     db: AsyncSession = Depends(get_db),
 ) -> APIResponse:
@@ -75,7 +75,7 @@ async def delete_item_by_slug(
 async def upsert_item(
     item_in: Annotated[ItemInForm, Form()],
     user: UserDB = Depends(resolve_firebase_session),
-    item_id: UUID | None = Depends(resolve_item_slug_query),
+    item_id: UUID | None = Depends(resolve_item_alias_query),
     db: AsyncSession = Depends(get_db),
 ) -> APIResponse:
     item_db = None
@@ -105,13 +105,13 @@ async def upsert_item(
     )
 
 
-@items_router.get("/slugs", response_model=APIResponse)
-async def get_items_by_slugs(
+@items_router.get("/aliases", response_model=APIResponse)
+async def get_items_by_aliases(
     _=Depends(resolve_firebase_session),
-    item_slugs: List[str] = Query(..., alias="itemSlugs"),
+    item_aliases: List[str] = Query(..., alias="aliases"),
     db: AsyncSession = Depends(get_db),
 ) -> APIResponse:
-    item_ids = [helpers.decode_slug(i) for i in item_slugs]
+    item_ids = [helpers.decode_alias(i) for i in item_aliases]
 
     item_dbs = await ItemRepository.get_by_items_and_user_id(db, item_ids)
 
