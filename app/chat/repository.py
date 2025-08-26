@@ -32,8 +32,8 @@ class ChatRepository:
             logger.info(e)
 
     @staticmethod
-    async def get_room_by_user_and_peer(
-        db: AsyncSession, user_id: UUID, peer_id: UUID
+    async def get_room_by_users_and_item(
+        db: AsyncSession, user_id: UUID, peer_id: UUID, item_id: UUID
     ) -> ChatRoomDB | None:
         try:
             stmt = select(ChatRoomDB).where(
@@ -46,7 +46,10 @@ class ChatRepository:
                         ChatRoomDB.user_1_id == peer_id,
                         ChatRoomDB.user_2_id == user_id,
                     ),
-                )
+                ),
+                and_(
+                    ChatRoomDB.item_id == item_id,
+                ),
             )
             result = await db.execute(stmt)
             return result.scalar_one_or_none()

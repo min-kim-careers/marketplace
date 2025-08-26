@@ -27,6 +27,8 @@ async def resolve_websocket_connection(
     if not room:
         await websocket.close(code=1008, reason="chat room not found")
         return
+    
+    
 
     peer = None
     if user.id == room.user_1_id:

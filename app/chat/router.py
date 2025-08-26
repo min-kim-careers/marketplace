@@ -39,7 +39,9 @@ async def get_room(
     item_id: UUID = Depends(resolve_item_alias_path),
     db: AsyncSession = Depends(get_db),
 ):
-    room_db = await ChatRepository.get_room_by_user_and_peer(db, user.id, peer.id)
+    room_db = await ChatRepository.get_room_by_users_and_item(
+        db, user.id, peer.id, item_id
+    )
 
     room = None
     if not room_db:
