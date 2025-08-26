@@ -53,13 +53,13 @@ class ChatService:
             logger.error(e)
 
     @staticmethod
-    async def delete_user(user_id: str):
+    async def delete_user(chat_id: str):
         admin_token = await ChatService.admin_access_token()
 
         try:
             async with httpx.AsyncClient() as client:
                 await client.post(
-                    f"{SYNAPSE_URL}/_synapse/admin/v1/deactivate/{user_id}",
+                    f"{SYNAPSE_URL}/_synapse/admin/v1/deactivate/{chat_id}",
                     headers={
                         "Authorization": f"Bearer {admin_token}"
                     },
@@ -69,15 +69,15 @@ class ChatService:
             logger.error(e)
 
     @staticmethod
-    async def login(user_id: str) -> Optional[SynapseLoginResponse]:
+    async def login(chat_id: str) -> Optional[SynapseLoginResponse]:
         try:
             async with httpx.AsyncClient() as client:
                 r = await client.post(
                     f"{SYNAPSE_URL}/_matrix/client/v3/login",
                     json={
                         "type": "m.login.password",
-                        "user": user_id,
-                        "password": user_id,
+                        "user": chat_id,
+                        "password": chat_id,
                     },
                 )
                 return SynapseLoginResponse.model_validate(r.json())
@@ -85,14 +85,14 @@ class ChatService:
             logger.error(e)
 
     @staticmethod
-    async def access_token(user_id: str):
-        token = token_store.get_token(user_id)
+    async def access_token(chat_id: str):
+        token = token_store.get_token(chat_id)
         if token:
             return token
-        data = await ChatService.login(user_id)
+        data = await ChatService.login(chat_id)
         if data:
             token = data.access_token
-            token_store.set_token(user_id, token)
+            token_store.set_token(chat_id, token)
             return token
 
     @staticmethod
@@ -192,8 +192,8 @@ class ChatService:
             async def create_room():
                 room_id = await ChatService.create_room(
                     invite=[
-                        user_1_db.chat_user_id,
-                        user_2_db.chat_user_id,
+                        user_1_db.chat_id,
+                        user_2_db.chat_id,
                     ]
                 )
                 return room_id
@@ -215,14 +215,14 @@ class ChatService:
 
             async def create_filters(
                 access_token_1: str,
-                user_id_1: str,
+                chat_id_1: str,
                 access_token_2: str,
-                user_id_2,
+                chat_id_2,
                 room_id: str,
             ):
                 user_1_filter, user_2_filter = await asyncio.gather(
-                    ChatService.create_room_filter(access_token_1, user_id_1, room_id),
-                    ChatService.create_room_filter(access_token_2, user_id_2, room_id),
+                    ChatService.create_room_filter(access_token_1, chat_id_1, room_id),
+                    ChatService.create_room_filter(access_token_2, chat_id_2, room_id),
                 )
                 return user_1_filter, user_2_filter
 
@@ -242,9 +242,9 @@ class ChatService:
 
             user_1_filter, user_2_filter = await create_filters(
                 access_token_1,
-                user_1_db.chat_user_id,
+                user_1_db.chat_id,
                 access_token_2,
-                user_2_db.chat_user_id,
+                user_2_db.chat_id,
                 room_id,
             )
             if not user_1_filter or not user_2_filter:
@@ -281,9 +281,9 @@ class ChatService:
             logger.error(e)
 
     @staticmethod
-    async def create_room_filter(access_token: str, user_id: str, room_id: str):
+    async def create_room_filter(access_token: str, chat_id: str, room_id: str):
         try:
-            url = f"{SYNAPSE_URL}/_matrix/client/v3/user/{user_id}/filter"
+            url = f"{SYNAPSE_URL}/_matrix/client/v3/user/{chat_id}/filter"
             headers = {"Authorization": f"Bearer {access_token}"}
             payload = {
                 "room": {

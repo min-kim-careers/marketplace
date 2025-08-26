@@ -26,7 +26,10 @@ class UnreadCountStore:
         if self.unread_ready_store.get(user_id) == "1":
             return int(self.unread_store.get(user_id))
 
-        join_rooms: list[dict] = deep_get(sync_data, ["rooms", "join"], {}).values()
+        join_rooms = deep_get(
+            sync_data,
+            [("rooms", {}), ("join", {})],
+        ).values()
         if not join_rooms:
             self.unread_ready_store.set("0", user_id)
             return 0
@@ -34,7 +37,10 @@ class UnreadCountStore:
         message_count = read_count = 0
         for room in join_rooms:
 
-            events: list[dict] = deep_get(room, ["timeline", "events"], [])
+            events = deep_get(
+                room,
+                [("timeline", {}), ("events", [])],
+            )
             for e in events:
                 print(e["sender"], chat_user_id, e["type"])
                 if e["sender"] != chat_user_id and e["type"] == "m.room.message":

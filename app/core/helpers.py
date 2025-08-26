@@ -6,7 +6,7 @@ from uuid import UUID
 from app.core import logger
 from fastapi import Path
 from rich import print_json
-from sqlalchemy import and_, select
+from sqlalchemy import Tuple, and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -52,10 +52,7 @@ def json_print(data: dict):
     print_json(json.dumps(data))
 
 
-def deep_get(d: dict, keys: Iterable, default: Any = None) -> Any:
-    for k in keys:
-        if isinstance(d, dict):
-            d = d.get(k, default)
-        else:
-            return default
+def deep_get(d: dict, keys: Iterable[tuple[str, Any]]) -> Any:
+    for k, default in keys:
+        d = d.get(k, default)
     return d

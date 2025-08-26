@@ -15,19 +15,12 @@ if TYPE_CHECKING:
 class ChatRoomDB(Base):
     __tablename__ = "chat_rooms"
     __table_args__ = (
-        UniqueConstraint("room_id", "user_1_id", "user_2_id"),
-        UniqueConstraint("room_id", "user_2_id", "user_1_id"),
+        UniqueConstraint("id", "user_1_id", "user_2_id"),
+        UniqueConstraint("id", "user_2_id", "user_1_id"),
     )
 
-    id: Mapped[UUID] = mapped_column(
-        PG_UUID(as_uuid=True),
+    id: Mapped[str] = mapped_column(
         primary_key=True,
-        default=uuid4,
-    )
-
-    room_id: Mapped[str] = mapped_column(
-        unique=True,
-        nullable=False,
     )
 
     item_id: Mapped[UUID] = mapped_column(

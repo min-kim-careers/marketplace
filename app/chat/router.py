@@ -54,6 +54,7 @@ async def get_room(
             db,
             ChatRoomInDB(
                 **res,
+                id=room_id,
                 item_id=item_id,
                 user_1_id=user.id,
                 user_2_id=peer.id,
@@ -87,7 +88,7 @@ async def get_unread_messages_count(
         raise ErrorResponse(message="failed to get sync data")
 
     unread_count = unread_count_store.load_unread_count(
-        str(user.id), user.chat_user_id, sync_data
+        str(user.id), user.chat_id, sync_data
     )
 
     return APIResponse(data={"count": unread_count})
