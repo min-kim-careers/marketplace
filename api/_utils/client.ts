@@ -49,7 +49,7 @@ class Client {
   setBody(body: any): this {
     const obj = cleanObject(body)
     if (Object.keys(obj).length === 0) {
-      throw new Error("empty body")
+      throw new Error('empty body')
     }
     this.init = {
       ...this.init,
@@ -110,8 +110,11 @@ class Client {
     try {
       if (this.useSession) {
         const session = await getSession()
-        if (session)
+        if (session) {
           this.addHeader({ cookie: `${envLoader.sessionHeader}=${session}` })
+        } else {
+          throw new Error('session missing')
+        }
       }
 
       console.log(this.url.toString())
@@ -126,7 +129,7 @@ class Client {
 
       const resp = await fetch(this.url.toString(), this.init as RequestInit)
       if (!resp.ok) {
-        const err = await resp.text() as APIError
+        const err = (await resp.text()) as APIError
         console.log(err)
         throw new Error()
       }

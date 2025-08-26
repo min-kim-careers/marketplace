@@ -52,7 +52,10 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const [url, setUrl] = useState<string | null>(null)
 
   const ws = useWebSocket(url, {
-    onOpen: () => console.log('Connected to WebSocket'),
+    onOpen: () => {
+      console.log('Connected to WebSocket')
+      
+    },
     onMessage: (e) => {
       const payload = JSON.parse(e.data) as ChatPayload
       console.log(payload)
@@ -67,7 +70,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (token && room) {
-      setUrl(toPath('ws://localhost/chat/ws', { token, roomAlias: room.id }))
+      setUrl(toPath('ws://localhost/chat/ws', { token }))
     }
   }, [token, room])
 

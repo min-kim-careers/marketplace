@@ -13,11 +13,10 @@ export function MarketItems({
   props: { items: Item[]; count: number }
 }) {
   const { items, count } = props
+  const { setProps } = useItemPageStore()
+  useEffect(() => setProps({ items, count }), [items, count])
 
   const { itemColumns } = useLayoutStore()
-  const { setProps } = useItemPageStore()
-
-  useEffect(() => setProps({ items, count }), [items, count])
 
   if (!items.length)
     return (

@@ -8,7 +8,7 @@ import { formatDate } from '@/lib/helpers/format-date'
 import { useChatContext } from '@/lib/providers/chat-provider'
 import useProfileStore from '@/lib/stores/profile-store'
 import { ChatMessage } from '@/lib/types/chat-message'
-import { Minus, X } from 'lucide-react'
+import { MessageCircleMoreIcon, Minus, X } from 'lucide-react'
 import { FormEvent, useEffect, useRef, useState } from 'react'
 
 export default function ChatWindow() {
@@ -51,7 +51,7 @@ export default function ChatWindow() {
         'fixed bottom-0 right-0 z-40 m-2 flex rounded border bg-background shadow transition-all duration-300',
         open
           ? 'h-[36rem] max-h-[95vh] w-96'
-          : 'h-16 w-32 rounded-xl hover:scale-105',
+          : 'flex h-10 w-48 items-center justify-center rounded-xl p-2 shadow-xl hover:scale-105',
       )}
     >
       {open && room && profile ? (
@@ -60,7 +60,7 @@ export default function ChatWindow() {
           <div className='flex items-center justify-between'>
             <span>
               <span className='font-semibold'>{room.item.name}</span>
-              {room.item.profile.handle === profile.handle && (
+              {room.item.profile.handle !== profile.handle && (
                 <span> - {room.item.profile.handle}</span>
               )}
             </span>
@@ -106,11 +106,13 @@ export default function ChatWindow() {
           </div>
         </div>
       ) : room ? (
-        <button
-          onClick={() => setOpen(true)}
-          className='flex flex-1 items-center justify-center p-2'
-        >
-          {room.item.name}
+        <button onClick={() => setOpen(true)} className='flex flex-row items-center gap-2'>
+          <span>
+            <MessageCircleMoreIcon />
+          </span>
+          <span className='line-clamp-1'>
+            {room.item.name}
+          </span>
         </button>
       ) : (
         <Spinner />
@@ -134,7 +136,9 @@ function MessageBubble({ message }: { message: ChatMessage }) {
         )}
       >
         <span>{message.content}</span>
-        <span className='text-xs'>{formatDate(message.timestamp)}</span>
+        <span className='text-xs text-black/50'>
+          {formatDate(message.timestamp)}
+        </span>
       </div>
     </div>
   )

@@ -8,8 +8,11 @@ import {
 } from '@/components/shadcn/components/ui/avatar'
 import { Button } from '@/components/shadcn/components/ui/button'
 import {
+  Dialog,
+  DialogContent,
   DialogDescription,
   DialogTitle,
+  DialogTrigger,
 } from '@/components/shadcn/components/ui/dialog'
 import { ITEM_CONDITION_LABELS } from '@/lib/constants/item-condition-labels'
 import { ItemCondition } from '@/lib/enums/item-condition'
@@ -18,15 +21,34 @@ import { useChatContext } from '@/lib/providers/chat-provider'
 import { useLoadingStore } from '@/lib/providers/loading-provider'
 import { Item } from '@/lib/types/item'
 import { CircleUserIcon } from 'lucide-react'
+import { ReactNode } from 'react'
 import { toast } from 'sonner'
 
-export default function DetailSection({ item }: { item: Item }) {
+export default function MarketModal({
+  children,
+  item,
+}: {
+  children: ReactNode
+  item: Item
+}) {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className='max-h-[90vh] overflow-auto'>
+        <DetailSection item={item} />
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+function DetailSection({ item }: { item: Item }) {
+
   const { setRoom } = useChatContext()
   const { setLoading } = useLoadingStore()
 
   const handleChatButton = async () => {
     try {
-      setLoading('Loading chat room...')
+      setLoading('Loading chat...')
       const room = await getRoom(item.profile.handle, item.id)
       if (!room) throw new Error()
       setRoom(room)
