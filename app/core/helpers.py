@@ -4,9 +4,8 @@ from typing import Any, Iterable
 from uuid import UUID
 
 from app.core import logger
-from fastapi import Path
 from rich import print_json
-from sqlalchemy import Tuple, and_, select
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -36,16 +35,23 @@ async def get_exists_by(db: AsyncSession, model, **filters) -> bool:
         return False
 
 
-def encode_alias(u: UUID) -> str:
-    b = u.bytes
-    alias = base64.urlsafe_b64encode(b).rstrip(b"=").decode()
-    return alias
+def encode_uuid(u: UUID) -> str:
+    return base64.urlsafe_b64encode(u.bytes).rstrip(b"=").decode()
 
 
-def decode_alias(s: str) -> UUID:
+def decode_uuid(s: str) -> UUID:
     padding = "=" * (-len(s) % 4)
     b = base64.urlsafe_b64decode(s + padding)
     return UUID(bytes=b)
+
+
+def encode_str(s: str) -> str:
+    return base64.urlsafe_b64encode(s.encode()).rstrip(b"=").decode()
+
+
+def decode_str(s: str) -> str:
+    padding = "=" * (-len(s) % 4)
+    return base64.urlsafe_b64decode(s + padding).decode()
 
 
 def json_print(data: dict):

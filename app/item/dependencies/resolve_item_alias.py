@@ -1,10 +1,7 @@
-from app.core.helpers import decode_alias
-
-
-from fastapi import Query
-
-
 from uuid import UUID
+
+from app.core.helpers import decode_uuid
+from fastapi import Query
 
 
 def resolve_item_alias_query(
@@ -12,4 +9,4 @@ def resolve_item_alias_query(
 ) -> UUID | None:
     if not item_alias:
         return None
-    return decode_alias(item_alias)
+    return decode_uuid(item_alias)

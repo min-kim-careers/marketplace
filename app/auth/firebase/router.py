@@ -1,26 +1,25 @@
 from datetime import timedelta
 
+from app.auth.firebase.dependencies import (
+    get_firebase_user_from_body_token,
+    get_firebase_user_from_session,
+    resolve_firebase_body_token,
+    resolve_firebase_session,
+)
+from app.auth.firebase.schemas.outbound import FirebaseUser
+from app.auth.firebase.service import FirebaseService
+from app.auth.user.repository import UserRepository
+from app.auth.user.schemas.inbound import UserInDB
+from app.chat.service import ChatService
+from app.core.schemas.error import ErrorResponse
+from app.core.schemas.outbound import APIResponse
+from app.db.models.user import UserDB
+from app.db.session import get_db
+from app.profile.schemas.outbound import ProfileOut
 from fastapi import APIRouter, Body, Cookie, Depends, HTTPException, Query, status
 from firebase_admin import auth
 from rich import print
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from app.auth.firebase.dependencies import (
-    get_firebase_user_from_session,
-    get_firebase_user_from_body_token,
-    resolve_firebase_session,
-    resolve_firebase_body_token,
-)
-from app.auth.firebase.service import FirebaseService
-from app.chat.service import ChatService
-from app.core.schemas.error import ErrorResponse
-from app.core.schemas.outbound import APIResponse
-from app.db.session import get_db
-from app.db.models.user import UserDB
-from app.auth.user.repository import UserRepository
-from app.auth.user.schemas.inbound import UserInDB
-from app.auth.firebase.schemas.outbound import FirebaseUser
-from app.profile.schemas.outbound import ProfileOut
 
 firebase_router = APIRouter(prefix="/auth/firebase", tags=["Auth - Firebase"])
 
@@ -31,7 +30,7 @@ async def get_session(
     firebase_user: FirebaseUser = Depends(get_firebase_user_from_body_token),
     db: AsyncSession = Depends(get_db),
 ) -> APIResponse:
-    user = await UserRepository.get_user_by_provider_user_id(db, firebase_user.uid)
+    user = await UserRepository.get_user_by_provider(db, firebase_user.uid)
     if not user:
         user = await FirebaseService.handle_new_user(db, firebase_user)
 

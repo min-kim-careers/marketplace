@@ -1,29 +1,22 @@
+from typing import cast
 from uuid import UUID
 
-import httpx
-from app.auth.firebase.dependencies import (
-    resolve_firebase_session,
-)
-from app.cache.stores import unread_count_store
-from app.cache.stores.unread_count_store import UnreadCountStore
+from app.auth.firebase.dependencies import resolve_firebase_session
 from app.chat.dependencies.resolve_peer_user import resolve_peer_user
 from app.chat.repository import ChatRepository
 from app.chat.schemas.inbound import ChatRoomInDB
 from app.chat.schemas.outbound import ChatRoomOut
+from app.chat.schemas.synapse.inbound import SyncData
 from app.chat.service import ChatService
 from app.core import logger
 from app.core.schemas.error import ErrorResponse
 from app.core.schemas.outbound import APIResponse
 from app.core.security import verify_service_key
-from app.core.helpers import encode_alias, json_print
-from app.db.models.profile import ProfileDB
 from app.db.models.user import UserDB
 from app.db.session import get_db
+from app.item.dependencies.resolve_item_path import resolve_item_alias_path
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from rich import print
-
-from app.item.dependencies.resolve_item_path import resolve_item_alias_path
 
 chat_router = APIRouter(
     prefix="/api/chat",
@@ -87,11 +80,7 @@ async def get_unread_messages_count(
     if not sync_data:
         raise ErrorResponse(message="failed to get sync data")
 
-    unread_count = unread_count_store.load_unread_count(
-        str(user.id), user.chat_id, sync_data
-    )
-
-    return APIResponse(data={"count": unread_count})
+    return APIResponse(data={"count": 0})
 
 
 @chat_router.get("/rooms")

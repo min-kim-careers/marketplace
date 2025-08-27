@@ -1,15 +1,9 @@
 from typing import Optional
 
-from pydantic import BaseModel
 from app.auth.firebase.dependencies import resolve_firebase_query_token
-from app.chat.repository import ChatRepository
-from app.core.helpers import decode_alias
-from app.db.models.chat_room import ChatRoomDB
 from app.db.models.user import UserDB
 from app.db.session import get_db
-
-
-from fastapi import Depends, Query, WebSocket
+from fastapi import Depends, WebSocket
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -27,8 +21,6 @@ async def resolve_websocket_connection(
     # if not room:
     #     await websocket.close(code=1008, reason="chat room not found")
     #     return
-    
-    
 
     # peer = None
     # if user.id == room.user_1_id:

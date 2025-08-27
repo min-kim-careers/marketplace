@@ -1,11 +1,10 @@
 from typing import TYPE_CHECKING
-from uuid import UUID, uuid4
+from uuid import UUID
 
-from sqlalchemy import ForeignKey, UniqueConstraint
-from sqlalchemy.orm import relationship, Mapped, mapped_column
 from app.db.base import Base
+from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
     from app.db.models.item import ItemDB
@@ -15,17 +14,15 @@ if TYPE_CHECKING:
 class ChatRoomDB(Base):
     __tablename__ = "chat_rooms"
     __table_args__ = (
-        UniqueConstraint("id", "user_1_id", "user_2_id"),
-        UniqueConstraint("id", "user_2_id", "user_1_id"),
+        UniqueConstraint("item_id", "user_1_id", "user_2_id"),
+        UniqueConstraint("item_id", "user_2_id", "user_1_id"),
     )
 
     id: Mapped[str] = mapped_column(
         primary_key=True,
     )
 
-    item_id: Mapped[UUID] = mapped_column(
-        PG_UUID(as_uuid=True), ForeignKey("items.id"), nullable=False
-    )
+    item_id: Mapped[str] = mapped_column(ForeignKey("items.id"), nullable=False)
 
     user_1_id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True), ForeignKey("users.id"), nullable=False

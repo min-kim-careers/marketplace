@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import List, Optional
 
+from app.core.helpers import encode_uuid
 from app.core.schemas.outbound import OutboundBase
-from app.core.helpers import encode_alias
 from app.db.models.item import ItemDB
 from app.item.enums import ItemCategory, ItemCondition, ItemStatus
 from app.item.helpers import format_item_date
@@ -36,7 +36,7 @@ class ItemOut(OutboundBase):
                 "profile": ProfileOut.model_validate(
                     item.user.profile, from_attributes=True
                 ),
-                "id": encode_alias(item.id),
+                "id": encode_uuid(item.id),
             },
             from_attributes=True,
         )

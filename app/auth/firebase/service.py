@@ -1,14 +1,13 @@
 import uuid
+
 from app.auth.firebase.helpers import create_handle
 from app.auth.firebase.schemas.outbound import FirebaseUser
 from app.auth.user.repository import UserRepository
 from app.auth.user.schemas.inbound import UserInDB
-from firebase_admin import auth
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.chat.service import ChatService
 from app.core.schemas.error import ErrorResponse
 from app.profile.schemas.inbound import ProfileInCreateDB
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class FirebaseService:
@@ -25,7 +24,7 @@ class FirebaseService:
             UserInDB(
                 id=new_user_id,
                 provider_name="firebase",
-                provider_user_id=firebase_user.uid,
+                provider_id=firebase_user.uid,
                 chat_user_id=chat_user.user_id,
             ),
             ProfileInCreateDB(

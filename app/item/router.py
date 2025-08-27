@@ -2,27 +2,26 @@ import re
 from typing import Annotated, List, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Body, Depends, File, Form, Path, Query, UploadFile
-from rich import print
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.auth.firebase.dependencies import (
     resolve_firebase_session,
     resolve_firebase_session_optional,
 )
 from app.core import helpers
 from app.core.schemas.error import ErrorResponse
+from app.core.schemas.outbound import APIResponse
 from app.core.security import verify_service_key
+from app.db.models.item import ItemDB
 from app.db.models.user import UserDB
 from app.db.session import get_db
-from app.db.models.item import ItemDB
 from app.item.dependencies import resolve_item, resolve_item_alias_query
 from app.item.repository import ItemRepository
 from app.item.schemas.inbound import ItemInForm, ItemsQuery
 from app.item.schemas.outbound import ItemOut
 from app.item.service import ItemService
-from app.core.schemas.outbound import APIResponse, APIResponse
 from app.storage.image import remove_image_bulk
+from fastapi import APIRouter, Body, Depends, File, Form, Path, Query, UploadFile
+from rich import print
+from sqlalchemy.ext.asyncio import AsyncSession
 
 items_router = APIRouter(
     prefix="/api/items",
@@ -111,7 +110,7 @@ async def get_items_by_aliases(
     item_aliases: List[str] = Query(..., alias="aliases"),
     db: AsyncSession = Depends(get_db),
 ) -> APIResponse:
-    item_ids = [helpers.decode_alias(i) for i in item_aliases]
+    item_ids = [helpers.decode_uuid(i) for i in item_aliases]
 
     item_dbs = await ItemRepository.get_by_items_and_user_id(db, item_ids)
 

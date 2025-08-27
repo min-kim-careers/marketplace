@@ -3,16 +3,12 @@ from typing import Optional
 from app.cache.stores.cache_store import CacheStore
 
 
-class TokenStore:
-    def __init__(self):
-        self.store = CacheStore("chat:access_token:user")
+class TokenStore(CacheStore):
+    def to_key(self, user_id):
+        return f"chat:user:{user_id}:access_token"
 
-    def set_token(self, user_id: str, access_token: str):
-        return self.store.set(access_token, user_id)
+    def set(self, user_id: str, access_token: str):
+        return super().set(access_token, user_id)
 
-    def get_token(self, user_id: str) -> Optional[str]:
-        return self.store.get(user_id)
-
-
-
-token_store = TokenStore()
+    def get(self, user_id: str) -> Optional[str]:
+        return super().get(user_id)

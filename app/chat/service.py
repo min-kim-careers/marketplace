@@ -1,18 +1,14 @@
 import asyncio
-from typing import Any, Callable, Optional
-import uuid
+from typing import Optional
+from uuid import UUID, uuid4
+
 import httpx
-from app.chat.helpers.handle_raise_for_status import handle_raise_for_status
 from app.cache.stores import admin_token_store, token_store
 from app.chat.helpers.create_mac import create_mac
 from app.chat.helpers.get_nonce import get_nonce
-from app.chat.schemas.synapse.inbound import (
-    SynapseLoginResponse,
-    SynapseRegisterResponse,
-)
-from app.core import logger
-from app.core import env_loader
-from app.chat.schemas.outbound import MessageOut
+from app.chat.helpers.handle_raise_for_status import handle_raise_for_status
+from app.chat.schemas.synapse.inbound import LoginResponse, RegisterResponse
+from app.core import env_loader, logger
 from app.db.models.user import UserDB
 
 SYNAPSE_URL = env_loader.SYNAPSE_URL
@@ -22,7 +18,7 @@ class ChatService:
     @staticmethod
     async def register_new_user(
         user_id: str, admin=False
-    ) -> Optional[SynapseRegisterResponse]:
+    ) -> Optional[RegisterResponse]:
         new_user = None
 
         try:
@@ -46,7 +42,7 @@ class ChatService:
                 )
                 handle_raise_for_status(r)
 
-                new_user = SynapseRegisterResponse.model_validate(r.json())
+                new_user = RegisterResponse.model_validate(r.json())
 
             return new_user
         except Exception as e:
@@ -60,54 +56,52 @@ class ChatService:
             async with httpx.AsyncClient() as client:
                 await client.post(
                     f"{SYNAPSE_URL}/_synapse/admin/v1/deactivate/{chat_id}",
-                    headers={
-                        "Authorization": f"Bearer {admin_token}"
-                    },
+                    headers={"Authorization": f"Bearer {admin_token}"},
                     json={"erase": True},
                 )
         except Exception as e:
             logger.error(e)
 
     @staticmethod
-    async def login(chat_id: str) -> Optional[SynapseLoginResponse]:
+    async def login(user_id: str) -> Optional[LoginResponse]:
         try:
             async with httpx.AsyncClient() as client:
                 r = await client.post(
                     f"{SYNAPSE_URL}/_matrix/client/v3/login",
                     json={
                         "type": "m.login.password",
-                        "user": chat_id,
-                        "password": chat_id,
+                        "user": user_id,
+                        "password": user_id,
                     },
                 )
-                return SynapseLoginResponse.model_validate(r.json())
+                return LoginResponse.model_validate(r.json())
         except Exception as e:
             logger.error(e)
 
     @staticmethod
-    async def access_token(chat_id: str):
-        token = token_store.get_token(chat_id)
+    async def access_token(user_id: str):
+        token = token_store.get(user_id)
         if token:
             return token
-        data = await ChatService.login(chat_id)
+        data = await ChatService.login(str(user_id))
         if data:
             token = data.access_token
-            token_store.set_token(chat_id, token)
+            token_store.set(user_id, token)
             return token
 
     @staticmethod
     async def admin_access_token():
-        token = admin_token_store.get_admin_token()
+        token = admin_token_store.get()
         if token:
             return token
-        data = await ChatService.login(admin_token_store.admin_user)
+        data = await ChatService.login(admin_token_store.user_id)
         if data:
             token = data.access_token
-            admin_token_store.set_admin_token(token)
+            admin_token_store.set(token)
             return token
 
     @staticmethod
-    async def sync_data(access_token: str, since=None):
+    async def sync_data(access_token: str, since=None) -> Optional[dict]:
         try:
             async with httpx.AsyncClient() as client:
                 params = {
@@ -132,7 +126,7 @@ class ChatService:
     async def send_message(access_token: str, room_id: str, message: str):
         try:
             async with httpx.AsyncClient() as client:
-                txn_id = str(uuid.uuid4())
+                txn_id = str(uuid4())
                 r = await client.put(
                     f"{SYNAPSE_URL}/_matrix/client/v3/rooms/{room_id}/send/m.room.message/{txn_id}",
                     headers={"Authorization": f"Bearer {access_token}"},
@@ -156,9 +150,7 @@ class ChatService:
             async with httpx.AsyncClient() as client:
                 r = await client.post(
                     f"{SYNAPSE_URL}/_matrix/client/v3/createRoom",
-                    headers={
-                        "Authorization": f"Bearer {admin_token}"
-                    },
+                    headers={"Authorization": f"Bearer {admin_token}"},
                     json=payload,
                 )
                 handle_raise_for_status(r)
@@ -198,7 +190,7 @@ class ChatService:
                 )
                 return room_id
 
-            async def get_access_tokens(user_1_id: uuid.UUID, user_2_id: uuid.UUID):
+            async def get_access_tokens(user_1_id: UUID, user_2_id: UUID):
                 access_token_1, access_token_2 = await asyncio.gather(
                     ChatService.access_token(str(user_1_id)),
                     ChatService.access_token(str(user_2_id)),
@@ -270,9 +262,7 @@ class ChatService:
                 r = await client.request(
                     "DELETE",
                     f"{SYNAPSE_URL}/_synapse/admin/v1/rooms/{room_id}",
-                    headers={
-                        "Authorization": f"Bearer {admin_token}"
-                    },
+                    headers={"Authorization": f"Bearer {admin_token}"},
                     json={},
                 )
                 handle_raise_for_status(r)

@@ -1,20 +1,17 @@
 import asyncio
-from datetime import datetime
+import random
 from uuid import UUID, uuid4
-from faker import Faker
-from sqlalchemy import select
+
 from app.core import logger
-from app.db.models.profile_extra import ProfileExtraDB
-from app.db.models.user import UserDB
 from app.core.helpers import get_one_by
-from app.db.session import get_db
-from app.item.enums import ItemCategory, ItemCondition
 from app.db.models.item import ItemDB
 from app.db.models.profile import ProfileDB
-import random
-
+from app.db.models.user import UserDB
+from app.db.session import get_db
+from app.item.enums import ItemCategory, ItemCondition
 from app.profile.constants.defaults import default_profile_extra
-
+from faker import Faker
+from sqlalchemy import select
 
 fake = Faker(locale="en_AU")
 
@@ -22,7 +19,7 @@ fake = Faker(locale="en_AU")
 def create_mock_user() -> UserDB:
     return UserDB(
         provider_name="firebase",
-        provider_user_id=str(uuid4()),
+        provider_id=str(uuid4()),
     )
 
 

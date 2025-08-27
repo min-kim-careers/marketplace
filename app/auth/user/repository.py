@@ -1,26 +1,23 @@
-from datetime import datetime
 from uuid import UUID
-from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.auth.user.schemas.inbound import UserInDB
 from app.core import logger
 from app.core.helpers import get_one_by
 from app.db.models.profile import ProfileDB
 from app.db.models.user import UserDB
-from app.auth.user.schemas.inbound import UserInDB
 from app.profile.constants.defaults import default_profile_extra
 from app.profile.schemas.inbound import ProfileInCreateDB
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class UserRepository:
     @staticmethod
-    async def get_user_by_user_id(db: AsyncSession, user_id: UUID) -> UserDB | None:
+    async def get_user_by_user(db: AsyncSession, user_id: UUID) -> UserDB | None:
         return await get_one_by(db, UserDB, user_id=user_id)
 
     @staticmethod
-    async def get_user_by_provider_user_id(
-        db: AsyncSession, provider_user_id: str
-    ) -> UserDB | None:
-        return await get_one_by(db, UserDB, provider_user_id=provider_user_id)
+    async def get_user_by_provider(db: AsyncSession, provider_id: str) -> UserDB | None:
+        return await get_one_by(db, UserDB, provider_id=provider_id)
 
     # @staticmethod
     # async def create_user(db: AsyncSession, user_in: UserInDB) -> UserDB | None:

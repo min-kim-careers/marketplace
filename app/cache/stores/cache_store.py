@@ -1,33 +1,32 @@
 import inspect
-from typing import Any, Optional
-from app.cache import cache
+from abc import abstractmethod
+from typing import Any
+
+from redis import Redis
 from redis.typing import ResponseT
+
 
 def process(rv: ResponseT) -> Any:
     assert not inspect.isawaitable(rv), "Expected non-awaitable"
     return rv
 
-class CacheStore:
-    def __init__(self, prefix: str, suffix: Optional[str] = None) -> None:
-        self.prefix = prefix
-        self.suffix = suffix
-        self.cache = cache
 
-    def to_key(self, id: Optional[str] = None):
-        _suffix = ":" + self.suffix if self.suffix else ""
-        return f"{self.prefix}:{id}" + _suffix if id else self.prefix + _suffix
+class CacheStore(Redis):
+    @abstractmethod
+    def to_key(self, *args: str) -> str:
+        pass
 
-    def get(self, id: Optional[str] = None):
-        return process(self.cache.get(self.to_key(id)))
+    def get(self, *args):
+        return process(super().get(self.to_key(*args)))
 
-    def set(self, val: Any, id: Optional[str] = None):
-        return process(self.cache.set(self.to_key(id), val))
+    def set(self, val: Any, *args):
+        return process(super().set(self.to_key(*args), val))
 
-    def exists(self, id: Optional[str] = None):
-        return process(self.cache.exists(self.to_key(id)))
+    def exists(self, *args):
+        return process(super().exists(self.to_key(*args)))
 
-    def incr(self, id: Optional[str] = None):
-        return process(self.cache.incr(self.to_key(id)))
+    def incr(self, *args):
+        return process(super().incr(self.to_key(*args)))
 
-    def decr(self, id: Optional[str] = None):
-        return process(self.cache.decr(self.to_key(id)))
+    def decr(self, *args):
+        return process(super().decr(self.to_key(*args)))
