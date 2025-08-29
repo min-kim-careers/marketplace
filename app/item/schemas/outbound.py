@@ -1,16 +1,16 @@
 from datetime import datetime
 from typing import List, Optional
 
+from app.core import env
 from app.core.helpers import encode_uuid
 from app.core.schemas.outbound import OutboundBase
 from app.db.models.item import ItemDB
 from app.item.enums import ItemCategory, ItemCondition, ItemStatus
-from app.item.helpers import format_item_date
 from app.profile.schemas.outbound import ProfileOut
 
 
 class ItemOut(OutboundBase):
-    id: str
+    alias: str
     name: str
     description: str
     price: float
@@ -29,6 +29,10 @@ class ItemOut(OutboundBase):
     profile: ProfileOut
 
     @classmethod
+    def concat_host_to_urls(cls, item_db: ItemDB):
+        return [f"http://{env.HOST_IP}{url}" for url in item_db.image_urls]
+
+    @classmethod
     def from_db(cls, item: ItemDB) -> "ItemOut":
         return cls.model_validate(
             {
@@ -36,7 +40,8 @@ class ItemOut(OutboundBase):
                 "profile": ProfileOut.model_validate(
                     item.user.profile, from_attributes=True
                 ),
-                "id": encode_uuid(item.id),
+                "alias": encode_uuid(item.id),
+                "image_urls": cls.concat_host_to_urls(item),
             },
             from_attributes=True,
         )

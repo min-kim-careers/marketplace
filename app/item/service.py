@@ -11,7 +11,6 @@ from app.item.schemas.inbound import ItemInDB, ItemInForm, ItemsQuery
 from app.item.schemas.outbound import ItemOut
 from app.storage.image import remove_image_bulk, store_image_bulk
 from fastapi import UploadFile
-from rich import print
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -51,7 +50,8 @@ class ItemService:
     async def get_items(
         db: AsyncSession, query: ItemsQuery, user_id: Optional[UUID] = None
     ):
-        item_count = await ItemRepository.query_count(db, query, user_id)
+
+        item_count = await ItemRepository.count(db, query, user_id)
         if not item_count:
             return APIResponse(
                 data={
@@ -60,7 +60,7 @@ class ItemService:
                 }
             )
 
-        items_db = await ItemRepository.query_paginated(db, query, user_id)
+        items_db = await ItemRepository.paginated(db, query, user_id)
         if not items_db:
             raise ErrorResponse(
                 status_code=500,
@@ -68,13 +68,6 @@ class ItemService:
             )
 
         items = [ItemOut.from_db(item) for item in items_db]
-
-        # Combine db image urls with hostname
-        for i in items:
-            urls_with_host = []
-            for url in i.image_urls:
-                urls_with_host += [f"http://192.168.8.103{url}"]
-            i.image_urls = urls_with_host
 
         return APIResponse(
             data={

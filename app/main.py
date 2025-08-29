@@ -5,22 +5,30 @@ from app.auth.router import auth_router
 from app.core import logger
 from app.db.session import init_db
 from app.item.router import items_router
-from app.message.router import messages_router
 from app.profile.router import profiles_router
+from app.chat.router import chat_router
+from app.chat.server.websocket import chat_server
 from app.tests.mocks import seed_db
-from app.thread.router import threads_router
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 
 
-@asynccontextmanager
-async def lifespan(_: FastAPI):
+async def startup():
     initialize_firebase_admin()
-
     await init_db()
     await seed_db()
+
+
+async def shutdown():
+    pass
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    await startup()
     yield
+    await shutdown()
 
 
 app = FastAPI(
@@ -42,15 +50,11 @@ app.add_middleware(
 app.include_router(items_router)
 app.include_router(profiles_router)
 app.include_router(auth_router)
-app.include_router(threads_router)
-app.include_router(messages_router)
+app.include_router(chat_router)
+app.include_router(chat_server)
 
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     logger.info(request.url)
-    logger.info(exc.errors())  # prints full error list including loc arrays
-    # return ErrorResponse(
-    #     status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-    #     message=exc.errors()
-    # )
+    logger.info(exc.errors())

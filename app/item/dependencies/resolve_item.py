@@ -15,7 +15,7 @@ async def resolve_item(
     db: AsyncSession = Depends(get_db),
 ) -> ItemDB:
     item_id = decode_uuid(item_alias)
-    item_db = await ItemRepository.get_by_item_and_user_id(db, user.id, item_id)
+    item_db = await ItemRepository.by_item_and_user(db, user.id, item_id)
     if not item_db:
         raise ErrorResponse(status_code=404, message="Item not found")
     return item_db

@@ -46,7 +46,7 @@ class ItemRepository:
         return stmt
 
     @staticmethod
-    async def query_paginated(
+    async def paginated(
         db: AsyncSession,
         query: ItemsQuery,
         user_id: Optional[UUID] = None,
@@ -71,7 +71,7 @@ class ItemRepository:
             return None
 
     @staticmethod
-    async def query_count(
+    async def count(
         db: AsyncSession,
         query: ItemsQuery,
         user_id: Optional[UUID] = None,
@@ -88,7 +88,7 @@ class ItemRepository:
             return 0
 
     @staticmethod
-    async def get_item_count_for_user(
+    async def count_for_user(
         db: AsyncSession,
         user_id: UUID,
     ) -> int:
@@ -106,7 +106,7 @@ class ItemRepository:
             return 0
 
     @staticmethod
-    async def get_by_item_and_user_id(
+    async def by_item_and_user(
         db: AsyncSession,
         user_id: UUID,
         item_id: UUID,
@@ -119,7 +119,7 @@ class ItemRepository:
         )
 
     @staticmethod
-    async def get_by_items_and_user_id(
+    async def by_items_and_user(
         db: AsyncSession,
         item_ids: List[UUID],
     ) -> Sequence[ItemDB]:

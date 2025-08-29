@@ -3,29 +3,36 @@ from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 from app.db.base import Base
-from sqlalchemy import DateTime, ForeignKey
+from sqlalchemy import DateTime, ForeignKey, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
-    from app.db.models.thread import ThreadDB
+    from app.db.models.item import ItemDB
+    from app.db.models.user import UserDB
 
 
-class MessageDB(Base):
-    __tablename__ = "messages"
+class ChatRoomDB(Base):
+    __tablename__ = "chat_rooms"
 
     id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
         primary_key=True,
         default=uuid4,
     )
+    __table_args__ = (UniqueConstraint("item_id", "buyer_id"),)
 
-    thread_id: Mapped[UUID] = mapped_column(ForeignKey("threads.id"), nullable=False)
-    thread: Mapped["ThreadDB"] = relationship(
-        "ThreadDB", foreign_keys=[thread_id], lazy="selectin", uselist=False
+    item_id: Mapped[UUID] = mapped_column(ForeignKey("items.id"), nullable=False)
+    item: Mapped["ItemDB"] = relationship(
+        "ItemDB", foreign_keys=[item_id], lazy="selectin", uselist=False
     )
 
-    content: Mapped[str] = mapped_column(nullable=False)
+    buyer_id: Mapped[UUID] = mapped_column(
+        PG_UUID(as_uuid=True), ForeignKey("users.id"), nullable=False
+    )
+    buyer: Mapped["UserDB"] = relationship(
+        "UserDB", foreign_keys=[buyer_id], lazy="selectin", uselist=False
+    )
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

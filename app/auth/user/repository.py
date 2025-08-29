@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 class UserRepository:
     @staticmethod
-    async def get_user_by_user(db: AsyncSession, user_id: UUID) -> UserDB | None:
+    async def get_user_by_id(db: AsyncSession, user_id: UUID) -> UserDB | None:
         return await get_one_by(db, UserDB, user_id=user_id)
 
     @staticmethod

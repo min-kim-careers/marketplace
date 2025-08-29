@@ -2,7 +2,7 @@ import inspect
 from abc import abstractmethod
 from typing import Any
 
-from redis import Redis
+from redis.asyncio import Redis
 from redis.typing import ResponseT
 
 
@@ -11,7 +11,7 @@ def process(rv: ResponseT) -> Any:
     return rv
 
 
-class CacheStore(Redis):
+class Cache(Redis):
     @abstractmethod
     def to_key(self, *args: str) -> str:
         pass

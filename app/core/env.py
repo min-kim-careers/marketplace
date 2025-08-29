@@ -30,6 +30,8 @@ class Env(BaseSettings):
 
     SESSION_HEADER: str
 
+    HOST_IP: str
+
     model_config = SettingsConfigDict(
         env_file=".env",
     )

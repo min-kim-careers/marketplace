@@ -1,5 +1,4 @@
-import re
-from typing import Annotated, List, Optional
+from typing import Annotated, List
 from uuid import UUID
 
 from app.auth.firebase.dependencies import (
@@ -19,8 +18,7 @@ from app.item.schemas.inbound import ItemInForm, ItemsQuery
 from app.item.schemas.outbound import ItemOut
 from app.item.service import ItemService
 from app.storage.image import remove_image_bulk
-from fastapi import APIRouter, Body, Depends, File, Form, Path, Query, UploadFile
-from rich import print
+from fastapi import APIRouter, Depends, Form, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 items_router = APIRouter(
@@ -46,7 +44,7 @@ async def get_item_count_for_user(
 ) -> APIResponse:
     return APIResponse(
         data={
-            "count": await ItemRepository.get_item_count_for_user(db, user.id),
+            "count": await ItemRepository.count_for_user(db, user.id),
         },
     )
 
@@ -79,7 +77,7 @@ async def upsert_item(
 ) -> APIResponse:
     item_db = None
     if item_id:
-        item_db = await ItemRepository.get_by_item_and_user_id(db, user.id, item_id)
+        item_db = await ItemRepository.by_item_and_user(db, user.id, item_id)
 
     new_image_urls = []
     if item_in.upload_images and item_in.image_urls:
@@ -112,7 +110,7 @@ async def get_items_by_aliases(
 ) -> APIResponse:
     item_ids = [helpers.decode_uuid(i) for i in item_aliases]
 
-    item_dbs = await ItemRepository.get_by_items_and_user_id(db, item_ids)
+    item_dbs = await ItemRepository.by_items_and_user(db, item_ids)
 
     items = []
     for item_id in item_ids:
