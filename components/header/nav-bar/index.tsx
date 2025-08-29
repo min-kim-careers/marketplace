@@ -1,11 +1,9 @@
-import ChatRoomsModal from '@/components/chat/chat-rooms-modal'
 import LoadingDots from '@/components/loading-dots'
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from '@/components/shadcn/components/ui/avatar'
-import UnreadCountBadge from '@/components/unread-count-badge'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { useAuthHandler } from '@/lib/hooks/auth/use-auth-handler'
 import { useAuthContext } from '@/lib/providers/auth-provider'
@@ -41,13 +39,6 @@ export default function NavBar() {
       <Link href={APP_ROUTES.ITEM_POST.href}>
         <Button>Post Ad</Button>
       </Link>
-
-      <div className='relative'>
-        <ChatRoomsModal>
-          <Button>Chat</Button>
-        </ChatRoomsModal>
-        <UnreadCountBadge />
-      </div>
 
       <Dropdown>
         <div>

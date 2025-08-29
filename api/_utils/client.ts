@@ -1,10 +1,10 @@
 import 'server-only'
 
 import { APIError, APIResponse } from '@/api/endpoints/types'
+import { cleanObject } from '@/lib/helpers/clean-object'
 import { getSession } from '@/lib/helpers/server/get-session'
 import { toURLSearchParams } from '@/lib/helpers/to-url-search-params'
-import { envLoader } from '@/lib/utils/env-loader'
-import { cleanObject } from '@/lib/helpers/clean-object'
+import { env } from '@/lib/utils/env'
 
 type ApiKey = {
   header: string
@@ -111,7 +111,7 @@ class Client {
       if (this.useSession) {
         const session = await getSession()
         if (session) {
-          this.addHeader({ cookie: `${envLoader.sessionHeader}=${session}` })
+          this.addHeader({ cookie: `${env.sessionHeader}=${session}` })
         } else {
           throw new Error('session missing')
         }
@@ -152,5 +152,5 @@ class Client {
 
 export const client = async () =>
   new Client()
-    .setBase(envLoader.apiUrl)
-    .setApiKey({ header: envLoader.apiKeyHeader, key: envLoader.apiKey })
+    .setBase(env.apiUrl)
+    .setApiKey({ header: env.apiKeyHeader, key: env.apiKey })

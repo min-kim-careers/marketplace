@@ -75,11 +75,11 @@ export const deleteItem = async (itemAlias: string) => {
 type UpsertItemRequest = _UpsertItemRequest
 export const upsertItem = async (
   request: UpsertItemRequest,
-  itemId?: string,
+  itemAlias?: string,
 ) => {
   try {
     const form = await toFormData(request)
-    const res = await _upsertItem(form, { itemAlias: itemId })
+    const res = await _upsertItem(form, { itemAlias })
     return res.item
   } catch (error) {
     console.error(error)

@@ -1,66 +1,30 @@
-import { getRoom } from '@/api/service/chat'
 import DateFormatter from '@/components/date-formatter'
-import ItemImagePreview from '@/components/item-image-preview'
+import ItemImageCarousel from '@/components/item-image-carousel'
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from '@/components/shadcn/components/ui/avatar'
-import { Button } from '@/components/shadcn/components/ui/button'
 import {
-  Dialog,
-  DialogContent,
   DialogDescription,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/shadcn/components/ui/dialog'
+import { cn } from '@/components/shadcn/lib/utils'
 import { ITEM_CONDITION_LABELS } from '@/lib/constants/item-condition-labels'
 import { ItemCondition } from '@/lib/enums/item-condition'
 import { formatCurrency } from '@/lib/helpers/format-price'
-import { useChatContext } from '@/lib/providers/chat-provider'
-import { useLoadingStore } from '@/lib/providers/loading-provider'
 import { Item } from '@/lib/types/item'
 import { CircleUserIcon } from 'lucide-react'
-import { ReactNode } from 'react'
-import { toast } from 'sonner'
 
-export default function MarketModal({
-  children,
+export default function DetailSection({
   item,
+  className,
 }: {
-  children: ReactNode
   item: Item
+  className?: string
 }) {
   return (
-    <Dialog>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className='max-h-[90vh] overflow-auto'>
-        <DetailSection item={item} />
-      </DialogContent>
-    </Dialog>
-  )
-}
-
-function DetailSection({ item }: { item: Item }) {
-
-  const { setRoom } = useChatContext()
-  const { setLoading } = useLoadingStore()
-
-  const handleChatButton = async () => {
-    try {
-      setLoading('Loading chat...')
-      const room = await getRoom(item.profile.handle, item.id)
-      if (!room) throw new Error()
-      setRoom(room)
-    } catch (error) {
-      toast('Something went wrong')
-    } finally {
-      setLoading()
-    }
-  }
-
-  return (
-    <div className='flex flex-col gap-2'>
+    <div className={cn('flex flex-col gap-2', className)}>
       <div className='flex flex-row'>
         <span className='flex flex-[9] flex-col gap-3'>
           <DialogTitle className='space-x-2'>
@@ -92,13 +56,11 @@ function DetailSection({ item }: { item: Item }) {
       <div className='flex flex-1 flex-col gap-4'>
         <div className='flex-1'>{item.description}</div>
         <div className='relative flex-1 rounded'>
-          <ItemImagePreview imageUrls={item.imageUrls} />
+          <ItemImageCarousel imageUrls={item.imageUrls} className='rounded' />
         </div>
       </div>
 
       <div className='flex items-center justify-between gap-2'>
-        <Button onClick={handleChatButton}>Chat</Button>
-
         <span className='rounded-lg border p-2 font-semibold'>
           Offered at {formatCurrency(item.price.toString())}
         </span>

@@ -4,8 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-import ItemImagePreview from '@/components/item-image-preview'
-import { ItemFormSchema } from '@/components/item-form/schema'
+import { _UpsertItemRequest } from '@/api/endpoints/item'
 import {
   CategoryField,
   ConditionField,
@@ -15,6 +14,8 @@ import {
   NameField,
   PriceField,
 } from '@/components/item-form/fields'
+import { ItemFormSchema } from '@/components/item-form/schema'
+import ItemImageCarousel from '@/components/item-image-carousel'
 import { Button } from '@/components/shadcn/components/ui/button'
 import {
   Card,
@@ -24,9 +25,8 @@ import {
   CardTitle,
 } from '@/components/shadcn/components/ui/card'
 import { Form } from '@/components/shadcn/components/ui/form'
-import { useItemHandler } from '@/lib/hooks/use-item-handler'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
-import { _UpsertItemRequest } from '@/api/endpoints/item'
+import { useItemHandler } from '@/lib/hooks/use-item-handler'
 import { useRouter } from 'next/navigation'
 
 interface ItemPostProps {
@@ -94,7 +94,7 @@ export default function ItemPost({ props }: { props: ItemPostProps }) {
           </CardContent>
         </div>
         <div className='flex flex-1 items-center justify-center bg-muted'>
-          <ItemImagePreview
+          <ItemImageCarousel
             imageUrls={form
               .watch('imageUrls')
               .filter((v) => v != null)

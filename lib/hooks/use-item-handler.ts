@@ -10,7 +10,7 @@ import { useLoadingStore } from '../providers/loading-provider'
 interface ItemHandlerState {
   handleUpsert: (
     request: _UpsertItemRequest,
-    itemId?: string,
+    itemAlias?: string,
   ) => Promise<boolean>
   handleDelete: (item: Item) => Promise<boolean>
 }
@@ -18,8 +18,11 @@ interface ItemHandlerState {
 export const useItemHandler = (): ItemHandlerState => {
   const { setLoading } = useLoadingStore()
 
-  const handleUpsert = async (request: _UpsertItemRequest, itemId?: string) => {
-    const isUpdate = !!itemId
+  const handleUpsert = async (
+    request: _UpsertItemRequest,
+    itemAlias?: string,
+  ) => {
+    const isUpdate = !!itemAlias
     let toastMsg = ''
 
     try {
@@ -29,7 +32,7 @@ export const useItemHandler = (): ItemHandlerState => {
         request.uploadImages = await imageUrlsToFiles(request.imageUrls)
       }
 
-      if (!(await upsertItem(request, itemId))) {
+      if (!(await upsertItem(request, itemAlias))) {
         throw new Error(`failed to ${isUpdate ? 'update' : 'post'}`)
       }
 

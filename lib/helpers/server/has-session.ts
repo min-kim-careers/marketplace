@@ -1,7 +1,7 @@
 'use server'
 
-import { envLoader } from '@/lib/utils/env-loader'
+import { env } from '@/lib/utils/env'
 import { cookies } from 'next/headers'
 
 export const hasSession = async () =>
-  Boolean((await cookies()).has(envLoader.sessionHeader))
+  Boolean((await cookies()).has(env.sessionHeader))

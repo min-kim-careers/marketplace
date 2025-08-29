@@ -1,5 +1,5 @@
 import DateFormatter from '@/components/date-formatter'
-import ItemImagePreview from '@/components/item-image-preview'
+import ItemImageCarousel from '@/components/item-image-carousel'
 import DeleteConfirmDialog from '@/components/item-list/03_profile-listings-list/profile-listings-modal/delete-confirm-dialog'
 import ItemStatusSelect from '@/components/item-list/03_profile-listings-list/profile-listings-modal/item-status-select'
 import { Button } from '@/components/shadcn/components/ui/button'
@@ -55,7 +55,7 @@ export default function ProfileListingsModal({
           <div className='flex-1'>{item.description}</div>
 
           <div className='relative flex-1 rounded'>
-            <ItemImagePreview imageUrls={item.imageUrls} />
+            <ItemImageCarousel imageUrls={item.imageUrls} />
           </div>
         </div>
 

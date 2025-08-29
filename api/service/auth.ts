@@ -1,7 +1,6 @@
 'use server'
 
 import { _getSession, _revokeSession, _verifySession } from '@/api/endpoints'
-import { hasSession } from '@/lib/helpers/server/has-session'
 import { setSession } from '@/lib/helpers/server/set-session'
 
 export const signInWithGoogle = async (token: string) => {

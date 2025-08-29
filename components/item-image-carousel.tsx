@@ -7,10 +7,12 @@ import {
   CarouselPrevious,
 } from '@/components/shadcn/components/ui/carousel'
 
-export default function ItemImagePreview({
+export default function ItemImageCarousel({
   imageUrls,
+  className,
 }: {
   imageUrls: string[]
+  className?: string
 }) {
   if (!imageUrls.length) return null
 
@@ -22,9 +24,9 @@ export default function ItemImagePreview({
             url && (
               <CarouselItem
                 key={index}
-                className='relative aspect-square bg-gray-100 rounded'
+                className='relative aspect-square rounded bg-gray-100'
               >
-                <ImageContainer url={url} />
+                <ImageContainer url={url} className={className} />
               </CarouselItem>
             ),
         )}
