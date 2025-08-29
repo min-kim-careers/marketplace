@@ -1,6 +1,9 @@
-from .user import UserDB
+from .item import ItemDB
+from .message import MessageDB
 from .profile import ProfileDB
 from .profile_extra import ProfileExtraDB
-from .item import ItemDB
 from .rating import RatingDB
-from .chat_room import ChatRoomDB
+from .thread import ThreadDB
+from .user import UserDB
+
+_ = UserDB, ProfileDB, ProfileExtraDB, ItemDB, RatingDB, ThreadDB, MessageDB

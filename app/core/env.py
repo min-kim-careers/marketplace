@@ -1,8 +1,7 @@
-from typing import Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-class EnvLoader(BaseSettings):
+class Env(BaseSettings):
     DB_HOST: str
     DB_PORT: str
     DB_USER: str
@@ -31,13 +30,6 @@ class EnvLoader(BaseSettings):
 
     SESSION_HEADER: str
 
-    SYNAPSE_URL: str
-    SYNAPSE_SHARED_SECRET: str
-    SYNAPSE_ADMIN_USER: str
-
     model_config = SettingsConfigDict(
         env_file=".env",
     )
-
-
-env_loader = EnvLoader()  # type: ignore

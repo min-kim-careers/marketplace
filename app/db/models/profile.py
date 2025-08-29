@@ -2,15 +2,14 @@ from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
-from sqlalchemy import DateTime, ForeignKey, UniqueConstraint
-from sqlalchemy.orm import relationship, Mapped, mapped_column
 from app.db.base import Base
+from sqlalchemy import DateTime, ForeignKey, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
-    from app.db.models.user import UserDB
     from app.db.models.profile_extra import ProfileExtraDB
+    from app.db.models.user import UserDB
 
 
 class ProfileDB(Base):
@@ -54,13 +53,10 @@ class ProfileDB(Base):
         nullable=False,
         unique=True,
     )
-
     user: Mapped["UserDB"] = relationship(
-        "UserDB",
-        lazy="selectin",
-        uselist=False,
-        back_populates='profile'
+        "UserDB", lazy="selectin", uselist=False, back_populates="profile"
     )
+
     extra: Mapped["ProfileExtraDB"] = relationship(
         "ProfileExtraDB",
         lazy="selectin",

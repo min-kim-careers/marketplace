@@ -1,11 +1,10 @@
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
-from sqlalchemy import UniqueConstraint
-from sqlalchemy.orm import relationship, Mapped, mapped_column
 from app.db.base import Base
+from sqlalchemy import UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
     from app.db.models.profile import ProfileDB
@@ -23,7 +22,6 @@ class UserDB(Base):
 
     provider_name: Mapped[str] = mapped_column(nullable=False)
     provider_id: Mapped[str] = mapped_column(nullable=False, unique=True)
-    chat_id: Mapped[str] = mapped_column(nullable=True, unique=True)
 
     profile: Mapped["ProfileDB"] = relationship(
         "ProfileDB",
@@ -31,6 +29,5 @@ class UserDB(Base):
         uselist=False,
         passive_deletes=True,
         cascade="all, delete",
-        back_populates='user',
+        back_populates="user",
     )
-

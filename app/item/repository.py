@@ -1,17 +1,13 @@
-from typing import Any, List, Optional, Sequence, Tuple
+from typing import List, Optional, Sequence
 from uuid import UUID
-
-from sqlalchemy import Select, String, and_, asc, cast, desc, func, or_, select, update
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core import logger
 from app.core.helpers import get_one_by
-from app.item.schemas.inbound import ItemInDB
-from app.item.enums import ItemSortOrder, ItemStatus, ItemUserOption
 from app.db.models.item import ItemDB
-from app.item.schemas.inbound import (
-    ItemsQuery,
-)
+from app.item.enums import ItemSortOrder, ItemStatus, ItemUserOption
+from app.item.schemas.inbound import ItemInDB, ItemsQuery
+from sqlalchemy import Select, String, and_, asc, cast, desc, func, or_, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class ItemRepository:
@@ -50,7 +46,7 @@ class ItemRepository:
         return stmt
 
     @staticmethod
-    async def get_queried_paginated(
+    async def query_paginated(
         db: AsyncSession,
         query: ItemsQuery,
         user_id: Optional[UUID] = None,
@@ -75,7 +71,7 @@ class ItemRepository:
             return None
 
     @staticmethod
-    async def get_queried_count(
+    async def query_count(
         db: AsyncSession,
         query: ItemsQuery,
         user_id: Optional[UUID] = None,

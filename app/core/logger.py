@@ -43,5 +43,3 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
     handlers=[handler],
 )
-
-logger = logging.getLogger(__name__)

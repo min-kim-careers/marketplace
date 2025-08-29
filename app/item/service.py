@@ -2,18 +2,17 @@ import re
 from typing import List, Optional
 from uuid import UUID
 
-from fastapi import UploadFile
 from app.core import logger
 from app.core.schemas.error import ErrorResponse
 from app.core.schemas.outbound import APIResponse
 from app.db.models.item import ItemDB
 from app.item.repository import ItemRepository
-from app.item.schemas.inbound import ItemInDB, ItemsQuery
-from app.item.schemas.inbound import ItemInForm
+from app.item.schemas.inbound import ItemInDB, ItemInForm, ItemsQuery
 from app.item.schemas.outbound import ItemOut
 from app.storage.image import remove_image_bulk, store_image_bulk
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import UploadFile
 from rich import print
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class ItemService:
@@ -52,7 +51,7 @@ class ItemService:
     async def get_items(
         db: AsyncSession, query: ItemsQuery, user_id: Optional[UUID] = None
     ):
-        item_count = await ItemRepository.get_queried_count(db, query, user_id)
+        item_count = await ItemRepository.query_count(db, query, user_id)
         if not item_count:
             return APIResponse(
                 data={
@@ -61,7 +60,7 @@ class ItemService:
                 }
             )
 
-        items_db = await ItemRepository.get_queried_paginated(db, query, user_id)
+        items_db = await ItemRepository.query_paginated(db, query, user_id)
         if not items_db:
             raise ErrorResponse(
                 status_code=500,

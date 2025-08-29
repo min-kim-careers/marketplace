@@ -1,24 +1,21 @@
 from contextlib import asynccontextmanager
 
-from fastapi import Depends, FastAPI, Request, status
-from fastapi.exceptions import RequestValidationError
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-
 from app.auth.firebase.config import initialize_firebase_admin
+from app.auth.router import auth_router
 from app.core import logger
-from app.tests.mocks import seed_db
-
 from app.db.session import init_db
 from app.item.router import items_router
+from app.message.router import messages_router
 from app.profile.router import profiles_router
-from app.auth.router import auth_router
-from app.chat.router import chat_router
-from app.chat.websocket.websocket import chat_ws_router
+from app.tests.mocks import seed_db
+from app.thread.router import threads_router
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(_: FastAPI):
     initialize_firebase_admin()
 
     await init_db()
@@ -45,10 +42,8 @@ app.add_middleware(
 app.include_router(items_router)
 app.include_router(profiles_router)
 app.include_router(auth_router)
-app.include_router(chat_router)
-app.include_router(chat_ws_router)
-
-# app.mount("/images", StaticFiles(directory="/code/images"), name="images")
+app.include_router(threads_router)
+app.include_router(messages_router)
 
 
 @app.exception_handler(RequestValidationError)

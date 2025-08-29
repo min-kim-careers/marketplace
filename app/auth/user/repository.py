@@ -19,21 +19,6 @@ class UserRepository:
     async def get_user_by_provider(db: AsyncSession, provider_id: str) -> UserDB | None:
         return await get_one_by(db, UserDB, provider_id=provider_id)
 
-    # @staticmethod
-    # async def create_user(db: AsyncSession, user_in: UserInDB) -> UserDB | None:
-    #     try:
-    #         new_user = UserDB(
-    #             **user_in.model_dump(exclude_unset=True),
-    #         )
-    #         db.add(new_user)
-    #         await db.commit()
-    #         await db.refresh(new_user)
-    #         return new_user
-    #     except Exception as e:
-    #         await db.rollback()
-    #         logger.info(e)
-    #         return None
-
     @staticmethod
     async def create_user_with_profile(
         db: AsyncSession, user_in: UserInDB, profile_in: ProfileInCreateDB

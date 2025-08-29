@@ -1,12 +1,10 @@
-from app.core import config
+from app import core
 from app.core.schemas.error import ErrorResponse
-
-
 from fastapi import Cookie, status
 
 
 def get_session_from_request(
-    session: str | None = Cookie(default=None, alias=config.env_loader.SESSION_HEADER)
+    session: str | None = Cookie(default=None, alias=core.env.SESSION_HEADER)
 ) -> str:
     if not session:
         raise ErrorResponse(
@@ -18,6 +16,6 @@ def get_session_from_request(
 
 
 def get_session_from_request_optional(
-    session: str | None = Cookie(default=None, alias=config.env_loader.SESSION_HEADER)
+    session: str | None = Cookie(default=None, alias=core.env.SESSION_HEADER)
 ) -> str | None:
     return session

@@ -38,11 +38,6 @@ services:
       - api-cache-data:/data
 
   api-service:
-    depends_on:
-      api-db-service:
-        condition: service_healthy
-      api-cache-service:
-        condition: service_started
     container_name: api-container
     restart: always
     build: .
@@ -64,10 +59,6 @@ services:
       - SERVICE_KEY_HEADER=x-api-key
 
       - SESSION_HEADER=__session
-
-      - SYNAPSE_URL=http://synapse-service:8008
-      - SYNAPSE_SHARED_SECRET=REDACTED
-      - SYNAPSE_ADMIN_USER=admin
     env_file:
       - .env
       - .env.firebase

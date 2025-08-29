@@ -1,13 +1,14 @@
 import asyncio
 from typing import AsyncGenerator
 
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-
-from app.core import env_loader
+from app.core import env
 from app.db.base import Base
 from app.db.models.rating import RatingDB
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-DATABASE_URL = f"postgresql+asyncpg://{env_loader.DB_USER}:{env_loader.DB_PASSWORD}@{env_loader.DB_HOST}/{env_loader.DB_NAME}"
+DATABASE_URL = (
+    f"postgresql+asyncpg://{env.DB_USER}:{env.DB_PASSWORD}@{env.DB_HOST}/{env.DB_NAME}"
+)
 
 engine = create_async_engine(
     DATABASE_URL,
@@ -29,4 +30,3 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 async def init_db():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-

@@ -8,4 +8,3 @@ class UserInDB(OutboundBase):
     id: Optional[UUID] = None
     provider_name: str
     provider_id: str
-    chat_user_id: str

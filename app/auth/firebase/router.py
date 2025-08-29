@@ -9,16 +9,12 @@ from app.auth.firebase.dependencies import (
 from app.auth.firebase.schemas.outbound import FirebaseUser
 from app.auth.firebase.service import FirebaseService
 from app.auth.user.repository import UserRepository
-from app.auth.user.schemas.inbound import UserInDB
-from app.chat.service import ChatService
 from app.core.schemas.error import ErrorResponse
 from app.core.schemas.outbound import APIResponse
-from app.db.models.user import UserDB
 from app.db.session import get_db
 from app.profile.schemas.outbound import ProfileOut
-from fastapi import APIRouter, Body, Cookie, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Body, Depends
 from firebase_admin import auth
-from rich import print
 from sqlalchemy.ext.asyncio import AsyncSession
 
 firebase_router = APIRouter(prefix="/auth/firebase", tags=["Auth - Firebase"])
