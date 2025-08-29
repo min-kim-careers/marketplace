@@ -1,5 +1,4 @@
 import DetailSection from '@/components/item-list/03_market-list/market-modal/detail-section'
-import MessageSection from '@/components/item-list/03_market-list/market-modal/message-section'
 import {
   Dialog,
   DialogContent,
@@ -22,9 +21,9 @@ export default function MarketModal({
         <div className='flex flex-1 flex-col gap-2 overflow-auto p-2'>
           <DetailSection className='flex flex-1 p-2' item={item} />
 
-          <span className='mx-2 border-b' />
+          {/* <span className='mx-2 border-b' />
 
-          <MessageSection className='flex flex-1 p-2' />
+          <MessageSection className='flex flex-1 p-2' /> */}
         </div>
       </DialogContent>
     </Dialog>

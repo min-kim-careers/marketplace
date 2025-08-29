@@ -7,8 +7,10 @@ services:
       - API_URL=http://api-service:8000
       - API_KEY=REDACTED
       - API_KEY_HEADER=REDACTED
-      
+
       - SESSION_HEADER=__session
+
+      - NEXT_PUBLIC_CHAT_URL=ws://192.168.8.103/chat/ws
     env_file:
       - .env
     volumes:

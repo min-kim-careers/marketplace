@@ -5,6 +5,8 @@ export const APP_ROUTES = {
 
   REAUTH: { href: '/reauth', label: 'Auth' },
 
+  CHAT: { href: '/chat', label: 'Chat', index: '/chat/index' },
+
   MARKET: { href: '/market', label: 'Market' },
 
   ITEM_POST: { href: '/item/post', label: 'Post' },
@@ -27,6 +29,7 @@ const PROTECTED_ROUTES = [
   APP_ROUTES.ITEM_EDIT.href,
   APP_ROUTES.PROFILE_DASHBOARD.href,
   APP_ROUTES.PROFILE_LISTINGS.href,
+  APP_ROUTES.CHAT.href,
 ] as const
 export const isProtectedRoute = (path: string) =>
   PROTECTED_ROUTES.some((route) => path.startsWith(route))

@@ -53,7 +53,7 @@ export const useItemHandler = (): ItemHandlerState => {
     try {
       setLoading('Deleting post')
 
-      if (!(await deleteItem(item.id))) {
+      if (!(await deleteItem(item.alias))) {
         throw new Error('failed to delete')
       }
 

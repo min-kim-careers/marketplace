@@ -67,7 +67,7 @@ export default function ProfileListingsModal({
           </div>
 
           <span className='flex flex-row items-center gap-2'>
-            <Link href={`${APP_ROUTES.ITEM_EDIT.href}/${item.id}`}>
+            <Link href={`${APP_ROUTES.ITEM_EDIT.href}/${item.alias}`}>
               <Button variant={'outline'}>Edit</Button>
             </Link>
 

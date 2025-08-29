@@ -1,3 +1,5 @@
+import { getRoom } from '@/api'
+import useChatStore from '@/chat/chat-store'
 import DateFormatter from '@/components/date-formatter'
 import ItemImageCarousel from '@/components/item-image-carousel'
 import {
@@ -5,16 +7,21 @@ import {
   AvatarFallback,
   AvatarImage,
 } from '@/components/shadcn/components/ui/avatar'
+import { Button } from '@/components/shadcn/components/ui/button'
 import {
   DialogDescription,
   DialogTitle,
 } from '@/components/shadcn/components/ui/dialog'
 import { cn } from '@/components/shadcn/lib/utils'
+import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { ITEM_CONDITION_LABELS } from '@/lib/constants/item-condition-labels'
 import { ItemCondition } from '@/lib/enums/item-condition'
 import { formatCurrency } from '@/lib/helpers/format-price'
+import { useLoadingStore } from '@/lib/providers/loading-provider'
 import { Item } from '@/lib/types/item'
 import { CircleUserIcon } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 export default function DetailSection({
   item,
@@ -23,6 +30,26 @@ export default function DetailSection({
   item: Item
   className?: string
 }) {
+  const router = useRouter()
+  const { setLoading } = useLoadingStore()
+  const { setCurrentRoom } = useChatStore()
+
+  const handleChatButton = async () => {
+    try {
+      setLoading('Joining chat...')
+
+      const room = await getRoom(item.alias)
+      if (!room) throw new Error()
+      setCurrentRoom(room)
+      router.push(APP_ROUTES.CHAT.href)
+    } catch (error) {
+      console.error(error)
+      toast('Something went wrong')
+    } finally {
+      setLoading()
+    }
+  }
+
   return (
     <div className={cn('flex flex-col gap-2', className)}>
       <div className='flex flex-row'>
@@ -61,6 +88,8 @@ export default function DetailSection({
       </div>
 
       <div className='flex items-center justify-between gap-2'>
+        <Button onClick={handleChatButton}>Chat</Button>
+
         <span className='rounded-lg border p-2 font-semibold'>
           Offered at {formatCurrency(item.price.toString())}
         </span>

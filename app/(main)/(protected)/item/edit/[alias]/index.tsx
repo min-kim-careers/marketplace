@@ -76,7 +76,7 @@ export default function ItemEdit({
   }
 
   async function onSubmit(values: z.infer<typeof ItemFormSchema>) {
-    if (!item.id) throw new Error('missing item id')
+    if (!item.alias) throw new Error('missing item id')
 
     if (!formWasUpdated(values)) {
       toast('Please make a change before submitting.')
@@ -91,7 +91,7 @@ export default function ItemEdit({
       imageUrls: imageUrls.filter((u) => u !== null),
     }
 
-    if (await handleUpsert(request, item.id)) {
+    if (await handleUpsert(request, item.alias)) {
       router.replace(APP_ROUTES.PROFILE_LISTINGS.href)
     }
   }

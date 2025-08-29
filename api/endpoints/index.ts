@@ -1,7 +1,6 @@
 import 'server-only'
 
-export * from './auth-firebase'
+export * from './auth/firebase'
+export * from './chat'
 export * from './item'
-export * from './message'
 export * from './profile'
-export * from './thread'

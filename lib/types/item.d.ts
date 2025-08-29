@@ -4,7 +4,7 @@ import { ItemStatus } from '@/lib/enums/item-status'
 import { Profile } from '@/lib/types/profile'
 
 export type Item = {
-  id: string
+  alias: string
   name: string
   description: string
   price: number

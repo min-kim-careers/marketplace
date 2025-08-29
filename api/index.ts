@@ -1,5 +1,4 @@
 export * from './service/auth'
+export * from './service/chat'
 export * from './service/item'
-export * from './service/message'
 export * from './service/profile'
-export * from './service/thread'

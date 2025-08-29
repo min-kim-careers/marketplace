@@ -13,6 +13,7 @@ import { NextResponse } from 'next/server'
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname
   const headers = new Headers(req.headers)
+  headers.set('x-pathname', path)
   const nextResponse = NextResponse.next({ request: { headers } })
 
   if (isFallbackRoute(path) || isAuthRoute(path) || req.method !== 'GET') {
