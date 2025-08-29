@@ -27,11 +27,6 @@ server {
     add_header Access-Control-Allow-Origin *;
   }
 
-  location /_matrix {
-    proxy_pass http://${SYNAPSE_SERVICE};
-    proxy_set_header Host $host;
-  }
-
   location /__/auth/ {
     add_header Cross-Origin-Opener-Policy "same-origin-allow-popups";
 

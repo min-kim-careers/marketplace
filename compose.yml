@@ -1,25 +1,14 @@
 services:
-  # ----------------------------------- CHAT -----------------------------------
-  synapse-db-service:
-    extends:
-      file: ./chat/compose.yml
-      service: synapse-db-service
-
-  synapse-service:
-    extends:
-      file: ./chat/compose.yml
-      service: synapse-service
-
   # ----------------------------------- API -----------------------------------
   api-db-service:
     extends:
       file: ./api/compose.yml
       service: api-db-service
 
-  api-cache-service:
-    extends:
-      file: ./api/compose.yml
-      service: api-cache-service
+  # api-cache-service:
+  #   extends:
+  #     file: ./api/compose.yml
+  #     service: api-cache-service
 
   api-service:
     extends:
@@ -28,8 +17,8 @@ services:
     depends_on:
       api-db-service:
         condition: service_healthy
-      api-cache-service:
-        condition: service_started
+      # api-cache-service:
+      #   condition: service_started
     ports:
       - 8000:8000
 
@@ -45,11 +34,9 @@ services:
       file: ./nginx/compose.yml
       service: nginx-service
     depends_on:
-      - synapse-service
       - api-service
       - web-service
 
 volumes:
   api-db-data:
-  api-cache-data:
-  synapse-db-data:
+  # api-cache-data:

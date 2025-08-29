@@ -1,8 +1,0 @@
-#!/bin/bash
-
-docker exec -it synapse-container \
-/usr/local/bin/register_new_matrix_user \
---config /data/homeserver.yaml \
---user admin \
---password admin \
---admin
