@@ -34,6 +34,13 @@ class ChatRoomDB(Base):
         "UserDB", foreign_keys=[buyer_id], lazy="selectin", uselist=False
     )
 
+    seller_id: Mapped[UUID] = mapped_column(
+        PG_UUID(as_uuid=True), ForeignKey("users.id"), nullable=False
+    )
+    seller: Mapped["UserDB"] = relationship(
+        "UserDB", foreign_keys=[seller_id], lazy="selectin", uselist=False
+    )
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),

@@ -106,6 +106,17 @@ class ItemRepository:
             return 0
 
     @staticmethod
+    async def by_item(
+        db: AsyncSession,
+        item_id: UUID,
+    ) -> ItemDB | None:
+        return await get_one_by(
+            db,
+            ItemDB,
+            id=item_id,
+        )
+
+    @staticmethod
     async def by_item_and_user(
         db: AsyncSession,
         user_id: UUID,

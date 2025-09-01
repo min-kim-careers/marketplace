@@ -1,8 +1,10 @@
+from typing import Sequence
 from uuid import UUID
 
-from sqlalchemy import Select, select
+from sqlalchemy import asc, desc, or_, select
 
-from app.chat.schemas.inbound import ChatRoomInDB, RoomQuery
+from app.chat.enums import RoomSortOrder
+from app.chat.schemas.inbound import ChatRoomInDB, RoomsQuery
 from app.core import logger
 from app.core.helpers import get_one_by
 from app.db.models.chat_room import ChatRoomDB
@@ -11,53 +13,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 class ChatRepository:
     @staticmethod
-    def build_query(stmt: Select, query: RoomQuery):
-        # if query.keyword:
-        #     or_conditions = [
-        #         func.lower(ChatRoomDB.name).ilike(f"%{query.keyword}%"),
-        #         func.lower(ChatRoomDB.description).ilike(f"%{query.keyword}%"),
-        #         func.lower(cast(ChatRoomDB.category, String)).ilike(f"%{query.keyword}%"),
-        #     ]
-        #     stmt = stmt.where(
-        #         or_(*or_conditions),
-        #     )
-        # if user_id:
-        #     if query.user_option == ItemUserOption.exclude_user:
-        #         stmt = stmt.where(
-        #             ChatRoomDB.user_id != user_id,
-        #         )
-        #     elif query.user_option == ItemUserOption.user_only:
-        #         stmt = stmt.where(
-        #             ChatRoomDB.user_id == user_id,
-        #         )
-        # if query.active_only:
-        #     stmt = stmt.where(
-        #         ChatRoomDB.status.in_(
-        #             [
-        #                 ItemStatus.available,
-        #                 ItemStatus.pending,
-        #             ]
-        #         )
-        #     )
-        # if query.categories:
-        #     stmt = stmt.where(ChatRoomDB.category.in_(query.categories))
-
-        return stmt
-
-    @staticmethod
     async def rooms_paginated(
         db: AsyncSession,
-        query: RoomQuery,
-        buyer_id: UUID,
-    ):
+        query: RoomsQuery,
+        user_id: UUID,
+    ) -> Sequence[ChatRoomDB]:
         try:
-            stmt = select(ChatRoomDB)
-
-            stmt = ChatRepository.build_query(stmt, query)
+            stmt = select(ChatRoomDB).where(or_(ChatRoomDB.buyer_id == user_id))
 
             if query.sort_by:
                 sort_column = getattr(ChatRoomDB, query.sort_by.value)
-                if query.sort_order == ItemSortOrder.asc:
+                if query.sort_order == RoomSortOrder.asc:
                     stmt = stmt.order_by(asc(sort_column))
                 else:
                     stmt = stmt.order_by(desc(sort_column))
@@ -67,7 +33,7 @@ class ChatRepository:
             return result.scalars().all()
         except Exception as e:
             logger.info(e)
-            return None
+            return []
 
     @staticmethod
     async def room_by_item_and_buyer(

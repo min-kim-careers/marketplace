@@ -1,5 +1,4 @@
 from typing import List, Optional
-from uuid import UUID
 
 from fastapi import File, Query, UploadFile
 from pydantic import BaseModel, Field, field_validator, model_validator
@@ -13,7 +12,7 @@ from app.item.enums import (
     ItemStatus,
     ItemUserOption,
 )
-from app.item.constants.defaults import *
+from app.item.constants import *
 
 
 class ItemsQuery(InboundBase):
