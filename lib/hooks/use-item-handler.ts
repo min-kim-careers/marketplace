@@ -1,6 +1,6 @@
 'use client'
 
-import { _UpsertItemRequest } from '@/api/endpoints/item'
+import { _UpsertItemQuery } from '@/api/endpoints/item'
 import { deleteItem, upsertItem } from '@/api/service/item'
 import { imageUrlsToFiles } from '@/lib/helpers/image-urls-to-files'
 import { Item } from '@/lib/types/item'
@@ -9,7 +9,7 @@ import { useLoadingStore } from '../providers/loading-provider'
 
 interface ItemHandlerState {
   handleUpsert: (
-    request: _UpsertItemRequest,
+    request: _UpsertItemQuery,
     itemAlias?: string,
   ) => Promise<boolean>
   handleDelete: (item: Item) => Promise<boolean>
@@ -19,7 +19,7 @@ export const useItemHandler = (): ItemHandlerState => {
   const { setLoading } = useLoadingStore()
 
   const handleUpsert = async (
-    request: _UpsertItemRequest,
+    request: _UpsertItemQuery,
     itemAlias?: string,
   ) => {
     const isUpdate = !!itemAlias

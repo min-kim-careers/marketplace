@@ -7,7 +7,7 @@ import {
   _getItemsCountForUser,
   _getProfileExtra,
   _upsertItem,
-  _UpsertItemRequest,
+  _UpsertItemQuery,
 } from '@/api/endpoints'
 import { toFormData } from '@/lib/helpers/server/to-form-data'
 import { ItemPageParams } from '@/lib/types/item-page-params'
@@ -72,7 +72,7 @@ export const deleteItem = async (itemAlias: string) => {
   }
 }
 
-type UpsertItemRequest = _UpsertItemRequest
+type UpsertItemRequest = _UpsertItemQuery
 export const upsertItem = async (
   request: UpsertItemRequest,
   itemAlias?: string,

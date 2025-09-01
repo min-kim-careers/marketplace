@@ -1,8 +1,8 @@
-import PageFallback from '@/components/page-fallback'
 import Toolbar from '@/components/item-list/01_toolbar'
 import PaginationTop from '@/components/item-list/02_pagination-top'
-import MarketList from '@/components/item-list/03_market-list'
+import MarketListServer from '@/components/item-list/03_market-list/server/market-list'
 import PaginationBottom from '@/components/item-list/04_pagination-bottom'
+import PageFallback from '@/components/page-fallback'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { ItemPageProvider } from '@/lib/providers/item-page-provider'
 import { ItemPageParams } from '@/lib/types/item-page-params'
@@ -19,7 +19,7 @@ export default function Market({ params }: { params: ItemPageParams }) {
 
           <PaginationTop />
           <Suspense fallback={<PageFallback />}>
-            <MarketList params={params} />
+            <MarketListServer params={params} />
           </Suspense>
         </div>
         <PaginationBottom />

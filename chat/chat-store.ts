@@ -5,6 +5,9 @@ import { ChatRoom } from '@/chat/chat-room'
 import { create } from 'zustand'
 
 interface ChatState {
+  url: string | null
+  setUrl: (url: string | null) => void
+
   currentRoom?: ChatRoom
   setCurrentRoom: (currentRoom?: ChatRoom) => void
 
@@ -13,6 +16,9 @@ interface ChatState {
 }
 
 const useChatStore = create<ChatState>((set) => ({
+  url: null,
+  setUrl: (url: string | null) => set({ url }),
+
   setCurrentRoom: (currentRoom?: ChatRoom) => set({ currentRoom }),
 
   messages: [],

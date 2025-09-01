@@ -2,25 +2,26 @@
 
 import { ChatMessage } from '@/chat/chat-message'
 import { useChatContext } from '@/chat/chat-provider'
+import ChatRoomList from '@/chat/chat-room-list'
 import useChatStore from '@/chat/chat-store'
 import { Button } from '@/components/shadcn/components/ui/button'
 import { Input } from '@/components/shadcn/components/ui/input'
 import { cn } from '@/components/shadcn/lib/utils'
 import { formatDate } from '@/lib/helpers/format-date'
 import useProfileStore from '@/lib/stores/profile-store'
-import { FormEvent, useEffect, useRef } from 'react'
+import { FormEvent } from 'react'
 
 export default function ChatWindow() {
-  const containerRef = useRef<HTMLDivElement>(null)
+  // const containerRef = useRef<HTMLDivElement>(null)
   const { profile } = useProfileStore()
   const { messages, currentRoom } = useChatStore()
   const { sendJsonMessage, getWebSocket } = useChatContext()
 
-  useEffect(() => {
-    if (containerRef.current) {
-      containerRef.current.scrollTop = containerRef.current.scrollHeight
-    }
-  }, [messages])
+  // useEffect(() => {
+  //   if (containerRef.current) {
+  //     containerRef.current.scrollTop = containerRef.current.scrollHeight
+  //   }
+  // }, [messages])
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -34,7 +35,7 @@ export default function ChatWindow() {
   return (
     <div className='flex flex-1 gap-2 rounded border p-2'>
       {/* left pane */}
-      <div className='min-w-16 rounded border'></div>
+      <ChatRoomList />
 
       {/* right pane */}
       <div className='flex flex-1 flex-col gap-2 rounded border p-2'>

@@ -1,6 +1,6 @@
 'use client'
 
-import { UpdateConstraint, UpdateConstraints } from '@/api'
+import { UpdateConstraint, UpdateConstraintMap } from '@/api'
 import LoadingDots from '@/components/loading-dots'
 import {
   EmailField,
@@ -47,7 +47,7 @@ const useCanUpdate = (
 export default function ProfileDashboard({
   constraints,
 }: {
-  constraints: UpdateConstraints
+  constraints: UpdateConstraintMap
 }) {
   const { profile } = useProfileStore()
 

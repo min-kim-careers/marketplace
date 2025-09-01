@@ -40,6 +40,10 @@ export default function NavBar() {
         <Button>Post Ad</Button>
       </Link>
 
+      <Link href={APP_ROUTES.CHAT.href}>
+        <Button>Chat</Button>
+      </Link>
+
       <Dropdown>
         <div>
           <Avatar>

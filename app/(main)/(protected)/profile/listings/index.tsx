@@ -1,6 +1,6 @@
 import Toolbar from '@/components/item-list/01_toolbar'
 import PaginationTop from '@/components/item-list/02_pagination-top'
-import ProfileListingsList from '@/components/item-list/03_profile-listings-list'
+import ProfileListingsListServer from '@/components/item-list/03_profile-listings-list/server/profile-listings-list'
 import PaginationBottom from '@/components/item-list/04_pagination-bottom'
 import PageFallback from '@/components/page-fallback'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
@@ -21,7 +21,7 @@ export default function ProfileListing({ params }: { params: ItemPageParams }) {
 
           <PaginationTop />
           <Suspense fallback={<PageFallback />}>
-            <ProfileListingsList params={params} />
+            <ProfileListingsListServer params={params} />
           </Suspense>
         </div>
         <PaginationBottom />

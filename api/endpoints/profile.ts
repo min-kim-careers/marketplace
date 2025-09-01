@@ -26,11 +26,11 @@ export type _UpdateConstraint = {
   nextUpdateInDays: number
   intervalInDays: number
 }
-export type _UpdateConstraints = Record<string, _UpdateConstraint>
+export type _UpdateConstraintMap = Record<string, _UpdateConstraint>
 export interface _ProfileExtra {
   imageLimit: number
   listingLimit: number
-  updateConstraints: _UpdateConstraints
+  updateConstraints: _UpdateConstraintMap
 }
 export const _getProfileExtra = async () =>
   (await client()).get(`/api/profiles/extra`).withSession().asResult<{

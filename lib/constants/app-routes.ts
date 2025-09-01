@@ -5,7 +5,7 @@ export const APP_ROUTES = {
 
   REAUTH: { href: '/reauth', label: 'Auth' },
 
-  CHAT: { href: '/chat', label: 'Chat', index: '/chat/index' },
+  CHAT: { href: '/chat', label: 'Chat' },
 
   MARKET: { href: '/market', label: 'Market' },
 

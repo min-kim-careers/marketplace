@@ -2,7 +2,7 @@
 
 import {
   _UpdateConstraint,
-  _UpdateConstraints,
+  _UpdateConstraintMap,
   _UpsertProfileRequest,
   _getProfile,
   _getProfileExtra,
@@ -61,7 +61,7 @@ export const getItemImageLimit = async () => {
 }
 
 export type UpdateConstraint = _UpdateConstraint
-export type UpdateConstraints = _UpdateConstraints
+export type UpdateConstraintMap = _UpdateConstraintMap
 export const getProfileDashboardConstraints = async () => {
   try {
     const { extra } = await _getProfileExtra()

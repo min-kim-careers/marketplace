@@ -1,64 +1,39 @@
 'use client'
 
+import { useChatHandler } from '@/chat/chat-handlers'
 import useChatStore from '@/chat/chat-store'
+import { readyStateMap } from '@/chat/ready-state-map'
+import { useLoadToken } from '@/chat/use-load-token'
 import { toPath } from '@/lib/helpers/to-path'
-import useFirebaseStore from '@/lib/stores/firebase-store'
-import {
-  createContext,
-  PropsWithChildren,
-  useContext,
-  useEffect,
-  useState,
-} from 'react'
-import useWebSocket, { ReadyState } from 'react-use-websocket'
+import { createContext, PropsWithChildren, useContext, useEffect } from 'react'
+import useWebSocket from 'react-use-websocket'
 import { WebSocketHook } from 'react-use-websocket/dist/lib/types'
 
-const useLoadToken = () => {
-  const { user } = useFirebaseStore()
-  const [token, setToken] = useState<string | null>(null)
-  useEffect(() => {
-    const loadToken = async () => {
-      if (!token && user) {
-        const token = await user?.getIdToken()
-        if (token) setToken(token)
-      }
-    }
-
-    loadToken()
-  }, [user])
-
-  return token
-}
-
-const readyStateMap = {
-  [ReadyState.CONNECTING]: 'Connecting',
-  [ReadyState.OPEN]: 'Open',
-  [ReadyState.CLOSING]: 'Closing',
-  [ReadyState.CLOSED]: 'Closed',
-  [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
-} as const
-
-export interface ChatState extends WebSocketHook {}
+export type ChatState = WebSocketHook
 
 const ChatContext = createContext<ChatState | null>(null)
 
-const makeUrl = (token: string, roomAlias: string) =>
-  toPath('ws://192.168.8.103/chat/ws', { token, roomAlias })
+const _makeUrl = (token: string) =>
+  toPath('ws://192.168.8.103/chat/ws', { token })
 
 export default function ChatProvider({ children }: PropsWithChildren) {
   const token = useLoadToken()
 
-  const [url, setUrl] = useState<string | null>(null)
+  const { url, setUrl, currentRoom, setMessages } = useChatStore()
 
-  const { currentRoom, setMessages } = useChatStore()
+  const wsHook = useWebSocket(url, {
+    onOpen: async (e: Event) => {},
+  })
 
-  const wsHook = useWebSocket(url, {})
+  const { handleJoin } = useChatHandler(wsHook)
 
   useEffect(() => {
-    if (token && currentRoom) {
-      setUrl(makeUrl(token, currentRoom.alias))
-    }
-  }, [token, currentRoom])
+    if (token) setUrl(_makeUrl(token))
+  }, [token])
+
+  useEffect(() => {
+    if (currentRoom) handleJoin()
+  }, [currentRoom])
 
   useEffect(
     () => console.log(readyStateMap[wsHook.readyState]),

@@ -3,7 +3,7 @@ import 'server-only'
 import { client } from '@/api/_utils/client'
 import { Item } from '@/lib/types/item'
 
-export interface _GetItemsRequest {
+export interface _GetItemsQuery {
   page: number
   keyword?: string
   sortBy?: string
@@ -13,11 +13,11 @@ export interface _GetItemsRequest {
   userOption?: 'exclude_user' | 'user_only'
   activeOnly?: boolean
 }
-export const _getItems = async (request: _GetItemsRequest) =>
+export const _getItems = async (query: _GetItemsQuery) =>
   (await client())
     .get('/api/items')
     .withSession()
-    .setQuery(request)
+    .setQuery(query)
     .asResult<{ items: Item[]; count: number }>()
 
 export const _getItemsCountForUser = async () =>
@@ -38,7 +38,7 @@ export const _deleteItemByUser = async (itemAlias: string) =>
     .withSession()
     .asResult<{ deleted: boolean }>()
 
-export interface _UpsertItemRequest {
+export interface _UpsertItemQuery {
   name?: string
   description?: string
   price?: number
