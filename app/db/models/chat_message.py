@@ -7,8 +7,10 @@ from sqlalchemy import DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+
 if TYPE_CHECKING:
     from app.db.models.chat_room import ChatRoomDB
+    from app.db.models.user import UserDB
 
 
 class ChatMessageDB(Base):
@@ -25,14 +27,14 @@ class ChatMessageDB(Base):
         "ChatRoomDB", foreign_keys=[room_id], lazy="selectin", uselist=False
     )
 
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
+    user: Mapped["UserDB"] = relationship(
+        "UserDB", foreign_keys=[user_id], lazy="selectin", uselist=False
+    )
+
     content: Mapped[str] = mapped_column(nullable=False)
 
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
-        nullable=False,
-    )
-    updated_at: Mapped[datetime] = mapped_column(
+    timestamp: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
         nullable=False,

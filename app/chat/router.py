@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Query
 
 from app.auth.firebase.dependencies import resolve_firebase_session
 from app.chat.dependencies.resolve_room_alias import resolve_room_alias
-from app.chat.repository import ChatRepository
+from app.chat.repositories.chat_room import ChatRoomRepository
 from app.chat.schemas.inbound import ChatRoomInDB, RoomsQuery
 from app.chat.schemas.outbound import ChatRoomOut
 from app.core.schemas.error import ErrorResponse
@@ -31,7 +31,7 @@ async def get_room_by_item(
     db: AsyncSession = Depends(get_db),
 ):
     buyer_id = user.id
-    room_db = await ChatRepository.room_by_item_and_buyer(
+    room_db = await ChatRoomRepository.room_by_item_and_buyer(
         db,
         item_id,
         buyer_id,
@@ -40,7 +40,7 @@ async def get_room_by_item(
         item_db = await ItemRepository.by_item(db, item_id)
         if not item_db:
             raise ErrorResponse(message="item not found")
-        room_db = await ChatRepository.create_room(
+        room_db = await ChatRoomRepository.create_room(
             db,
             ChatRoomInDB(
                 item_id=item_id,
@@ -51,7 +51,7 @@ async def get_room_by_item(
         if not room_db:
             raise ErrorResponse(message="failed to create room")
 
-    room = ChatRoomOut.from_db(room_db)
+    room = ChatRoomOut.from_db(room_db, user.id)
 
     return APIResponse(data={"room": room})
 
@@ -62,8 +62,8 @@ async def get_rooms(
     user: UserDB = Depends(resolve_firebase_session),
     db: AsyncSession = Depends(get_db),
 ):
-    rooms_db = await ChatRepository.rooms_paginated(db, query, user.id)
+    rooms_db = await ChatRoomRepository.rooms_paginated(db, query, user.id)
 
-    rooms = [ChatRoomOut.from_db(r) for r in rooms_db]
+    rooms = [ChatRoomOut.from_db(r, user.id) for r in rooms_db]
 
     return APIResponse(data={"rooms": rooms})

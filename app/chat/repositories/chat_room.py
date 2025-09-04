@@ -11,7 +11,7 @@ from app.db.models.chat_room import ChatRoomDB
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-class ChatRepository:
+class ChatRoomRepository:
     @staticmethod
     async def rooms_paginated(
         db: AsyncSession,
@@ -19,7 +19,12 @@ class ChatRepository:
         user_id: UUID,
     ) -> Sequence[ChatRoomDB]:
         try:
-            stmt = select(ChatRoomDB).where(or_(ChatRoomDB.buyer_id == user_id))
+            stmt = select(ChatRoomDB).where(
+                or_(
+                    ChatRoomDB.buyer_id == user_id,
+                    ChatRoomDB.seller_id == user_id,
+                )
+            )
 
             if query.sort_by:
                 sort_column = getattr(ChatRoomDB, query.sort_by.value)
