@@ -1,7 +1,7 @@
 import 'server-only'
 
 import { client } from '@/api/_utils/client'
-import { ChatRoom } from '@/chat/chat-room'
+import { ChatRoom } from '@/chat/types/chat-room'
 
 export const _getRoomByItem = async (itemAlias: string) =>
   (await client())

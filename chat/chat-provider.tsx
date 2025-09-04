@@ -1,15 +1,14 @@
 'use client'
 
-import { useChatHandler } from '@/chat/chat-handlers'
 import useChatStore from '@/chat/chat-store'
-import { readyStateMap } from '@/chat/ready-state-map'
+import { useChatSocket } from '@/chat/use-chat-socket'
 import { useLoadToken } from '@/chat/use-load-token'
 import { toPath } from '@/lib/helpers/to-path'
 import { createContext, PropsWithChildren, useContext, useEffect } from 'react'
-import useWebSocket from 'react-use-websocket'
-import { WebSocketHook } from 'react-use-websocket/dist/lib/types'
 
-export type ChatState = WebSocketHook
+export type ChatState = {
+  sendTextMessage: (message: string) => void
+}
 
 const ChatContext = createContext<ChatState | null>(null)
 
@@ -21,27 +20,14 @@ export default function ChatProvider({ children }: PropsWithChildren) {
 
   const { url, setUrl, currentRoom, setMessages } = useChatStore()
 
-  const wsHook = useWebSocket(url, {
-    onOpen: async (e: Event) => {},
-  })
-
-  const { handleJoin } = useChatHandler(wsHook)
+  const socket = useChatSocket()
 
   useEffect(() => {
     if (token) setUrl(_makeUrl(token))
   }, [token])
 
-  useEffect(() => {
-    if (currentRoom) handleJoin()
-  }, [currentRoom])
-
-  useEffect(
-    () => console.log(readyStateMap[wsHook.readyState]),
-    [wsHook.readyState],
-  )
-
   return (
-    <ChatContext.Provider value={{ ...wsHook }}>
+    <ChatContext.Provider value={{ ...socket }}>
       {children}
     </ChatContext.Provider>
   )

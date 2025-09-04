@@ -18,8 +18,7 @@ const useLayoutStore = create(
           setItemColumns: (itemColumns: number) => set({ itemColumns }),
 
           sidebarOpen: false,
-          setSidebarOpen: (open: boolean) =>
-            set({ sidebarOpen: open }),
+          setSidebarOpen: (open: boolean) => set({ sidebarOpen: open }),
         }
       },
       {

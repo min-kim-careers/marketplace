@@ -1,7 +1,7 @@
 'use client'
 
-import { ChatMessage } from '@/chat/chat-message'
-import { ChatRoom } from '@/chat/chat-room'
+import { ChatMessageIn } from '@/chat/types/chat-inbound'
+import { ChatRoom } from '@/chat/types/chat-room'
 import { create } from 'zustand'
 
 interface ChatState {
@@ -11,8 +11,12 @@ interface ChatState {
   currentRoom?: ChatRoom
   setCurrentRoom: (currentRoom?: ChatRoom) => void
 
-  messages: ChatMessage[]
-  setMessages: (messages: ChatMessage[]) => void
+  joinedRoom: boolean
+  setJoinedRoom: (joinedRoom: boolean) => void
+
+  messages: ChatMessageIn[]
+  setMessages: (messages: ChatMessageIn[]) => void
+  addMessage: (message: ChatMessageIn) => void
 }
 
 const useChatStore = create<ChatState>((set) => ({
@@ -21,8 +25,13 @@ const useChatStore = create<ChatState>((set) => ({
 
   setCurrentRoom: (currentRoom?: ChatRoom) => set({ currentRoom }),
 
+  joinedRoom: false,
+  setJoinedRoom: (joinedRoom: boolean) => set({ joinedRoom }),
+
   messages: [],
-  setMessages: (messages: ChatMessage[]) => set({ messages }),
+  setMessages: (messages: ChatMessageIn[]) => set({ messages }),
+  addMessage: (message: ChatMessageIn) =>
+    set((state) => ({ messages: [message, ...state.messages] })),
 }))
 
 export default useChatStore

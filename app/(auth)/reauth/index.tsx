@@ -3,14 +3,15 @@
 import { verifySession } from '@/api'
 import LoadingDots from '@/components/loading-dots'
 import { delay } from '@/lib/helpers/delay'
+import { useAuthHandler } from '@/lib/hooks/auth/use-auth-handler'
 import { useAuthContext } from '@/lib/providers/auth-provider'
-import { auth } from '@/lib/utils/firebase'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
 export default function Reauth({ next }: { next: string }) {
   const router = useRouter()
   const { isAuthenticated, isLoading } = useAuthContext()
+  const { globalSignOut } = useAuthHandler()
 
   useEffect(() => {
     const handleReauth = async () => {
@@ -22,7 +23,7 @@ export default function Reauth({ next }: { next: string }) {
         router.replace(next)
       } else {
         await delay(1000)
-        await auth.signOut()
+        await globalSignOut()
       }
     }
 

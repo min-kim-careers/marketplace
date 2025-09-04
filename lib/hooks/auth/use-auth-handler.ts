@@ -2,6 +2,7 @@
 
 import { revokeSession, signInWithGoogle } from '@/api/service/auth'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
+import { clearSession } from '@/lib/helpers/server/clear-session'
 import useFirebaseStore from '@/lib/stores/firebase-store'
 import useProfileStore from '@/lib/stores/profile-store'
 import { auth, provider } from '@/lib/utils/firebase'
@@ -10,7 +11,6 @@ import { signInWithPopup, User } from 'firebase/auth'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { useLoadingStore } from '../../providers/loading-provider'
-import { clearSession } from '@/lib/helpers/server/clear-session'
 
 export const useAuthHandler = () => {
   const { setLoading } = useLoadingStore()
@@ -79,14 +79,14 @@ export const useAuthHandler = () => {
   const globalSignOut = async () => {
     try {
       auth.signOut()
-      setProfile()
-      setUser()
       await revokeSession()
       await clearSession()
+      setProfile()
+      setUser()
     } catch (error) {
       throw error
     }
   }
 
-  return { handleSignIn, handleSignOut, refreshSession }
+  return { handleSignIn, handleSignOut, refreshSession, globalSignOut }
 }

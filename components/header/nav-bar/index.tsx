@@ -18,48 +18,49 @@ export default function NavBar() {
   const { isLoading, isAuthenticated } = useAuthContext()
   const { handleSignIn } = useAuthHandler()
 
-  if (isLoading) {
-    return (
-      <div className='flex-1'>
-        <LoadingDots className='h-2 w-2' />
-      </div>
-    )
-  }
-
   const unauthenticated = () => (
     <Button onClick={handleSignIn}>Sign in with Google</Button>
   )
 
-  const authenticated = () => (
-    <span className='flex items-center justify-between gap-4'>
-      <Link href={`${APP_ROUTES.MARKET.href}`} passHref>
-        <Button>Browse</Button>
-      </Link>
-
-      <Link href={APP_ROUTES.ITEM_POST.href}>
-        <Button>Post Ad</Button>
-      </Link>
-
-      <Link href={APP_ROUTES.CHAT.href}>
-        <Button>Chat</Button>
-      </Link>
-
-      <Dropdown>
-        <div>
-          <Avatar>
-            <AvatarImage src={profile!.avatarUrl} />
-            <AvatarFallback>
-              {profile ? (
-                <CircleUserIcon className='h-full w-full' />
-              ) : (
-                <LoadingDots />
-              )}
-            </AvatarFallback>
-          </Avatar>
+  const authenticated = () => {
+    if (isLoading || !profile) {
+      return (
+        <div className='flex-1'>
+          <LoadingDots className='h-2 w-2' />
         </div>
-      </Dropdown>
-    </span>
-  )
+      )
+    }
+    return (
+      <span className='flex items-center justify-between gap-4'>
+        <Link href={`${APP_ROUTES.MARKET.href}`} passHref>
+          <Button>Browse</Button>
+        </Link>
+
+        <Link href={APP_ROUTES.ITEM_POST.href}>
+          <Button>Post Ad</Button>
+        </Link>
+
+        <Link href={APP_ROUTES.CHAT.href}>
+          <Button>Chat</Button>
+        </Link>
+
+        <Dropdown>
+          <div>
+            <Avatar>
+              <AvatarImage src={profile.avatarUrl} />
+              <AvatarFallback>
+                {profile ? (
+                  <CircleUserIcon className='h-full w-full' />
+                ) : (
+                  <LoadingDots />
+                )}
+              </AvatarFallback>
+            </Avatar>
+          </div>
+        </Dropdown>
+      </span>
+    )
+  }
 
   return isAuthenticated ? authenticated() : unauthenticated()
 }

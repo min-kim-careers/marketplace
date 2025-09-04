@@ -1,4 +1,3 @@
-import { getUnreadMessagesCount } from '@/api/service/chat'
 import Spinner from '@/components/spinner'
 import { useAuthContext } from '@/lib/providers/auth-provider'
 import { useEffect, useState } from 'react'
@@ -12,7 +11,7 @@ const useGetUnreadCount = () => {
     const getUnreadCount = async () => {
       try {
         setLoading(true)
-        if (isAuthenticated) setCount(await getUnreadMessagesCount())
+        // if (isAuthenticated) setCount(await getUnreadMessagesCount())
       } catch (error) {
         console.error(error)
       } finally {
