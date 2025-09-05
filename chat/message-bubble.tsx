@@ -1,8 +1,8 @@
-import { ChatMessageIn } from '@/chat/types/chat-inbound'
+import { ChatTextIn } from '@/chat/types/chat-inbound'
 import { cn } from '@/components/shadcn/lib/utils'
 import { formatDate } from '@/lib/helpers/format-date'
 
-export default function MessageBubble({ message }: { message: ChatMessageIn }) {
+export default function MessageBubble({ message }: { message: ChatTextIn }) {
   return (
     <div
       className={cn(

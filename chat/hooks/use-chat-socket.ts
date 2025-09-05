@@ -1,11 +1,12 @@
 import useChatStore from '@/chat/stores/chat-store'
-import { ChatMessageIn, ChatPayloadIn } from '@/chat/types/chat-inbound'
+import { ChatPayloadIn, ChatTextIn } from '@/chat/types/chat-inbound'
 import { ChatPayloadOut } from '@/chat/types/chat-outbound'
 import { useEffect } from 'react'
 import useWebSocket from 'react-use-websocket'
 
 export type ChatSocketState = {
   sendTextMessage: (message: string) => void
+  sendRestoreMessage: () => void
 }
 
 export const useChatSocket = (): ChatSocketState => {
@@ -15,9 +16,11 @@ export const useChatSocket = (): ChatSocketState => {
     currentRoom,
     setJoinedRoom,
     joinedRoom,
-    addMessage,
     setMessages,
+    setNoMessages,
+    setSessionId,
   } = useChatStore()
+  const messages = useChatStore((state) => state.messages)
 
   useEffect(() => {
     if (currentRoom) {
@@ -32,8 +35,14 @@ export const useChatSocket = (): ChatSocketState => {
         console.log('received:', payload)
 
         switch (payload.type) {
-          case 'join':
-            handleJoin(payload.history)
+          case 'connected':
+            handleConnected(payload.sessionId)
+            break
+          case 'joined':
+            handleJoin()
+            break
+          case 'restore':
+            handleRestore(payload.previous)
             break
           case 'text':
             handleTextMessage({ ...payload })
@@ -52,18 +61,32 @@ export const useChatSocket = (): ChatSocketState => {
     console.log('sent:', payload)
   }
 
-  const handleJoin = (history: ChatMessageIn[]) => {
+  const handleConnected = (sessionId: string) => {
+    setSessionId(sessionId)
+  }
+
+  const handleJoin = () => {
     setJoinedRoom(true)
-    setMessages(history)
   }
 
-  const handleTextMessage = (msg: ChatMessageIn) => {
-    addMessage(msg)
+  const handleRestore = (previous: ChatTextIn[]) => {
+    if (previous.length) {
+      setMessages([...messages, ...previous])
+    } else {
+      setNoMessages(true)
+    }
   }
 
-  const sendTextMessage = (message: string) => {
-    sendMessage({ type: 'text', content: message })
+  const handleTextMessage = (msg: ChatTextIn) => {
+    setMessages([...messages, msg])
   }
 
-  return { sendTextMessage }
+  return {
+    sendTextMessage: (message: string) => {
+      sendMessage({ type: 'text', content: message })
+    },
+    sendRestoreMessage: () => {
+      sendMessage({ type: 'restore' })
+    },
+  }
 }

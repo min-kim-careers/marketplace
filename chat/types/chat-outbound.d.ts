@@ -7,3 +7,6 @@ export type ChatPayloadOut =
       type: 'join'
       roomAlias: string
     }
+  | {
+      type: 'restore'
+    }

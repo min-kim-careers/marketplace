@@ -1,53 +1,42 @@
 'use client'
 
+import { useScrollHandler } from '@/chat/hooks/use-scroll-handler'
 import MessageBubble from '@/chat/message-bubble'
 import { useChatContext } from '@/chat/providers/chat-provider'
 import useChatStore from '@/chat/stores/chat-store'
+import LoadingDots from '@/components/loading-dots'
 import { Button } from '@/components/shadcn/components/ui/button'
 import { Input } from '@/components/shadcn/components/ui/input'
-import { FormEvent, useEffect, useRef, useState } from 'react'
-
-const useScrollHandler = (mount: boolean) => {
-  const ref = useRef<HTMLDivElement>(null)
-  const [atTop, setAtTop] = useState(false)
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (ref.current) {
-        setAtTop(ref.current.scrollTop === 0)
-      }
-    }
-
-    if (ref.current) {
-      ref.current.addEventListener('scroll', handleScroll)
-      handleScroll()
-    }
-
-    return () => {
-      if (ref.current) {
-        ref.current.removeEventListener('scroll', handleScroll)
-      }
-    }
-  }, [mount])
-
-  useEffect(() => {
-    console.log(atTop)
-  }, [atTop])
-
-  useEffect(() => {
-    if (ref.current) {
-      ref.current.scrollTop = ref.current.scrollHeight
-    }
-  }, [mount])
-
-  return { ref, atTop }
-}
+import { cn } from '@/components/shadcn/lib/utils'
+import { delay } from '@/lib/helpers/delay'
+import { FormEvent, useEffect, useState } from 'react'
 
 export default function ChatWindow() {
   const { joinedRoom } = useChatStore()
   const messages = useChatStore((state) => state.messages)
-  const { sendTextMessage } = useChatContext()
-  const { atTop, ref } = useScrollHandler(joinedRoom)
+  const noMessages = useChatStore((state) => state.noMessages)
+  const { sendTextMessage, sendRestoreMessage } = useChatContext()
+  const { atTop, ref, nudgeDown } = useScrollHandler(joinedRoom)
+  const [loading, setLoading] = useState<boolean>(false)
+
+  useEffect(() => {
+    const handleAtTop = async () => {
+      if (atTop && !noMessages) {
+        try {
+          setLoading(true)
+          await delay(2000)
+          sendRestoreMessage()
+        } catch (error) {
+        } finally {
+          setLoading(false)
+        }
+      }
+    }
+
+    handleAtTop()
+  }, [atTop])
+
+  useEffect(() => nudgeDown(), [messages.length])
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -64,7 +53,22 @@ export default function ChatWindow() {
     <div className='flex h-full flex-col gap-2'>
       {/* messages */}
       <div className='h-full overflow-y-auto rounded border p-2' ref={ref}>
-        <div className='flex w-full flex-col-reverse gap-2'>
+        <div
+          className={cn(
+            'transition-all',
+            loading ? 'translate-y-0' : '-translate-y-10',
+          )}
+        >
+          <LoadingDots />
+        </div>
+
+        {noMessages && (
+          <div className='mb-2 flex items-center justify-center italic text-black/50'>
+            No more messages..
+          </div>
+        )}
+
+        <div className='flex min-h-full w-full flex-col-reverse gap-2'>
           {messages.map((m, i) => (
             <MessageBubble message={m} key={i} />
           ))}
