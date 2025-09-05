@@ -21,8 +21,16 @@ class ChatTextIn(InboundBase):
     content: str
 
 
+class ChatRestoreIn(InboundBase):
+    type: Literal["restore"]
+
+
 ChatPayloadInType = Annotated[
-    Union[ChatTextIn, ChatJoinIn],
+    Union[
+        ChatTextIn,
+        ChatJoinIn,
+        ChatRestoreIn,
+    ],
     Field(discriminator="type"),
 ]
 

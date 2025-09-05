@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Sequence
 from uuid import UUID
 
@@ -13,15 +14,16 @@ class ChatMessageRepository:
     async def messages_offset(
         db: AsyncSession,
         room_id: UUID,
-        offset: int,
+        from_timestamp: datetime,
         limit: int,
     ) -> Sequence[ChatMessageDB]:
         try:
-            stmt = select(ChatMessageDB).where(or_(ChatMessageDB.room_id == room_id))
-
-            stmt = (
-                stmt.offset(offset).limit(limit).order_by(desc(ChatMessageDB.timestamp))
+            stmt = select(ChatMessageDB).where(
+                or_(ChatMessageDB.room_id == room_id),
+                ChatMessageDB.timestamp < from_timestamp,
             )
+
+            stmt = stmt.limit(limit).order_by(desc(ChatMessageDB.timestamp))
             result = await db.execute(stmt)
             return result.scalars().all()
         except Exception as e:
