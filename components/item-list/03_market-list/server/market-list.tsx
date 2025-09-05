@@ -1,6 +1,5 @@
 import { getItems } from '@/api/service/item'
 import { MarketList } from '@/components/item-list/03_market-list'
-import { hasSession } from '@/lib/helpers/server/has-session'
 import { ItemPageParams } from '@/lib/types/item-page-params'
 
 export default async function MarketListServer({
@@ -8,7 +7,7 @@ export default async function MarketListServer({
 }: {
   params: ItemPageParams
 }) {
-  const { items, count } = await getItems(params, await hasSession())
+  const { items, count } = await getItems(params)
 
   return <MarketList props={{ items, count }} />
 }

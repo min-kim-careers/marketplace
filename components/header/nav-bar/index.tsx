@@ -1,3 +1,4 @@
+import ChatDrawer from '@/chat/chat-drawer'
 import LoadingDots from '@/components/loading-dots'
 import {
   Avatar,
@@ -18,18 +19,27 @@ export default function NavBar() {
   const { isLoading, isAuthenticated } = useAuthContext()
   const { handleSignIn } = useAuthHandler()
 
+  if (isLoading) {
+    return (
+      <div className='flex-1'>
+        <LoadingDots className='h-2 w-2' />
+      </div>
+    )
+  }
+
   const unauthenticated = () => (
     <Button onClick={handleSignIn}>Sign in with Google</Button>
   )
 
   const authenticated = () => {
-    if (isLoading || !profile) {
+    if (!profile) {
       return (
         <div className='flex-1'>
           <LoadingDots className='h-2 w-2' />
         </div>
       )
     }
+
     return (
       <span className='flex items-center justify-between gap-4'>
         <Link href={`${APP_ROUTES.MARKET.href}`} passHref>
@@ -40,9 +50,7 @@ export default function NavBar() {
           <Button>Post Ad</Button>
         </Link>
 
-        <Link href={APP_ROUTES.CHAT.href}>
-          <Button>Chat</Button>
-        </Link>
+        <ChatDrawer />
 
         <Dropdown>
           <div>

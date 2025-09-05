@@ -1,8 +1,8 @@
 'use client'
 
-import useChatStore from '@/chat/chat-store'
-import { useChatSocket } from '@/chat/use-chat-socket'
-import { useLoadToken } from '@/chat/use-load-token'
+import { useChatSocket } from '@/chat/hooks/use-chat-socket'
+import { useLoadToken } from '@/chat/hooks/use-load-token'
+import useChatStore from '@/chat/stores/chat-store'
 import { toPath } from '@/lib/helpers/to-path'
 import { createContext, PropsWithChildren, useContext, useEffect } from 'react'
 

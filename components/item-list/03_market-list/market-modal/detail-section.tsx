@@ -1,5 +1,5 @@
 import { getRoom } from '@/api'
-import useChatStore from '@/chat/chat-store'
+import useChatStore from '@/chat/stores/chat-store'
 import DateFormatter from '@/components/date-formatter'
 import ItemImageCarousel from '@/components/item-image-carousel'
 import {

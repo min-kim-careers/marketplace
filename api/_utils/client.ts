@@ -112,8 +112,6 @@ class Client {
         const session = await getSession()
         if (session) {
           this.addHeader({ cookie: `${env.sessionHeader}=${session}` })
-        } else {
-          throw new Error('session missing')
         }
       }
 
@@ -135,6 +133,7 @@ class Client {
       }
       return await resp.json()
     } catch (error) {
+      console.error(error)
       throw new Error()
     }
   }
@@ -145,6 +144,7 @@ class Client {
       message && console.log('API: ', message)
       return data as T
     } catch (error) {
+      console.error(error)
       throw new Error()
     }
   }

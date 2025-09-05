@@ -9,6 +9,7 @@ import {
   _upsertItem,
   _UpsertItemQuery,
 } from '@/api/endpoints'
+import { hasSession } from '@/lib/helpers/server/has-session'
 import { toFormData } from '@/lib/helpers/server/to-form-data'
 import { ItemPageParams } from '@/lib/types/item-page-params'
 
@@ -17,11 +18,10 @@ const getItemsFallback = {
   count: 0,
 }
 
-export const getItems = async (
-  params: ItemPageParams,
-  excludeUser: boolean = false,
-) => {
+export const getItems = async (params: ItemPageParams) => {
   try {
+    const excludeUser = await hasSession()
+
     return await _getItems({
       page: params.page,
       sortBy: params.sortBy,

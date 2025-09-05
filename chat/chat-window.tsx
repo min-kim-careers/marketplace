@@ -1,21 +1,53 @@
 'use client'
 
-import { useChatContext } from '@/chat/chat-provider'
-import useChatStore from '@/chat/chat-store'
 import MessageBubble from '@/chat/message-bubble'
+import { useChatContext } from '@/chat/providers/chat-provider'
+import useChatStore from '@/chat/stores/chat-store'
 import { Button } from '@/components/shadcn/components/ui/button'
 import { Input } from '@/components/shadcn/components/ui/input'
-import { cn } from '@/components/shadcn/lib/utils'
-import { FormEvent, useEffect } from 'react'
+import { FormEvent, useEffect, useRef, useState } from 'react'
 
-export default function ChatWindow() {
-  const { joinedRoom, setJoinedRoom } = useChatStore()
-  const messages = useChatStore((state) => state.messages)
-  const { sendTextMessage } = useChatContext()
+const useScrollHandler = (mount: boolean) => {
+  const ref = useRef<HTMLDivElement>(null)
+  const [atTop, setAtTop] = useState(false)
 
   useEffect(() => {
-    console.log(joinedRoom)
-  }, [joinedRoom])
+    const handleScroll = () => {
+      if (ref.current) {
+        setAtTop(ref.current.scrollTop === 0)
+      }
+    }
+
+    if (ref.current) {
+      ref.current.addEventListener('scroll', handleScroll)
+      handleScroll()
+    }
+
+    return () => {
+      if (ref.current) {
+        ref.current.removeEventListener('scroll', handleScroll)
+      }
+    }
+  }, [mount])
+
+  useEffect(() => {
+    console.log(atTop)
+  }, [atTop])
+
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.scrollTop = ref.current.scrollHeight
+    }
+  }, [mount])
+
+  return { ref, atTop }
+}
+
+export default function ChatWindow() {
+  const { joinedRoom } = useChatStore()
+  const messages = useChatStore((state) => state.messages)
+  const { sendTextMessage } = useChatContext()
+  const { atTop, ref } = useScrollHandler(joinedRoom)
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -26,18 +58,17 @@ export default function ChatWindow() {
     }
   }
 
+  if (!joinedRoom) return null
+
   return (
-    <div
-      className={cn(
-        'flex h-full flex-1 flex-col gap-2 rounded border p-2 transition-opacity',
-        joinedRoom ? 'opacity-100' : 'pointer-events-none opacity-0',
-      )}
-    >
+    <div className='flex h-full flex-col gap-2'>
       {/* messages */}
-      <div className='flex h-full flex-col-reverse gap-2 overflow-y-auto rounded border p-2'>
-        {messages.map((m, i) => (
-          <MessageBubble key={i} message={m} />
-        ))}
+      <div className='h-full overflow-y-auto rounded border p-2' ref={ref}>
+        <div className='flex w-full flex-col-reverse gap-2'>
+          {messages.map((m, i) => (
+            <MessageBubble message={m} key={i} />
+          ))}
+        </div>
       </div>
 
       {/* input */}

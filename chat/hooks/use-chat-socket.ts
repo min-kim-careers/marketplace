@@ -1,4 +1,4 @@
-import useChatStore from '@/chat/chat-store'
+import useChatStore from '@/chat/stores/chat-store'
 import { ChatMessageIn, ChatPayloadIn } from '@/chat/types/chat-inbound'
 import { ChatPayloadOut } from '@/chat/types/chat-outbound'
 import { useEffect } from 'react'
@@ -54,7 +54,6 @@ export const useChatSocket = (): ChatSocketState => {
 
   const handleJoin = (history: ChatMessageIn[]) => {
     setJoinedRoom(true)
-    console.log('joinedRoom:', joinedRoom)
     setMessages(history)
   }
 
