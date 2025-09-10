@@ -1,8 +1,6 @@
 import asyncio
 from collections import defaultdict
-from datetime import datetime
-import time
-from typing import List, Set
+from typing import List, Literal, Optional, Set
 from uuid import UUID
 from fastapi import WebSocket
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -28,63 +26,107 @@ from app.core import logger
 
 
 class ChatClient:
-    def __init__(
-        self, conn: WebSocket, db: AsyncSession, user_id: UUID, session_id: UUID
-    ) -> None:
+    def __init__(self, conn: WebSocket, db: AsyncSession, user_id: UUID) -> None:
         self.conn: WebSocket = conn
         self.db: AsyncSession = db
-        self.session_id: UUID = session_id
         self.user_id: UUID = user_id
-        self.room_id: UUID | None = None
-        self._tasks: Set[asyncio.Task] = set()
+        self.room_id: Optional[UUID] = None
+        self.tasks: Set[asyncio.Task] = set()
 
-        self.no_messages = False
-        self.last_timestamp = datetime.now().isoformat()
+        # listener
+        self.cmd_q: asyncio.Queue[tuple[Literal["subscribe", "unsubscribe"], str]] = (
+            asyncio.Queue()
+        )
+        self.idle_key = b"__idle__"
 
-    def reset(self):
-        self.no_messages = False
-        self.last_timestamp = datetime.now().isoformat()
-        self.last_activity = time.time()
+    async def subscribe(self, room_key: str):
+        await self.cmd_q.put(("subscribe", room_key))
+
+    async def unsubscribe(self, room_key: str):
+        await self.cmd_q.put(("unsubscribe", room_key))
+
+    async def run_listener(self):
+        async def set_idle():
+            await pubsub.subscribe(self.idle_key)
+            print("idling..")
+
+        async def handle_message(msg):
+            try:
+                if msg["channel"] == self.idle_key:
+                    return
+
+                elif msg["type"] == "message":
+                    stream_msg = StreamMessage.model_validate_json(msg["data"])
+                    if not stream_msg.timestamp:
+                        logger.error("stream message missing timestamp")
+                        return
+                    await self.send_text(
+                        ChatTextOut.from_stream(stream_msg, str(self.user_id)),
+                    )
+            except Exception as e:
+                logger.error("room listener error:", e)
+
+        pubsub = redis.pubsub()
+        await set_idle()
+        timeout = 0.5
+        try:
+            while True:
+                try:
+                    cmd, key = self.cmd_q.get_nowait()
+                except asyncio.QueueEmpty:
+                    pass
+                else:
+                    if cmd == "subscribe":
+                        await pubsub.subscribe(key)
+                        print("subscribed:", key)
+                    elif cmd == "unsubscribe":
+                        await pubsub.unsubscribe(key)
+                        await set_idle()
+                        print("unsubscribed:", key)
+
+                msg = await pubsub.get_message(
+                    ignore_subscribe_messages=False, timeout=timeout
+                )
+                if msg:
+                    await handle_message(msg)
+        except Exception as e:
+            logger.error("listener error:", e)
+        finally:
+            await pubsub.close()
+            print("channel closed")
+
+    async def reset_state(self):
+        await self.end_tasks()
 
     def spawn(self, coro):
         t = asyncio.create_task(coro)
-        self._tasks.add(t)
-        t.add_done_callback(self._tasks.discard)
+        self.tasks.add(t)
+        t.add_done_callback(self.tasks.discard)
         return t
 
-    async def send_message(self, payload: ChatPayloadOutType):
+    async def send_text(self, payload: ChatPayloadOutType):
         try:
             await self.conn.send_json(payload.model_dump(by_alias=True))
             print("sent payload:", payload.model_dump())
         except Exception as e:
             logger.error("send message error:", e)
 
-    async def run_message_listener(self):
-        if self.room_id:
-            pubsub = redis.pubsub()
-            print("subscribing to:", pubsub_key(str(self.room_id)))
-            await pubsub.subscribe(pubsub_key(str(self.room_id)))
-            async for msg in pubsub.listen():
-                try:
-                    if msg["type"] == "message":
-                        stream_msg = StreamMessage.model_validate_json(msg["data"])
-                        if not stream_msg.timestamp:
-                            logger.error("stream message missing timestamp")
-                            continue
-                        await self.send_message(
-                            ChatTextOut.from_stream(stream_msg, str(self.user_id)),
-                        )
-                except Exception as e:
-                    logger.error("room listener error:", e)
-                    continue
+    async def set_room(self, room_id: UUID):
+        await self.subscribe(pubsub_key(str(room_id)))
+        self.room_id = room_id
 
-    async def run_tasks(self):
-        self.spawn(self.run_message_listener())
+    async def unset_room(self, room_id: UUID):
+        await self.unsubscribe(pubsub_key(str(room_id)))
+        self.room_id = None
+
+    def run_tasks(self):
+        if not self.tasks:
+            self.spawn(self.run_listener())
 
     async def end_tasks(self):
-        for t in list(self._tasks):
+        for t in list(self.tasks):
             t.cancel()
-        for t in list(self._tasks):
+        for t in list(self.tasks):
             try:
                 await t
             except asyncio.CancelledError:
@@ -93,42 +135,32 @@ class ChatClient:
 
 class ChatManager:
     def __init__(self) -> None:
-        self.clients: dict[UUID, ChatClient] = defaultdict()
         self.rooms: dict[UUID, set[ChatClient]] = defaultdict(set)
         self.stream: ChatStream = ChatStream()
 
     async def connect(self, client: ChatClient):
+        print("connecting...")
         await client.conn.accept()
-        self.clients[client.session_id] = client
-        await client.run_tasks()
-        await client.send_message(ChatConnectedOut(session_id=client.session_id))
+        client.run_tasks()
+        await client.send_text(ChatConnectedOut())
+        return client
 
-    async def reconnect(self, conn: WebSocket, session_id: UUID):
-        client = self.clients[session_id]
-        client.conn = conn
-        await client.conn.accept()
-
-    async def soft_disconnect(self, client: ChatClient):
-        await client.conn.close(1000, reason="idle timeout")
-        await client.end_tasks()
-
-    async def hard_disconnect(self, client: ChatClient):
-        self.leave_room(client)
-        del self.clients[client.session_id]
+    async def disconnect(self, client: ChatClient):
+        print("disconnecting...")
+        await self.leave_room(client)
         await client.end_tasks()
 
     async def join_room(self, room_id: UUID, client: ChatClient):
-        client.reset()
-        client.room_id = room_id
+        await client.set_room(room_id)
         self.rooms[room_id].add(client)
 
-    def leave_room(self, client: ChatClient):
+    async def leave_room(self, client: ChatClient):
         if client.room_id:
             self.rooms[client.room_id].remove(client)
             if not self.rooms[client.room_id]:
                 del self.rooms[client.room_id]
-            client.room_id = None
-            client.reset()
+            await client.unset_room(client.room_id)
+            await client.reset_state()
 
     async def broadcast_message(self, content: str, client: ChatClient):
         await self.stream.enqueue_message(
@@ -139,16 +171,11 @@ class ChatManager:
             )
         )
 
-    async def get_previous(self, client: ChatClient) -> List[ChatTextOut]:
-        if client.room_id and not client.no_messages:
-            previous = await ChatMessageService.get_messages(
-                client.db, client.room_id, client.user_id, client.last_timestamp
+    async def get_previous(self, client: ChatClient, since: str) -> List[ChatTextOut]:
+        if client.room_id:
+            return await ChatMessageService.get_messages(
+                client.db, client.room_id, client.user_id, since
             )
-            if previous:
-                client.last_timestamp = previous[-1].timestamp
-            else:
-                client.no_messages = True
-            return previous
         return []
 
     async def handle_payload(self, data: dict, client: ChatClient):
@@ -157,13 +184,11 @@ class ChatManager:
 
             if isinstance(payload, ChatJoinIn):
                 await self.join_room(payload.room_id, client)
-                previous = await self.get_previous(client)
-                await client.send_message(ChatJoinedOut())
-                await client.send_message(ChatRestoreOut(previous=previous))
+                await client.send_text(ChatJoinedOut())
 
             elif isinstance(payload, ChatRestoreIn):
-                previous = await self.get_previous(client)
-                await client.send_message(ChatRestoreOut(previous=previous))
+                previous = await self.get_previous(client, payload.since)
+                await client.send_text(ChatRestoreOut(previous=previous))
 
             elif isinstance(payload, ChatTextIn):
                 await self.broadcast_message(payload.content, client)

@@ -70,7 +70,7 @@ class ChatStream:
                 ]
                 async with AsyncSessionLocal() as db:
                     for msg_id, fields in entries:
-                        print("got stream:", msg_id, fields)
+                        print("from stream:", msg_id, fields)
                         stream_msg = StreamMessage.model_validate(fields)
                         msg_db = await ChatMessageRepository.create_message(
                             db,
@@ -85,9 +85,7 @@ class ChatStream:
                                 pubsub_key(stream_msg.room_id),
                                 stream_msg.model_dump_json(),
                             )
-                            print(
-                                f"broadcasted to: {pubsub_key(str(stream_msg.room_id))}"
-                            )
+                            print(f"broadcasted to: {pubsub_key(stream_msg.room_id)}")
 
                             await redis.xack(self.STREAM_KEY, self.GROUP, msg_id)
             except Exception as e:

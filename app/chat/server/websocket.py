@@ -1,6 +1,4 @@
-from typing import Optional
-from uuid import UUID, uuid4
-from fastapi import APIRouter, Depends, Query, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from app.auth.firebase.dependencies import resolve_firebase_query_token
 from app.chat.server.manager import ChatClient
 from app.core import logger
@@ -21,16 +19,15 @@ async def websocket_endpoint(
     conn: WebSocket,
     db: AsyncSession = Depends(get_db),
     user: UserDB = Depends(resolve_firebase_query_token),
-    session_id: Optional[UUID] = Query(None, alias="sessionId"),
 ):
-    client = None
     try:
-        if session_id:
-            client = manager.clients[session_id]
-            await manager.reconnect(conn, session_id)
-        else:
-            client = ChatClient(conn, db, user.id, uuid4())
-            await manager.connect(client)
+        client = await manager.connect(
+            ChatClient(
+                conn=conn,
+                db=db,
+                user_id=user.id,
+            ),
+        )
 
         while True:
             data = await conn.receive_json()
@@ -38,8 +35,7 @@ async def websocket_endpoint(
     except WebSocketDisconnect as e:
         logger.info("websocket disconnected")
     except Exception as e:
-        # logger.error("websocket error:", e)
-        pass
+        logger.error("websocket error:", e)
     finally:
         if client:
-            await manager.hard_disconnect(client)
+            await manager.disconnect(client)

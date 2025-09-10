@@ -1,7 +1,7 @@
 from typing import Annotated, Literal, Union
 from uuid import UUID
 
-from pydantic import Field, TypeAdapter, field_serializer
+from pydantic import Field, TypeAdapter
 
 
 from app.chat.server.stream import StreamMessage
@@ -40,11 +40,6 @@ class ChatTextOut(OutboundBase):
 
 class ChatConnectedOut(OutboundBase):
     type: Literal["connected"] = "connected"
-    session_id: UUID
-
-    @field_serializer("session_id")
-    def serialize_uuid(self, v: UUID):
-        return str(v)
 
 
 class ChatJoinedOut(OutboundBase):

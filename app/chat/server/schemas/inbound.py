@@ -23,6 +23,7 @@ class ChatTextIn(InboundBase):
 
 class ChatRestoreIn(InboundBase):
     type: Literal["restore"]
+    since: str
 
 
 ChatPayloadInType = Annotated[

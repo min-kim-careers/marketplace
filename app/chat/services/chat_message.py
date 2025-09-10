@@ -15,10 +15,9 @@ class ChatMessageService:
         db: AsyncSession,
         room_id: UUID,
         user_id: UUID,
-        from_timestamp: str,
+        since: str,
     ) -> List[ChatTextOut]:
         messages_db = await ChatMessageRepository.messages_offset(
-            db, room_id, datetime.fromisoformat(from_timestamp), DEFAULT_RESTORE_LIMIT
+            db, room_id, datetime.fromisoformat(since), DEFAULT_RESTORE_LIMIT
         )
-        messages = [ChatTextOut.from_db(m, user_id) for m in messages_db]
-        return messages
+        return [ChatTextOut.from_db(m, user_id) for m in messages_db]
