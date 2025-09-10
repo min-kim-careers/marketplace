@@ -5,10 +5,10 @@ services:
       file: ./api/compose.yml
       service: api-db-service
 
-  # api-cache-service:
-  #   extends:
-  #     file: ./api/compose.yml
-  #     service: api-cache-service
+  api-cache-service:
+    extends:
+      file: ./api/compose.yml
+      service: api-cache-service
 
   api-service:
     extends:
@@ -17,8 +17,8 @@ services:
     depends_on:
       api-db-service:
         condition: service_healthy
-      # api-cache-service:
-      #   condition: service_started
+      api-cache-service:
+        condition: service_started
     ports:
       - 8000:8000
 
@@ -39,4 +39,4 @@ services:
 
 volumes:
   api-db-data:
-  # api-cache-data:
+  api-cache-data:
