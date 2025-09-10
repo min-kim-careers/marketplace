@@ -7,7 +7,6 @@ export type ChatTextIn = {
 export type ChatPayloadIn =
   | {
       type: 'connected'
-      sessionId: string
     }
   | {
       type: 'joined'

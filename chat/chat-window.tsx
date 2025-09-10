@@ -12,20 +12,21 @@ import { delay } from '@/lib/helpers/delay'
 import { FormEvent, useEffect, useState } from 'react'
 
 export default function ChatWindow() {
-  const { joinedRoom } = useChatStore()
   const messages = useChatStore((state) => state.messages)
   const noMessages = useChatStore((state) => state.noMessages)
-  const { sendTextMessage, sendRestoreMessage } = useChatContext()
-  const { atTop, ref, nudgeDown } = useScrollHandler(joinedRoom)
+  const status = useChatStore((state) => state.status)
+
+  const { sendTextOut, sendRestoreOut } = useChatContext()
+  const { atTop, scrollRef, handleAtTop } = useScrollHandler()
   const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
-    const handleAtTop = async () => {
+    const handleRestore = async () => {
       if (atTop && !noMessages) {
         try {
           setLoading(true)
-          await delay(2000)
-          sendRestoreMessage()
+          await delay(1000)
+          sendRestoreOut()
         } catch (error) {
         } finally {
           setLoading(false)
@@ -33,26 +34,37 @@ export default function ChatWindow() {
       }
     }
 
-    handleAtTop()
+    handleRestore()
   }, [atTop])
-
-  useEffect(() => nudgeDown(), [messages.length])
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const input = e.currentTarget.input.value as string
     if (input) {
-      sendTextMessage(input)
+      sendTextOut(input)
       e.currentTarget.reset()
     }
   }
 
-  if (!joinedRoom) return null
+  const isActive = ['joining', 'joined', 'idle'].includes(status)
+  if (!isActive) return null
+
+  if (status === 'joining') {
+    return (
+      <div className='flex h-full flex-col items-center justify-center gap-2'>
+        <LoadingDots />
+      </div>
+    )
+  }
 
   return (
     <div className='flex h-full flex-col gap-2'>
       {/* messages */}
-      <div className='h-full overflow-y-auto rounded border p-2' ref={ref}>
+      <div
+        className='h-full overflow-y-auto rounded border p-2'
+        onScroll={handleAtTop}
+        ref={scrollRef}
+      >
         <div
           className={cn(
             'transition-all',
@@ -63,7 +75,7 @@ export default function ChatWindow() {
         </div>
 
         {noMessages && (
-          <div className='mb-2 flex items-center justify-center italic text-black/50'>
+          <div className='-mt-4 mb-2 flex items-center justify-center italic text-black/50'>
             No more messages..
           </div>
         )}

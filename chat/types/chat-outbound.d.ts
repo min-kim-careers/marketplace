@@ -9,4 +9,5 @@ export type ChatPayloadOut =
     }
   | {
       type: 'restore'
+      since: string
     }

@@ -2,44 +2,48 @@
 
 import { ChatTextIn } from '@/chat/types/chat-inbound'
 import { ChatRoom } from '@/chat/types/chat-room'
+import { ChatStatus } from '@/chat/types/chat-status'
 import { create } from 'zustand'
 
-interface ChatState {
-  url: string | null
-  setUrl: (url: string | null) => void
+const defaultProps: ChatProps = {
+  url: undefined,
+  currentRoom: undefined,
+  since: undefined,
 
-  sessionId: string | null
-  setSessionId: (sessionId: string | null) => void
-
-  currentRoom?: ChatRoom
-  setCurrentRoom: (currentRoom?: ChatRoom) => void
-
-  joinedRoom: boolean
-  setJoinedRoom: (joinedRoom: boolean) => void
-
-  messages: ChatTextIn[]
-  setMessages: (messages: ChatTextIn[]) => void
-
-  noMessages: boolean
-  setNoMessages: (noMessages: boolean) => void
+  status: 'disconnected',
+  messages: [],
+  noMessages: false,
 }
 
+type ChatProps = {
+  url?: string
+  currentRoom?: ChatRoom
+  since?: string
+
+  status: ChatStatus
+  messages: ChatTextIn[]
+  noMessages: boolean
+}
+
+type ChatState = {
+  setUrl: (url?: string) => void
+  setCurrentRoom: (currentRoom?: ChatRoom) => void
+  setSince: (since?: string) => void
+
+  setStatus: (status: ChatStatus) => void
+  setMessages: (messages: ChatTextIn[]) => void
+  setNoMessages: (noMessages: boolean) => void
+} & ChatProps
+
 const useChatStore = create<ChatState>((set) => ({
-  url: null,
-  setUrl: (url: string | null) => set({ url }),
+  ...defaultProps,
 
-  sessionId: null,
-  setSessionId: (sessionId: string | null) => set({ sessionId }),
-
+  setUrl: (url?: string) => set({ url }),
   setCurrentRoom: (currentRoom?: ChatRoom) => set({ currentRoom }),
+  setSince: (since?: string) => set({ since }),
 
-  joinedRoom: false,
-  setJoinedRoom: (joinedRoom: boolean) => set({ joinedRoom }),
-
-  messages: [],
+  setStatus: (status: ChatStatus) => set({ status }),
   setMessages: (messages: ChatTextIn[]) => set({ messages }),
-
-  noMessages: false,
   setNoMessages: (noMessages: boolean) => set({ noMessages }),
 }))
 

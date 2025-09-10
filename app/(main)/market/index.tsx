@@ -1,6 +1,6 @@
 import Toolbar from '@/components/item-list/01_toolbar'
 import PaginationTop from '@/components/item-list/02_pagination-top'
-import MarketListServer from '@/components/item-list/03_market-list/server/market-list'
+import MarketListServer from '@/components/item-list/03_market-list/server'
 import PaginationBottom from '@/components/item-list/04_pagination-bottom'
 import PageFallback from '@/components/page-fallback'
 import { APP_ROUTES } from '@/lib/constants/app-routes'

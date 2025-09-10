@@ -1,34 +1,75 @@
+import { useLoadToken } from '@/chat/hooks/use-load-token'
 import useChatStore from '@/chat/stores/chat-store'
 import { ChatPayloadIn, ChatTextIn } from '@/chat/types/chat-inbound'
 import { ChatPayloadOut } from '@/chat/types/chat-outbound'
+import { toPath } from '@/lib/helpers/to-path'
 import { useEffect } from 'react'
+import { useIdleTimer } from 'react-idle-timer'
 import useWebSocket from 'react-use-websocket'
 
 export type ChatSocketState = {
-  sendTextMessage: (message: string) => void
-  sendRestoreMessage: () => void
+  sendTextOut: (message: string) => void
+  sendRestoreOut: () => void
+  timeUntilIdle: () => number
 }
+
+const buildUrl = (token: string) =>
+  toPath('ws://192.168.8.103/chat/ws', {
+    token,
+  })
 
 export const useChatSocket = (): ChatSocketState => {
   const {
     url,
-    setUrl,
     currentRoom,
-    setJoinedRoom,
-    joinedRoom,
+    setUrl,
     setMessages,
     setNoMessages,
-    setSessionId,
+    setSince,
+    setStatus,
   } = useChatStore()
+
   const messages = useChatStore((state) => state.messages)
+  const since = useChatStore((state) => state.since)
+  const noMessages = useChatStore((state) => state.noMessages)
+  const status = useChatStore((state) => state.status)
+
+  const token = useLoadToken()
 
   useEffect(() => {
-    if (currentRoom) {
-      sendMessage({ type: 'join', roomAlias: currentRoom.alias })
+    if (token) {
+      setUrl(buildUrl(token))
     }
-  }, [currentRoom])
+  }, [token])
 
-  const socket = useWebSocket(url, {
+  const joinRoom = () => {
+    if (currentRoom) {
+      sendOut({ type: 'join', roomAlias: currentRoom.alias })
+      setStatus('joining')
+    }
+  }
+
+  useEffect(() => joinRoom(), [currentRoom])
+
+  const { getRemainingTime } = useIdleTimer({
+    timeout: 5000,
+    onIdle: () => {
+      setUrl()
+      setStatus('idle')
+    },
+    onActive: () => {
+      setMessages([])
+      setNoMessages(false)
+      if (token) setUrl(buildUrl(token))
+      joinRoom()
+    },
+    debounce: 500,
+  })
+
+  const socket = useWebSocket(url ?? null, {
+    onOpen: () => {
+      setStatus('connecting')
+    },
     onMessage: async (e: MessageEvent<any>) => {
       try {
         const payload: ChatPayloadIn = JSON.parse(e.data)
@@ -36,16 +77,16 @@ export const useChatSocket = (): ChatSocketState => {
 
         switch (payload.type) {
           case 'connected':
-            handleConnected(payload.sessionId)
+            handleConnectedIn()
             break
           case 'joined':
-            handleJoin()
+            handleJoinIn()
             break
           case 'restore':
-            handleRestore(payload.previous)
+            handleRestoreIn(payload.previous)
             break
           case 'text':
-            handleTextMessage({ ...payload })
+            handleTextIn(payload)
             break
           default:
             break
@@ -56,37 +97,53 @@ export const useChatSocket = (): ChatSocketState => {
     },
   })
 
-  const sendMessage = (payload: ChatPayloadOut) => {
-    socket.sendJsonMessage(payload)
-    console.log('sent:', payload)
+  // --------------------------------- IN ---------------------------------
+  const handleConnectedIn = () => {
+    setStatus('connected')
   }
 
-  const handleConnected = (sessionId: string) => {
-    setSessionId(sessionId)
+  const handleJoinIn = () => {
+    const since = new Date().toISOString()
+    setSince(since)
+    sendOut({ type: 'restore', since })
+    setStatus('joined')
   }
 
-  const handleJoin = () => {
-    setJoinedRoom(true)
-  }
-
-  const handleRestore = (previous: ChatTextIn[]) => {
-    if (previous.length) {
+  const handleRestoreIn = (previous: ChatTextIn[]) => {
+    if (previous.length && !noMessages) {
       setMessages([...messages, ...previous])
+      const since = previous[previous.length - 1].timestamp
+      setSince(since)
     } else {
       setNoMessages(true)
     }
   }
 
-  const handleTextMessage = (msg: ChatTextIn) => {
-    setMessages([...messages, msg])
+  const handleTextIn = (msg: ChatTextIn) => {
+    setMessages([msg, ...messages])
   }
 
+  // --------------------------------- OUT ---------------------------------
+  const sendOut = (payload: ChatPayloadOut) => {
+    socket.sendJsonMessage(payload)
+    console.log('sent:', payload)
+  }
+
+  const sendTextOut = (message: string) => {
+    sendOut({ type: 'text', content: message })
+  }
+
+  const sendRestoreOut = () => {
+    if (since) {
+      sendOut({ type: 'restore', since })
+    }
+  }
+
+  const timeUntilIdle = () => getRemainingTime()
+
   return {
-    sendTextMessage: (message: string) => {
-      sendMessage({ type: 'text', content: message })
-    },
-    sendRestoreMessage: () => {
-      sendMessage({ type: 'restore' })
-    },
+    sendTextOut,
+    sendRestoreOut,
+    timeUntilIdle,
   }
 }

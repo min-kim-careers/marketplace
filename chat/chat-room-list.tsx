@@ -45,11 +45,13 @@ export default function ChatRoomList() {
           <button
             className={cn(
               'flex w-full flex-1 flex-row items-center gap-2 border border-transparent p-2 hover:bg-secondary',
-              currentRoom === room && 'rounded bg-secondary',
+              currentRoom &&
+                currentRoom.alias === room.alias &&
+                'rounded bg-secondary',
             )}
             key={i}
             onClick={() => setCurrentRoom(room)}
-            disabled={currentRoom === room}
+            disabled={currentRoom && currentRoom.alias === room.alias}
           >
             <Avatar className='h-9 w-9'>
               <AvatarImage src={room.item.profile.avatarUrl} />

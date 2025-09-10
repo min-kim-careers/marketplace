@@ -1,39 +1,44 @@
 'use client'
-import { useEffect, useRef, useState } from 'react'
+import useChatStore from '@/chat/stores/chat-store'
+import { UIEvent, useEffect, useRef, useState } from 'react'
 
-export const useScrollHandler = (mount: boolean) => {
-  const ref = useRef<HTMLDivElement>(null)
+export const useScrollHandler = () => {
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  const messages = useChatStore((state) => state.messages)
+  const status = useChatStore((state) => state.status)
+
   const [atTop, setAtTop] = useState(false)
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (ref.current) {
-        setAtTop(ref.current.scrollTop === 0)
-      }
-    }
+    const div = scrollRef.current
 
-    if (ref.current) {
-      ref.current.addEventListener('scroll', handleScroll)
-      ref.current.scrollTop = ref.current.scrollHeight
+    if (div && !atTop) {
+      div.scrollTop = div.scrollHeight
     }
+  }, [messages.length])
 
-    return () => {
-      if (ref.current) {
-        ref.current.removeEventListener('scroll', handleScroll)
-      }
+  const handleAtTop = (e: UIEvent<HTMLDivElement>) =>
+    setAtTop(e.currentTarget.scrollTop === 0)
+
+  const nudgeDown = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({
+        top: 20,
+        behavior: 'smooth',
+      })
     }
-  }, [mount])
+  }
+
+  useEffect(() => {
+    if (atTop) {
+      nudgeDown()
+    }
+  }, [messages.length])
 
   return {
-    ref,
+    scrollRef,
     atTop,
-    nudgeDown: () => {
-      if (ref.current) {
-        ref.current.scrollBy({
-          top: 20,
-          behavior: 'smooth',
-        })
-      }
-    },
+    handleAtTop,
   }
 }
