@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 
 export const useLoadToken = () => {
   const { user } = useFirebaseStore()
-  const [token, setToken] = useState<string | null>(null)
+  const [token, setToken] = useState<string | undefined>()
   useEffect(() => {
     const loadToken = async () => {
       if (!token && user) {

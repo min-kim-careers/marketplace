@@ -6,7 +6,6 @@ export const useScrollHandler = () => {
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const messages = useChatStore((state) => state.messages)
-  const status = useChatStore((state) => state.status)
 
   const [atTop, setAtTop] = useState(false)
 
@@ -21,16 +20,14 @@ export const useScrollHandler = () => {
   const handleAtTop = (e: UIEvent<HTMLDivElement>) =>
     setAtTop(e.currentTarget.scrollTop === 0)
 
-  const nudgeDown = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({
-        top: 20,
-        behavior: 'smooth',
-      })
-    }
-  }
-
   useEffect(() => {
+    const nudgeDown = () => {
+      if (scrollRef.current) {
+        scrollRef.current.scrollBy({
+          top: 20,
+        })
+      }
+    }
     if (atTop) {
       nudgeDown()
     }

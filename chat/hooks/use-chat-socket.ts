@@ -2,7 +2,6 @@ import { useLoadToken } from '@/chat/hooks/use-load-token'
 import useChatStore from '@/chat/stores/chat-store'
 import { ChatPayloadIn, ChatTextIn } from '@/chat/types/chat-inbound'
 import { ChatPayloadOut } from '@/chat/types/chat-outbound'
-import { toPath } from '@/lib/helpers/to-path'
 import { useEffect } from 'react'
 import { useIdleTimer } from 'react-idle-timer'
 import useWebSocket from 'react-use-websocket'
@@ -13,63 +12,59 @@ export type ChatSocketState = {
   timeUntilIdle: () => number
 }
 
-const buildUrl = (token: string) =>
-  toPath('ws://192.168.8.103/chat/ws', {
-    token,
-  })
-
 export const useChatSocket = (): ChatSocketState => {
-  const {
-    url,
-    currentRoom,
-    setUrl,
-    setMessages,
-    setNoMessages,
-    setSince,
-    setStatus,
-  } = useChatStore()
+  const { setUrl, setMessages, setNoMessages, setSince, setStatus } =
+    useChatStore()
 
   const messages = useChatStore((state) => state.messages)
   const since = useChatStore((state) => state.since)
-  const noMessages = useChatStore((state) => state.noMessages)
+  const open = useChatStore((state) => state.open)
+  const url = useChatStore((state) => state.url)
+  const currentRoom = useChatStore((state) => state.currentRoom)
   const status = useChatStore((state) => state.status)
 
   const token = useLoadToken()
 
   useEffect(() => {
-    if (token) {
-      setUrl(buildUrl(token))
+    if (open) {
+      setUrl(token)
+    } else {
+      setUrl()
     }
-  }, [token])
+  }, [open])
 
   const joinRoom = () => {
     if (currentRoom) {
-      sendOut({ type: 'join', roomAlias: currentRoom.alias })
       setStatus('joining')
+      setMessages([])
+      setNoMessages(false)
+      setSince()
+      sendMessage({ type: 'join', roomAlias: currentRoom.alias })
     }
   }
 
-  useEffect(() => joinRoom(), [currentRoom])
+  useEffect(() => {
+    if (status === 'connected' || status === 'joined') joinRoom()
+  }, [currentRoom])
 
   const { getRemainingTime } = useIdleTimer({
-    timeout: 5000,
+    timeout: 1000 * 60 * 5,
+    // timeout: 3000,
     onIdle: () => {
       setUrl()
-      setStatus('idle')
+      setStatus('idling')
     },
     onActive: () => {
-      setMessages([])
-      setNoMessages(false)
-      if (token) setUrl(buildUrl(token))
-      joinRoom()
+      setUrl(token)
     },
     debounce: 500,
   })
 
-  const socket = useWebSocket(url ?? null, {
+  const { sendJsonMessage } = useWebSocket(url ?? null, {
     onOpen: () => {
       setStatus('connecting')
     },
+
     onMessage: async (e: MessageEvent<any>) => {
       try {
         const payload: ChatPayloadIn = JSON.parse(e.data)
@@ -80,7 +75,7 @@ export const useChatSocket = (): ChatSocketState => {
             handleConnectedIn()
             break
           case 'joined':
-            handleJoinIn()
+            handleJoinedIn()
             break
           case 'restore':
             handleRestoreIn(payload.previous)
@@ -97,53 +92,48 @@ export const useChatSocket = (): ChatSocketState => {
     },
   })
 
-  // --------------------------------- IN ---------------------------------
   const handleConnectedIn = () => {
     setStatus('connected')
+    if (currentRoom) {
+      joinRoom()
+    }
   }
 
-  const handleJoinIn = () => {
+  const handleJoinedIn = () => {
     const since = new Date().toISOString()
     setSince(since)
-    sendOut({ type: 'restore', since })
+    sendMessage({ type: 'restore', since })
+
     setStatus('joined')
   }
 
-  const handleRestoreIn = (previous: ChatTextIn[]) => {
-    if (previous.length && !noMessages) {
-      setMessages([...messages, ...previous])
-      const since = previous[previous.length - 1].timestamp
-      setSince(since)
-    } else {
+  const handleRestoreIn = async (previous: ChatTextIn[]) => {
+    if (!previous.length) {
       setNoMessages(true)
+      return
     }
+    setMessages([...messages, ...previous])
+    setSince(previous[previous.length - 1].timestamp)
   }
 
   const handleTextIn = (msg: ChatTextIn) => {
     setMessages([msg, ...messages])
   }
 
-  // --------------------------------- OUT ---------------------------------
-  const sendOut = (payload: ChatPayloadOut) => {
-    socket.sendJsonMessage(payload)
+  const sendMessage = (payload: ChatPayloadOut) => {
+    sendJsonMessage(payload)
     console.log('sent:', payload)
   }
 
-  const sendTextOut = (message: string) => {
-    sendOut({ type: 'text', content: message })
-  }
-
-  const sendRestoreOut = () => {
-    if (since) {
-      sendOut({ type: 'restore', since })
-    }
-  }
-
-  const timeUntilIdle = () => getRemainingTime()
-
   return {
-    sendTextOut,
-    sendRestoreOut,
-    timeUntilIdle,
+    sendTextOut: (message: string) => {
+      sendMessage({ type: 'text', content: message })
+    },
+    sendRestoreOut: () => {
+      if (since) {
+        sendMessage({ type: 'restore', since })
+      }
+    },
+    timeUntilIdle: () => getRemainingTime(),
   }
 }

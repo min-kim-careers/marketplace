@@ -4,6 +4,7 @@ import { useScrollHandler } from '@/chat/hooks/use-scroll-handler'
 import MessageBubble from '@/chat/message-bubble'
 import { useChatContext } from '@/chat/providers/chat-provider'
 import useChatStore from '@/chat/stores/chat-store'
+import { ChatStatus } from '@/chat/types/chat-status'
 import LoadingDots from '@/components/loading-dots'
 import { Button } from '@/components/shadcn/components/ui/button'
 import { Input } from '@/components/shadcn/components/ui/input'
@@ -11,17 +12,21 @@ import { cn } from '@/components/shadcn/lib/utils'
 import { delay } from '@/lib/helpers/delay'
 import { FormEvent, useEffect, useState } from 'react'
 
+const activeStatus: ChatStatus[] = ['joining', 'joined', 'idling'] as const
+const isActive = (status: ChatStatus) => activeStatus.includes(status)
+
 export default function ChatWindow() {
   const messages = useChatStore((state) => state.messages)
   const noMessages = useChatStore((state) => state.noMessages)
   const status = useChatStore((state) => state.status)
+  const currentRoom = useChatStore((state) => state.currentRoom)
 
   const { sendTextOut, sendRestoreOut } = useChatContext()
   const { atTop, scrollRef, handleAtTop } = useScrollHandler()
   const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
-    const handleRestore = async () => {
+    const handleScrollRestore = async () => {
       if (atTop && !noMessages) {
         try {
           setLoading(true)
@@ -34,7 +39,7 @@ export default function ChatWindow() {
       }
     }
 
-    handleRestore()
+    handleScrollRestore()
   }, [atTop])
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -46,8 +51,7 @@ export default function ChatWindow() {
     }
   }
 
-  const isActive = ['joining', 'joined', 'idle'].includes(status)
-  if (!isActive) return null
+  if (!currentRoom || !isActive(status)) return null
 
   if (status === 'joining') {
     return (
@@ -58,7 +62,12 @@ export default function ChatWindow() {
   }
 
   return (
-    <div className='flex h-full flex-col gap-2'>
+    <div
+      className={cn(
+        'flex h-full flex-col gap-2',
+        status === 'idling' && 'pointer-events-none opacity-50',
+      )}
+    >
       {/* messages */}
       <div
         className='h-full overflow-y-auto rounded border p-2'

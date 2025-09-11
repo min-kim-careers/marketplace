@@ -15,12 +15,16 @@ export default function ChatToolbar() {
   }, [timeUntilIdle])
 
   return (
-    <div className='flex justify-between space-x-2 rounded border p-2 text-sm italic text-black/80'>
+    <div className='flex justify-between space-x-2 rounded border p-1 px-2 text-sm italic text-black/80'>
+      <span>
+        {remaining < 10 && remaining > 0 && (
+          <span>{remaining}s until idle</span>
+        )}
+      </span>
+
       <span>
         <span>{status.toUpperCase()}</span>
       </span>
-
-      {remaining < 10 && remaining > 0 && <span>{remaining}s until idle</span>}
     </div>
   )
 }

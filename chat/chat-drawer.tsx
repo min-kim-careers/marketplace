@@ -3,7 +3,6 @@
 import ChatRoomList from '@/chat/chat-room-list'
 import ChatToolbar from '@/chat/chat-toolbar'
 import ChatWindow from '@/chat/chat-window'
-import ChatProvider from '@/chat/providers/chat-provider'
 import useChatStore from '@/chat/stores/chat-store'
 import { Button } from '@/components/shadcn/components/ui/button'
 import {
@@ -14,11 +13,9 @@ import {
   SheetTrigger,
 } from '@/components/shadcn/components/ui/sheet'
 import { cn } from '@/components/shadcn/lib/utils'
-import { useState } from 'react'
 
 export default function ChatDrawer() {
-  const [open, setOpen] = useState<boolean>(false)
-  const status = useChatStore((state) => state.status)
+  const { open, setOpen } = useChatStore()
 
   return (
     <Sheet open={open} onOpenChange={() => setOpen(!open)}>
@@ -37,21 +34,19 @@ export default function ChatDrawer() {
         <SheetHeader>
           <SheetTitle />
         </SheetHeader>
-        <ChatProvider>
-          <div className='flex flex-1 flex-row gap-2 pr-4'>
-            <div className='flex-[1]'>
-              <ChatRoomList />
+        <div className='flex flex-1 flex-row gap-2 pr-4'>
+          <div className='flex-[1]'>
+            <ChatRoomList />
+          </div>
+          <div className='flex flex-[3] flex-col gap-2'>
+            <div className='h-[5%]'>
+              <ChatToolbar />
             </div>
-            <div className='flex flex-[3] flex-col gap-2'>
-              <div className='h-[5%]'>
-                <ChatToolbar />
-              </div>
-              <div className='h-[95%]'>
-                <ChatWindow />
-              </div>
+            <div className='h-[95%]'>
+              <ChatWindow />
             </div>
           </div>
-        </ChatProvider>
+        </div>
       </SheetContent>
     </Sheet>
   )

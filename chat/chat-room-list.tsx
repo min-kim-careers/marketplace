@@ -13,7 +13,8 @@ import Spinner from '@/components/spinner'
 import { useEffect, useState } from 'react'
 
 export default function ChatRoomList() {
-  const { currentRoom, setCurrentRoom } = useChatStore()
+  const { setCurrentRoom } = useChatStore()
+  const currentRoom = useChatStore((state) => state.currentRoom)
   const [rooms, setRooms] = useState<ChatRoom[]>([])
   const [loading, setLoading] = useState<boolean>(false)
 

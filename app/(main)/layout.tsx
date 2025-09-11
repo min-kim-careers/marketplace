@@ -1,3 +1,4 @@
+import ChatProvider from '@/chat/providers/chat-provider'
 import Footer from '@/components/footer'
 import Header from '@/components/header'
 import { ProfileLoader } from '@/components/profile-loader'
@@ -12,14 +13,16 @@ export default function MainLayout({
   return (
     <LoadingProvider>
       <AuthProvider>
-        <ProfileLoader />
-        <div className='flex flex-col px-4'>
-          <div className='flex min-h-screen flex-col gap-2 py-2'>
-            <Header />
-            {children}
+        <ChatProvider>
+          <ProfileLoader />
+          <div className='flex flex-col px-4'>
+            <div className='flex min-h-screen flex-col gap-2 py-2'>
+              <Header />
+              {children}
+            </div>
+            <Footer />
           </div>
-          <Footer />
-        </div>
+        </ChatProvider>
       </AuthProvider>
     </LoadingProvider>
   )

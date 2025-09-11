@@ -6,4 +6,4 @@ export type ChatStatus =
   | 'connected'
   | 'joining'
   | 'joined'
-  | 'idle'
+  | 'idling'

@@ -13,14 +13,12 @@ import {
   DialogTitle,
 } from '@/components/shadcn/components/ui/dialog'
 import { cn } from '@/components/shadcn/lib/utils'
-import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { ITEM_CONDITION_LABELS } from '@/lib/constants/item-condition-labels'
 import { ItemCondition } from '@/lib/enums/item-condition'
 import { formatCurrency } from '@/lib/helpers/format-price'
 import { useLoadingStore } from '@/lib/providers/loading-provider'
 import { Item } from '@/lib/types/item'
 import { CircleUserIcon } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
 export default function DetailSection({
@@ -30,9 +28,8 @@ export default function DetailSection({
   item: Item
   className?: string
 }) {
-  const router = useRouter()
   const { setLoading } = useLoadingStore()
-  const { setCurrentRoom } = useChatStore()
+  const { setCurrentRoom, setOpen } = useChatStore()
 
   const handleChatButton = async () => {
     try {
@@ -40,8 +37,9 @@ export default function DetailSection({
 
       const room = await getRoom(item.alias)
       if (!room) throw new Error()
+
+      setOpen(true)
       setCurrentRoom(room)
-      router.push(APP_ROUTES.CHAT.href)
     } catch (error) {
       console.error(error)
       toast('Something went wrong')
