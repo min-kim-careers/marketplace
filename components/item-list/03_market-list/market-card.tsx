@@ -1,5 +1,5 @@
 import DateFormatter from '@/components/date-formatter'
-import ImageContainer from '@/components/image-container'
+import CardImage from '@/components/item-list/00_common/card-image'
 import {
   Card,
   CardContent,
@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from '@/components/shadcn/components/ui/card'
 import { formatCurrency } from '@/lib/helpers/format-price'
+import useLayoutStore from '@/lib/stores/layout-store'
 import { Item } from '@/lib/types/item'
 
 export default function MarketCard({
@@ -18,20 +19,7 @@ export default function MarketCard({
   item: Item
   columns: number
 }) {
-  const renderCardImage = () => {
-    if (!item.imageUrls[0]) return null
-
-    return (
-      <div className='relative m-2 flex flex-1 rounded bg-gray-100 p-2'>
-        <ImageContainer url={item.imageUrls[0]} />
-        {item.imageUrls.length > 1 && (
-          <p className='absolute bottom-0 right-0 z-10 m-2 flex justify-end rounded bg-white px-1 py-[0.5]'>
-            +{item.imageUrls.length - 1}
-          </p>
-        )}
-      </div>
-    )
-  }
+  const { itemColumns } = useLayoutStore()
 
   return (
     <Card
@@ -64,9 +52,8 @@ export default function MarketCard({
           {formatCurrency(item.price.toString())}
         </CardFooter>
       </div>
-      {columns === 1 && (
-        <div className='flex min-w-3xs sm:min-w-xs'>{renderCardImage()}</div>
-      )}
+
+      <CardImage imageUrls={item.imageUrls} show={itemColumns === 1} />
     </Card>
   )
 }

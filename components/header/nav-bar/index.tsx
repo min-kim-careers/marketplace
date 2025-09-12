@@ -1,15 +1,9 @@
 import ChatDrawer from '@/chat/chat-drawer'
 import LoadingDots from '@/components/loading-dots'
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@/components/shadcn/components/ui/avatar'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { useAuthHandler } from '@/lib/hooks/auth/use-auth-handler'
 import { useAuthContext } from '@/lib/providers/auth-provider'
 import useProfileStore from '@/lib/stores/profile-store'
-import { CircleUserIcon } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '../../shadcn/components/ui/button'
 import Dropdown from './dropdown'
@@ -41,31 +35,20 @@ export default function NavBar() {
     }
 
     return (
-      <span className='flex items-center justify-between gap-4'>
-        <Link href={`${APP_ROUTES.MARKET.href}`} passHref>
-          <Button>Browse</Button>
-        </Link>
+      <span className='flex items-center gap-4'>
+        <span className='hidden flex-1 gap-4 sm:flex'>
+          <Link href={`${APP_ROUTES.MARKET.href}`} passHref>
+            <Button>Browse</Button>
+          </Link>
 
-        <Link href={APP_ROUTES.ITEM_POST.href}>
-          <Button>Post Ad</Button>
-        </Link>
+          <Link href={APP_ROUTES.ITEM_POST.href}>
+            <Button>Post Ad</Button>
+          </Link>
 
-        <ChatDrawer />
+          <ChatDrawer useButton />
+        </span>
 
-        <Dropdown>
-          <div>
-            <Avatar>
-              <AvatarImage src={profile.avatarUrl} />
-              <AvatarFallback>
-                {profile ? (
-                  <CircleUserIcon className='h-full w-full' />
-                ) : (
-                  <LoadingDots />
-                )}
-              </AvatarFallback>
-            </Avatar>
-          </div>
-        </Dropdown>
+        <Dropdown />
       </span>
     )
   }

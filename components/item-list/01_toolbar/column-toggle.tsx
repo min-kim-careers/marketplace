@@ -4,23 +4,16 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from '@/components/shadcn/components/ui/toggle-group'
-import useLayoutStore from '@/lib/stores/layout-store'
+import useLayoutStore, { ItemColumn } from '@/lib/stores/layout-store'
 import { Grip, Menu } from 'lucide-react'
-
-const ALLOWED_COLUMNS = new Set([1, 3])
 
 export default function ColumnToggle() {
   const { itemColumns, setItemColumns } = useLayoutStore()
 
-  const handleValueChange = (value: string) => {
-    const col = +value
-    setItemColumns(ALLOWED_COLUMNS.has(col) ? col : 1)
-  }
-
   return (
     <ToggleGroup
       type='single'
-      onValueChange={handleValueChange}
+      onValueChange={(v) => setItemColumns(Number(v) as ItemColumn)}
       value={itemColumns.toString()}
     >
       <ToggleGroupItem value='1'>

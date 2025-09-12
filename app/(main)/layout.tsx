@@ -15,7 +15,7 @@ export default function MainLayout({
       <AuthProvider>
         <ChatProvider>
           <ProfileLoader />
-          <div className='flex flex-col px-4'>
+          <div className='mx-2 box-border flex flex-col sm:mx-4'>
             <div className='flex min-h-screen flex-col gap-2 py-2'>
               <Header />
               {children}

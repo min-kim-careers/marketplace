@@ -1,4 +1,3 @@
-import ImageContainer from '@/components/image-container'
 import { ItemFormSchema } from '@/components/item-form/schema'
 import {
   FormControl,
@@ -10,6 +9,7 @@ import {
 import { Input } from '@/components/shadcn/components/ui/input'
 import { Label } from '@/components/shadcn/components/ui/label'
 import { Plus, Trash } from 'lucide-react'
+import Image from 'next/image'
 import { ChangeEvent } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
@@ -43,7 +43,7 @@ const ImageInput = ({
 
   if (!watcher[index])
     return (
-      <Label className='flex h-32 w-32 cursor-pointer items-center justify-center rounded bg-gray-200 text-gray-400'>
+      <Label className='flex h-24 w-24 cursor-pointer items-center justify-center rounded bg-gray-200 text-gray-400 sm:h-32 sm:w-32'>
         <Input
           type='file'
           accept='image/x'
@@ -55,8 +55,14 @@ const ImageInput = ({
     )
 
   return (
-    <div className='relative h-32 w-32 rounded bg-gray-200'>
-      <ImageContainer url={watcher[index]} className='rounded' />
+    <div className='relative h-24 w-24 rounded bg-gray-200 sm:h-32 sm:w-32'>
+      <Image
+        src={watcher[index]}
+        alt='Failed to load'
+        layout='fill'
+        objectFit='contain'
+        className='flex items-center justify-center text-gray-300'
+      />
       <button type='button' onClick={handleDelete}>
         <Trash className='absolute bottom-0 right-0 z-50 m-1 cursor-pointer fill-gray-100 hover:scale-110 active:scale-90' />
       </button>

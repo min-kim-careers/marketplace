@@ -7,7 +7,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -29,6 +28,7 @@ export default function ProfileListingsModal({
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
+
       <DialogContent className='max-h-[90vh] overflow-auto'>
         <DialogHeader className='flex-row justify-between'>
           <span className='flex w-full flex-col justify-around'>
@@ -43,6 +43,7 @@ export default function ProfileListingsModal({
                 <ItemStatusSelect item={item} />
               </span>
             </DialogTitle>
+
             <DialogDescription className='flex gap-2'>
               <span>
                 Last update at <DateFormatter date={item.updatedAt} />
@@ -59,14 +60,12 @@ export default function ProfileListingsModal({
           </div>
         </div>
 
-        <DialogFooter className='items-center sm:justify-between'>
-          <div className='flex items-center'>
-            <span className='rounded-lg border p-2 font-semibold'>
-              {formatCurrency(item.price.toString())}
-            </span>
-          </div>
+        <div className='flex justify-between'>
+          <p className='rounded-lg border p-2 font-semibold'>
+            {formatCurrency(item.price.toString())}
+          </p>
 
-          <span className='flex flex-row items-center gap-2'>
+          <span className='flex items-center gap-2'>
             <Link href={`${APP_ROUTES.ITEM_EDIT.href}/${item.alias}`}>
               <Button variant={'outline'}>Edit</Button>
             </Link>
@@ -75,7 +74,7 @@ export default function ProfileListingsModal({
               <Button variant={'outline'}>Delete</Button>
             </DeleteConfirmDialog>
           </span>
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   )

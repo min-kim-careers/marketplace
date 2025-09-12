@@ -1,4 +1,3 @@
-import ImageContainer from '@/components/image-container'
 import {
   Carousel,
   CarouselContent,
@@ -6,13 +5,16 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/shadcn/components/ui/carousel'
+import Image from 'next/image'
 
 export default function ItemImageCarousel({
   imageUrls,
   className,
+  size,
 }: {
   imageUrls: string[]
   className?: string
+  size?: number
 }) {
   if (!imageUrls.length) return null
 
@@ -24,9 +26,11 @@ export default function ItemImageCarousel({
             url && (
               <CarouselItem
                 key={index}
-                className='relative aspect-square rounded bg-gray-100'
+                className='relative flex items-center justify-center rounded-lg bg-gray-100'
               >
-                <ImageContainer url={url} className={className} />
+                <div className={`relative h-[${size}rem] w-[${size}rem] `}>
+                  <Image src={url} alt='Failed to load' fill />
+                </div>
               </CarouselItem>
             ),
         )}

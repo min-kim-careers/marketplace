@@ -1,12 +1,11 @@
 import { create } from 'zustand'
 import { persist, subscribeWithSelector } from 'zustand/middleware'
 
-interface LayoutState {
-  itemColumns: number
-  setItemColumns: (itemColumns: number) => void
+export type ItemColumn = 1 | 3
 
-  sidebarOpen: boolean
-  setSidebarOpen: (open: boolean) => void
+interface LayoutState {
+  itemColumns: ItemColumn
+  setItemColumns: (itemColumns: ItemColumn) => void
 }
 
 const useLayoutStore = create(
@@ -15,10 +14,7 @@ const useLayoutStore = create(
       (set) => {
         return {
           itemColumns: 1,
-          setItemColumns: (itemColumns: number) => set({ itemColumns }),
-
-          sidebarOpen: false,
-          setSidebarOpen: (open: boolean) => set({ sidebarOpen: open }),
+          setItemColumns: (itemColumns: ItemColumn) => set({ itemColumns }),
         }
       },
       {
@@ -26,7 +22,6 @@ const useLayoutStore = create(
         partialize: (state) =>
           ({
             itemColumns: state.itemColumns,
-            sidebarOpen: state.sidebarOpen,
           }) as LayoutState,
       },
     ),

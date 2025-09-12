@@ -2,6 +2,7 @@
 
 import ProfileListingsCard from '@/components/item-list/03_profile-listings-list/profile-listings-card'
 import ProfileListingsModal from '@/components/item-list/03_profile-listings-list/profile-listings-modal'
+import { useIsMobile } from '@/lib/hooks/ui/use-is-mobile'
 import { useItemPageStore } from '@/lib/providers/item-page-provider'
 import useLayoutStore from '@/lib/stores/layout-store'
 import { Item } from '@/lib/types/item'
@@ -13,9 +14,9 @@ export function ProfileListingsList({
   props: { items: Item[]; count: number }
 }) {
   const { items, count } = props
-
   const { itemColumns } = useLayoutStore()
   const { setProps } = useItemPageStore()
+  const isMobile = useIsMobile()
 
   useEffect(() => setProps({ items, count }), [items, count])
 
@@ -30,7 +31,9 @@ export function ProfileListingsList({
     <div
       className='grid w-full items-start gap-2'
       style={{
-        gridTemplateColumns: `repeat(${itemColumns}, minmax(0, 1fr))`,
+        gridTemplateColumns: isMobile
+          ? 'repeat(1, 1fr)'
+          : `repeat(${itemColumns}, minmax(0, 1fr)`,
       }}
     >
       {items.map((item: Item, i) => (
@@ -40,13 +43,6 @@ export function ProfileListingsList({
           </div>
         </ProfileListingsModal>
       ))}
-      <style jsx>{`
-        @media (max-width: 640px) {
-          div.grid {
-            grid-template-columns: repeat(1, 1fr) !important;
-          }
-        }
-      `}</style>
     </div>
   )
 }

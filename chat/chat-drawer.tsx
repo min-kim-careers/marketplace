@@ -1,6 +1,5 @@
 'use client'
 
-import ChatRoomList from '@/chat/chat-room-list'
 import ChatToolbar from '@/chat/chat-toolbar'
 import ChatWindow from '@/chat/chat-window'
 import useChatStore from '@/chat/stores/chat-store'
@@ -14,31 +13,32 @@ import {
 } from '@/components/shadcn/components/ui/sheet'
 import { cn } from '@/components/shadcn/lib/utils'
 
-export default function ChatDrawer() {
+export default function ChatDrawer({ useButton }: { useButton?: boolean }) {
   const { open, setOpen } = useChatStore()
 
   return (
     <Sheet open={open} onOpenChange={() => setOpen(!open)}>
-      <SheetTrigger asChild>
-        <Button>Chat</Button>
-      </SheetTrigger>
+      {useButton ? (
+        <SheetTrigger asChild>
+          <Button>Chat</Button>
+        </SheetTrigger>
+      ) : (
+        <SheetTrigger>Chat</SheetTrigger>
+      )}
 
       <SheetContent
         side='right'
         className={cn(
           'flex flex-1',
           '[state=closed]:duration-200 data-[state=open]:duration-200',
-          'sm:max-w-screen w-3/4',
+          'min-w-full',
         )}
       >
         <SheetHeader>
           <SheetTitle />
         </SheetHeader>
-        <div className='flex flex-1 flex-row gap-2 pr-4'>
-          <div className='flex-[1]'>
-            <ChatRoomList />
-          </div>
-          <div className='flex flex-[3] flex-col gap-2'>
+        <div className='flex flex-1 flex-row gap-2'>
+          <div className='flex w-full flex-col gap-2'>
             <div className='h-[5%]'>
               <ChatToolbar />
             </div>

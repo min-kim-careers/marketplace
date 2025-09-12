@@ -58,7 +58,7 @@ export default function SortDropdown() {
 
   return (
     <Select value={currentSortOption.label} onValueChange={handleValueChange}>
-      <SelectTrigger className='w-[180px]'>
+      <SelectTrigger className='w-full sm:w-[180px]'>
         <span>{`Sorted by ${currentSortOption.label}`}</span>
       </SelectTrigger>
       <SelectContent>

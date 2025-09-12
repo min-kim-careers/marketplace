@@ -8,12 +8,16 @@ export default function PaginationTop() {
   const { count, items, params } = useItemPageStore()
 
   return (
-    <div className='flex w-full items-center justify-between px-2 text-sm'>
-      <span className='flex-1'>{items.length} items</span>
-      <span className='flex-1'>
+    <div className='flex w-full items-center px-2 text-sm'>
+      <span className='hidden flex-1 justify-start sm:flex'>
+        {items.length} items
+      </span>
+
+      <span className='flex flex-1 justify-center'>
         <Pagination />
       </span>
-      <span className='flex flex-1 justify-end'>
+
+      <span className='hidden flex-1 justify-end sm:flex'>
         {`${(params.page - 1) * DEFAULT_ITEM_PAGINATION.LIMIT + 1} - ${DEFAULT_ITEM_PAGINATION.LIMIT * (params.page - 1) + items.length} of ${count}`}
       </span>
     </div>

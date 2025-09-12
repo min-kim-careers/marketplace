@@ -9,7 +9,7 @@ import useWebSocket from 'react-use-websocket'
 export type ChatSocketState = {
   sendTextOut: (message: string) => void
   sendRestoreOut: () => void
-  timeUntilIdle: () => number
+  msUntilIdle: () => number
 }
 
 export const useChatSocket = (): ChatSocketState => {
@@ -134,6 +134,6 @@ export const useChatSocket = (): ChatSocketState => {
         sendMessage({ type: 'restore', since })
       }
     },
-    timeUntilIdle: () => getRemainingTime(),
+    msUntilIdle: () => getRemainingTime(),
   }
 }

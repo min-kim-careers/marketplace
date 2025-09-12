@@ -2,6 +2,8 @@
 
 import MarketCard from '@/components/item-list/03_market-list/market-card'
 import MarketModal from '@/components/item-list/03_market-list/market-modal'
+import { cn } from '@/components/shadcn/lib/utils'
+import { useIsMobile } from '@/lib/hooks/ui/use-is-mobile'
 import { useItemPageStore } from '@/lib/providers/item-page-provider'
 import useLayoutStore from '@/lib/stores/layout-store'
 import { Item } from '@/lib/types/item'
@@ -14,9 +16,10 @@ export function MarketList({
 }) {
   const { items, count } = props
   const { setProps } = useItemPageStore()
-  useEffect(() => setProps({ items, count }), [items, count])
-
   const { itemColumns } = useLayoutStore()
+  const isMobile = useIsMobile()
+
+  useEffect(() => setProps({ items, count }), [items, count])
 
   if (!items.length)
     return (
@@ -27,10 +30,10 @@ export function MarketList({
 
   return (
     <div
-      className='grid w-full items-start gap-2'
-      style={{
-        gridTemplateColumns: `repeat(${itemColumns}, minmax(0, 1fr)`,
-      }}
+      className={cn(
+        'grid w-full items-start gap-2',
+        isMobile || itemColumns === 1 ? 'grid-cols-1' : 'grid-cols-3',
+      )}
     >
       {items.map((item: Item, i: number) => (
         <MarketModal key={i} item={item}>
@@ -39,13 +42,6 @@ export function MarketList({
           </div>
         </MarketModal>
       ))}
-      <style jsx>{`
-        @media (max-width: 640px) {
-          div.grid {
-            grid-template-columns: repeat(1, 1fr) !important;
-          }
-        }
-      `}</style>
     </div>
   )
 }
