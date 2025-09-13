@@ -17,7 +17,7 @@ export default function ChatDrawer({ useButton }: { useButton?: boolean }) {
   const { open, setOpen } = useChatStore()
 
   return (
-    <Sheet open={open} onOpenChange={() => setOpen(!open)}>
+    <Sheet open={open} onOpenChange={setOpen}>
       {useButton ? (
         <SheetTrigger asChild>
           <Button>Chat</Button>

@@ -93,7 +93,7 @@ export default function ItemPost({ props }: { props: ItemPostProps }) {
             </Form>
           </CardContent>
         </div>
-        <div className='flex flex-1 items-center justify-center rounded-xl bg-muted'>
+        <div className='flex flex-1 items-center justify-center rounded-r-xl bg-muted'>
           <ItemImageCarousel
             imageUrls={form
               .watch('imageUrls')

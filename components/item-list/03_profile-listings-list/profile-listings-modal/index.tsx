@@ -29,7 +29,7 @@ export default function ProfileListingsModal({
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
 
-      <DialogContent className='max-h-[90vh] overflow-auto'>
+      <DialogContent className='max-h-[96vh] overflow-auto max-sm:max-w-[96vw]'>
         <DialogHeader className='flex-row justify-between'>
           <span className='flex w-full flex-col justify-around'>
             <DialogTitle className='flex w-full flex-row justify-between'>
@@ -55,8 +55,10 @@ export default function ProfileListingsModal({
         <div className='flex flex-1 flex-col gap-4'>
           <div className='flex-1'>{item.description}</div>
 
-          <div className='relative flex-1 rounded'>
-            <ItemImageCarousel imageUrls={item.imageUrls} />
+          <div className='flex w-full items-center justify-center'>
+            <div className='w-full'>
+              <ItemImageCarousel imageUrls={item.imageUrls} rounded />
+            </div>
           </div>
         </div>
 

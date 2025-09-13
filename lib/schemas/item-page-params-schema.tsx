@@ -1,4 +1,5 @@
 import { ITEM_CATEGORY_LABELS } from '@/lib/constants/item-category-labels'
+import { ITEM_CONDITION_LABELS } from '@/lib/constants/item-condition-labels'
 import { ItemSortBy } from '@/lib/enums/item-sort-by'
 import { ItemSortOrder } from '@/lib/enums/item-sort-order'
 import { z } from 'zod'
@@ -11,6 +12,9 @@ const validateSortOrder = (val: string) =>
 
 const validateCategories = (val: string) =>
   Object.keys(ITEM_CATEGORY_LABELS).includes(val)
+
+const validateConditions = (val: string) =>
+  Object.keys(ITEM_CONDITION_LABELS).includes(val)
 
 export const ItemPageParamsSchema = z
   .object({
@@ -36,6 +40,21 @@ export const ItemPageParamsSchema = z
           .string()
           .trim()
           .refine((val) => validateCategories(val)),
+      ])
+      .optional()
+      .transform((val) => (typeof val === 'string' ? [val] : val)),
+    conditions: z
+      .union([
+        z.array(
+          z
+            .string()
+            .trim()
+            .refine((val) => validateConditions(val)),
+        ),
+        z
+          .string()
+          .trim()
+          .refine((val) => validateConditions(val)),
       ])
       .optional()
       .transform((val) => (typeof val === 'string' ? [val] : val)),

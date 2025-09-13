@@ -55,13 +55,13 @@ const ImageInput = ({
     )
 
   return (
-    <div className='relative h-24 w-24 rounded bg-gray-200 sm:h-32 sm:w-32'>
+    <div className='relative h-24 w-24 bg-gray-200 sm:h-32 sm:w-32'>
       <Image
         src={watcher[index]}
         alt='Failed to load'
         layout='fill'
         objectFit='contain'
-        className='flex items-center justify-center text-gray-300'
+        className='rounded'
       />
       <button type='button' onClick={handleDelete}>
         <Trash className='absolute bottom-0 right-0 z-50 m-1 cursor-pointer fill-gray-100 hover:scale-110 active:scale-90' />

@@ -54,7 +54,7 @@ export default function MarketModal({
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
 
-      <DialogContent className='max-h-[90vh] max-w-[50vw] overflow-auto max-sm:max-w-[95vw]'>
+      <DialogContent className='max-h-[96vh] overflow-auto max-sm:max-w-[96vw]'>
         <div className='flex flex-1 flex-col gap-4 overflow-auto p-2'>
           <div className='flex flex-row'>
             <span className='flex flex-[9] flex-col gap-3'>
@@ -89,7 +89,12 @@ export default function MarketModal({
 
           <div className='flex flex-1 flex-col gap-4'>
             <div className='flex-1'>{item.description}</div>
-            <ItemImageCarousel imageUrls={item.imageUrls} size={32} />
+
+            <div className='flex w-full items-center justify-center'>
+              <div className='w-full'>
+                <ItemImageCarousel imageUrls={item.imageUrls} rounded />
+              </div>
+            </div>
           </div>
 
           <div className='flex items-center justify-between gap-2'>

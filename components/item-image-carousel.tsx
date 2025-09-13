@@ -5,16 +5,15 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/shadcn/components/ui/carousel'
+import { cn } from '@/components/shadcn/lib/utils'
 import Image from 'next/image'
 
 export default function ItemImageCarousel({
   imageUrls,
-  className,
-  size,
+  rounded = false,
 }: {
   imageUrls: string[]
-  className?: string
-  size?: number
+  rounded?: boolean
 }) {
   if (!imageUrls.length) return null
 
@@ -24,13 +23,13 @@ export default function ItemImageCarousel({
         {imageUrls.map(
           (url, index) =>
             url && (
-              <CarouselItem
-                key={index}
-                className='relative flex items-center justify-center rounded-lg bg-gray-100'
-              >
-                <div className={`relative h-[${size}rem] w-[${size}rem] `}>
-                  <Image src={url} alt='Failed to load' fill />
-                </div>
+              <CarouselItem key={index} className='relative aspect-square'>
+                <Image
+                  src={url}
+                  alt='Failed to load'
+                  fill
+                  className={cn('object-contain', rounded ? 'rounded-xl' : '')}
+                />
               </CarouselItem>
             ),
         )}

@@ -38,7 +38,7 @@ export function MarketList({
       {items.map((item: Item, i: number) => (
         <MarketModal key={i} item={item}>
           <div className='cursor-pointer'>
-            <MarketCard item={item} columns={itemColumns} />
+            <MarketCard item={item} itemColumns={itemColumns} />
           </div>
         </MarketModal>
       ))}

@@ -2,6 +2,7 @@
 
 import ProfileListingsCard from '@/components/item-list/03_profile-listings-list/profile-listings-card'
 import ProfileListingsModal from '@/components/item-list/03_profile-listings-list/profile-listings-modal'
+import { cn } from '@/components/shadcn/lib/utils'
 import { useIsMobile } from '@/lib/hooks/ui/use-is-mobile'
 import { useItemPageStore } from '@/lib/providers/item-page-provider'
 import useLayoutStore from '@/lib/stores/layout-store'
@@ -29,17 +30,15 @@ export function ProfileListingsList({
 
   return (
     <div
-      className='grid w-full items-start gap-2'
-      style={{
-        gridTemplateColumns: isMobile
-          ? 'repeat(1, 1fr)'
-          : `repeat(${itemColumns}, minmax(0, 1fr)`,
-      }}
+      className={cn(
+        'grid w-full items-start gap-2',
+        isMobile || itemColumns === 1 ? 'grid-cols-1' : 'grid-cols-3',
+      )}
     >
       {items.map((item: Item, i) => (
         <ProfileListingsModal key={i} item={item}>
           <div className='cursor-pointer'>
-            <ProfileListingsCard item={item} columns={itemColumns} />
+            <ProfileListingsCard item={item} itemColumns={itemColumns} />
           </div>
         </ProfileListingsModal>
       ))}

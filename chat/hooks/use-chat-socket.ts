@@ -51,10 +51,14 @@ export const useChatSocket = (): ChatSocketState => {
     timeout: 1000 * 60 * 5,
     // timeout: 3000,
     onIdle: () => {
+      console.log('idling')
+
       setUrl()
       setStatus('idling')
     },
     onActive: () => {
+      console.log('unidling')
+
       setUrl(token)
     },
     debounce: 500,

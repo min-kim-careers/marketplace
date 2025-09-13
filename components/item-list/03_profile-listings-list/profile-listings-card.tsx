@@ -10,24 +10,21 @@ import {
 } from '@/components/shadcn/components/ui/card'
 import { ITEM_STATUS_COLORS } from '@/lib/constants/item-status-colors'
 import { formatCurrency } from '@/lib/helpers/format-price'
-import useLayoutStore from '@/lib/stores/layout-store'
 import { Item } from '@/lib/types/item'
 import { Circle } from 'lucide-react'
 
 export default function ProfileListingsCard({
   item,
-  columns,
+  itemColumns,
 }: {
   item: Item
-  columns: number
+  itemColumns: number
 }) {
-  const { itemColumns } = useLayoutStore()
-
   return (
     <Card
       className='flex h-60 w-full flex-row justify-between transition-transform duration-300 hover:scale-[1.01]'
       style={{
-        minHeight: columns === 1 ? '12rem' : '15rem',
+        minHeight: itemColumns === 1 ? '12rem' : '15rem',
       }}
     >
       <div className='flex flex-1 flex-col justify-between'>

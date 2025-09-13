@@ -9,6 +9,7 @@ export interface _GetItemsQuery {
   sortBy?: string
   sortOrder?: string
   categories?: string[]
+  conditions?: string[]
   limit?: number
   userOption?: 'exclude_user' | 'user_only'
   activeOnly?: boolean

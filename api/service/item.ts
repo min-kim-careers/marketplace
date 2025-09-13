@@ -28,6 +28,7 @@ export const getItems = async (params: ItemPageParams) => {
       sortOrder: params.sortOrder,
       keyword: params.keyword,
       categories: params.categories,
+      conditions: params.conditions,
       activeOnly: true,
       ...(excludeUser && { userOption: 'exclude_user' }),
     })
@@ -45,6 +46,7 @@ export const getUserItems = async (params: ItemPageParams) => {
       sortOrder: params.sortOrder,
       keyword: params.keyword,
       categories: params.categories,
+      conditions: params.conditions,
       userOption: 'user_only',
     })
   } catch (error) {
