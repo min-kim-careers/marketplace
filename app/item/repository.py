@@ -43,6 +43,9 @@ class ItemRepository:
         if query.categories:
             stmt = stmt.where(ItemDB.category.in_(query.categories))
 
+        if query.conditions:
+            stmt = stmt.where(ItemDB.condition.in_(query.conditions))
+
         return stmt
 
     @staticmethod

@@ -23,6 +23,7 @@ class ItemsQuery(InboundBase):
     sort_order: Optional[ItemSortOrder] = DEFAULT_SORT_ORDER
     sort_by: Optional[ItemSortBy] = DEFAULT_SORT_BY
     categories: Optional[List[ItemCategory]] = Query(default=None)
+    conditions: Optional[List[ItemCondition]] = Query(default=None)
     user_option: Optional[ItemUserOption] = None
     active_only: Optional[bool] = True
 
