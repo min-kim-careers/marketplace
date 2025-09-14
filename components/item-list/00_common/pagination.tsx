@@ -10,11 +10,11 @@ import {
 } from '@/components/shadcn/components/ui/pagination'
 import { DEFAULT_ITEM_PAGINATION } from '@/lib/constants/item-pagination'
 import { toPath } from '@/lib/helpers/to-path'
-import { useItemPageStore } from '@/lib/providers/item-page-provider'
+import { useItemPageContext } from '@/lib/providers/item-page-provider'
 import { notFound } from 'next/navigation'
 
 export default function Pagination() {
-  const { count, params, route } = useItemPageStore()
+  const { count, params, route } = useItemPageContext()
 
   const lastPage = Math.ceil(count / DEFAULT_ITEM_PAGINATION.LIMIT)
 

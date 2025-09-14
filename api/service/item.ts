@@ -23,12 +23,7 @@ export const getItems = async (params: ItemPageParams) => {
     const excludeUser = await hasSession()
 
     return await _getItems({
-      page: params.page,
-      sortBy: params.sortBy,
-      sortOrder: params.sortOrder,
-      keyword: params.keyword,
-      categories: params.categories,
-      conditions: params.conditions,
+      ...params,
       activeOnly: true,
       ...(excludeUser && { userOption: 'exclude_user' }),
     })
@@ -41,12 +36,7 @@ export const getItems = async (params: ItemPageParams) => {
 export const getUserItems = async (params: ItemPageParams) => {
   try {
     return await _getItems({
-      page: params.page,
-      sortBy: params.sortBy,
-      sortOrder: params.sortOrder,
-      keyword: params.keyword,
-      categories: params.categories,
-      conditions: params.conditions,
+      ...params,
       userOption: 'user_only',
     })
   } catch (error) {

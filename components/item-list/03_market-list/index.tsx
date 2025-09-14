@@ -4,7 +4,7 @@ import MarketCard from '@/components/item-list/03_market-list/market-card'
 import MarketModal from '@/components/item-list/03_market-list/market-modal'
 import { cn } from '@/components/shadcn/lib/utils'
 import { useIsMobile } from '@/lib/hooks/ui/use-is-mobile'
-import { useItemPageStore } from '@/lib/providers/item-page-provider'
+import { useItemPageContext } from '@/lib/providers/item-page-provider'
 import useLayoutStore from '@/lib/stores/layout-store'
 import { Item } from '@/lib/types/item'
 import { useEffect } from 'react'
@@ -15,7 +15,7 @@ export function MarketList({
   props: { items: Item[]; count: number }
 }) {
   const { items, count } = props
-  const { setProps } = useItemPageStore()
+  const { setProps } = useItemPageContext()
   const { itemColumns } = useLayoutStore()
   const isMobile = useIsMobile()
 

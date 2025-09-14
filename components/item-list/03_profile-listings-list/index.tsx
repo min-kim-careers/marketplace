@@ -4,7 +4,7 @@ import ProfileListingsCard from '@/components/item-list/03_profile-listings-list
 import ProfileListingsModal from '@/components/item-list/03_profile-listings-list/profile-listings-modal'
 import { cn } from '@/components/shadcn/lib/utils'
 import { useIsMobile } from '@/lib/hooks/ui/use-is-mobile'
-import { useItemPageStore } from '@/lib/providers/item-page-provider'
+import { useItemPageContext } from '@/lib/providers/item-page-provider'
 import useLayoutStore from '@/lib/stores/layout-store'
 import { Item } from '@/lib/types/item'
 import { useEffect } from 'react'
@@ -16,7 +16,7 @@ export function ProfileListingsList({
 }) {
   const { items, count } = props
   const { itemColumns } = useLayoutStore()
-  const { setProps } = useItemPageStore()
+  const { setProps } = useItemPageContext()
   const isMobile = useIsMobile()
 
   useEffect(() => setProps({ items, count }), [items, count])

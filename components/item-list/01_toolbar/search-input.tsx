@@ -20,13 +20,15 @@ import { ITEM_CONDITION_LABELS } from '@/lib/constants/item-condition-labels'
 import { ItemCategory } from '@/lib/enums/item-category'
 import { ItemCondition } from '@/lib/enums/item-condition'
 import { toPath } from '@/lib/helpers/to-path'
-import { useItemPageStore } from '@/lib/providers/item-page-provider'
+import { useItemPageContext } from '@/lib/providers/item-page-provider'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Search } from 'lucide-react'
+import { Search, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+
+const DEFAULT_KEYWORD_LIMIT = 10 as const
 
 const SearchInputSchema = z.object({
   keyword: z.string().optional(),
@@ -46,22 +48,9 @@ const SearchInputSchema = z.object({
   ),
 })
 
-const Suggestions = () => {
-  const [keywords, setKeywords] = useState<string[]>([])
-
-  return (
-    <div>
-      {keywords.map((k, i) => (
-        <div key={i}>{k}</div>
-      ))}
-    </div>
-  )
-}
-
-export default function SearchInput() {
-  const router = useRouter()
-  const { params, route, setProps } = useItemPageStore()
+const useDismissable = () => {
   const [open, setOpen] = useState(false)
+
   const inputRef = useRef<HTMLInputElement | null>(null)
   const popoverRef = useRef<HTMLDivElement | null>(null)
 
@@ -72,10 +61,27 @@ export default function SearchInput() {
       if (popoverRef.current?.contains(target)) return
       setOpen(false)
     }
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape' || e.key === 'Enter') {
+        setOpen(false)
+      }
+    }
 
     document.addEventListener('pointerdown', onPointerDown)
-    return () => document.removeEventListener('pointerdown', onPointerDown)
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown)
+      document.removeEventListener('keydown', onKeyDown)
+    }
   }, [])
+
+  return { open, setOpen, inputRef, popoverRef }
+}
+
+export default function SearchInput() {
+  const router = useRouter()
+  const { params, route, recentKeywords, setProps } = useItemPageContext()
+  const { open, setOpen, inputRef, popoverRef } = useDismissable()
 
   const form = useForm<z.infer<typeof SearchInputSchema>>({
     resolver: zodResolver(SearchInputSchema),
@@ -88,14 +94,57 @@ export default function SearchInput() {
 
   const watcher = form.watch()
 
-  const getSelectedCount = () =>
-    watcher.categories.length + watcher.conditions.length
-
   const onSubmit = async (values: z.infer<typeof SearchInputSchema>) => {
+    const handleKeyword = (newKeyword?: string) => {
+      if (!newKeyword) return recentKeywords
+
+      const updated = [newKeyword, ...recentKeywords]
+      return updated.slice(0, DEFAULT_KEYWORD_LIMIT)
+    }
+
     const newParams = { ...params, ...values }
-    setProps({ params: newParams })
+
     router.push(toPath(route, newParams))
+
+    setProps({
+      params: newParams,
+      ...(values.keyword && {
+        recentKeywords: handleKeyword(values.keyword),
+      }),
+    })
   }
+
+  const RecentKeywords = () => (
+    <div className='flex max-h-60 flex-col overflow-y-auto'>
+      {recentKeywords.map((k, i) => (
+        <span
+          key={i}
+          className={cn(
+            'flex items-center px-2 py-1 hover:bg-secondary',
+            watcher.keyword === k && 'bg-secondary',
+          )}
+        >
+          <button
+            className={cn('flex-1 truncate text-left text-sm italic')}
+            onClick={() =>
+              form.setValue('keyword', k, { shouldValidate: true })
+            }
+          >
+            {k}
+          </button>
+          <button
+            onClick={() => {
+              setProps({
+                recentKeywords: recentKeywords.filter((_k) => _k !== k),
+              })
+            }}
+          >
+            <X className='w-4' />
+          </button>
+        </span>
+      ))}
+    </div>
+  )
 
   const Categories = () => (
     <div className='flex flex-wrap items-center justify-start gap-2'>
@@ -181,6 +230,12 @@ export default function SearchInput() {
                       className='flex w-96 flex-col gap-4 max-sm:w-[96vw] max-sm:translate-x-2'
                     >
                       <div className='space-y-2'>
+                        <RuleTextRule text={`Recent`} />
+
+                        <RecentKeywords />
+                      </div>
+
+                      <div className='space-y-2'>
                         <RuleTextRule
                           text={`${watcher.categories.length} selected`}
                         />
@@ -192,12 +247,6 @@ export default function SearchInput() {
                           text={`${watcher.conditions.length} selected`}
                         />
                         <Conditions />
-                      </div>
-
-                      <div className='space-y-2'>
-                        <RuleTextRule text={`Suggestions`} />
-
-                        <Suggestions />
                       </div>
                     </PopoverContent>
                   </Popover>

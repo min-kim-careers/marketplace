@@ -28,8 +28,10 @@ export const useChatSocket = (): ChatSocketState => {
   useEffect(() => {
     if (open) {
       setUrl(token)
+      start()
     } else {
       setUrl()
+      pause() && reset()
     }
   }, [open])
 
@@ -47,9 +49,10 @@ export const useChatSocket = (): ChatSocketState => {
     if (status === 'connected' || status === 'joined') joinRoom()
   }, [currentRoom])
 
-  const { getRemainingTime } = useIdleTimer({
+  const { getRemainingTime, start, reset, pause } = useIdleTimer({
     timeout: 1000 * 60 * 5,
     // timeout: 3000,
+    startManually: true,
     onIdle: () => {
       console.log('idling')
 
