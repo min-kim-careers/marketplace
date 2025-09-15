@@ -20,4 +20,5 @@ class ChatMessageService:
         messages_db = await ChatMessageRepository.messages_offset(
             db, room_id, datetime.fromisoformat(since), DEFAULT_RESTORE_LIMIT
         )
+
         return [ChatTextOut.from_db(m, user_id) for m in messages_db]

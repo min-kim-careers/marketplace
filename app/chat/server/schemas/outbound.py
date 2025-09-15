@@ -1,4 +1,4 @@
-from typing import Annotated, Literal, Union
+from typing import Annotated, Literal, Optional, Union
 from uuid import UUID
 
 from pydantic import Field, TypeAdapter
@@ -42,6 +42,11 @@ class ChatConnectedOut(OutboundBase):
     type: Literal["connected"] = "connected"
 
 
+class ChatErrorOut(OutboundBase):
+    type: Literal["error"] = "error"
+    message: Optional[str] = None
+
+
 class ChatJoinedOut(OutboundBase):
     type: Literal["joined"] = "joined"
 
@@ -57,6 +62,7 @@ ChatPayloadOutType = Annotated[
         ChatJoinedOut,
         ChatRestoreOut,
         ChatConnectedOut,
+        ChatErrorOut,
     ],
     Field(discriminator="type"),
 ]

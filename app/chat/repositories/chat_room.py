@@ -1,13 +1,14 @@
+from datetime import datetime
 from typing import Sequence
 from uuid import UUID
 
-from sqlalchemy import asc, desc, or_, select
+from sqlalchemy import asc, desc, or_, select, update
 
 from app.chat.enums import RoomSortOrder
 from app.chat.schemas.inbound import ChatRoomInDB, RoomsQuery
 from app.core import logger
 from app.core.helpers import get_one_by
-from app.db.models.chat_room import ChatRoomDB
+from app.db.models.chat_room import ChatRoomDB, ChatRoomStatusDB
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -54,6 +55,17 @@ class ChatRoomRepository:
         )
 
     @staticmethod
+    async def room_by_id(
+        db: AsyncSession,
+        room_id: UUID,
+    ) -> ChatRoomDB | None:
+        return await get_one_by(
+            db,
+            ChatRoomDB,
+            room_id=room_id,
+        )
+
+    @staticmethod
     async def create_room(
         db: AsyncSession,
         room_in: ChatRoomInDB,
@@ -64,6 +76,63 @@ class ChatRoomRepository:
             await db.commit()
             await db.refresh(room)
             return room
+        except Exception as e:
+            await db.rollback()
+            logger.info(e)
+            return None
+
+    @staticmethod
+    async def get_status(
+        db: AsyncSession,
+        user_id: UUID,
+        room_id: UUID,
+    ) -> ChatRoomStatusDB | None:
+        return await get_one_by(
+            db,
+            ChatRoomStatusDB,
+            user_id=user_id,
+            room_id=room_id,
+        )
+
+    @staticmethod
+    async def update_status(
+        db: AsyncSession,
+        user_id: UUID,
+        room_id: UUID,
+        last_read_at: datetime,
+    ) -> ChatRoomStatusDB | None:
+        try:
+            stmt = (
+                update(ChatRoomStatusDB)
+                .where(
+                    ChatRoomStatusDB.user_id == user_id,
+                    ChatRoomStatusDB.room_id == room_id,
+                )
+                .values(last_read_at=last_read_at)
+            )
+            res = await db.execute(stmt)
+            return res.scalar_one_or_none()
+        except Exception as e:
+            await db.rollback()
+            logger.info(e)
+            return None
+
+    @staticmethod
+    async def create_status(
+        db: AsyncSession,
+        user_id: UUID,
+        room_id: UUID,
+    ) -> ChatRoomStatusDB | None:
+        try:
+            status = ChatRoomStatusDB(
+                user_id=user_id,
+                room_id=room_id,
+            )
+
+            db.add(status)
+            await db.commit()
+            await db.refresh(status)
+            return status
         except Exception as e:
             await db.rollback()
             logger.info(e)
