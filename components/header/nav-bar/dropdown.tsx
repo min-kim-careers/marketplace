@@ -1,4 +1,3 @@
-import ChatDrawer from '@/chat/chat-drawer'
 import LoadingDots from '@/components/loading-dots'
 import {
   Avatar,
@@ -55,9 +54,6 @@ export default function Dropdown() {
           </DropdownMenuItem>
           <DropdownMenuItem>
             <Link href={APP_ROUTES.ITEM_POST.href}>Post Ad</Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <ChatDrawer />
           </DropdownMenuItem>
         </span>
 

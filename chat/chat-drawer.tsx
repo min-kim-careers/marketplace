@@ -31,7 +31,7 @@ export default function ChatDrawer({ useButton }: { useButton?: boolean }) {
         className={cn(
           'flex flex-1',
           '[state=closed]:duration-200 data-[state=open]:duration-200',
-          'min-w-full',
+          'min-w-[75vw] sm:min-w-[50vw]',
         )}
       >
         <SheetHeader>

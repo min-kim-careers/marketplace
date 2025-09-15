@@ -18,3 +18,7 @@ export type ChatPayloadIn =
   | ({
       type: 'text'
     } & ChatTextIn)
+  | {
+      type: 'error'
+      message?: string
+    }

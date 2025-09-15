@@ -90,6 +90,8 @@ export const useChatSocket = (): ChatSocketState => {
           case 'text':
             handleTextIn(payload)
             break
+          case 'error':
+            handleErrorIn(payload.message)
           default:
             break
         }
@@ -125,6 +127,14 @@ export const useChatSocket = (): ChatSocketState => {
 
   const handleTextIn = (msg: ChatTextIn) => {
     setMessages([msg, ...messages])
+  }
+
+  const handleErrorIn = (errorMessage?: string) => {
+    if (errorMessage) {
+      console.error('server error:', errorMessage)
+    } else {
+      console.error('server error')
+    }
   }
 
   const sendMessage = (payload: ChatPayloadOut) => {

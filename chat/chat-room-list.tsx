@@ -50,14 +50,14 @@ export default function ChatRoomList() {
       </SheetTrigger>
 
       <SheetContent
-        side='left'
+        side='right'
         className={cn(
-          'flex flex-1',
+          'flex flex-1 flex-col gap-2',
           '[state=closed]:duration-300 data-[state=open]:duration-300',
         )}
       >
         <SheetHeader>
-          <SheetTitle />
+          <SheetTitle>Rooms</SheetTitle>
         </SheetHeader>
         <div className={cn('h-full w-full overflow-y-auto rounded border')}>
           {loading ? (
@@ -65,46 +65,54 @@ export default function ChatRoomList() {
               <Spinner />
             </div>
           ) : (
-            <div className='flex flex-1 flex-col justify-start gap-2 p-2'>
-              {rooms.map((room: ChatRoom, i) => (
-                <button
-                  className={cn(
-                    'flex w-full flex-1 flex-row items-center gap-2 border border-transparent p-2 hover:bg-secondary',
-                    currentRoom &&
-                      currentRoom.alias === room.alias &&
-                      'rounded bg-secondary',
-                  )}
-                  key={i}
-                  onClick={() => {
-                    setCurrentRoom(room)
-                    setOpen(false)
-                  }}
-                  disabled={currentRoom && currentRoom.alias === room.alias}
-                >
-                  <Avatar className='h-9 w-9'>
-                    <AvatarImage src={room.item.profile.avatarUrl} />
-                    <AvatarFallback>
-                      <p className='text-lg font-bold'>
-                        {room.item.profile.handle.charAt(0).toUpperCase()}
-                      </p>
-                    </AvatarFallback>
-                  </Avatar>
-                  <span
+            <div className='flex h-full flex-1 flex-col justify-start gap-2 p-2'>
+              {rooms.length ? (
+                rooms.map((room: ChatRoom, i) => (
+                  <button
                     className={cn(
-                      'flex w-full justify-between truncate text-nowrap transition-all',
+                      'flex w-full flex-1 flex-row items-center gap-2 border border-transparent p-2 hover:bg-secondary',
+                      currentRoom &&
+                        currentRoom.alias === room.alias &&
+                        'rounded bg-secondary',
                     )}
+                    key={i}
+                    onClick={() => {
+                      setCurrentRoom(room)
+                      setOpen(false)
+                    }}
+                    disabled={currentRoom && currentRoom.alias === room.alias}
                   >
-                    {room.item.name}
-                  </span>
-                  {room.isSeller && (
-                    <p
-                      className={cn('pr-2 italic text-black/50 transition-all')}
+                    <Avatar className='h-9 w-9'>
+                      <AvatarImage src={room.item.profile.avatarUrl} />
+                      <AvatarFallback>
+                        <p className='text-lg font-bold'>
+                          {room.item.profile.handle.charAt(0).toUpperCase()}
+                        </p>
+                      </AvatarFallback>
+                    </Avatar>
+                    <span
+                      className={cn(
+                        'flex w-full justify-between truncate text-nowrap transition-all',
+                      )}
                     >
-                      Selling
-                    </p>
-                  )}
-                </button>
-              ))}
+                      {room.item.name}
+                    </span>
+                    {room.isSeller && (
+                      <p
+                        className={cn(
+                          'pr-2 italic text-black/50 transition-all',
+                        )}
+                      >
+                        Selling
+                      </p>
+                    )}
+                  </button>
+                ))
+              ) : (
+                <div className='flex h-full items-center justify-center italic text-muted-foreground'>
+                  No rooms...
+                </div>
+              )}
             </div>
           )}
         </div>

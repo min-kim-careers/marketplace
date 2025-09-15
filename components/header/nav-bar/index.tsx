@@ -36,14 +36,15 @@ export default function NavBar() {
 
     return (
       <span className='flex items-center gap-4'>
-        <span className='hidden flex-1 gap-4 sm:flex'>
-          <Link href={`${APP_ROUTES.MARKET.href}`} passHref>
-            <Button>Browse</Button>
-          </Link>
-
-          <Link href={APP_ROUTES.ITEM_POST.href}>
-            <Button>Post Ad</Button>
-          </Link>
+        <span className='flex-1 gap-4 sm:flex'>
+          <span className='flex gap-4 max-sm:hidden'>
+            <Link href={`${APP_ROUTES.MARKET.href}`} passHref>
+              <Button>Browse</Button>
+            </Link>
+            <Link href={APP_ROUTES.ITEM_POST.href}>
+              <Button>Post Ad</Button>
+            </Link>
+          </span>
 
           <ChatDrawer useButton />
         </span>
