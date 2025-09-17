@@ -6,19 +6,21 @@ export const useScrollHandler = () => {
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const messages = useChatStore((state) => state.messages)
+  const noMessages = useChatStore((state) => state.noMessages)
 
   const [atTop, setAtTop] = useState(false)
 
   useEffect(() => {
-    const div = scrollRef.current
-
-    if (div && !atTop) {
-      div.scrollTop = div.scrollHeight
+    const setToBottom = () => {
+      if (scrollRef.current) {
+        scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+      }
     }
-  }, [messages.length])
 
-  const handleAtTop = (e: UIEvent<HTMLDivElement>) =>
-    setAtTop(e.currentTarget.scrollTop === 0)
+    if (!atTop || noMessages) {
+      setToBottom()
+    }
+  }, [messages.length, noMessages])
 
   useEffect(() => {
     const nudgeDown = () => {
@@ -36,6 +38,7 @@ export const useScrollHandler = () => {
   return {
     scrollRef,
     atTop,
-    handleAtTop,
+    handleAtTop: (e: UIEvent<HTMLDivElement>) =>
+      setAtTop(e.currentTarget.scrollTop === 0),
   }
 }

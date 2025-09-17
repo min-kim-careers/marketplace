@@ -21,7 +21,7 @@ import { MenuIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 export default function ChatRoomList() {
-  const { setCurrentRoom } = useChatStore()
+  const { setProps } = useChatStore()
   const currentRoom = useChatStore((state) => state.currentRoom)
   const [open, setOpen] = useState<boolean>(false)
   const [rooms, setRooms] = useState<ChatRoom[]>([])
@@ -70,14 +70,14 @@ export default function ChatRoomList() {
                 rooms.map((room: ChatRoom, i) => (
                   <button
                     className={cn(
-                      'flex w-full flex-1 flex-row items-center gap-2 border border-transparent p-2 hover:bg-secondary',
+                      'flex w-full flex-row items-center gap-2 border border-transparent p-2 hover:bg-secondary',
                       currentRoom &&
                         currentRoom.alias === room.alias &&
                         'rounded bg-secondary',
                     )}
                     key={i}
                     onClick={() => {
-                      setCurrentRoom(room)
+                      setProps({ currentRoom: room })
                       setOpen(false)
                     }}
                     disabled={currentRoom && currentRoom.alias === room.alias}

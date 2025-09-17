@@ -14,10 +14,10 @@ import {
 import { cn } from '@/components/shadcn/lib/utils'
 
 export default function ChatDrawer({ useButton }: { useButton?: boolean }) {
-  const { open, setOpen } = useChatStore()
+  const { open, setProps } = useChatStore()
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
+    <Sheet open={open} onOpenChange={(open) => setProps({ open })}>
       {useButton ? (
         <SheetTrigger asChild>
           <Button>Chat</Button>
@@ -39,9 +39,7 @@ export default function ChatDrawer({ useButton }: { useButton?: boolean }) {
         </SheetHeader>
         <div className='flex flex-1 flex-row gap-2'>
           <div className='flex w-full flex-col gap-2'>
-            <div className='h-[5%]'>
-              <ChatToolbar />
-            </div>
+            <ChatToolbar />
             <div className='h-[95%]'>
               <ChatWindow />
             </div>

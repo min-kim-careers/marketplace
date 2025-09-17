@@ -1,6 +1,14 @@
+import { flagMessageRead } from '@/chat/helpers/flag-message-read'
 import { useLoadToken } from '@/chat/hooks/use-load-token'
 import useChatStore from '@/chat/stores/chat-store'
-import { ChatPayloadIn, ChatTextIn } from '@/chat/types/chat-inbound'
+import {
+  ChatConnectedIn,
+  ChatErrorIn,
+  ChatJoinedIn,
+  ChatPayloadIn,
+  ChatRestoreIn,
+  ChatTextIn,
+} from '@/chat/types/chat-inbound'
 import { ChatPayloadOut } from '@/chat/types/chat-outbound'
 import { useEffect } from 'react'
 import { useIdleTimer } from 'react-idle-timer'
@@ -13,8 +21,7 @@ export type ChatSocketState = {
 }
 
 export const useChatSocket = (): ChatSocketState => {
-  const { setUrl, setMessages, setNoMessages, setSince, setStatus } =
-    useChatStore()
+  const { setUrl, setProps } = useChatStore()
 
   const messages = useChatStore((state) => state.messages)
   const since = useChatStore((state) => state.since)
@@ -22,25 +29,28 @@ export const useChatSocket = (): ChatSocketState => {
   const url = useChatStore((state) => state.url)
   const currentRoom = useChatStore((state) => state.currentRoom)
   const status = useChatStore((state) => state.status)
+  const lastRead = useChatStore((state) => state.peerLastRead)
 
   const token = useLoadToken()
 
   useEffect(() => {
-    if (open) {
+    if (open && token) {
       setUrl(token)
       start()
     } else {
       setUrl()
       pause() && reset()
     }
-  }, [open])
+  }, [open, token])
 
   const joinRoom = () => {
     if (currentRoom) {
-      setStatus('joining')
-      setMessages([])
-      setNoMessages(false)
-      setSince()
+      setProps({
+        status: 'joining',
+        messages: [],
+        noMessages: false,
+        since: undefined,
+      })
       sendMessage({ type: 'join', roomAlias: currentRoom.alias })
     }
   }
@@ -57,7 +67,7 @@ export const useChatSocket = (): ChatSocketState => {
       console.log('idling')
 
       setUrl()
-      setStatus('idling')
+      setProps({ status: 'idling' })
     },
     onActive: () => {
       console.log('unidling')
@@ -69,7 +79,7 @@ export const useChatSocket = (): ChatSocketState => {
 
   const { sendJsonMessage } = useWebSocket(url ?? null, {
     onOpen: () => {
-      setStatus('connecting')
+      setProps({ status: 'connecting' })
     },
 
     onMessage: async (e: MessageEvent<any>) => {
@@ -79,19 +89,19 @@ export const useChatSocket = (): ChatSocketState => {
 
         switch (payload.type) {
           case 'connected':
-            handleConnectedIn()
+            handleConnectedIn(payload)
             break
           case 'joined':
-            handleJoinedIn()
+            handleJoinedIn(payload)
             break
           case 'restore':
-            handleRestoreIn(payload.previous)
+            handleRestoreIn(payload)
             break
           case 'text':
             handleTextIn(payload)
             break
           case 'error':
-            handleErrorIn(payload.message)
+            handleErrorIn(payload)
           default:
             break
         }
@@ -101,40 +111,52 @@ export const useChatSocket = (): ChatSocketState => {
     },
   })
 
-  const handleConnectedIn = () => {
-    setStatus('connected')
+  const handleConnectedIn = (_: ChatConnectedIn) => {
+    setProps({ status: 'connected' })
     if (currentRoom) {
       joinRoom()
     }
   }
 
-  const handleJoinedIn = () => {
+  const handleJoinedIn = (payload: ChatJoinedIn) => {
+    const { peerLastRead } = payload
     const since = new Date().toISOString()
-    setSince(since)
-    sendMessage({ type: 'restore', since })
+    setProps({ since, status: 'joined', peerLastRead })
 
-    setStatus('joined')
+    console.log(peerLastRead)
+
+    sendMessage({ type: 'restore', since })
   }
 
-  const handleRestoreIn = async (previous: ChatTextIn[]) => {
+  const handleRestoreIn = async (payload: ChatRestoreIn) => {
+    const { previous } = payload
     if (!previous.length) {
-      setNoMessages(true)
+      setProps({ noMessages: true })
       return
     }
-    setMessages([...messages, ...previous])
-    setSince(previous[previous.length - 1].timestamp)
+    if (lastRead) {
+      previous.forEach((m) => flagMessageRead(m, lastRead))
+    }
+    setProps({
+      messages: [...messages, ...previous],
+      since: previous[previous.length - 1].timestamp,
+    })
   }
 
-  const handleTextIn = (msg: ChatTextIn) => {
-    setMessages([msg, ...messages])
+  const handleTextIn = (payload: ChatTextIn) => {
+    console.log(payload)
+    if (lastRead) {
+      setProps({ messages: [flagMessageRead(payload, lastRead), ...messages] })
+    }
   }
 
-  const handleErrorIn = (errorMessage?: string) => {
-    if (errorMessage) {
-      console.error('server error:', errorMessage)
+  const handleErrorIn = (payload: ChatErrorIn) => {
+    if (payload.message) {
+      console.error('server error:', payload.message)
     } else {
       console.error('server error')
     }
+    setProps({ status: 'error' })
   }
 
   const sendMessage = (payload: ChatPayloadOut) => {
@@ -151,6 +173,6 @@ export const useChatSocket = (): ChatSocketState => {
         sendMessage({ type: 'restore', since })
       }
     },
-    msUntilIdle: () => getRemainingTime(),
+    msUntilIdle: getRemainingTime,
   }
 }

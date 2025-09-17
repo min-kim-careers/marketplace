@@ -32,7 +32,7 @@ export default function MarketModal({
   item: Item
 }) {
   const { setLoading } = useLoadingStore()
-  const { setCurrentRoom, setOpen } = useChatStore()
+  const { setProps } = useChatStore()
 
   const handleChatButton = async () => {
     try {
@@ -41,8 +41,7 @@ export default function MarketModal({
       const room = await getRoom(item.alias)
       if (!room) throw new Error()
 
-      setOpen(true)
-      setCurrentRoom(room)
+      setProps({ open: true, currentRoom: room })
     } catch (error) {
       console.error(error)
       toast('Something went wrong')

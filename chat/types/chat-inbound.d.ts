@@ -1,24 +1,33 @@
+export type ChatConnectedIn = {
+  type: 'connected'
+}
+
+export type ChatJoinedIn = {
+  type: 'joined'
+  peerLastRead: Date
+}
+
+export type ChatRestoreIn = {
+  type: 'restore'
+  previous: ChatTextIn[]
+}
+
 export type ChatTextIn = {
+  type: 'text'
   isMe: boolean
   content: string
   timestamp: string
+  read: boolean
+}
+
+export type ChatErrorIn = {
+  type: 'error'
+  message?: string
 }
 
 export type ChatPayloadIn =
-  | {
-      type: 'connected'
-    }
-  | {
-      type: 'joined'
-    }
-  | {
-      type: 'restore'
-      previous: ChatTextIn[]
-    }
-  | ({
-      type: 'text'
-    } & ChatTextIn)
-  | {
-      type: 'error'
-      message?: string
-    }
+  | ChatConnectedIn
+  | ChatJoinedIn
+  | ChatRestoreIn
+  | ChatTextIn
+  | ChatErrorIn

@@ -7,3 +7,4 @@ export type ChatStatus =
   | 'joining'
   | 'joined'
   | 'idling'
+  | 'error'
