@@ -68,7 +68,7 @@ class ChatRoomStatusDB(Base):
         "ChatRoomDB", foreign_keys=[room_id], lazy="selectin", uselist=False
     )
 
-    last_read_at: Mapped[datetime] = mapped_column(
+    last_read: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
         nullable=False,

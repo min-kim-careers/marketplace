@@ -40,7 +40,7 @@ async def get_room_by_item(
         item_db = await ItemRepository.by_item(db, item_id)
         if not item_db:
             raise ErrorResponse(message="item not found")
-        room_db = await ChatRoomRepository.create_room(
+        room_db = await ChatRoomRepository.create_room_with_status(
             db,
             ChatRoomInDB(
                 item_id=item_id,

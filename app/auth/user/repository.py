@@ -33,6 +33,7 @@ class UserRepository:
                 user_id=new_user.id,
                 extra=default_profile_extra(),
             )
+
             db.add(new_profile)
 
             await db.commit()
