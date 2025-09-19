@@ -57,12 +57,12 @@ class ChatRoomRepository:
     @staticmethod
     async def room_by_id(
         db: AsyncSession,
-        id: UUID,
+        room_id: UUID,
     ) -> ChatRoomDB | None:
         return await get_one_by(
             db,
             ChatRoomDB,
-            id=id,
+            id=room_id,
         )
 
     @staticmethod

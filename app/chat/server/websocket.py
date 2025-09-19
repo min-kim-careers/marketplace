@@ -25,7 +25,7 @@ async def websocket_endpoint(
             ChatClient(
                 conn=conn,
                 db=db,
-                user_id=user.id,
+                user=user,
             ),
         )
 

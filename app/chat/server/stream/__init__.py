@@ -1,50 +1,23 @@
 import asyncio
-from datetime import datetime
-from typing import Annotated, Literal, Optional, Union
 from uuid import UUID
 
-from pydantic import BaseModel, Field, TypeAdapter
-from app.cache.redis import redis
+from app.cache import redis
 
 
 from redis.exceptions import ResponseError
 
 from app.chat.repositories.chat_message import ChatMessageRepository
-from app.chat.repositories.chat_room import ChatRoomRepository
 from app.chat.server.helpers import broadcast_key
+from app.chat.server.stream.schemas import ChatStreamRead, ChatStreamText
+from app.chat.server.stream.schemas import ChatStreamType
+from app.chat.server.stream.schemas import ChatStreamAdapter
 from app.core import logger
 from app.db.session import AsyncSessionLocal
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-class ChatStreamText(BaseModel):
-    type: Literal["text"] = "text"
-    user_id: str
-    room_id: str
-    content: str
-    timestamp: Optional[str] = None
-
-
-class ChatStreamRead(BaseModel):
-    type: Literal["read"] = "read"
-    user_id: str
-    room_id: str
-    last_read_at: datetime
-
-
-ChatStreamType = Annotated[
-    Union[
-        ChatStreamText,
-        ChatStreamRead,
-    ],
-    Field(discriminator="type"),
-]
-
-ChatStream = TypeAdapter(ChatStreamType)
-
-
-class ChatStreamer:
+class ChatStream:
     def __init__(self) -> None:
         self.STREAM_KEY = "chat:stream"
         self.GROUP = "g1"
@@ -54,8 +27,7 @@ class ChatStreamer:
         self._init()
 
     def _init(self):
-        asyncio.create_task(self._create_stream())
-        asyncio.create_task(self._run_consumer())
+        asyncio.gather(self._create_stream(), self._run_consumer())
 
     async def _create_stream(self):
         try:
@@ -78,38 +50,24 @@ class ChatStreamer:
             return False
 
         stream.timestamp = msg_db.timestamp.isoformat()
-        return True
-
-    async def _handle_read(self, db: AsyncSession, stream: ChatStreamRead) -> bool:
-        status_db = await ChatRoomRepository.update_last_read_at(
-            db,
-            UUID(stream.user_id),
-            UUID(stream.room_id),
+        await redis.publish(
+            broadcast_key(stream.room_id),
+            stream.model_dump_json(),
         )
-        if not status_db:
-            logger.error("error updating status")
-            return False
+        print(f"broadcasted to: {broadcast_key(stream.room_id)}")
         return True
 
     async def _process_stream(self, db: AsyncSession, id: str, stream: ChatStreamType):
         print("from stream:", id, stream)
 
-        _stream = ChatStream.validate_python(stream)
+        stream = ChatStreamAdapter.validate_python(stream)
 
-        processed = False
+        success = False
 
-        if isinstance(_stream, ChatStreamText):
-            processed = await self._handle_text(db, _stream)
+        if isinstance(stream, ChatStreamText):
+            success = await self._handle_text(db, stream)
 
-        elif isinstance(_stream, ChatStreamRead):
-            processed = await self._handle_read(db, _stream)
-
-        if processed:
-            await redis.publish(
-                broadcast_key(stream.room_id),
-                stream.model_dump_json(),
-            )
-            print(f"broadcasted to: {broadcast_key(stream.room_id)}")
+        if success:
             await redis.xack(self.STREAM_KEY, self.GROUP, id)
 
     async def _run_consumer(self):
@@ -135,26 +93,20 @@ class ChatStreamer:
                 logger.error("stream consumer error:", e)
                 continue
 
-    async def enqueue_text(self, msg: ChatStreamText):
-        msg_id = await redis.xadd(
+    async def stream_text(self, text: ChatStreamText):
+        id = await redis.xadd(
             self.STREAM_KEY,
             {
-                "type": msg.type,
-                "room_id": msg.room_id,
-                "user_id": msg.user_id,
-                "content": msg.content,
+                "type": text.type,
+                "room_id": text.room_id,
+                "user_id": text.user_id,
+                "content": text.content,
             },
         )
-        return msg_id
+        return id
 
-    async def enqueue_read(self, msg: ChatStreamRead):
-        msg_id = await redis.xadd(
-            self.STREAM_KEY,
-            {
-                "type": msg.type,
-                "room_id": msg.room_id,
-                "user_id": msg.user_id,
-                "last_read_at": datetime.isoformat(msg.last_read_at),
-            },
+    async def broadcast_read(self, read: ChatStreamRead):
+        await redis.publish(
+            broadcast_key(read.room_id),
+            read.model_dump_json(),
         )
-        return msg_id

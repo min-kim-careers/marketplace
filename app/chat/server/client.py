@@ -1,4 +1,5 @@
-from app.cache.redis import redis
+import json
+from app.cache import redis
 from app.chat.repositories.chat_room import ChatRoomRepository
 from app.chat.server.helpers import broadcast_key
 from app.chat.server.schemas.outbound import (
@@ -7,7 +8,8 @@ from app.chat.server.schemas.outbound import (
     ChatReadOut,
     ChatTextOut,
 )
-from app.chat.server.stream import ChatStream, ChatStreamRead, ChatStreamText
+from app.chat.server.stream.schemas import ChatStreamAdapter, ChatStreamRead
+from app.chat.server.stream.schemas import ChatStreamText
 from app.core import logger
 
 
@@ -16,18 +18,20 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 
 import asyncio
-from typing import Any, Literal, Optional, Set
+from typing import Literal, Optional, Set
 from uuid import UUID
 
 from app.db.models.chat_room import ChatRoomDB
+from app.db.models.user import UserDB
 
 
 class ChatClient:
-    def __init__(self, conn: WebSocket, db: AsyncSession, user_id: UUID) -> None:
+    def __init__(self, conn: WebSocket, db: AsyncSession, user: UserDB) -> None:
         self.conn: WebSocket = conn
         self.db: AsyncSession = db
-        self.user_id: UUID = user_id
+        self.user: UserDB = user
         self.room: Optional[ChatRoomDB] = None
+        self.peer: Optional[UserDB] = None
 
         self.tasks: Set[asyncio.Task] = set()
 
@@ -44,25 +48,8 @@ class ChatClient:
         t.add_done_callback(self.tasks.discard)
         return t
 
-    def _get_peer_id(self):
-        if self.room:
-            return (
-                self.room.seller_id
-                if self.user_id == self.room.buyer_id
-                else self.room.buyer_id
-            )
-
-    async def get_peer_status(self):
-        if self.room:
-            peer_id = self._get_peer_id()
-            if not peer_id:
-                logger.error("failed to get peer status: no peer id")
-                return
-            return await ChatRoomRepository.status_by_user(
-                self.db,
-                user_id=peer_id,
-                room_id=self.room.id,
-            )
+    def peer_is_active(self) -> bool:
+        return len(self.manager.rooms[self.room.id]) == 2 if self.room else False
 
     def _handle_text(self, stream: ChatStreamText):
         if not stream.timestamp:
@@ -70,38 +57,38 @@ class ChatClient:
             return
 
         return ChatTextOut.from_stream(
-            msg=stream,
-            user_id=str(self.user_id),
+            msg=stream, user_id=str(self.user.id), peer_is_active=self.peer_is_active()
         )
 
     def _handle_read(self, stream: ChatStreamRead):
-        if stream.user_id == self.user_id:
-            return ChatReadOut(last_read_at=stream.last_read_at)
+        return ChatReadOut(
+            last_read=stream.last_read,
+        )
 
-    async def _process_data(self, data: dict[str, Any]):
-        stream = ChatStream.validate_python(data)
+    async def _process_message(self, data: dict):
+        stream = ChatStreamAdapter.validate_python(data)
 
         message = None
 
         if isinstance(stream, ChatStreamText):
             message = self._handle_text(stream)
 
-        elif isinstance(stream, ChatStreamRead):
+        if isinstance(stream, ChatStreamRead):
             message = self._handle_read(stream)
 
         if message:
             await self.send_message(message)
 
-    async def _handle_payload(self, payload: dict[str, Any]):
+    async def _handle_stream(self, payload: dict):
         try:
             # skip if listening to __idle__ channel
             if payload["channel"] == self.idle_key:
                 return
             # send message to client
             elif payload["type"] == "message":
-                await self._process_data(payload["data"])
+                await self._process_message(json.loads(payload["data"]))
         except Exception as e:
-            logger.error("handle message error:", e)
+            logger.error("handle payload error:", e)
 
     async def _run_listener(self):
         # must subscribe to idle key on init
@@ -129,7 +116,7 @@ class ChatClient:
                     ignore_subscribe_messages=False, timeout=timeout
                 )
                 if msg:
-                    await self._handle_payload(msg)
+                    await self._handle_stream(msg)
         except Exception as e:
             logger.error("listener error:", e)
         finally:
@@ -139,10 +126,10 @@ class ChatClient:
     async def send_message(self, payload: ChatPayloadOutType) -> bool:
         try:
             await self.conn.send_json(payload.model_dump(mode="json", by_alias=True))
-            logger.info("sent payload:", payload.model_dump())
         except Exception as e:
             logger.error("send message error:", e)
             return False
+        print("sent:", payload)
         return True
 
     async def _subscribe(self, room_key: str):
@@ -151,29 +138,27 @@ class ChatClient:
     async def _unsubscribe(self, room_key: str):
         await self.cmd_q.put(("unsubscribe", room_key))
 
+    def _set_peer(self, room: ChatRoomDB):
+        self.peer = room.seller if self.user.id == room.buyer_id else room.buyer
+
     # on room join
-    async def init_state(self, room_id: UUID) -> bool:
+    async def init_state(self, room_id: UUID):
         # set room
         room = await ChatRoomRepository.room_by_id(self.db, room_id)
         if not room:
-            logger.error("room not found")
-            return False
+            raise Exception("room not found")
 
-        # queue channel subscription
         await self._subscribe(broadcast_key(str(room_id)))
         self.room = room
-        return True
-
-    async def _unset_room(self):
-        if self.room:
-            await self._unsubscribe(broadcast_key(str(self.room.id)))
-            self.room = None
+        self._set_peer(room)
 
     # on room leave
     async def reset_state(self):
-        await asyncio.gather(
-            self._unset_room(),
-        )
+        if not self.room:
+            raise Exception("room missing while resetting state")
+
+        await self._unsubscribe(broadcast_key(str(self.room.id)))
+        self.room = None
 
     # on connect
     async def run(self):
