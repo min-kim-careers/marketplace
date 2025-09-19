@@ -2,13 +2,15 @@
 import useChatStore from '@/chat/stores/chat-store'
 import { UIEvent, useEffect, useRef, useState } from 'react'
 
+type ScreenPosition = 'top' | 'bottom'
+
 export const useScrollHandler = () => {
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const messages = useChatStore((state) => state.messages)
   const noMessages = useChatStore((state) => state.noMessages)
 
-  const [atTop, setAtTop] = useState(false)
+  const [position, setPosition] = useState<ScreenPosition | null>(null)
 
   useEffect(() => {
     const setToBottom = () => {
@@ -17,7 +19,7 @@ export const useScrollHandler = () => {
       }
     }
 
-    if (!atTop || noMessages) {
+    if (!position && !noMessages) {
       setToBottom()
     }
   }, [messages.length, noMessages])
@@ -30,15 +32,25 @@ export const useScrollHandler = () => {
         })
       }
     }
-    if (atTop) {
+    if (position) {
       nudgeDown()
     }
   }, [messages.length])
 
   return {
     scrollRef,
-    atTop,
-    handleAtTop: (e: UIEvent<HTMLDivElement>) =>
-      setAtTop(e.currentTarget.scrollTop === 0),
+    position,
+    handlePosition: (e: UIEvent<HTMLDivElement>) => {
+      if (e.currentTarget.scrollTop === 0) {
+        setPosition('top')
+      } else if (
+        e.currentTarget.scrollTop + e.currentTarget.clientHeight >=
+        e.currentTarget.scrollHeight - 1
+      ) {
+        setPosition('bottom')
+      } else {
+        setPosition(null)
+      }
+    },
   }
 }

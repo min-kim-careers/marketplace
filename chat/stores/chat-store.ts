@@ -10,7 +10,6 @@ const defaultProps: ChatProps = {
   url: undefined,
   currentRoom: undefined,
   since: undefined,
-  peerLastRead: undefined,
 
   open: false,
   status: 'disconnected',
@@ -22,7 +21,6 @@ type ChatProps = {
   url?: string
   currentRoom?: ChatRoom
   since?: string
-  peerLastRead?: Date
 
   open: boolean
   status: ChatStatus

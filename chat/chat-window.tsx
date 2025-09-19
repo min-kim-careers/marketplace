@@ -22,12 +22,13 @@ export default function ChatWindow() {
   const currentRoom = useChatStore((state) => state.currentRoom)
 
   const { sendTextOut, sendRestoreOut } = useChatContext()
-  const { atTop, scrollRef, handleAtTop } = useScrollHandler()
+  const { position, scrollRef, handlePosition } = useScrollHandler()
   const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
-    const handleScrollRestore = async () => {
-      if (atTop && !noMessages) {
+    const handleScrollPosition = async () => {
+      if (position === 'top' && !noMessages) {
+        // if at top, restore messages
         try {
           setLoading(true)
           await delay(1000)
@@ -39,8 +40,8 @@ export default function ChatWindow() {
       }
     }
 
-    handleScrollRestore()
-  }, [atTop])
+    handleScrollPosition()
+  }, [position])
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -71,7 +72,7 @@ export default function ChatWindow() {
       {/* messages */}
       <div
         className='h-full overflow-y-auto rounded border p-2'
-        onScroll={handleAtTop}
+        onScroll={handlePosition}
         ref={scrollRef}
       >
         <div

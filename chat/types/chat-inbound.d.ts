@@ -4,17 +4,17 @@ export type ChatConnectedIn = {
 
 export type ChatJoinedIn = {
   type: 'joined'
-  peerLastRead: Date
+  peerLastRead: string
 }
 
 export type ChatRestoreIn = {
-  type: 'restore'
+  type: 'restored'
   previous: ChatTextIn[]
 }
 
 export type ChatTextIn = {
   type: 'text'
-  isMe: boolean
+  mine: boolean
   content: string
   timestamp: string
   read: boolean
@@ -25,9 +25,15 @@ export type ChatErrorIn = {
   message?: string
 }
 
+export type ChatReadIn = {
+  type: 'read'
+  lastRead: string
+}
+
 export type ChatPayloadIn =
   | ChatConnectedIn
   | ChatJoinedIn
   | ChatRestoreIn
   | ChatTextIn
   | ChatErrorIn
+  | ChatReadIn

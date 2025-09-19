@@ -6,6 +6,7 @@ import {
   ChatErrorIn,
   ChatJoinedIn,
   ChatPayloadIn,
+  ChatReadIn,
   ChatRestoreIn,
   ChatTextIn,
 } from '@/chat/types/chat-inbound'
@@ -29,17 +30,14 @@ export const useChatSocket = (): ChatSocketState => {
   const url = useChatStore((state) => state.url)
   const currentRoom = useChatStore((state) => state.currentRoom)
   const status = useChatStore((state) => state.status)
-  const lastRead = useChatStore((state) => state.peerLastRead)
 
   const token = useLoadToken()
 
   useEffect(() => {
     if (open && token) {
       setUrl(token)
-      start()
     } else {
       setUrl()
-      pause() && reset()
     }
   }, [open, token])
 
@@ -94,11 +92,14 @@ export const useChatSocket = (): ChatSocketState => {
           case 'joined':
             handleJoinedIn(payload)
             break
-          case 'restore':
-            handleRestoreIn(payload)
+          case 'restored':
+            handleRestoredIn(payload)
             break
           case 'text':
             handleTextIn(payload)
+            break
+          case 'read':
+            handleReadIn(payload)
             break
           case 'error':
             handleErrorIn(payload)
@@ -118,24 +119,17 @@ export const useChatSocket = (): ChatSocketState => {
     }
   }
 
-  const handleJoinedIn = (payload: ChatJoinedIn) => {
-    const { peerLastRead } = payload
+  const handleJoinedIn = (_: ChatJoinedIn) => {
     const since = new Date().toISOString()
-    setProps({ since, status: 'joined', peerLastRead })
-
-    console.log(peerLastRead)
-
+    setProps({ since, status: 'joined' })
     sendMessage({ type: 'restore', since })
   }
 
-  const handleRestoreIn = async (payload: ChatRestoreIn) => {
+  const handleRestoredIn = async (payload: ChatRestoreIn) => {
     const { previous } = payload
     if (!previous.length) {
       setProps({ noMessages: true })
       return
-    }
-    if (lastRead) {
-      previous.forEach((m) => flagMessageRead(m, lastRead))
     }
     setProps({
       messages: [...messages, ...previous],
@@ -144,10 +138,11 @@ export const useChatSocket = (): ChatSocketState => {
   }
 
   const handleTextIn = (payload: ChatTextIn) => {
-    console.log(payload)
-    if (lastRead) {
-      setProps({ messages: [flagMessageRead(payload, lastRead), ...messages] })
-    }
+    setProps({ messages: [payload, ...messages] })
+  }
+
+  const handleReadIn = (payload: ChatReadIn) => {
+    messages.forEach((m) => flagMessageRead(m, new Date(payload.lastRead)))
   }
 
   const handleErrorIn = (payload: ChatErrorIn) => {
