@@ -30,6 +30,7 @@ export const useChatSocket = (): ChatSocketState => {
   const url = useChatStore((state) => state.url)
   const currentRoom = useChatStore((state) => state.currentRoom)
   const status = useChatStore((state) => state.status)
+  const lastRead = useChatStore((state) => state.lastRead)
 
   const token = useLoadToken()
 
@@ -142,7 +143,11 @@ export const useChatSocket = (): ChatSocketState => {
   }
 
   const handleReadIn = (payload: ChatReadIn) => {
-    messages.forEach((m) => flagMessageRead(m, new Date(payload.lastRead)))
+    for (const msg of messages) {
+      if (msg.timestamp <= lastRead) break
+      flagMessageRead(msg, new Date(payload.lastRead))
+    }
+    setProps({ lastRead: payload.lastRead })
   }
 
   const handleErrorIn = (payload: ChatErrorIn) => {

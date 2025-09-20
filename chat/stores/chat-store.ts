@@ -7,10 +7,7 @@ import { toPath } from '@/lib/helpers/to-path'
 import { create } from 'zustand'
 
 const defaultProps: ChatProps = {
-  url: undefined,
-  currentRoom: undefined,
-  since: undefined,
-
+  lastRead: new Date(0).toISOString(),
   open: false,
   status: 'disconnected',
   messages: [],
@@ -22,6 +19,7 @@ type ChatProps = {
   currentRoom?: ChatRoom
   since?: string
 
+  lastRead: string
   open: boolean
   status: ChatStatus
   messages: ChatTextIn[]
