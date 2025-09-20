@@ -1,5 +1,4 @@
 from typing import Annotated, Literal, Optional, Union
-from uuid import UUID
 
 from pydantic import Field, TypeAdapter
 
@@ -18,23 +17,22 @@ class ChatTextOut(OutboundBase):
 
     # restored messages
     @classmethod
-    def from_db(cls, msg: ChatMessageDB, user_id: UUID) -> "ChatTextOut":
+    def from_db(cls, msg: ChatMessageDB, mine: bool) -> "ChatTextOut":
         ts = msg.timestamp
         return ChatTextOut(
             content=msg.content,
-            mine=user_id == msg.user_id,
+            mine=mine,
             timestamp=ts.isoformat(),
         )
 
     # real time message
     @classmethod
     def from_stream(
-        cls, msg: ChatStreamText, user_id: str, peer_is_active: Optional[bool] = False
+        cls, msg: ChatStreamText, mine: bool, peer_is_active: Optional[bool] = False
     ) -> "ChatTextOut":
         if not msg.timestamp:
             raise ValueError("timestamp missing from stream")
 
-        mine = user_id == msg.user_id
         return ChatTextOut(
             content=msg.content,
             mine=mine,

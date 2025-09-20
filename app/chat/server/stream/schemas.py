@@ -16,7 +16,6 @@ class ChatStreamRead(BaseModel):
     type: Literal["read"] = "read"
     user_id: str
     room_id: str
-    last_read: str
 
 
 ChatStreamType = Annotated[

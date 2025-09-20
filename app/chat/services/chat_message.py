@@ -21,4 +21,4 @@ class ChatMessageService:
             db, room_id, datetime.fromisoformat(since), DEFAULT_RESTORE_LIMIT
         )
 
-        return [ChatTextOut.from_db(m, user_id) for m in messages_db]
+        return [ChatTextOut.from_db(m, user_id == m.user_id) for m in messages_db]

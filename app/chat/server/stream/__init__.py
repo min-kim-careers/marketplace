@@ -7,6 +7,7 @@ from app.cache import redis
 from redis.exceptions import ResponseError
 
 from app.chat.repositories.chat_message import ChatMessageRepository
+from app.chat.repositories.chat_room import ChatRoomRepository
 from app.chat.server.helpers import broadcast_key
 from app.chat.server.stream.schemas import ChatStreamRead, ChatStreamText
 from app.chat.server.stream.schemas import ChatStreamType
@@ -17,7 +18,7 @@ from app.db.session import AsyncSessionLocal
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-class ChatStream:
+class ChatStreamManager:
     def __init__(self) -> None:
         self.STREAM_KEY = "chat:stream"
         self.GROUP = "g1"
@@ -54,7 +55,24 @@ class ChatStream:
             broadcast_key(stream.room_id),
             stream.model_dump_json(),
         )
-        print(f"broadcasted to: {broadcast_key(stream.room_id)}")
+        print(f"broadcasted text to: {broadcast_key(stream.room_id)}")
+        return True
+
+    async def _handle_read(self, db: AsyncSession, stream: ChatStreamRead) -> bool:
+        updated = await ChatRoomRepository.update_last_read(
+            db,
+            user_id=UUID(stream.user_id),
+            room_id=UUID(stream.room_id),
+        )
+        if not updated:
+            logger.error("error persisting status read")
+            return False
+
+        await redis.publish(
+            broadcast_key(stream.room_id),
+            stream.model_dump_json(),
+        )
+        print(f"broadcasted read to: {broadcast_key(stream.room_id)}")
         return True
 
     async def _process_stream(self, db: AsyncSession, id: str, stream: ChatStreamType):
@@ -66,6 +84,9 @@ class ChatStream:
 
         if isinstance(stream, ChatStreamText):
             success = await self._handle_text(db, stream)
+
+        elif isinstance(stream, ChatStreamRead):
+            success = await self._handle_read(db, stream)
 
         if success:
             await redis.xack(self.STREAM_KEY, self.GROUP, id)
@@ -105,8 +126,16 @@ class ChatStream:
         )
         return id
 
-    async def broadcast_read(self, read: ChatStreamRead):
-        await redis.publish(
-            broadcast_key(read.room_id),
-            read.model_dump_json(),
+    async def stream_read(self, read: ChatStreamRead):
+        id = await redis.xadd(
+            self.STREAM_KEY,
+            {
+                "type": read.type,
+                "room_id": read.room_id,
+                "user_id": read.user_id,
+            },
         )
+        return id
+
+
+stream_manager = ChatStreamManager()

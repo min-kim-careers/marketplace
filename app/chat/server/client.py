@@ -1,9 +1,11 @@
+from datetime import datetime, timezone
 import json
 from app.cache import redis
 from app.chat.repositories.chat_room import ChatRoomRepository
 from app.chat.server.helpers import broadcast_key
 from app.chat.server.schemas.outbound import (
     ChatConnectedOut,
+    ChatJoinedOut,
     ChatPayloadOutType,
     ChatReadOut,
     ChatTextOut,
@@ -11,6 +13,8 @@ from app.chat.server.schemas.outbound import (
 from app.chat.server.stream.schemas import ChatStreamAdapter, ChatStreamRead
 from app.chat.server.stream.schemas import ChatStreamText
 from app.core import logger
+from app.chat.server.status import status_manager
+from app.chat.server.stream import stream_manager
 
 
 from fastapi import WebSocket
@@ -48,38 +52,62 @@ class ChatClient:
         t.add_done_callback(self.tasks.discard)
         return t
 
-    def peer_is_active(self) -> bool:
-        return len(self.manager.rooms[self.room.id]) == 2 if self.room else False
-
-    def _handle_text(self, stream: ChatStreamText):
-        if not stream.timestamp:
-            logger.error("stream message missing timestamp")
-            return
-
-        return ChatTextOut.from_stream(
-            msg=stream, user_id=str(self.user.id), peer_is_active=self.peer_is_active()
+    async def peer_is_active(self) -> bool:
+        return (
+            bool(self.room)
+            and bool(self.peer)
+            and await status_manager.user_is_active(self.room.id, self.peer.id)
         )
 
-    def _handle_read(self, stream: ChatStreamRead):
-        return ChatReadOut(
-            last_read=stream.last_read,
+    async def _handle_text(self, stream: ChatStreamText):
+        if not stream.timestamp or not self.room:
+            raise Exception("handle text error")
+
+        mine = UUID(stream.user_id) == self.user.id
+        peer_is_active = await self.peer_is_active()
+
+        await self.send_message(
+            ChatTextOut.from_stream(
+                msg=stream,
+                mine=mine,
+                peer_is_active=peer_is_active,
+            )
         )
+
+        await status_manager.set_last_read(
+            self.room.id, self.user.id, datetime.now(timezone.utc)
+        )
+        # if message is not mine (from peer) and peer is active, send read to peer
+        if self.room and self.peer and not mine and peer_is_active:
+            await stream_manager.stream_read(
+                ChatStreamRead(
+                    room_id=str(self.room.id),
+                    user_id=str(self.peer.id),
+                )
+            )
+
+    async def _handle_read(self, stream: ChatStreamRead):
+        # if read message for this client, send read
+        if self.room and self.peer and UUID(stream.user_id) == self.user.id:
+            last_read = await status_manager.get_last_read(self.room.id, self.peer.id)
+            if not last_read:
+                raise Exception("_handle_read error in client")
+            await self.send_message(
+                ChatReadOut(
+                    last_read=last_read.isoformat(),
+                )
+            )
 
     async def _process_message(self, data: dict):
         stream = ChatStreamAdapter.validate_python(data)
 
-        message = None
-
         if isinstance(stream, ChatStreamText):
-            message = self._handle_text(stream)
+            await self._handle_text(stream)
 
         if isinstance(stream, ChatStreamRead):
-            message = self._handle_read(stream)
+            await self._handle_read(stream)
 
-        if message:
-            await self.send_message(message)
-
-    async def _handle_stream(self, payload: dict):
+    async def _handle_message(self, payload: dict):
         try:
             # skip if listening to __idle__ channel
             if payload["channel"] == self.idle_key:
@@ -116,7 +144,7 @@ class ChatClient:
                     ignore_subscribe_messages=False, timeout=timeout
                 )
                 if msg:
-                    await self._handle_stream(msg)
+                    await self._handle_message(msg)
         except Exception as e:
             logger.error("listener error:", e)
         finally:
@@ -151,6 +179,9 @@ class ChatClient:
         await self._subscribe(broadcast_key(str(room_id)))
         self.room = room
         self._set_peer(room)
+        await status_manager.set_user_active(self.room.id, self.user.id)
+        await status_manager.update_last_read(self.db, self.room.id, self.user.id)
+        await self.send_message(ChatJoinedOut())
 
     # on room leave
     async def reset_state(self):
@@ -158,6 +189,7 @@ class ChatClient:
             raise Exception("room missing while resetting state")
 
         await self._unsubscribe(broadcast_key(str(self.room.id)))
+        await status_manager.set_user_inactive(self.room.id, self.user.id)
         self.room = None
 
     # on connect

@@ -139,11 +139,11 @@ class ChatRoomRepository:
             return []
 
     @staticmethod
-    async def update_last_read_at(
+    async def update_last_read(
         db: AsyncSession,
         user_id: UUID,
         room_id: UUID,
-    ) -> ChatRoomStatusDB | None:
+    ) -> bool:
         try:
             stmt = (
                 update(ChatRoomStatusDB)
@@ -151,15 +151,16 @@ class ChatRoomRepository:
                     ChatRoomStatusDB.user_id == user_id,
                     ChatRoomStatusDB.room_id == room_id,
                 )
-                .values(last_read_at=datetime.now(timezone.utc))
+                .values(last_read=datetime.now(timezone.utc))
             )
 
-            await db.execute(stmt)
+            res = await db.execute(stmt)
             await db.commit()
+            return res.rowcount > 0
         except Exception as e:
             await db.rollback()
             logger.info(e)
-            return None
+            return False
 
     @staticmethod
     async def create_status(
