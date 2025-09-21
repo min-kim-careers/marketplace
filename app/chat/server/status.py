@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 from app.cache.helpers import process_redis
-from app.cache import redis
+from app.cache.cache import redis
 from app.chat.repositories.chat_room import ChatRoomRepository
 from sqlalchemy.ext.asyncio import AsyncSession
 

@@ -3,9 +3,14 @@ from typing import Annotated, Literal, Optional, Union
 from pydantic import Field, TypeAdapter
 
 
-from app.chat.server.stream.schemas import ChatStreamText
+from app.chat.server.schemas.internal import ChatInternalText
 from app.core.schemas.outbound import OutboundBase
 from app.db.models.chat_message import ChatMessageDB
+
+
+class ChatTypingOut(OutboundBase):
+    type: Literal["typing"] = "typing"
+    typing: bool
 
 
 class ChatTextOut(OutboundBase):
@@ -27,9 +32,7 @@ class ChatTextOut(OutboundBase):
 
     # real time message
     @classmethod
-    def from_stream(
-        cls, msg: ChatStreamText, mine: bool, peer_is_active: Optional[bool] = False
-    ) -> "ChatTextOut":
+    def from_internal(cls, msg: ChatInternalText, mine: bool) -> "ChatTextOut":
         if not msg.timestamp:
             raise ValueError("timestamp missing from stream")
 
@@ -37,7 +40,6 @@ class ChatTextOut(OutboundBase):
             content=msg.content,
             mine=mine,
             timestamp=msg.timestamp,
-            read=mine and peer_is_active,
         )
 
 
@@ -72,6 +74,7 @@ ChatPayloadOutType = Annotated[
         ChatConnectedOut,
         ChatErrorOut,
         ChatReadOut,
+        ChatTypingOut,
     ],
     Field(discriminator="type"),
 ]

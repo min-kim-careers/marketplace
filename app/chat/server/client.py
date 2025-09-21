@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 import json
-from app.cache import redis
+from app.cache.cache import redis
 from app.chat.repositories.chat_room import ChatRoomRepository
 from app.chat.server.helpers import broadcast_key
 from app.chat.server.schemas.outbound import (
@@ -9,9 +9,14 @@ from app.chat.server.schemas.outbound import (
     ChatPayloadOutType,
     ChatReadOut,
     ChatTextOut,
+    ChatTypingOut,
 )
-from app.chat.server.stream.schemas import ChatStreamAdapter, ChatStreamRead
-from app.chat.server.stream.schemas import ChatStreamText
+from app.chat.server.schemas.internal import (
+    ChatInternalAdapter,
+    ChatInternalRead,
+    ChatInternalTyping,
+)
+from app.chat.server.schemas.internal import ChatInternalText
 from app.core import logger
 from app.chat.server.status import status_manager
 from app.chat.server.stream import stream_manager
@@ -22,7 +27,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 
 import asyncio
-from typing import Literal, Optional, Set
+from typing import Any, Literal, Optional, Set
 from uuid import UUID
 
 from app.db.models.chat_room import ChatRoomDB
@@ -59,66 +64,68 @@ class ChatClient:
             and await status_manager.user_is_active(self.room.id, self.peer.id)
         )
 
-    async def _handle_text(self, stream: ChatStreamText):
-        if not stream.timestamp or not self.room:
+    async def _handle_text(self, payload: ChatInternalText):
+        if not payload.timestamp or not self.room:
             raise Exception("handle text error")
 
-        mine = UUID(stream.user_id) == self.user.id
-        peer_is_active = await self.peer_is_active()
+        mine = UUID(payload.user_id) == self.user.id
 
         await self.send_message(
-            ChatTextOut.from_stream(
-                msg=stream,
+            ChatTextOut.from_internal(
+                msg=payload,
                 mine=mine,
-                peer_is_active=peer_is_active,
             )
         )
 
         await status_manager.set_last_read(
             self.room.id, self.user.id, datetime.now(timezone.utc)
         )
-        # if message is not mine (from peer) and peer is active, send read to peer
-        if self.room and self.peer and not mine and peer_is_active:
+        if not mine:
             await stream_manager.stream_read(
-                ChatStreamRead(
+                ChatInternalRead(
                     room_id=str(self.room.id),
-                    user_id=str(self.peer.id),
+                    user_id=str(self.user.id),
                 )
             )
 
-    async def _handle_read(self, stream: ChatStreamRead):
-        # if read message for this client, send read
-        if self.room and self.peer and UUID(stream.user_id) == self.user.id:
+    async def _handle_read(self, payload: ChatInternalRead):
+        # send if message not from client (from peer)
+        if self.room and self.peer and UUID(payload.user_id) != self.user.id:
             last_read = await status_manager.get_last_read(self.room.id, self.peer.id)
             if not last_read:
-                raise Exception("_handle_read error in client")
-            await self.send_message(
-                ChatReadOut(
-                    last_read=last_read.isoformat(),
-                )
-            )
+                raise Exception("client error handling last read")
+            await self.send_message(ChatReadOut(last_read=last_read.isoformat()))
 
-    async def _process_message(self, data: dict):
-        stream = ChatStreamAdapter.validate_python(data)
+    async def _handle_typing(self, payload: ChatInternalTyping):
+        # send if message not from client (from peer)
+        if UUID(payload.user_id) != self.user.id:
+            await self.send_message(ChatTypingOut(typing=payload.typing))
 
-        if isinstance(stream, ChatStreamText):
-            await self._handle_text(stream)
+    async def _process_payload(self, payload: dict[str, Any]):
+        payload = ChatInternalAdapter.validate_python(payload)
 
-        if isinstance(stream, ChatStreamRead):
-            await self._handle_read(stream)
+        if isinstance(payload, ChatInternalText):
+            await self._handle_text(payload)
 
-    async def _handle_message(self, payload: dict):
-        try:
-            # skip if listening to __idle__ channel
-            if payload["channel"] == self.idle_key:
-                return
-            # send message to client
-            elif payload["type"] == "message":
-                await self._process_message(json.loads(payload["data"]))
-        except Exception as e:
-            logger.error("handle payload error:", e)
+        elif isinstance(payload, ChatInternalRead):
+            await self._handle_read(payload)
+
+        elif isinstance(payload, ChatInternalTyping):
+            await self._handle_typing(payload)
 
     async def _run_listener(self):
+        async def _handle_data(data: dict):
+            try:
+                # skip if listening to __idle__ channel
+                if data["channel"] == self.idle_key:
+                    return
+                # send message to client
+                elif data["type"] == "message":
+                    payload = json.loads(data["data"])
+                    await self._process_payload(payload)
+            except Exception as e:
+                logger.error("handle payload error:", e)
+
         # must subscribe to idle key on init
         async def _set_idle():
             await self.psub.subscribe(self.idle_key)
@@ -144,7 +151,7 @@ class ChatClient:
                     ignore_subscribe_messages=False, timeout=timeout
                 )
                 if msg:
-                    await self._handle_message(msg)
+                    await _handle_data(msg)
         except Exception as e:
             logger.error("listener error:", e)
         finally:

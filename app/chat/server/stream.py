@@ -1,17 +1,20 @@
 import asyncio
 from uuid import UUID
 
-from app.cache import redis
+from app.cache.cache import redis
 
 
 from redis.exceptions import ResponseError
 
 from app.chat.repositories.chat_message import ChatMessageRepository
 from app.chat.repositories.chat_room import ChatRoomRepository
-from app.chat.server.helpers import broadcast_key
-from app.chat.server.stream.schemas import ChatStreamRead, ChatStreamText
-from app.chat.server.stream.schemas import ChatStreamType
-from app.chat.server.stream.schemas import ChatStreamAdapter
+from app.chat.server.helpers import broadcast_internal, broadcast_key
+from app.chat.server.schemas.internal import (
+    ChatInternalRead,
+    ChatInternalText,
+)
+from app.chat.server.schemas.internal import ChatInternalType
+from app.chat.server.schemas.internal import ChatInternalAdapter
 from app.core import logger
 from app.db.session import AsyncSessionLocal
 
@@ -39,57 +42,49 @@ class ChatStreamManager:
             if "BUSYGROUP" not in str(e):
                 raise
 
-    async def _handle_text(self, db: AsyncSession, stream: ChatStreamText) -> bool:
+    async def _handle_text(self, db: AsyncSession, payload: ChatInternalText):
         msg_db = await ChatMessageRepository.create_message(
             db,
-            user_id=UUID(stream.user_id),
-            room_id=UUID(stream.room_id),
-            content=stream.content,
+            user_id=UUID(payload.user_id),
+            room_id=UUID(payload.room_id),
+            content=payload.content,
         )
         if not msg_db:
-            logger.error("error persisting text")
-            return False
+            raise Exception("error persisting text")
 
-        stream.timestamp = msg_db.timestamp.isoformat()
-        await redis.publish(
-            broadcast_key(stream.room_id),
-            stream.model_dump_json(),
-        )
-        print(f"broadcasted text to: {broadcast_key(stream.room_id)}")
-        return True
+        payload.timestamp = msg_db.timestamp.isoformat()
+        await broadcast_internal(payload)
+        print(f"broadcasted text to: {broadcast_key(payload.room_id)}")
 
-    async def _handle_read(self, db: AsyncSession, stream: ChatStreamRead) -> bool:
+    async def _handle_read(self, db: AsyncSession, payload: ChatInternalRead):
         updated = await ChatRoomRepository.update_last_read(
             db,
-            user_id=UUID(stream.user_id),
-            room_id=UUID(stream.room_id),
+            user_id=UUID(payload.user_id),
+            room_id=UUID(payload.room_id),
         )
         if not updated:
-            logger.error("error persisting status read")
-            return False
+            raise Exception("error persisting status read")
 
-        await redis.publish(
-            broadcast_key(stream.room_id),
-            stream.model_dump_json(),
-        )
-        print(f"broadcasted read to: {broadcast_key(stream.room_id)}")
-        return True
+        await broadcast_internal(payload)
+        print(f"broadcasted read to: {broadcast_key(payload.room_id)}")
 
-    async def _process_stream(self, db: AsyncSession, id: str, stream: ChatStreamType):
-        print("from stream:", id, stream)
+    async def _process_payload(
+        self, db: AsyncSession, stream_id: str, payload: ChatInternalType
+    ):
+        try:
+            print("from stream:", stream_id, payload)
 
-        stream = ChatStreamAdapter.validate_python(stream)
+            payload = ChatInternalAdapter.validate_python(payload)
 
-        success = False
+            if isinstance(payload, ChatInternalText):
+                await self._handle_text(db, payload)
 
-        if isinstance(stream, ChatStreamText):
-            success = await self._handle_text(db, stream)
+            elif isinstance(payload, ChatInternalRead):
+                await self._handle_read(db, payload)
 
-        elif isinstance(stream, ChatStreamRead):
-            success = await self._handle_read(db, stream)
-
-        if success:
-            await redis.xack(self.STREAM_KEY, self.GROUP, id)
+            await redis.xack(self.STREAM_KEY, self.GROUP, stream_id)
+        except Exception as e:
+            logger.error("error processing payload in stream:", e)
 
     async def _run_consumer(self):
         while True:
@@ -107,14 +102,14 @@ class ChatStreamManager:
                     (msg_id, stream) for _, msgs in resp for msg_id, stream in msgs
                 ]
                 async with AsyncSessionLocal() as db:
-                    for id, stream in entries:
-                        await self._process_stream(db, id, stream)
+                    for stream_id, payload in entries:
+                        await self._process_payload(db, stream_id, payload)
 
             except Exception as e:
                 logger.error("stream consumer error:", e)
                 continue
 
-    async def stream_text(self, text: ChatStreamText):
+    async def stream_text(self, text: ChatInternalText):
         id = await redis.xadd(
             self.STREAM_KEY,
             {
@@ -126,7 +121,7 @@ class ChatStreamManager:
         )
         return id
 
-    async def stream_read(self, read: ChatStreamRead):
+    async def stream_read(self, read: ChatInternalRead):
         id = await redis.xadd(
             self.STREAM_KEY,
             {

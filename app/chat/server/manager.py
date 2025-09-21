@@ -1,17 +1,23 @@
 from datetime import datetime, timezone
 
 from app.chat.server.client import ChatClient
+from app.chat.server.helpers import broadcast_internal, broadcast_key
 from app.chat.server.schemas.inbound import (
     ChatJoinIn,
     ChatPayloadIn,
     ChatRestoreIn,
     ChatTextIn,
+    ChatTypingIn,
 )
 from app.chat.server.schemas.outbound import (
     ChatRestoredOut,
     ChatTextOut,
 )
-from app.chat.server.stream.schemas import ChatStreamRead, ChatStreamText
+from app.chat.server.schemas.internal import (
+    ChatInternalRead,
+    ChatInternalText,
+    ChatInternalTyping,
+)
 from app.chat.services.chat_message import ChatMessageService
 from app.core import logger
 from app.chat.server.status import status_manager
@@ -44,57 +50,73 @@ class ChatManager:
         except Exception as e:
             logger.error("error leaving room:", e)
 
-    def _update_last_read(self, text: ChatTextOut, last_read: datetime):
-        print(last_read)
-        if datetime.fromisoformat(text.timestamp) <= last_read:
-            text.read = True
-        return text
-
     async def _handle_restore(self, client: ChatClient, payload: ChatRestoreIn):
-        print("restoring...")
-        if not client.room:
-            return []
-        previous = await ChatMessageService.get_messages(
-            client.db,
-            client.room.id,
-            client.user.id,
-            payload.since,
-        )
+        try:
+            print("restoring...")
+            if not client.room:
+                return []
+            previous = await ChatMessageService.get_messages(
+                client.db,
+                client.room.id,
+                client.user.id,
+                payload.since,
+            )
 
-        peer_last_read = await status_manager.get_last_read(
-            client.room.id, client.user.id
-        )
-        if peer_last_read:
-            previous = [self._update_last_read(p, peer_last_read) for p in previous]
+            peer_last_read = await status_manager.get_last_read(
+                client.room.id, client.user.id
+            )
+            if peer_last_read:
 
-        await client.send_message(ChatRestoredOut(previous=previous))
+                def _update_last_read(text: ChatTextOut, last_read: datetime):
+                    if datetime.fromisoformat(text.timestamp) <= last_read:
+                        text.read = True
+                    return text
 
-        now = datetime.now(timezone.utc)
+                previous = [_update_last_read(p, peer_last_read) for p in previous]
 
-        await status_manager.set_last_read(client.room.id, client.user.id, now)
+            await client.send_message(ChatRestoredOut(previous=previous))
 
-        if client.peer and await client.peer_is_active():
-            print("broadcasting read...")
+            await status_manager.set_last_read(
+                client.room.id, client.user.id, datetime.now(timezone.utc)
+            )
+
             await stream_manager.stream_read(
-                ChatStreamRead(
+                ChatInternalRead(
                     room_id=str(client.room.id),
-                    user_id=str(client.peer.id),
+                    user_id=str(client.user.id),
                 )
             )
+        except Exception as e:
+            logger.error("handle restore error:", e)
 
     async def _handle_text(self, client: ChatClient, payload: ChatTextIn):
         print("streaming text...")
         try:
             if client.room:
                 await stream_manager.stream_text(
-                    ChatStreamText(
+                    ChatInternalText(
                         room_id=str(client.room.id),
                         user_id=str(client.user.id),
                         content=payload.content,
                     )
                 )
         except Exception as e:
-            logger.error("broadcast error:", e)
+            logger.error("handle text error:", e)
+
+    async def _handle_typing(self, client: ChatClient, payload: ChatTypingIn):
+        print("typing...")
+        try:
+            if client.room:
+                await broadcast_internal(
+                    ChatInternalTyping(
+                        room_id=str(client.room.id),
+                        user_id=str(client.user.id),
+                        typing=payload.typing,
+                    )
+                )
+                print(f"broadcasted typing to: {broadcast_key(str(client.room.id))}")
+        except Exception as e:
+            logger.error("error leaving room:", e)
 
     async def handle_payload(self, payload: dict, client: ChatClient):
         try:
@@ -110,6 +132,9 @@ class ChatManager:
 
             elif isinstance(payload, ChatTextIn):
                 await self._handle_text(client, payload)
+
+            elif isinstance(payload, ChatTypingIn):
+                await self._handle_typing(client, payload)
 
         except Exception as e:
             logger.error("handle payload error:", e)

@@ -7,6 +7,11 @@ from app.core.helpers import decode_uuid
 from app.core.schemas.inbound import InboundBase
 
 
+class ChatTypingIn(InboundBase):
+    type: Literal["typing"] = "typing"
+    typing: bool
+
+
 class ChatJoinIn(InboundBase):
     type: Literal["join"]
     room_id: UUID = Field(..., alias="roomAlias")
@@ -31,6 +36,7 @@ ChatPayloadInType = Annotated[
         ChatTextIn,
         ChatJoinIn,
         ChatRestoreIn,
+        ChatTypingIn,
     ],
     Field(discriminator="type"),
 ]
