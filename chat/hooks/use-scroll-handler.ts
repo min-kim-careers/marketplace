@@ -8,10 +8,10 @@ export const useScrollHandler = () => {
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const messages = useChatStore((state) => state.messages)
-  const noMessages = useChatStore((state) => state.noMessages)
   const peerTyping = useChatStore((state) => state.peerTyping)
 
   const [position, setPosition] = useState<ScreenPosition | null>(null)
+  const [timestamps, setTimestamps] = useState<string[]>(['', ''])
 
   const setToBottom = () => {
     if (scrollRef.current) {
@@ -20,10 +20,17 @@ export const useScrollHandler = () => {
   }
 
   useEffect(() => {
-    if (!position && !noMessages) {
+    if (messages.length) {
+      setTimestamps((p) => [p[1], messages[0].timestamp])
+    }
+  }, [messages.length])
+
+  useEffect(() => {
+    const didRestoreMessages = () => timestamps[0] === timestamps[1]
+    if (!didRestoreMessages()) {
       setToBottom()
     }
-  }, [messages.length, noMessages])
+  }, [timestamps])
 
   useEffect(() => setToBottom(), [peerTyping])
 

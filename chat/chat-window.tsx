@@ -50,6 +50,8 @@ export default function ChatWindow() {
     if (input) {
       sendTextOut(input)
       e.currentTarget.reset()
+      setTyping(false)
+      sendTypingOut(false)
     }
   }
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
