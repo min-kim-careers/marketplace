@@ -30,6 +30,11 @@ export type ChatReadIn = {
   lastRead: string
 }
 
+export type ChatTypingIn = {
+  type: 'typing'
+  typing: boolean
+}
+
 export type ChatPayloadIn =
   | ChatConnectedIn
   | ChatJoinedIn
@@ -37,3 +42,4 @@ export type ChatPayloadIn =
   | ChatTextIn
   | ChatErrorIn
   | ChatReadIn
+  | ChatTypingIn

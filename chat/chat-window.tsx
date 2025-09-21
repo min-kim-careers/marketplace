@@ -10,7 +10,7 @@ import { Button } from '@/components/shadcn/components/ui/button'
 import { Input } from '@/components/shadcn/components/ui/input'
 import { cn } from '@/components/shadcn/lib/utils'
 import { delay } from '@/lib/helpers/delay'
-import { FormEvent, useEffect, useState } from 'react'
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react'
 
 const activeStatus: ChatStatus[] = ['joining', 'joined', 'idling'] as const
 const isActive = (status: ChatStatus) => activeStatus.includes(status)
@@ -21,9 +21,10 @@ export default function ChatWindow() {
   const status = useChatStore((state) => state.status)
   const currentRoom = useChatStore((state) => state.currentRoom)
 
-  const { sendTextOut, sendRestoreOut } = useChatContext()
+  const { sendTextOut, sendRestoreOut, sendTypingOut } = useChatContext()
   const { position, scrollRef, handlePosition } = useScrollHandler()
   const [loading, setLoading] = useState<boolean>(false)
+  const [typing, setTyping] = useState<boolean>(false)
 
   useEffect(() => {
     const handleScrollPosition = async () => {
@@ -49,6 +50,16 @@ export default function ChatWindow() {
     if (input) {
       sendTextOut(input)
       e.currentTarget.reset()
+    }
+  }
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const input = e.currentTarget.value
+    if (input && !typing) {
+      setTyping(true)
+      sendTypingOut(true)
+    } else if (!input && typing) {
+      setTyping(false)
+      sendTypingOut(false)
     }
   }
 
@@ -91,6 +102,8 @@ export default function ChatWindow() {
         )}
 
         <div className='flex min-h-full w-full flex-col-reverse gap-2'>
+          <TypingIndicator />
+
           {messages.map((m, i) => (
             <MessageBubble message={m} key={i} />
           ))}
@@ -99,11 +112,30 @@ export default function ChatWindow() {
 
       {/* input */}
       <form onSubmit={handleSubmit} className='flex h-8 items-center gap-2'>
-        <Input name='input' type='text' className='h-full flex-1 rounded' />
+        <Input
+          name='input'
+          type='text'
+          onChange={handleChange}
+          className='h-full flex-1 rounded'
+        />
         <Button type='submit' className='h-full w-[15%] rounded'>
           Send
         </Button>
       </form>
     </div>
+  )
+}
+
+const TypingIndicator = () => {
+  const peerTyping = useChatStore((state) => state.peerTyping)
+
+  return (
+    peerTyping && (
+      <div
+        className={cn('flex-start w-32 rounded-2xl border bg-secondary py-1')}
+      >
+        <LoadingDots className='h-2 w-2' />
+      </div>
+    )
   )
 }

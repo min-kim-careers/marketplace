@@ -9,6 +9,7 @@ import {
   ChatReadIn,
   ChatRestoreIn,
   ChatTextIn,
+  ChatTypingIn,
 } from '@/chat/types/chat-inbound'
 import { ChatPayloadOut } from '@/chat/types/chat-outbound'
 import { useEffect } from 'react'
@@ -18,6 +19,7 @@ import useWebSocket from 'react-use-websocket'
 export type ChatSocketState = {
   sendTextOut: (message: string) => void
   sendRestoreOut: () => void
+  sendTypingOut: (typing: boolean) => void
   msUntilIdle: () => number
 }
 
@@ -30,7 +32,7 @@ export const useChatSocket = (): ChatSocketState => {
   const url = useChatStore((state) => state.url)
   const currentRoom = useChatStore((state) => state.currentRoom)
   const status = useChatStore((state) => state.status)
-  const lastRead = useChatStore((state) => state.lastRead)
+  const lastRead = useChatStore((state) => state.peerlastRead)
 
   const token = useLoadToken()
 
@@ -50,7 +52,7 @@ export const useChatSocket = (): ChatSocketState => {
         noMessages: false,
         since: undefined,
       })
-      sendMessage({ type: 'join', roomAlias: currentRoom.alias })
+      _sendMessage({ type: 'join', roomAlias: currentRoom.alias })
     }
   }
 
@@ -104,6 +106,10 @@ export const useChatSocket = (): ChatSocketState => {
             break
           case 'error':
             handleErrorIn(payload)
+            break
+          case 'typing':
+            handleTypingIn(payload)
+            break
           default:
             break
         }
@@ -123,7 +129,7 @@ export const useChatSocket = (): ChatSocketState => {
   const handleJoinedIn = (_: ChatJoinedIn) => {
     const since = new Date().toISOString()
     setProps({ since, status: 'joined' })
-    sendMessage({ type: 'restore', since })
+    _sendMessage({ type: 'restore', since })
   }
 
   const handleRestoredIn = async (payload: ChatRestoreIn) => {
@@ -147,7 +153,7 @@ export const useChatSocket = (): ChatSocketState => {
       if (msg.timestamp <= lastRead) break
       flagMessageRead(msg, new Date(payload.lastRead))
     }
-    setProps({ lastRead: payload.lastRead })
+    setProps({ peerlastRead: payload.lastRead })
   }
 
   const handleErrorIn = (payload: ChatErrorIn) => {
@@ -159,19 +165,26 @@ export const useChatSocket = (): ChatSocketState => {
     setProps({ status: 'error' })
   }
 
-  const sendMessage = (payload: ChatPayloadOut) => {
+  const handleTypingIn = (payload: ChatTypingIn) => {
+    setProps({ peerTyping: payload.typing })
+  }
+
+  const _sendMessage = (payload: ChatPayloadOut) => {
     sendJsonMessage(payload)
     console.log('sent:', payload)
   }
 
   return {
     sendTextOut: (message: string) => {
-      sendMessage({ type: 'text', content: message })
+      _sendMessage({ type: 'text', content: message })
     },
     sendRestoreOut: () => {
       if (since) {
-        sendMessage({ type: 'restore', since })
+        _sendMessage({ type: 'restore', since })
       }
+    },
+    sendTypingOut: (typing: boolean) => {
+      _sendMessage({ type: 'typing', typing })
     },
     msUntilIdle: getRemainingTime,
   }

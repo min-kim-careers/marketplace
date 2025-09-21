@@ -7,7 +7,8 @@ import { toPath } from '@/lib/helpers/to-path'
 import { create } from 'zustand'
 
 const defaultProps: ChatProps = {
-  lastRead: new Date(0).toISOString(),
+  peerTyping: false,
+  peerlastRead: new Date(0).toISOString(),
   open: false,
   status: 'disconnected',
   messages: [],
@@ -19,7 +20,8 @@ type ChatProps = {
   currentRoom?: ChatRoom
   since?: string
 
-  lastRead: string
+  peerTyping: boolean
+  peerlastRead: string
   open: boolean
   status: ChatStatus
   messages: ChatTextIn[]

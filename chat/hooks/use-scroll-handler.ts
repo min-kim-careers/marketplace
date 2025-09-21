@@ -9,20 +9,23 @@ export const useScrollHandler = () => {
 
   const messages = useChatStore((state) => state.messages)
   const noMessages = useChatStore((state) => state.noMessages)
+  const peerTyping = useChatStore((state) => state.peerTyping)
 
   const [position, setPosition] = useState<ScreenPosition | null>(null)
 
-  useEffect(() => {
-    const setToBottom = () => {
-      if (scrollRef.current) {
-        scrollRef.current.scrollTop = scrollRef.current.scrollHeight
-      }
+  const setToBottom = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
     }
+  }
 
+  useEffect(() => {
     if (!position && !noMessages) {
       setToBottom()
     }
   }, [messages.length, noMessages])
+
+  useEffect(() => setToBottom(), [peerTyping])
 
   useEffect(() => {
     const nudgeDown = () => {
