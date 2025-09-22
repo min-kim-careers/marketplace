@@ -27,7 +27,6 @@ from app.chat.server.stream import stream_manager
 class ChatManager:
     async def connect(self, client: ChatClient):
         print("connecting...")
-        await client.conn.accept()
         await client.run()
         return client
 
@@ -39,21 +38,25 @@ class ChatManager:
     async def _handle_join(self, client: ChatClient, payload: ChatJoinIn):
         print("joining...")
         try:
+            if client.is_in_session():
+                await client.reset_state()
+
             await client.init_state(payload.room_id)
         except Exception as e:
-            logger.error("error joining room:", e)
+            logger.exception("error joining room: %s", e)
 
     async def _handle_leave(self, client: ChatClient):
         print("leaving...")
         try:
-            await client.reset_state()
+            if client.is_in_session():
+                await client.reset_state()
         except Exception as e:
-            logger.error("error leaving room:", e)
+            logger.exception("error leaving room: %s", e)
 
     async def _handle_restore(self, client: ChatClient, payload: ChatRestoreIn):
         try:
             print("restoring...")
-            if not client.room:
+            if not client.room or not client.peer:
                 return []
             previous = await ChatMessageService.get_messages(
                 client.db,
@@ -83,11 +86,11 @@ class ChatManager:
             await stream_manager.stream_read(
                 ChatInternalRead(
                     room_id=str(client.room.id),
-                    user_id=str(client.user.id),
+                    user_id=str(client.peer.id),
                 )
             )
         except Exception as e:
-            logger.error("handle restore error:", e)
+            logger.exception("handle restore error: %s", e)
 
     async def _handle_text(self, client: ChatClient, payload: ChatTextIn):
         print("streaming text...")
@@ -101,7 +104,7 @@ class ChatManager:
                     )
                 )
         except Exception as e:
-            logger.error("handle text error:", e)
+            logger.exception("handle text error: %s", e)
 
     async def _handle_typing(self, client: ChatClient, payload: ChatTypingIn):
         print("typing...")
@@ -116,7 +119,7 @@ class ChatManager:
                 )
                 print(f"broadcasted typing to: {broadcast_key(str(client.room.id))}")
         except Exception as e:
-            logger.error("error leaving room:", e)
+            logger.exception("error leaving room: %s", e)
 
     async def handle_payload(self, payload: dict, client: ChatClient):
         try:
@@ -137,4 +140,4 @@ class ChatManager:
                 await self._handle_typing(client, payload)
 
         except Exception as e:
-            logger.error("handle payload error:", e)
+            logger.exception("handle payload error: %s", e)

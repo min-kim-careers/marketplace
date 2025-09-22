@@ -42,6 +42,28 @@ class ChatRoomRepository:
             return []
 
     @staticmethod
+    async def update_room_activity(
+        db: AsyncSession,
+        room_id: UUID,
+    ) -> bool:
+        try:
+            stmt = (
+                update(ChatRoomDB)
+                .where(
+                    ChatRoomDB.id == room_id,
+                )
+                .values(updated_at=datetime.now(timezone.utc))
+            )
+
+            res = await db.execute(stmt)
+            await db.commit()
+            return res.rowcount > 0
+        except Exception as e:
+            await db.rollback()
+            logger.info(e)
+            return False
+
+    @staticmethod
     async def room_by_item_and_buyer(
         db: AsyncSession,
         item_id: UUID,
@@ -182,3 +204,27 @@ class ChatRoomRepository:
             await db.rollback()
             logger.info(e)
             return None
+
+    @staticmethod
+    async def update_user_activity(
+        db: AsyncSession,
+        room_id: UUID,
+        user_id: UUID,
+    ) -> bool:
+        try:
+            stmt = (
+                update(ChatRoomStatusDB)
+                .where(
+                    ChatRoomStatusDB.room_id == room_id,
+                    ChatRoomStatusDB.user_id == user_id,
+                )
+                .values(last_activity=datetime.now(timezone.utc))
+            )
+
+            res = await db.execute(stmt)
+            await db.commit()
+            return res.rowcount > 0
+        except Exception as e:
+            await db.rollback()
+            logger.info(e)
+            return False

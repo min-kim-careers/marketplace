@@ -84,7 +84,7 @@ class ChatStreamManager:
 
             await redis.xack(self.STREAM_KEY, self.GROUP, stream_id)
         except Exception as e:
-            logger.error("error processing payload in stream:", e)
+            logger.exception("error processing payload in stream: %s", e)
 
     async def _run_consumer(self):
         while True:
@@ -106,7 +106,7 @@ class ChatStreamManager:
                         await self._process_payload(db, stream_id, payload)
 
             except Exception as e:
-                logger.error("stream consumer error:", e)
+                logger.exception("stream consumer error: %s", e)
                 continue
 
     async def stream_text(self, text: ChatInternalText):

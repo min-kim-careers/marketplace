@@ -73,3 +73,9 @@ class ChatRoomStatusDB(Base):
         default=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
+
+    last_activity: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )

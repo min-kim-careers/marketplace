@@ -21,6 +21,9 @@ async def websocket_endpoint(
     user: UserDB = Depends(resolve_firebase_query_token),
 ):
     try:
+        await conn.accept()
+        logger.info("Connection accepted")
+
         client = await manager.connect(
             ChatClient(
                 conn=conn,
@@ -35,7 +38,7 @@ async def websocket_endpoint(
     except WebSocketDisconnect as e:
         logger.info("websocket disconnected")
     except Exception as e:
-        logger.error("websocket error:", e)
+        logger.exception("websocket error: %s", e)
     finally:
         if client:
             await manager.disconnect(client)

@@ -59,8 +59,8 @@ class ChatClient:
 
     async def peer_is_active(self) -> bool:
         return (
-            bool(self.room)
-            and bool(self.peer)
+            self.room is not None
+            and self.peer is not None
             and await status_manager.user_is_active(self.room.id, self.peer.id)
         )
 
@@ -80,6 +80,7 @@ class ChatClient:
         await status_manager.set_last_read(
             self.room.id, self.user.id, datetime.now(timezone.utc)
         )
+
         if not mine:
             await stream_manager.stream_read(
                 ChatInternalRead(
@@ -87,6 +88,12 @@ class ChatClient:
                     user_id=str(self.user.id),
                 )
             )
+
+        room_updated = await ChatRoomRepository.update_room_activity(
+            self.db, self.room.id
+        )
+        if not room_updated:
+            raise Exception("failed to update room timestamp")
 
     async def _handle_read(self, payload: ChatInternalRead):
         # send if message not from client (from peer)
@@ -124,7 +131,7 @@ class ChatClient:
                     payload = json.loads(data["data"])
                     await self._process_payload(payload)
             except Exception as e:
-                logger.error("handle payload error:", e)
+                logger.exception("handle payload error: %s", e)
 
         # must subscribe to idle key on init
         async def _set_idle():
@@ -153,7 +160,7 @@ class ChatClient:
                 if msg:
                     await _handle_data(msg)
         except Exception as e:
-            logger.error("listener error:", e)
+            logger.exception("listener error: %s", e)
         finally:
             await self.psub.close()
             logger.info("room channel closed")
@@ -162,7 +169,7 @@ class ChatClient:
         try:
             await self.conn.send_json(payload.model_dump(mode="json", by_alias=True))
         except Exception as e:
-            logger.error("send message error:", e)
+            logger.exception("send message error: %s", e)
             return False
         print("sent:", payload)
         return True
@@ -195,6 +202,7 @@ class ChatClient:
         if not self.room:
             raise Exception("room missing while resetting state")
 
+        await ChatRoomRepository.update_room_activity(self.db, self.room.id)
         await self._unsubscribe(broadcast_key(str(self.room.id)))
         await status_manager.set_user_inactive(self.room.id, self.user.id)
         self.room = None
@@ -218,3 +226,6 @@ class ChatClient:
                 await t
             except asyncio.CancelledError:
                 pass
+
+    def is_in_session(self) -> bool:
+        return self.room is not None and self.peer is not None

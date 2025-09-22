@@ -12,6 +12,7 @@ from app.core.schemas.outbound import APIResponse
 from app.core.security import verify_service_key
 from app.db.models.user import UserDB
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.chat.server.status import status_manager
 
 from app.db.session import get_db
 from app.item.repository import ItemRepository
@@ -67,3 +68,13 @@ async def get_rooms(
     rooms = [ChatRoomOut.from_db(r, user.id) for r in rooms_db]
 
     return APIResponse(data={"rooms": rooms})
+
+
+@chat_router.get("/message/unread/exists")
+async def unread_exists(
+    user: UserDB = Depends(resolve_firebase_session),
+    db: AsyncSession = Depends(get_db),
+):
+    exists = await status_manager.unread_room_exists(db, user.id)
+
+    return APIResponse(data={"exists": exists})

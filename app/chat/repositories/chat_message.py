@@ -2,11 +2,13 @@ from datetime import datetime
 from typing import Sequence
 from uuid import UUID
 
-from sqlalchemy import desc, or_, select
+from sqlalchemy import desc, exists, or_, select
 
 from app.core import logger
 from app.db.models.chat_message import ChatMessageDB
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.db.models.chat_room import ChatRoomStatusDB
 
 
 class ChatMessageRepository:
@@ -51,3 +53,24 @@ class ChatMessageRepository:
             await db.rollback()
             logger.info(e)
             return None
+
+    @staticmethod
+    async def unread_exists(
+        db: AsyncSession,
+        user_id: UUID,
+    ) -> bool:
+        try:
+            stmt = select(
+                exists().where(
+                    ChatRoomStatusDB.user_id != user_id,
+                    ChatRoomStatusDB.room_id == ChatMessageDB.room_id,
+                    ChatMessageDB.timestamp > ChatRoomStatusDB.last_read,
+                )
+            )
+
+            res = await db.execute(stmt)
+            return res.scalar() or False
+        except Exception as e:
+            await db.rollback()
+            logger.info(e)
+            return False
