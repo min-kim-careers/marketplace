@@ -1,6 +1,11 @@
 'use server'
 
-import { _getRoomByItem, _getRooms, _GetRoomsQuery } from '@/api/endpoints'
+import {
+  _getRoomByItem,
+  _getRooms,
+  _GetRoomsQuery,
+  _unreadExists,
+} from '@/api/endpoints'
 
 export const getRoom = async (itemAlias: string) => {
   try {
@@ -19,5 +24,15 @@ export const getRooms = async (query: GetRoomsQuery) => {
   } catch (error) {
     console.error(error)
     return []
+  }
+}
+
+export const unreadExists = async () => {
+  try {
+    const { exists } = await _unreadExists()
+    return exists
+  } catch (error) {
+    console.error(error)
+    return false
   }
 }

@@ -11,7 +11,15 @@ export const useScrollHandler = () => {
   const peerTyping = useChatStore((state) => state.peerTyping)
 
   const [position, setPosition] = useState<ScreenPosition | null>(null)
-  const [timestamps, setTimestamps] = useState<string[]>(['', ''])
+  const [timesteps, setTimesteps] = useState<string[]>(['', ''])
+
+  useEffect(() => {
+    if (messages.length) {
+      setTimesteps((p) => [p[1], messages[0].timestamp])
+    } else {
+      setTimesteps(['', ''])
+    }
+  }, [messages.length])
 
   const setToBottom = () => {
     if (scrollRef.current) {
@@ -20,17 +28,11 @@ export const useScrollHandler = () => {
   }
 
   useEffect(() => {
-    if (messages.length) {
-      setTimestamps((p) => [p[1], messages[0].timestamp])
-    }
-  }, [messages.length])
-
-  useEffect(() => {
-    const didRestoreMessages = () => timestamps[0] === timestamps[1]
+    const didRestoreMessages = () => timesteps[0] === timesteps[1]
     if (!didRestoreMessages()) {
       setToBottom()
     }
-  }, [timestamps])
+  }, [timesteps])
 
   useEffect(() => setToBottom(), [peerTyping])
 

@@ -6,15 +6,6 @@ import { ChatStatus } from '@/chat/types/chat-status'
 import { toPath } from '@/lib/helpers/to-path'
 import { create } from 'zustand'
 
-const defaultProps: ChatProps = {
-  peerTyping: false,
-  peerlastRead: new Date(0).toISOString(),
-  open: false,
-  status: 'disconnected',
-  messages: [],
-  noMessages: false,
-}
-
 type ChatProps = {
   url?: string
   currentRoom?: ChatRoom
@@ -31,11 +22,17 @@ type ChatProps = {
 type ChatState = {
   setUrl: (token?: string) => void
   setProps: (props: Partial<ChatProps>) => void
+  clearState: () => void
 } & ChatProps
 
 const useChatStore = create<ChatState>((set) => {
   return {
-    ...defaultProps,
+    peerTyping: false,
+    peerlastRead: new Date(0).toISOString(),
+    open: false,
+    status: 'disconnected',
+    messages: [],
+    noMessages: false,
 
     setUrl: (token?: string) =>
       set({
@@ -46,6 +43,13 @@ const useChatStore = create<ChatState>((set) => {
           : undefined,
       }),
     setProps: (props: Partial<ChatProps>) => set({ ...props }),
+    clearState: () =>
+      set({
+        peerTyping: false,
+        peerlastRead: new Date(0).toISOString(),
+        messages: [],
+        noMessages: false,
+      }),
   }
 })
 

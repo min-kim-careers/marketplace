@@ -1,5 +1,6 @@
 'use client'
 
+import { unreadExists } from '@/api'
 import ChatToolbar from '@/chat/chat-toolbar'
 import ChatWindow from '@/chat/chat-window'
 import useChatStore from '@/chat/stores/chat-store'
@@ -12,15 +13,30 @@ import {
   SheetTrigger,
 } from '@/components/shadcn/components/ui/sheet'
 import { cn } from '@/components/shadcn/lib/utils'
+import { useEffect, useState } from 'react'
 
 export default function ChatDrawer({ useButton }: { useButton?: boolean }) {
   const { open, setProps } = useChatStore()
+  const [unreadNoti, setUnreadNoti] = useState<boolean>(false)
+
+  useEffect(() => {
+    const checkUnreadExists = async () => {
+      setUnreadNoti(await unreadExists())
+    }
+
+    checkUnreadExists()
+  }, [open])
 
   return (
     <Sheet open={open} onOpenChange={(open) => setProps({ open })}>
       {useButton ? (
         <SheetTrigger asChild>
-          <Button>Chat</Button>
+          <Button className='relative'>
+            Chat
+            {unreadNoti && (
+              <div className='absolute -right-1 -top-1 h-3 w-3 rounded-full bg-red-500' />
+            )}
+          </Button>
         </SheetTrigger>
       ) : (
         <SheetTrigger>Chat</SheetTrigger>

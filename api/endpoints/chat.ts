@@ -25,3 +25,11 @@ export const _getRooms = async (query: _GetRoomsQuery) =>
     .asResult<{
       rooms: ChatRoom[]
     }>()
+
+export const _unreadExists = async () =>
+  (await client())
+    .get(`/api/chat/message/unread/exists`)
+    .withSession()
+    .asResult<{
+      exists: boolean
+    }>()

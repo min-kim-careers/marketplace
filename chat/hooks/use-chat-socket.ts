@@ -24,7 +24,7 @@ export type ChatSocketState = {
 }
 
 export const useChatSocket = (): ChatSocketState => {
-  const { setUrl, setProps } = useChatStore()
+  const { setUrl, setProps, clearState } = useChatStore()
 
   const messages = useChatStore((state) => state.messages)
   const since = useChatStore((state) => state.since)
@@ -46,12 +46,7 @@ export const useChatSocket = (): ChatSocketState => {
 
   const joinRoom = () => {
     if (currentRoom) {
-      setProps({
-        status: 'joining',
-        messages: [],
-        noMessages: false,
-        since: undefined,
-      })
+      clearState()
       _sendMessage({ type: 'join', roomAlias: currentRoom.alias })
     }
   }

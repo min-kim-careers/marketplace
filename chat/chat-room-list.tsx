@@ -23,6 +23,7 @@ import { useEffect, useState } from 'react'
 export default function ChatRoomList() {
   const { setProps } = useChatStore()
   const currentRoom = useChatStore((state) => state.currentRoom)
+
   const [open, setOpen] = useState<boolean>(false)
   const [rooms, setRooms] = useState<ChatRoom[]>([])
   const [loading, setLoading] = useState<boolean>(false)
@@ -31,15 +32,19 @@ export default function ChatRoomList() {
     const loadRooms = async () => {
       try {
         setLoading(true)
-        setRooms(await getRooms({ page: 1 }))
+        setRooms(
+          await getRooms({ page: 1, sortBy: 'updated_at', sortOrder: 'desc' }),
+        )
       } catch (error) {
         console.error(error)
       } finally {
         setLoading(false)
       }
     }
-    loadRooms()
-  }, [])
+    if (open) {
+      loadRooms()
+    }
+  }, [open])
 
   return (
     <Sheet open={open} onOpenChange={() => setOpen(!open)}>
