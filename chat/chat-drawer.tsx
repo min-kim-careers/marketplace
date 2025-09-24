@@ -17,14 +17,16 @@ import { useEffect, useState } from 'react'
 
 export default function ChatDrawer({ useButton }: { useButton?: boolean }) {
   const { open, setProps } = useChatStore()
-  const [unreadNoti, setUnreadNoti] = useState<boolean>(false)
+  const [showUnread, setShowUnread] = useState<boolean>(false)
 
   useEffect(() => {
     const checkUnreadExists = async () => {
-      setUnreadNoti(await unreadExists())
+      setShowUnread(await unreadExists())
     }
 
-    checkUnreadExists()
+    if (!open) {
+      checkUnreadExists()
+    }
   }, [open])
 
   return (
@@ -33,9 +35,12 @@ export default function ChatDrawer({ useButton }: { useButton?: boolean }) {
         <SheetTrigger asChild>
           <Button className='relative'>
             Chat
-            {unreadNoti && (
-              <div className='absolute -right-1 -top-1 h-3 w-3 rounded-full bg-red-500' />
-            )}
+            <div
+              className={cn(
+                'absolute -right-1 -top-1 h-0 w-0 rounded-full bg-red-500 transition-all',
+                showUnread && 'h-3 w-3',
+              )}
+            />
           </Button>
         </SheetTrigger>
       ) : (

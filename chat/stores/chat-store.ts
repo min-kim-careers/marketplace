@@ -17,6 +17,7 @@ type ChatProps = {
   status: ChatStatus
   messages: ChatTextIn[]
   noMessages: boolean
+  rooms: ChatRoom[]
 }
 
 type ChatState = {
@@ -33,6 +34,7 @@ const useChatStore = create<ChatState>((set) => {
     status: 'disconnected',
     messages: [],
     noMessages: false,
+    rooms: [],
 
     setUrl: (token?: string) =>
       set({

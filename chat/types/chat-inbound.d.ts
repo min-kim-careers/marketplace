@@ -1,3 +1,5 @@
+import { ChatRoom } from '@/chat/types/chat-room'
+
 export type ChatConnectedIn = {
   type: 'connected'
 }
@@ -35,6 +37,11 @@ export type ChatTypingIn = {
   typing: boolean
 }
 
+export type ChatRoomIn = {
+  type: 'room'
+  rooms: ChatRoom
+}
+
 export type ChatPayloadIn =
   | ChatConnectedIn
   | ChatJoinedIn
@@ -43,3 +50,4 @@ export type ChatPayloadIn =
   | ChatErrorIn
   | ChatReadIn
   | ChatTypingIn
+  | ChatRoomIn

@@ -1,7 +1,6 @@
 import { ChatTextIn } from '@/chat/types/chat-inbound'
 import { cn } from '@/components/shadcn/lib/utils'
 import { formatDate } from '@/lib/helpers/format-date'
-import { Circle } from 'lucide-react'
 
 export default function MessageBubble({ message }: { message: ChatTextIn }) {
   return (
@@ -12,10 +11,10 @@ export default function MessageBubble({ message }: { message: ChatTextIn }) {
       )}
     >
       {message.mine && (
-        <Circle
+        <div
           className={cn(
-            'h-2 w-2 stroke-muted-foreground',
-            message.read && 'fill-muted-foreground',
+            'h-[2px] w-[8px] rounded-full bg-muted-foreground/60 transition-all duration-300',
+            message.read && 'h-[6px] w-[6px]',
           )}
         />
       )}

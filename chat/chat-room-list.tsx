@@ -23,18 +23,19 @@ import { useEffect, useState } from 'react'
 export default function ChatRoomList() {
   const { setProps } = useChatStore()
   const currentRoom = useChatStore((state) => state.currentRoom)
+  const rooms = useChatStore((state) => state.rooms)
 
   const [open, setOpen] = useState<boolean>(false)
-  const [rooms, setRooms] = useState<ChatRoom[]>([])
   const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
     const loadRooms = async () => {
       try {
         setLoading(true)
-        setRooms(
-          await getRooms({ page: 1, sortBy: 'updated_at', sortOrder: 'desc' }),
-        )
+        const rooms = await getRooms({
+          page: 1,
+        })
+        setProps({ rooms })
       } catch (error) {
         console.error(error)
       } finally {

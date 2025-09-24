@@ -1,4 +1,5 @@
 import { flagMessageRead } from '@/chat/helpers/flag-message-read'
+import { useIdleHandler } from '@/chat/hooks/use-idle-handler'
 import { useLoadToken } from '@/chat/hooks/use-load-token'
 import useChatStore from '@/chat/stores/chat-store'
 import {
@@ -13,28 +14,27 @@ import {
 } from '@/chat/types/chat-inbound'
 import { ChatPayloadOut } from '@/chat/types/chat-outbound'
 import { useEffect } from 'react'
-import { useIdleTimer } from 'react-idle-timer'
 import useWebSocket from 'react-use-websocket'
 
 export type ChatSocketState = {
   sendTextOut: (message: string) => void
   sendRestoreOut: () => void
   sendTypingOut: (typing: boolean) => void
-  msUntilIdle: () => number
 }
 
 export const useChatSocket = (): ChatSocketState => {
   const { setUrl, setProps, clearState } = useChatStore()
 
+  const open = useChatStore((state) => state.open)
   const messages = useChatStore((state) => state.messages)
   const since = useChatStore((state) => state.since)
-  const open = useChatStore((state) => state.open)
   const url = useChatStore((state) => state.url)
   const currentRoom = useChatStore((state) => state.currentRoom)
   const status = useChatStore((state) => state.status)
   const lastRead = useChatStore((state) => state.peerlastRead)
 
   const token = useLoadToken()
+  useIdleHandler(token)
 
   useEffect(() => {
     if (open && token) {
@@ -54,24 +54,6 @@ export const useChatSocket = (): ChatSocketState => {
   useEffect(() => {
     if (status === 'connected' || status === 'joined') joinRoom()
   }, [currentRoom])
-
-  const { getRemainingTime, start, reset, pause } = useIdleTimer({
-    timeout: 1000 * 60 * 5,
-    // timeout: 3000,
-    startManually: true,
-    onIdle: () => {
-      console.log('idling')
-
-      setUrl()
-      setProps({ status: 'idling' })
-    },
-    onActive: () => {
-      console.log('unidling')
-
-      setUrl(token)
-    },
-    debounce: 500,
-  })
 
   const { sendJsonMessage } = useWebSocket(url ?? null, {
     onOpen: () => {
@@ -99,11 +81,11 @@ export const useChatSocket = (): ChatSocketState => {
           case 'read':
             handleReadIn(payload)
             break
-          case 'error':
-            handleErrorIn(payload)
-            break
           case 'typing':
             handleTypingIn(payload)
+            break
+          case 'error':
+            handleErrorIn(payload)
             break
           default:
             break
@@ -113,6 +95,11 @@ export const useChatSocket = (): ChatSocketState => {
       }
     },
   })
+
+  const _sendMessage = (payload: ChatPayloadOut) => {
+    sendJsonMessage(payload)
+    console.log('sent:', payload)
+  }
 
   const handleConnectedIn = (_: ChatConnectedIn) => {
     setProps({ status: 'connected' })
@@ -151,6 +138,10 @@ export const useChatSocket = (): ChatSocketState => {
     setProps({ peerlastRead: payload.lastRead })
   }
 
+  const handleTypingIn = (payload: ChatTypingIn) => {
+    setProps({ peerTyping: payload.typing })
+  }
+
   const handleErrorIn = (payload: ChatErrorIn) => {
     if (payload.message) {
       console.error('server error:', payload.message)
@@ -158,15 +149,6 @@ export const useChatSocket = (): ChatSocketState => {
       console.error('server error')
     }
     setProps({ status: 'error' })
-  }
-
-  const handleTypingIn = (payload: ChatTypingIn) => {
-    setProps({ peerTyping: payload.typing })
-  }
-
-  const _sendMessage = (payload: ChatPayloadOut) => {
-    sendJsonMessage(payload)
-    console.log('sent:', payload)
   }
 
   return {
@@ -181,6 +163,5 @@ export const useChatSocket = (): ChatSocketState => {
     sendTypingOut: (typing: boolean) => {
       _sendMessage({ type: 'typing', typing })
     },
-    msUntilIdle: getRemainingTime,
   }
 }

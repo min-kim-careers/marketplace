@@ -41,7 +41,7 @@ export default function MarketModal({
       const room = await getRoom(item.alias)
       if (!room) throw new Error()
 
-      setProps({ open: true, currentRoom: room })
+      setProps({ open: true, currentRoomIndex: room })
     } catch (error) {
       console.error(error)
       toast('Something went wrong')
