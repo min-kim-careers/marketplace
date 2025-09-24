@@ -1,25 +1,28 @@
-from datetime import datetime, timezone
 import json
 from app.cache.cache import redis
 from app.chat.repositories.chat_room import ChatRoomRepository
-from app.chat.server.helpers import broadcast_key
+from app.chat.schemas.outbound import ChatRoomOut
+from app.chat.server.constants import CHAT_IDLE_KEY
+from app.chat.server.helpers.broadcast_key import broadcast_key
 from app.chat.server.schemas.outbound import (
     ChatConnectedOut,
     ChatJoinedOut,
     ChatPayloadOutType,
     ChatReadOut,
+    ChatRoomUpdateOut,
     ChatTextOut,
     ChatTypingOut,
 )
 from app.chat.server.schemas.internal import (
     ChatInternalAdapter,
     ChatInternalRead,
+    ChatInternalRoom,
     ChatInternalTyping,
 )
 from app.chat.server.schemas.internal import ChatInternalText
 from app.core import logger
-from app.chat.server.status import status_manager
-from app.chat.server.stream import stream_manager
+from app.chat.server.cache import chat_cache
+from app.chat.server.streamer import chat_streamer
 
 
 from fastapi import WebSocket
@@ -49,7 +52,7 @@ class ChatClient:
             asyncio.Queue()
         )
         self.psub = redis.pubsub()
-        self.idle_key = b"__idle__"
+        self.idle_key = CHAT_IDLE_KEY
 
     def _add_task(self, coro):
         t = asyncio.create_task(coro)
@@ -57,16 +60,19 @@ class ChatClient:
         t.add_done_callback(self.tasks.discard)
         return t
 
-    async def peer_is_active(self) -> bool:
+    async def is_peer_active(self) -> bool:
+        return self.peer is not None and await chat_cache.is_user_active(self.peer.id)
+
+    async def is_peer_active_room(self) -> bool:
         return (
             self.room is not None
             and self.peer is not None
-            and await status_manager.user_is_active(self.room.id, self.peer.id)
+            and await chat_cache.is_user_active_room(self.room.id, self.peer.id)
         )
 
     async def _handle_text(self, payload: ChatInternalText):
         if not payload.timestamp or not self.room:
-            raise Exception("handle text error")
+            raise
 
         mine = UUID(payload.user_id) == self.user.id
 
@@ -77,36 +83,44 @@ class ChatClient:
             )
         )
 
-        await status_manager.set_last_read(
-            self.room.id, self.user.id, datetime.now(timezone.utc)
-        )
-
         if not mine:
-            await stream_manager.stream_read(
+            await chat_streamer.stream_read(
                 ChatInternalRead(
                     room_id=str(self.room.id),
                     user_id=str(self.user.id),
                 )
             )
 
-        room_updated = await ChatRoomRepository.update_room_activity(
-            self.db, self.room.id
-        )
-        if not room_updated:
-            raise Exception("failed to update room timestamp")
+            await chat_streamer.stream_room(
+                ChatInternalRoom(
+                    room_id=str(self.room.id),
+                    user_id=str(self.user.id),
+                )
+            )
 
     async def _handle_read(self, payload: ChatInternalRead):
         # send if message not from client (from peer)
         if self.room and self.peer and UUID(payload.user_id) != self.user.id:
-            last_read = await status_manager.get_last_read(self.room.id, self.peer.id)
+            last_read = await chat_cache.get_last_read(self.room.id, self.peer.id)
             if not last_read:
-                raise Exception("client error handling last read")
+                raise
             await self.send_message(ChatReadOut(last_read=last_read.isoformat()))
 
     async def _handle_typing(self, payload: ChatInternalTyping):
         # send if message not from client (from peer)
         if UUID(payload.user_id) != self.user.id:
             await self.send_message(ChatTypingOut(typing=payload.typing))
+
+    async def _handle_room(self, payload: ChatInternalRoom):
+        # send message if for user
+        if UUID(payload.user_id) != self.user.id:
+            room_db = await ChatRoomRepository.room_by_id(
+                self.db, UUID(payload.room_id)
+            )
+            if not room_db:
+                raise
+            room = ChatRoomOut.from_db(room_db, self.user.id)
+            await self.send_message(ChatRoomUpdateOut(room=room))
 
     async def _process_payload(self, payload: dict[str, Any]):
         payload = ChatInternalAdapter.validate_python(payload)
@@ -119,6 +133,9 @@ class ChatClient:
 
         elif isinstance(payload, ChatInternalTyping):
             await self._handle_typing(payload)
+
+        elif isinstance(payload, ChatInternalRoom):
+            await self._handle_room(payload)
 
     async def _run_listener(self):
         async def _handle_data(data: dict):
@@ -193,8 +210,8 @@ class ChatClient:
         await self._subscribe(broadcast_key(str(room_id)))
         self.room = room
         self._set_peer(room)
-        await status_manager.set_user_active(self.room.id, self.user.id)
-        await status_manager.update_last_read(self.db, self.room.id, self.user.id)
+        await chat_cache.set_user_active_room(self.room.id, self.user.id)
+        await chat_cache.update_last_read(self.db, self.room.id, self.user.id)
         await self.send_message(ChatJoinedOut())
 
     # on room leave
@@ -202,13 +219,14 @@ class ChatClient:
         if not self.room:
             raise Exception("room missing while resetting state")
 
-        await ChatRoomRepository.update_room_activity(self.db, self.room.id)
         await self._unsubscribe(broadcast_key(str(self.room.id)))
-        await status_manager.set_user_inactive(self.room.id, self.user.id)
+        await chat_cache.set_user_inactive_room(self.room.id, self.user.id)
         self.room = None
 
     # on connect
     async def run(self):
+        await chat_cache.set_user_active(self.user.id)
+
         # start background tasks
         if not self.tasks:
             self._add_task(self._run_listener())
@@ -218,6 +236,8 @@ class ChatClient:
 
     # on disconnect
     async def close(self):
+        await chat_cache.set_user_inactive(self.user.id)
+
         # clean up background tasks
         for t in list(self.tasks):
             t.cancel()

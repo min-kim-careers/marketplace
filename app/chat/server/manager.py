@@ -1,7 +1,9 @@
 from datetime import datetime, timezone
 
+from app.chat.repositories.chat_room import ChatRoomRepository
+from app.chat.server.helpers.broadcast_key import broadcast_key
 from app.chat.server.client import ChatClient
-from app.chat.server.helpers import broadcast_internal, broadcast_key
+from app.chat.server.helpers.broadcast_room import broadcast_room
 from app.chat.server.schemas.inbound import (
     ChatJoinIn,
     ChatPayloadIn,
@@ -20,8 +22,8 @@ from app.chat.server.schemas.internal import (
 )
 from app.chat.services.chat_message import ChatMessageService
 from app.core import logger
-from app.chat.server.status import status_manager
-from app.chat.server.stream import stream_manager
+from app.chat.server.cache import chat_cache
+from app.chat.server.streamer import chat_streamer
 
 
 class ChatManager:
@@ -65,7 +67,7 @@ class ChatManager:
                 payload.since,
             )
 
-            peer_last_read = await status_manager.get_last_read(
+            peer_last_read = await chat_cache.get_last_read(
                 client.room.id, client.user.id
             )
             if peer_last_read:
@@ -79,11 +81,11 @@ class ChatManager:
 
             await client.send_message(ChatRestoredOut(previous=previous))
 
-            await status_manager.set_last_read(
+            await chat_cache.set_last_read(
                 client.room.id, client.user.id, datetime.now(timezone.utc)
             )
 
-            await stream_manager.stream_read(
+            await chat_streamer.stream_read(
                 ChatInternalRead(
                     room_id=str(client.room.id),
                     user_id=str(client.peer.id),
@@ -96,13 +98,15 @@ class ChatManager:
         print("streaming text...")
         try:
             if client.room:
-                await stream_manager.stream_text(
+                await chat_streamer.stream_text(
                     ChatInternalText(
                         room_id=str(client.room.id),
                         user_id=str(client.user.id),
                         content=payload.content,
                     )
                 )
+                await ChatRoomRepository.update_room_activity(client.db, client.room.id)
+
         except Exception as e:
             logger.exception("handle text error: %s", e)
 
@@ -110,7 +114,7 @@ class ChatManager:
         print("typing...")
         try:
             if client.room:
-                await broadcast_internal(
+                await broadcast_room(
                     ChatInternalTyping(
                         room_id=str(client.room.id),
                         user_id=str(client.user.id),
@@ -141,3 +145,6 @@ class ChatManager:
 
         except Exception as e:
             logger.exception("handle payload error: %s", e)
+
+
+chat_manager = ChatManager()

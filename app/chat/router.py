@@ -5,14 +5,14 @@ from fastapi import APIRouter, Depends, Query
 from app.auth.firebase.dependencies import resolve_firebase_session
 from app.chat.dependencies.resolve_room_alias import resolve_room_alias
 from app.chat.repositories.chat_room import ChatRoomRepository
-from app.chat.schemas.inbound import ChatRoomInDB, RoomsQuery
+from app.chat.schemas.inbound import ChatRoomInDB, ChatRoomQuery
 from app.chat.schemas.outbound import ChatRoomOut
 from app.core.schemas.error import ErrorResponse
 from app.core.schemas.outbound import APIResponse
 from app.core.security import verify_service_key
 from app.db.models.user import UserDB
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.chat.server.status import status_manager
+from app.chat.server.cache import chat_cache
 
 from app.db.session import get_db
 from app.item.repository import ItemRepository
@@ -52,20 +52,22 @@ async def get_room_by_item(
         if not room_db:
             raise ErrorResponse(message="failed to create room")
 
-    room = ChatRoomOut.from_db(room_db, user.id)
+    room = ChatRoomOut.from_db(room_db, user.id == room_db.item.user_id)
 
     return APIResponse(data={"room": room})
 
 
 @chat_router.get("/room/list")
 async def get_rooms(
-    query: Annotated[RoomsQuery, Query()],
+    query: Annotated[ChatRoomQuery, Query()],
     user: UserDB = Depends(resolve_firebase_session),
     db: AsyncSession = Depends(get_db),
 ):
     rooms_db = await ChatRoomRepository.rooms_paginated(db, query, user.id)
 
-    rooms = [ChatRoomOut.from_db(r, user.id) for r in rooms_db]
+    rooms = [
+        ChatRoomOut.from_db(r_db, user.id == r_db.item.user_id) for r_db in rooms_db
+    ]
 
     return APIResponse(data={"rooms": rooms})
 
@@ -75,6 +77,6 @@ async def unread_exists(
     user: UserDB = Depends(resolve_firebase_session),
     db: AsyncSession = Depends(get_db),
 ):
-    exists = await status_manager.unread_room_exists(db, user.id)
+    exists = await chat_cache.unread_room_exists(db, user.id)
 
     return APIResponse(data={"exists": exists})

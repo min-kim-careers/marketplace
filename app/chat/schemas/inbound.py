@@ -19,7 +19,7 @@ class ChatRoomInDB(BaseModel):
     seller_id: UUID
 
 
-class RoomsQuery(InboundBase):
+class ChatRoomQuery(InboundBase):
     page: int = DEFAULT_PAGINATION_PAGE
     limit: int = DEFAULT_PAGINATION_LIMIT
 

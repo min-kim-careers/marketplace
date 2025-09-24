@@ -1,3 +1,4 @@
+from typing import Optional
 from uuid import UUID
 from app.core.helpers import encode_uuid
 from app.core.schemas.outbound import OutboundBase
@@ -29,13 +30,14 @@ class ChatRoomOut(OutboundBase):
     alias: str
     is_seller: bool
     item: ChatRoomItemOut
+    unread: Optional[bool] = False
 
     @classmethod
-    def from_db(cls, room: ChatRoomDB, user_id: UUID) -> "ChatRoomOut":
+    def from_db(cls, room: ChatRoomDB, receiving_user: UUID) -> "ChatRoomOut":
         return cls.model_validate(
             {
                 "alias": encode_uuid(room.id),
-                "is_seller": user_id == room.item.user_id,
+                "is_seller": (receiving_user == room.item.user_id),
                 "item": ChatRoomItemOut.from_db(room.item),
             },
             from_attributes=True,

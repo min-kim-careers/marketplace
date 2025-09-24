@@ -5,7 +5,7 @@ from uuid import UUID
 from sqlalchemy import asc, desc, or_, select, update
 
 from app.chat.enums import RoomSortOrder
-from app.chat.schemas.inbound import ChatRoomInDB, RoomsQuery
+from app.chat.schemas.inbound import ChatRoomInDB, ChatRoomQuery
 from app.core import logger
 from app.core.helpers import get_one_by
 from app.db.models.chat_room import ChatRoomDB, ChatRoomStatusDB
@@ -16,7 +16,7 @@ class ChatRoomRepository:
     @staticmethod
     async def rooms_paginated(
         db: AsyncSession,
-        query: RoomsQuery,
+        query: ChatRoomQuery,
         user_id: UUID,
     ) -> Sequence[ChatRoomDB]:
         try:
@@ -204,27 +204,3 @@ class ChatRoomRepository:
             await db.rollback()
             logger.info(e)
             return None
-
-    @staticmethod
-    async def update_user_activity(
-        db: AsyncSession,
-        room_id: UUID,
-        user_id: UUID,
-    ) -> bool:
-        try:
-            stmt = (
-                update(ChatRoomStatusDB)
-                .where(
-                    ChatRoomStatusDB.room_id == room_id,
-                    ChatRoomStatusDB.user_id == user_id,
-                )
-                .values(last_activity=datetime.now(timezone.utc))
-            )
-
-            res = await db.execute(stmt)
-            await db.commit()
-            return res.rowcount > 0
-        except Exception as e:
-            await db.rollback()
-            logger.info(e)
-            return False

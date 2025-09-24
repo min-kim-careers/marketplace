@@ -3,6 +3,7 @@ from typing import Annotated, Literal, Optional, Union
 from pydantic import Field, TypeAdapter
 
 
+from app.chat.schemas.outbound import ChatRoomOut
 from app.chat.server.schemas.internal import ChatInternalText
 from app.core.schemas.outbound import OutboundBase
 from app.db.models.chat_message import ChatMessageDB
@@ -11,6 +12,11 @@ from app.db.models.chat_message import ChatMessageDB
 class ChatTypingOut(OutboundBase):
     type: Literal["typing"] = "typing"
     typing: bool
+
+
+class ChatRoomUpdateOut(OutboundBase):
+    type: Literal["room_update"] = "room_update"
+    room: ChatRoomOut
 
 
 class ChatTextOut(OutboundBase):
@@ -75,6 +81,7 @@ ChatPayloadOutType = Annotated[
         ChatErrorOut,
         ChatReadOut,
         ChatTypingOut,
+        ChatRoomUpdateOut,
     ],
     Field(discriminator="type"),
 ]

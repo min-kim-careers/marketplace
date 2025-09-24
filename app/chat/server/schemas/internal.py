@@ -18,6 +18,12 @@ class ChatInternalRead(BaseModel):
     room_id: str
 
 
+class ChatInternalRoom(BaseModel):
+    type: Literal["room"] = "room"
+    user_id: str
+    room_id: str
+
+
 class ChatInternalTyping(BaseModel):
     type: Literal["typing"] = "typing"
     user_id: str
@@ -30,6 +36,7 @@ ChatInternalType = Annotated[
         ChatInternalText,
         ChatInternalRead,
         ChatInternalTyping,
+        ChatInternalRoom,
     ],
     Field(discriminator="type"),
 ]
