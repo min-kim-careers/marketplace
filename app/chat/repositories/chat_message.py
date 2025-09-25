@@ -64,7 +64,7 @@ class ChatMessageRepository:
                 exists().where(
                     ChatRoomStatusDB.user_id == user_id,
                     ChatRoomStatusDB.room_id == ChatMessageDB.room_id,
-                    ChatMessageDB.user_id != user_id,
+                    ChatRoomStatusDB.user_id != ChatMessageDB.user_id,
                     ChatMessageDB.timestamp > ChatRoomStatusDB.last_read,
                 )
             )

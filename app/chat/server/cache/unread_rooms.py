@@ -1,22 +1,23 @@
-from typing import Set
 from uuid import UUID
-from app.cache.helpers import process_redis
 from app.cache.cache import redis
+from app.core import logger
 
 
 class UnreadRooms:
     def _unread_rooms_key(self, user_id: UUID) -> str:
         return f"chat:user:{str(user_id)}:unread_rooms"
 
-    async def get_unread_rooms(self, user_id: UUID) -> Set[UUID]:
-        return await process_redis(redis.smembers(self._unread_rooms_key(user_id)))
+    async def check_unread_rooms(self, user_id: UUID, room_ids: list[UUID]):
+        rids = [str(rid) for rid in room_ids]
+        res = await redis.smismember(self._unread_rooms_key(user_id), rids)  # type: ignore
+        return {rid: bool(flag) for rid, flag in zip(room_ids, res)}
 
     async def add_unread_room(self, user_id: UUID, room_id: UUID):
         added = await redis.sadd(self._unread_rooms_key(user_id), str(room_id))  # type: ignore
         if added != 1:
-            raise Exception(f"error adding unread room")
+            logger.info("unread room cached")
 
     async def remove_unread_room(self, user_id: UUID, room_id: UUID):
         removed = await redis.srem(self._unread_rooms_key(user_id), str(room_id))  # type: ignore
         if removed != 1:
-            raise Exception(f"error removing unread room")
+            logger.info("unread room uncached")

@@ -1,28 +1,26 @@
+from datetime import datetime, timezone
 import json
 from app.cache.cache import redis
 from app.chat.repositories.chat_room import ChatRoomRepository
-from app.chat.schemas.outbound import ChatRoomOut
 from app.chat.server.constants import CHAT_IDLE_KEY
 from app.chat.server.helpers.broadcast_key import broadcast_key
+from app.chat.server.helpers.broadcast_room import broadcast_room
 from app.chat.server.schemas.outbound import (
     ChatConnectedOut,
     ChatJoinedOut,
     ChatPayloadOutType,
     ChatReadOut,
-    ChatRoomUpdateOut,
     ChatTextOut,
     ChatTypingOut,
 )
 from app.chat.server.schemas.internal import (
     ChatInternalAdapter,
     ChatInternalRead,
-    ChatInternalRoom,
     ChatInternalTyping,
 )
 from app.chat.server.schemas.internal import ChatInternalText
 from app.core import logger
 from app.chat.server.cache import chat_cache
-from app.chat.server.streamer import chat_streamer
 
 
 from fastapi import WebSocket
@@ -70,7 +68,7 @@ class ChatClient:
             and await chat_cache.is_user_active_room(self.room.id, self.peer.id)
         )
 
-    async def _handle_text(self, payload: ChatInternalText):
+    async def _send_text(self, payload: ChatInternalText):
         if not payload.timestamp or not self.room:
             raise
 
@@ -83,59 +81,44 @@ class ChatClient:
             )
         )
 
+        # handle peer
         if not mine:
-            await chat_streamer.stream_read(
+            await broadcast_room(
                 ChatInternalRead(
-                    room_id=str(self.room.id),
-                    user_id=str(self.user.id),
+                    room_id=payload.room_id,
+                    user_id=payload.user_id,
                 )
             )
 
-            await chat_streamer.stream_room(
-                ChatInternalRoom(
-                    room_id=str(self.room.id),
-                    user_id=str(self.user.id),
-                )
+    async def _send_read(self, payload: ChatInternalRead):
+        if UUID(payload.user_id) != self.user.id and self.room:
+            now = datetime.now(timezone.utc)
+
+            await self.send_message(ChatReadOut(last_read=now.isoformat()))
+
+            updated = await ChatRoomRepository.update_last_read(
+                self.db, self.user.id, self.room.id, now
             )
+            if not updated:
+                logger.error("failed to update last read")
 
-    async def _handle_read(self, payload: ChatInternalRead):
-        # send if message not from client (from peer)
-        if self.room and self.peer and UUID(payload.user_id) != self.user.id:
-            last_read = await chat_cache.get_last_read(self.room.id, self.peer.id)
-            if not last_read:
-                raise
-            await self.send_message(ChatReadOut(last_read=last_read.isoformat()))
+            await chat_cache.remove_unread_room(self.user.id, self.room.id)
 
-    async def _handle_typing(self, payload: ChatInternalTyping):
-        # send if message not from client (from peer)
+    async def _send_typing(self, payload: ChatInternalTyping):
         if UUID(payload.user_id) != self.user.id:
             await self.send_message(ChatTypingOut(typing=payload.typing))
-
-    async def _handle_room(self, payload: ChatInternalRoom):
-        # send message if for user
-        if UUID(payload.user_id) != self.user.id:
-            room_db = await ChatRoomRepository.room_by_id(
-                self.db, UUID(payload.room_id)
-            )
-            if not room_db:
-                raise
-            room = ChatRoomOut.from_db(room_db, self.user.id)
-            await self.send_message(ChatRoomUpdateOut(room=room))
 
     async def _process_payload(self, payload: dict[str, Any]):
         payload = ChatInternalAdapter.validate_python(payload)
 
         if isinstance(payload, ChatInternalText):
-            await self._handle_text(payload)
+            await self._send_text(payload)
 
         elif isinstance(payload, ChatInternalRead):
-            await self._handle_read(payload)
+            await self._send_read(payload)
 
         elif isinstance(payload, ChatInternalTyping):
-            await self._handle_typing(payload)
-
-        elif isinstance(payload, ChatInternalRoom):
-            await self._handle_room(payload)
+            await self._send_typing(payload)
 
     async def _run_listener(self):
         async def _handle_data(data: dict):
@@ -203,15 +186,14 @@ class ChatClient:
     # on room join
     async def init_state(self, room_id: UUID):
         # set room
-        room = await ChatRoomRepository.room_by_id(self.db, room_id)
-        if not room:
+        room_db = await ChatRoomRepository.room_by_id(self.db, room_id)
+        if not room_db:
             raise Exception("room not found")
 
         await self._subscribe(broadcast_key(str(room_id)))
-        self.room = room
-        self._set_peer(room)
+        self.room = room_db
+        self._set_peer(room_db)
         await chat_cache.set_user_active_room(self.room.id, self.user.id)
-        await chat_cache.update_last_read(self.db, self.room.id, self.user.id)
         await self.send_message(ChatJoinedOut())
 
     # on room leave

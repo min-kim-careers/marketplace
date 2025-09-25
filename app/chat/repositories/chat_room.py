@@ -165,7 +165,8 @@ class ChatRoomRepository:
         db: AsyncSession,
         user_id: UUID,
         room_id: UUID,
-    ) -> bool:
+        last_read: datetime,
+    ) -> bool | None:
         try:
             stmt = (
                 update(ChatRoomStatusDB)
@@ -173,7 +174,7 @@ class ChatRoomRepository:
                     ChatRoomStatusDB.user_id == user_id,
                     ChatRoomStatusDB.room_id == room_id,
                 )
-                .values(last_read=datetime.now(timezone.utc))
+                .values(last_read=last_read)
             )
 
             res = await db.execute(stmt)
