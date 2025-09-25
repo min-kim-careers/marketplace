@@ -31,7 +31,7 @@ export const useChatSocket = (): ChatSocketState => {
   const url = useChatStore((state) => state.url)
   const currentRoom = useChatStore((state) => state.currentRoom)
   const status = useChatStore((state) => state.status)
-  const lastRead = useChatStore((state) => state.peerlastRead)
+  const peerLastRead = useChatStore((state) => state.peerlastRead)
 
   const token = useLoadToken()
   useIdleHandler(token)
@@ -132,10 +132,12 @@ export const useChatSocket = (): ChatSocketState => {
 
   const handleReadIn = (payload: ChatReadIn) => {
     for (const msg of messages) {
-      if (msg.timestamp <= lastRead) break
+      if (msg.timestamp <= peerLastRead) break
       flagMessageRead(msg, new Date(payload.lastRead))
     }
-    setProps({ peerlastRead: payload.lastRead })
+    setProps({
+      peerlastRead: payload.lastRead,
+    })
   }
 
   const handleTypingIn = (payload: ChatTypingIn) => {

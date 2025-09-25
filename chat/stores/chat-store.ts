@@ -1,14 +1,14 @@
 'use client'
 
 import { ChatTextIn } from '@/chat/types/chat-inbound'
-import { ChatRoom } from '@/chat/types/chat-room'
+import { ChatRoomSimple } from '@/chat/types/chat-room'
 import { ChatStatus } from '@/chat/types/chat-status'
 import { toPath } from '@/lib/helpers/to-path'
 import { create } from 'zustand'
 
 type ChatProps = {
   url?: string
-  currentRoom?: ChatRoom
+  currentRoom?: ChatRoomSimple
   since?: string
 
   peerTyping: boolean
@@ -17,7 +17,7 @@ type ChatProps = {
   status: ChatStatus
   messages: ChatTextIn[]
   noMessages: boolean
-  rooms: ChatRoom[]
+  rooms: ChatRoomSimple[]
 }
 
 type ChatState = {

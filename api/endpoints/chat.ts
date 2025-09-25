@@ -1,14 +1,14 @@
 import 'server-only'
 
 import { client } from '@/api/_utils/client'
-import { ChatRoom } from '@/chat/types/chat-room'
+import { ChatRoomSimple } from '@/chat/types/chat-room'
 
 export const _getRoomByItem = async (itemAlias: string) =>
   (await client())
     .post(`/api/chat/room/item/${itemAlias}`)
     .withSession()
     .asResult<{
-      room: ChatRoom
+      room: ChatRoomSimple
     }>()
 
 export interface _GetRoomsQuery {
@@ -23,7 +23,7 @@ export const _getRooms = async (query: _GetRoomsQuery) =>
     .withSession()
     .setQuery(query)
     .asResult<{
-      rooms: ChatRoom[]
+      rooms: ChatRoomSimple[]
     }>()
 
 export const _unreadExists = async () =>

@@ -13,8 +13,8 @@ export default function MessageBubble({ message }: { message: ChatTextIn }) {
       {message.mine && (
         <div
           className={cn(
-            'h-[2px] w-[8px] rounded-full bg-muted-foreground/60 transition-all duration-300',
-            message.read && 'h-[6px] w-[6px]',
+            'rounded-full bg-muted-foreground/60 transition-all duration-300',
+            message.read ? 'h-[6px] w-[6px]' : 'h-[2px] w-[8px]',
           )}
         />
       )}

@@ -2,7 +2,7 @@
 
 import { getRooms } from '@/api'
 import useChatStore from '@/chat/stores/chat-store'
-import { ChatRoom } from '@/chat/types/chat-room'
+import { ChatRoomSimple } from '@/chat/types/chat-room'
 import {
   Avatar,
   AvatarFallback,
@@ -17,6 +17,7 @@ import {
 } from '@/components/shadcn/components/ui/sheet'
 import { cn } from '@/components/shadcn/lib/utils'
 import Spinner from '@/components/spinner'
+import { formatCurrency } from '@/lib/helpers/format-price'
 import { MenuIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
@@ -73,10 +74,10 @@ export default function ChatRoomList() {
           ) : (
             <div className='flex h-full flex-1 flex-col justify-start gap-2 p-2'>
               {rooms.length ? (
-                rooms.map((room: ChatRoom, i) => (
+                rooms.map((room: ChatRoomSimple, i) => (
                   <button
                     className={cn(
-                      'flex w-full flex-row items-center gap-2 border border-transparent p-2 hover:bg-secondary',
+                      'relative flex w-full flex-row items-center gap-4 border border-transparent p-2 hover:bg-secondary',
                       currentRoom &&
                         currentRoom.alias === room.alias &&
                         'rounded bg-secondary',
@@ -89,28 +90,32 @@ export default function ChatRoomList() {
                     disabled={currentRoom && currentRoom.alias === room.alias}
                   >
                     <Avatar className='h-9 w-9'>
-                      <AvatarImage src={room.item.profile.avatarUrl} />
+                      <AvatarImage src={room.item.previewUrl} />
                       <AvatarFallback>
-                        <p className='text-lg font-bold'>
-                          {room.item.profile.handle.charAt(0).toUpperCase()}
-                        </p>
+                        <p className='text-lg font-bold'>-</p>
                       </AvatarFallback>
                     </Avatar>
-                    <span
-                      className={cn(
-                        'flex w-full justify-between truncate text-nowrap transition-all',
-                      )}
-                    >
-                      {room.item.name}
-                    </span>
+                    <div className='flex flex-col'>
+                      <span className='text-left'>{room.peer.handle}</span>
+                      <span className='text-left'>
+                        {formatCurrency(room.item.price)} - {room.item.name}
+                      </span>
+                    </div>
                     {room.isSeller && (
                       <p
                         className={cn(
-                          'pr-2 italic text-black/50 transition-all',
+                          'flex-1 pr-2 text-right italic text-black/50 transition-all',
                         )}
                       >
                         Selling
                       </p>
+                    )}
+                    {room.unread && (
+                      <div
+                        className={cn(
+                          'absolute -left-1 -top-1 h-3 w-3 rounded-full bg-red-500 transition-all',
+                        )}
+                      />
                     )}
                   </button>
                 ))
