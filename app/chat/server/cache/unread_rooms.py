@@ -12,6 +12,11 @@ class UnreadRooms:
         res = await redis.smismember(self._unread_rooms_key(user_id), rids)  # type: ignore
         return {rid: bool(flag) for rid, flag in zip(room_ids, res)}
 
+    async def has_unread(self, user_id: UUID) -> bool:
+        unread_rooms_key = self._unread_rooms_key(user_id)
+        unread_flags = await redis.smembers(unread_rooms_key)  # type: ignore
+        return bool(unread_flags)
+
     async def add_unread_room(self, user_id: UUID, room_id: UUID):
         added = await redis.sadd(self._unread_rooms_key(user_id), str(room_id))  # type: ignore
         if added != 1:

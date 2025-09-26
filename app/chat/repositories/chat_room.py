@@ -8,7 +8,8 @@ from app.chat.enums import RoomSortOrder
 from app.chat.schemas.inbound import ChatRoomInDB, ChatRoomQuery
 from app.core import logger
 from app.core.helpers import get_one_by
-from app.db.models.chat_room import ChatRoomDB, ChatRoomStatusDB
+from app.db.models.chat_status import ChatStatusDB
+from app.db.models.chat_room import ChatRoomDB
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -113,11 +114,11 @@ class ChatRoomRepository:
             db.add(room)
             await db.flush()
 
-            buyer_status = ChatRoomStatusDB(
+            buyer_status = ChatStatusDB(
                 user_id=room_in.buyer_id,
                 room_id=room.id,
             )
-            seller_status = ChatRoomStatusDB(
+            seller_status = ChatStatusDB(
                 user_id=room_in.seller_id,
                 room_id=room.id,
             )
@@ -137,10 +138,10 @@ class ChatRoomRepository:
         db: AsyncSession,
         user_id: UUID,
         room_id: UUID,
-    ) -> ChatRoomStatusDB | None:
+    ) -> ChatStatusDB | None:
         return await get_one_by(
             db,
-            ChatRoomStatusDB,
+            ChatStatusDB,
             user_id=user_id,
             room_id=room_id,
         )
@@ -149,9 +150,9 @@ class ChatRoomRepository:
     async def statuses_by_room(
         db: AsyncSession,
         room_id: UUID,
-    ) -> Sequence[ChatRoomStatusDB]:
+    ) -> Sequence[ChatStatusDB]:
         try:
-            stmt = select(ChatRoomStatusDB).where(ChatRoomStatusDB.room_id == room_id)
+            stmt = select(ChatStatusDB).where(ChatStatusDB.room_id == room_id)
 
             res = await db.execute(stmt)
             return res.scalars().all()
@@ -169,10 +170,10 @@ class ChatRoomRepository:
     ) -> bool | None:
         try:
             stmt = (
-                update(ChatRoomStatusDB)
+                update(ChatStatusDB)
                 .where(
-                    ChatRoomStatusDB.user_id == user_id,
-                    ChatRoomStatusDB.room_id == room_id,
+                    ChatStatusDB.user_id == user_id,
+                    ChatStatusDB.room_id == room_id,
                 )
                 .values(last_read=last_read)
             )
@@ -190,9 +191,9 @@ class ChatRoomRepository:
         db: AsyncSession,
         user_id: UUID,
         room_id: UUID,
-    ) -> ChatRoomStatusDB | None:
+    ) -> ChatStatusDB | None:
         try:
-            status = ChatRoomStatusDB(
+            status = ChatStatusDB(
                 user_id=user_id,
                 room_id=room_id,
             )

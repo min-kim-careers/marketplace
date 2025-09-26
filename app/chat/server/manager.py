@@ -1,7 +1,7 @@
-from datetime import datetime, timezone
+from datetime import datetime
 
 from app.chat.repositories.chat_room import ChatRoomRepository
-from app.chat.server.helpers.broadcast_key import broadcast_key
+from app.chat.server.helpers.room_broadcast_key import room_broadcast_key
 from app.chat.server.client import ChatClient
 from app.chat.server.helpers.broadcast_room import broadcast_room
 from app.chat.server.schemas.inbound import (
@@ -77,15 +77,14 @@ class ChatManager:
 
                 await client.send_message(ChatRestoredOut(previous=previous))
 
-                status.last_read = datetime.now(timezone.utc)
-                await client.db.commit()
-
-                await broadcast_room(
-                    ChatInternalRead(
-                        room_id=str(client.room.id),
-                        user_id=str(client.user.id),
+                # tell peer, client has read latest messages
+                if client.peer:
+                    await broadcast_room(
+                        ChatInternalRead(
+                            room_id=str(client.room.id),
+                            user_id=str(client.peer.id),
+                        )
                     )
-                )
 
                 await chat_cache.remove_unread_room(client.user.id, client.room.id)
         except Exception as e:
@@ -112,15 +111,17 @@ class ChatManager:
     async def _handle_typing(self, client: ChatClient, payload: ChatTypingIn):
         print("typing...")
         try:
-            if client.room:
+            if client.room and client.peer:
                 await broadcast_room(
                     ChatInternalTyping(
                         room_id=str(client.room.id),
-                        user_id=str(client.user.id),
+                        user_id=str(client.peer.id),
                         typing=payload.typing,
                     )
                 )
-                print(f"broadcasted typing to: {broadcast_key(str(client.room.id))}")
+                print(
+                    f"broadcasted typing to: {room_broadcast_key(str(client.room.id))}"
+                )
         except Exception as e:
             logger.exception("error leaving room: %s", e)
 

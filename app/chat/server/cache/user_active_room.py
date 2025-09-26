@@ -13,9 +13,9 @@ class UserActiveRoom:
     async def set_user_active_room(self, room_id: UUID, user_id: UUID):
         added = await redis.sadd(self._user_active_room_key(room_id), str(user_id))  # type: ignore
         if added != 1:
-            raise Exception(f"error setting user active")
+            raise Exception(f"error setting user room active")
 
     async def set_user_inactive_room(self, room_id: UUID, user_id: UUID):
         removed = await redis.srem(self._user_active_room_key(room_id), str(user_id))  # type: ignore
         if removed != 1:
-            raise Exception(f"error setting user inactive")
+            raise Exception(f"error setting user room inactive")

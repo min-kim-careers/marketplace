@@ -4,7 +4,6 @@ from fastapi import APIRouter, Depends, Query
 
 from app.auth.firebase.dependencies import resolve_firebase_session
 from app.chat.dependencies.resolve_room_alias import resolve_room_alias
-from app.chat.repositories.chat_message import ChatMessageRepository
 from app.chat.repositories.chat_room import ChatRoomRepository
 from app.chat.schemas.inbound import ChatRoomInDB, ChatRoomQuery
 from app.chat.schemas.outbound import ChatRoomOut
@@ -66,12 +65,14 @@ async def get_rooms(
 ):
     rooms_db = await ChatRoomRepository.rooms_paginated(db, query, user.id)
 
-    rooms = [ChatRoomOut.from_db(r_db, user.id) for r_db in rooms_db]
-    unread_rooms = await chat_cache.check_unread_rooms(
-        user.id, [r.id for r in rooms_db]
-    )
-    for i, r in enumerate(rooms_db):
-        rooms[i].unread = unread_rooms[r.id]
+    rooms = []
+    if len(rooms_db) > 0:
+        rooms = [ChatRoomOut.from_db(r_db, user.id) for r_db in rooms_db]
+        unread_rooms = await chat_cache.check_unread_rooms(
+            user.id, [r.id for r in rooms_db]
+        )
+        for i, r in enumerate(rooms_db):
+            rooms[i].unread = unread_rooms[r.id]
 
     return APIResponse(data={"rooms": rooms})
 
@@ -79,8 +80,7 @@ async def get_rooms(
 @chat_router.get("/message/unread/exists")
 async def unread_exists(
     user: UserDB = Depends(resolve_firebase_session),
-    db: AsyncSession = Depends(get_db),
 ):
-    exists = await ChatMessageRepository.unread_exists(db, user.id)
+    exists = await chat_cache.has_unread(user.id)
 
     return APIResponse(data={"exists": exists})

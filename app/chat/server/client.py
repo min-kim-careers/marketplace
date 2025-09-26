@@ -2,10 +2,14 @@ from datetime import datetime, timezone
 import json
 from app.cache.cache import redis
 from app.chat.repositories.chat_room import ChatRoomRepository
+from app.chat.schemas.outbound import ChatRoomOut
 from app.chat.server.constants import CHAT_IDLE_KEY
-from app.chat.server.helpers.broadcast_key import broadcast_key
+from app.chat.server.helpers.broadcast_client import broadcast_client
+from app.chat.server.helpers.client_broadcast_key import client_broadcast_key
+from app.chat.server.helpers.room_broadcast_key import room_broadcast_key
 from app.chat.server.helpers.broadcast_room import broadcast_room
 from app.chat.server.schemas.outbound import (
+    ChatClientOut,
     ChatConnectedOut,
     ChatJoinedOut,
     ChatPayloadOutType,
@@ -15,6 +19,7 @@ from app.chat.server.schemas.outbound import (
 )
 from app.chat.server.schemas.internal import (
     ChatInternalAdapter,
+    ChatInternalClient,
     ChatInternalRead,
     ChatInternalTyping,
 )
@@ -45,12 +50,10 @@ class ChatClient:
 
         self.tasks: Set[asyncio.Task] = set()
 
-        # listener
-        self.cmd_q: asyncio.Queue[tuple[Literal["subscribe", "unsubscribe"], str]] = (
-            asyncio.Queue()
-        )
-        self.psub = redis.pubsub()
-        self.idle_key = CHAT_IDLE_KEY
+        # for room only
+        self.room_queue: asyncio.Queue[
+            tuple[Literal["subscribe", "unsubscribe"], str]
+        ] = asyncio.Queue()
 
     def _add_task(self, coro):
         t = asyncio.create_task(coro)
@@ -58,22 +61,13 @@ class ChatClient:
         t.add_done_callback(self.tasks.discard)
         return t
 
-    async def is_peer_active(self) -> bool:
-        return self.peer is not None and await chat_cache.is_user_active(self.peer.id)
-
-    async def is_peer_active_room(self) -> bool:
-        return (
-            self.room is not None
-            and self.peer is not None
-            and await chat_cache.is_user_active_room(self.room.id, self.peer.id)
-        )
-
     async def _send_text(self, payload: ChatInternalText):
-        if not payload.timestamp or not self.room:
+        if not payload.timestamp or not self.room or not self.peer:
             raise
 
         mine = UUID(payload.user_id) == self.user.id
 
+        # send to all
         await self.send_message(
             ChatTextOut.from_internal(
                 msg=payload,
@@ -81,7 +75,7 @@ class ChatClient:
             )
         )
 
-        # handle peer
+        # send to peers only
         if not mine:
             await broadcast_room(
                 ChatInternalRead(
@@ -90,8 +84,16 @@ class ChatClient:
                 )
             )
 
+        if mine:
+            await broadcast_client(
+                ChatInternalClient(
+                    room_id=str(self.room.id),
+                    user_id=str(self.peer.id),
+                )
+            )
+
     async def _send_read(self, payload: ChatInternalRead):
-        if UUID(payload.user_id) != self.user.id and self.room:
+        if UUID(payload.user_id) == self.user.id and self.room:
             now = datetime.now(timezone.utc)
 
             await self.send_message(ChatReadOut(last_read=now.isoformat()))
@@ -105,7 +107,7 @@ class ChatClient:
             await chat_cache.remove_unread_room(self.user.id, self.room.id)
 
     async def _send_typing(self, payload: ChatInternalTyping):
-        if UUID(payload.user_id) != self.user.id:
+        if UUID(payload.user_id) == self.user.id:
             await self.send_message(ChatTypingOut(typing=payload.typing))
 
     async def _process_payload(self, payload: dict[str, Any]):
@@ -120,65 +122,89 @@ class ChatClient:
         elif isinstance(payload, ChatInternalTyping):
             await self._send_typing(payload)
 
-    async def _run_listener(self):
-        async def _handle_data(data: dict):
+    async def _room_listener(self):
+        async def __handle_message(msg: dict):
             try:
-                # skip if listening to __idle__ channel
-                if data["channel"] == self.idle_key:
+                if msg["channel"] == CHAT_IDLE_KEY or msg["type"] != "message":
                     return
-                # send message to client
-                elif data["type"] == "message":
-                    payload = json.loads(data["data"])
-                    await self._process_payload(payload)
+
+                payload = json.loads(msg["data"])
+                await self._process_payload(payload)
             except Exception as e:
-                logger.exception("handle payload error: %s", e)
+                logger.exception("handle room payload error: %s", e)
 
-        # must subscribe to idle key on init
-        async def _set_idle():
-            await self.psub.subscribe(self.idle_key)
-
+        pubsub = redis.pubsub()
         try:
-            await _set_idle()
+            await pubsub.subscribe(CHAT_IDLE_KEY)
             timeout = 0.5
             while True:
                 try:
-                    cmd, key = self.cmd_q.get_nowait()
+                    cmd, key = self.room_queue.get_nowait()
                 except asyncio.QueueEmpty:
                     pass
                 else:
                     if cmd == "subscribe":
-                        await self.psub.subscribe(key)
+                        await pubsub.unsubscribe(CHAT_IDLE_KEY)
+                        await pubsub.subscribe(key)
                         logger.info("subscribed:", key)
                     elif cmd == "unsubscribe":
-                        await self.psub.unsubscribe(key)
-                        await _set_idle()
+                        await pubsub.unsubscribe(key)
+                        await pubsub.subscribe(CHAT_IDLE_KEY)
                         logger.info("unsubscribed:", key)
 
-                msg = await self.psub.get_message(
+                msg = await pubsub.get_message(
                     ignore_subscribe_messages=False, timeout=timeout
                 )
                 if msg:
-                    await _handle_data(msg)
+                    await __handle_message(msg)
         except Exception as e:
             logger.exception("listener error: %s", e)
         finally:
-            await self.psub.close()
-            logger.info("room channel closed")
+            await pubsub.close()
 
-    async def send_message(self, payload: ChatPayloadOutType) -> bool:
+    async def _client_listener(self):
+        async def __handle_message(msg: dict):
+            try:
+                # only send direct client message if client not in room
+                if self.room or msg["type"] != "message":
+                    return
+
+                data = json.loads(msg["data"])
+                payload = ChatInternalClient.model_validate(data)
+                room_db = await ChatRoomRepository.room_by_id(
+                    self.db, UUID(payload.room_id)
+                )
+                if room_db:
+                    room = ChatRoomOut.from_db(room_db, self.user.id)
+                    room.unread = True
+                    await self.send_message(ChatClientOut(room=room))
+            except Exception as e:
+                logger.exception("handle client payload error: %s", e)
+
+        pubsub = redis.pubsub()
+        try:
+            await pubsub.subscribe(client_broadcast_key(str(self.user.id)))
+
+            async for msg in pubsub.listen():
+                await __handle_message(msg)
+
+        except Exception as e:
+            logger.exception("listener error: %s", e)
+        finally:
+            await pubsub.close()
+
+    async def send_message(self, payload: ChatPayloadOutType):
         try:
             await self.conn.send_json(payload.model_dump(mode="json", by_alias=True))
         except Exception as e:
             logger.exception("send message error: %s", e)
-            return False
         print("sent:", payload)
-        return True
 
     async def _subscribe(self, room_key: str):
-        await self.cmd_q.put(("subscribe", room_key))
+        await self.room_queue.put(("subscribe", room_key))
 
     async def _unsubscribe(self, room_key: str):
-        await self.cmd_q.put(("unsubscribe", room_key))
+        await self.room_queue.put(("unsubscribe", room_key))
 
     def _set_peer(self, room: ChatRoomDB):
         self.peer = room.seller if self.user.id == room.buyer_id else room.buyer
@@ -190,7 +216,7 @@ class ChatClient:
         if not room_db:
             raise Exception("room not found")
 
-        await self._subscribe(broadcast_key(str(room_id)))
+        await self._subscribe(room_broadcast_key(str(room_id)))
         self.room = room_db
         self._set_peer(room_db)
         await chat_cache.set_user_active_room(self.room.id, self.user.id)
@@ -201,7 +227,7 @@ class ChatClient:
         if not self.room:
             raise Exception("room missing while resetting state")
 
-        await self._unsubscribe(broadcast_key(str(self.room.id)))
+        await self._unsubscribe(room_broadcast_key(str(self.room.id)))
         await chat_cache.set_user_inactive_room(self.room.id, self.user.id)
         self.room = None
 
@@ -211,7 +237,8 @@ class ChatClient:
 
         # start background tasks
         if not self.tasks:
-            self._add_task(self._run_listener())
+            self._add_task(self._room_listener())
+            self._add_task(self._client_listener())
 
         # send connected message to client
         await self.send_message(ChatConnectedOut())

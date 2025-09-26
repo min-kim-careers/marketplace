@@ -18,6 +18,7 @@ async def websocket_endpoint(
     db: AsyncSession = Depends(get_db),
     user: UserDB = Depends(resolve_firebase_query_token),
 ):
+    client = None
     try:
         await conn.accept()
 

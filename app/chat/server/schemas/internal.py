@@ -24,11 +24,16 @@ class ChatInternalTyping(ChatInternalBase):
     typing: bool
 
 
+class ChatInternalClient(ChatInternalBase):
+    type: Literal["client"] = "client"
+
+
 ChatInternalType = Annotated[
     Union[
         ChatInternalText,
         ChatInternalRead,
         ChatInternalTyping,
+        ChatInternalClient,
     ],
     Field(discriminator="type"),
 ]
