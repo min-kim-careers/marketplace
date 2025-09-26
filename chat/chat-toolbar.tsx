@@ -6,15 +6,22 @@ import {
   AvatarImage,
 } from '@/components/shadcn/components/ui/avatar'
 import { formatCurrency } from '@/lib/helpers/format-price'
-import useProfileStore from '@/lib/stores/profile-store'
+import { ArrowLeft } from 'lucide-react'
 
 export default function ChatToolbar() {
   const currentRoom = useChatStore((state) => state.currentRoom)
-  const { profile } = useProfileStore()
+  const { setProps } = useChatStore()
 
   return (
-    <div className='flex items-center justify-between space-x-2 rounded border p-1 px-3 text-sm text-black/80'>
-      <span>
+    <div className='flex items-center space-x-2 rounded border p-1 px-3 text-sm text-black/80'>
+      <span className='flex flex-[1] items-center'>
+        <ArrowLeft
+          onClick={() => setProps({ open: false })}
+          className='cursor-pointer transition-all hover:scale-105 active:scale-95'
+        />
+      </span>
+
+      <span className='flex-[12] py-2'>
         {currentRoom ? (
           <span className='flex items-center gap-2'>
             <Avatar className='h-8 w-8'>
@@ -32,11 +39,13 @@ export default function ChatToolbar() {
             </div>
           </span>
         ) : (
-          <span>Select a room</span>
+          <span className='flex flex-1 items-center justify-center text-base'>
+            Select a room
+          </span>
         )}
       </span>
 
-      <span>
+      <span className='flex flex-[1] items-center'>
         <ChatRoomList />
       </span>
     </div>

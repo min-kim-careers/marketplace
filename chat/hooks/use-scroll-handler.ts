@@ -9,6 +9,7 @@ export const useScrollHandler = () => {
 
   const messages = useChatStore((state) => state.messages)
   const peerTyping = useChatStore((state) => state.peerTyping)
+  const noMessages = useChatStore((state) => state.noMessages)
 
   const [position, setPosition] = useState<ScreenPosition | null>(null)
   const [timesteps, setTimesteps] = useState<string[]>(['', ''])
@@ -21,20 +22,21 @@ export const useScrollHandler = () => {
     }
   }, [messages.length])
 
-  const setToBottom = () => {
+  const _setToBottom = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight
     }
   }
 
   useEffect(() => {
-    const didRestoreMessages = () => timesteps[0] === timesteps[1]
+    const didRestoreMessages = () =>
+      timesteps[0] === timesteps[1] && !noMessages
     if (!didRestoreMessages()) {
-      setToBottom()
+      _setToBottom()
     }
-  }, [timesteps])
+  }, [timesteps, noMessages])
 
-  useEffect(() => setToBottom(), [peerTyping])
+  useEffect(() => _setToBottom(), [peerTyping])
 
   useEffect(() => {
     const nudgeDown = () => {

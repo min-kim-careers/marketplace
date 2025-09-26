@@ -13,15 +13,14 @@ import {
   SheetTrigger,
 } from '@/components/shadcn/components/ui/sheet'
 import { cn } from '@/components/shadcn/lib/utils'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
 export default function ChatDrawer({ useButton }: { useButton?: boolean }) {
-  const { open, setProps } = useChatStore()
-  const [showUnread, setShowUnread] = useState<boolean>(false)
+  const { open, setProps, hasUnread } = useChatStore()
 
   useEffect(() => {
     const checkUnreadExists = async () => {
-      setShowUnread(await unreadExists())
+      setProps({ hasUnread: await unreadExists() })
     }
 
     if (!open) {
@@ -38,7 +37,7 @@ export default function ChatDrawer({ useButton }: { useButton?: boolean }) {
             <div
               className={cn(
                 'absolute -right-1 -top-1 h-0 w-0 rounded-full bg-red-500 transition-all',
-                showUnread && 'h-3 w-3',
+                hasUnread && 'h-3 w-3',
               )}
             />
           </Button>

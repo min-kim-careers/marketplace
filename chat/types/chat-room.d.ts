@@ -7,7 +7,7 @@ export type ChatRoomItem = {
   previewUrl?: string
 }
 
-export type ChatRoomSimple = {
+export type ChatRoom = {
   alias: string
   isSeller: boolean
   peer: Profile

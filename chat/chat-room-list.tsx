@@ -2,7 +2,7 @@
 
 import { getRooms } from '@/api'
 import useChatStore from '@/chat/stores/chat-store'
-import { ChatRoomSimple } from '@/chat/types/chat-room'
+import { ChatRoom } from '@/chat/types/chat-room'
 import {
   Avatar,
   AvatarFallback,
@@ -18,13 +18,11 @@ import {
 import { cn } from '@/components/shadcn/lib/utils'
 import Spinner from '@/components/spinner'
 import { formatCurrency } from '@/lib/helpers/format-price'
-import { MenuIcon } from 'lucide-react'
+import { ArrowLeft, MenuIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 export default function ChatRoomList() {
-  const { setProps } = useChatStore()
-  const currentRoom = useChatStore((state) => state.currentRoom)
-  const rooms = useChatStore((state) => state.rooms)
+  const { setProps, hasUnread, currentRoom, rooms } = useChatStore()
 
   const [open, setOpen] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
@@ -43,7 +41,7 @@ export default function ChatRoomList() {
         setLoading(false)
       }
     }
-    if (open) {
+    if (open && !rooms.length) {
       loadRooms()
     }
   }, [open])
@@ -51,8 +49,14 @@ export default function ChatRoomList() {
   return (
     <Sheet open={open} onOpenChange={() => setOpen(!open)}>
       <SheetTrigger asChild>
-        <button className='transition-transform duration-200 hover:scale-110'>
+        <button className='relative transition-transform duration-200 hover:scale-110'>
           <MenuIcon />
+          <div
+            className={cn(
+              'absolute -right-1 -top-1 h-0 w-0 rounded-full bg-red-500 transition-all',
+              hasUnread && 'h-3 w-3',
+            )}
+          />
         </button>
       </SheetTrigger>
 
@@ -64,8 +68,20 @@ export default function ChatRoomList() {
         )}
       >
         <SheetHeader>
-          <SheetTitle>Rooms</SheetTitle>
+          <SheetTitle />
         </SheetHeader>
+        <div className='relative flex flex-row items-center justify-center rounded border p-2 text-base font-normal'>
+          <span className='flex flex-[1] items-center'>
+            <ArrowLeft
+              onClick={() => setOpen(false)}
+              className='absolute left-0 ml-2 cursor-pointer transition-all hover:scale-105 active:scale-95'
+            />
+          </span>
+          <span className='flex flex-[10] items-center justify-center'>
+            Rooms
+          </span>
+          <span className='flex flex-[1] items-center'></span>
+        </div>
         <div className={cn('h-full w-full overflow-y-auto rounded border')}>
           {loading ? (
             <div className='flex h-full items-center justify-center'>
@@ -74,7 +90,7 @@ export default function ChatRoomList() {
           ) : (
             <div className='flex h-full flex-1 flex-col justify-start gap-2 p-2'>
               {rooms.length ? (
-                rooms.map((room: ChatRoomSimple, i) => (
+                rooms.map((room: ChatRoom, i) => (
                   <button
                     className={cn(
                       'relative flex w-full flex-row items-center gap-4 border border-transparent p-2 hover:bg-secondary',

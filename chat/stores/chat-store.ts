@@ -1,14 +1,14 @@
 'use client'
 
 import { ChatTextIn } from '@/chat/types/chat-inbound'
-import { ChatRoomSimple } from '@/chat/types/chat-room'
+import { ChatRoom } from '@/chat/types/chat-room'
 import { ChatStatus } from '@/chat/types/chat-status'
 import { toPath } from '@/lib/helpers/to-path'
 import { create } from 'zustand'
 
 type ChatProps = {
   url?: string
-  currentRoom?: ChatRoomSimple
+  currentRoom?: ChatRoom
   since?: string
 
   peerTyping: boolean
@@ -17,7 +17,8 @@ type ChatProps = {
   status: ChatStatus
   messages: ChatTextIn[]
   noMessages: boolean
-  rooms: ChatRoomSimple[]
+  rooms: ChatRoom[]
+  hasUnread: boolean
 }
 
 type ChatState = {
@@ -35,6 +36,7 @@ const useChatStore = create<ChatState>((set) => {
     messages: [],
     noMessages: false,
     rooms: [],
+    hasUnread: false,
 
     setUrl: (token?: string) =>
       set({

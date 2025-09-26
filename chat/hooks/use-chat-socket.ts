@@ -1,8 +1,10 @@
 import { flagMessageRead } from '@/chat/helpers/flag-message-read'
+import { upsertChatRoom } from '@/chat/helpers/upsert-chat-room'
 import { useIdleHandler } from '@/chat/hooks/use-idle-handler'
 import { useLoadToken } from '@/chat/hooks/use-load-token'
 import useChatStore from '@/chat/stores/chat-store'
 import {
+  ChatClientIn,
   ChatConnectedIn,
   ChatErrorIn,
   ChatJoinedIn,
@@ -32,6 +34,7 @@ export const useChatSocket = (): ChatSocketState => {
   const currentRoom = useChatStore((state) => state.currentRoom)
   const status = useChatStore((state) => state.status)
   const peerLastRead = useChatStore((state) => state.peerlastRead)
+  const rooms = useChatStore((state) => state.rooms)
 
   const token = useLoadToken()
   useIdleHandler(token)
@@ -87,6 +90,9 @@ export const useChatSocket = (): ChatSocketState => {
           case 'error':
             handleErrorIn(payload)
             break
+          case 'client':
+            handleClientIn(payload)
+            break
           default:
             break
         }
@@ -120,10 +126,18 @@ export const useChatSocket = (): ChatSocketState => {
       setProps({ noMessages: true })
       return
     }
+
     setProps({
       messages: [...messages, ...previous],
       since: previous[previous.length - 1].timestamp,
     })
+
+    if (!messages.length && currentRoom) {
+      const activeRoom = rooms.find((r) => r.alias === currentRoom.alias)
+      if (activeRoom) {
+        activeRoom.unread = false
+      }
+    }
   }
 
   const handleTextIn = (payload: ChatTextIn) => {
@@ -151,6 +165,10 @@ export const useChatSocket = (): ChatSocketState => {
       console.error('server error')
     }
     setProps({ status: 'error' })
+  }
+
+  const handleClientIn = (payload: ChatClientIn) => {
+    setProps({ rooms: upsertChatRoom(rooms, payload.room) })
   }
 
   return {
