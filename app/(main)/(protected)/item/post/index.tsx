@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-import { _UpsertItemQuery } from '@/api/endpoints/item'
+import { UpsertItemRequest } from '@/api'
 import {
   CategoryField,
   ConditionField,
@@ -53,13 +53,17 @@ export default function ItemPost({ props }: { props: ItemPostProps }) {
   async function onSubmit(values: z.infer<typeof ItemFormSchema>) {
     const { location, imageUrls, ..._values } = values
 
-    const request: _UpsertItemQuery = {
+    const request: UpsertItemRequest = {
       ..._values,
       ...location,
-      imageUrls: imageUrls.filter((u) => u !== null),
     }
 
-    if (await handleUpsert(request)) {
+    if (
+      await handleUpsert({
+        request,
+        imageUrls: imageUrls.filter((u) => u !== null),
+      })
+    ) {
       router.replace(APP_ROUTES.PROFILE_LISTINGS.href)
     }
   }

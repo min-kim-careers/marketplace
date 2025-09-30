@@ -1,74 +1,66 @@
 'use client'
 
-import { verifySession } from '@/api/service/auth'
-import { useAuthClient } from '@/lib/hooks/auth/use-auth-client'
-import { useAuthHandler } from '@/lib/hooks/auth/use-auth-handler'
-import { useAuthStatus } from '@/lib/hooks/auth/use-auth-status'
+import useFirebaseStore from '@/lib/stores/firebase-store'
+import useProfileStore from '@/lib/stores/profile-store'
+import { auth } from '@/lib/utils/firebase'
+import { onIdTokenChanged } from 'firebase/auth'
 import { usePathname } from 'next/navigation'
-import { createContext, ReactNode, useContext, useEffect } from 'react'
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 
 export type AuthStatus = 'loading' | 'authenticated' | 'unauthenticated'
-
-export interface AuthState {
-  status: {
-    client: AuthStatus
-    server: AuthStatus
-  }
-  isAuthenticated: boolean
-  isLoading: boolean
+export type AuthState = {
+  status: AuthStatus
 }
 
 const AuthContext = createContext<AuthState | null>(null)
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const pathname = usePathname()
+  const [status, setStatus] = useState<AuthState['status']>('loading')
 
-  const { handleSignOut, refreshSession } = useAuthHandler()
-
-  const { status, setStatus, isAuthenticated, isLoading } = useAuthStatus()
-
-  const { user } = useAuthClient((client: AuthStatus) =>
-    setStatus((p) => ({
-      ...p,
-      client,
-      ...(client === 'unauthenticated' && { server: 'unauthenticated' }),
-    })),
-  )
+  const { setUser } = useFirebaseStore()
+  const { setProfile } = useProfileStore()
+  const user = useFirebaseStore((state) => state.user)
+  const profile = useProfileStore((state) => state.profile)
 
   useEffect(() => {
-    const authenticateServer = async () => {
-      if (status.client !== 'authenticated') return
+    const unsub = onIdTokenChanged(auth, async (fbUser) => {
+      if (fbUser) {
+        setUser(fbUser)
+        setStatus('authenticated')
+      } else {
+        setUser()
+        setStatus('unauthenticated')
+      }
+    })
+    return () => unsub()
+  }, [setUser])
 
-      try {
-        const authenticated = await verifySession()
-        if (!authenticated && user) {
-          console.log('invalid or missing session, refreshing...')
-          const refreshed = await refreshSession(user)
-          if (!refreshed) {
-            await handleSignOut()
-            throw new Error('session refresh failed')
-          }
-        }
-        setStatus((p) => ({ ...p, server: 'authenticated' }))
-      } catch (error) {
-        console.error(error)
-        setStatus((p) => ({
-          ...p,
-          server: 'unauthenticated',
-          client: 'unauthenticated',
-        }))
+  useEffect(() => {
+    if (status === 'loading') return
+
+    const handleAuth = async () => {
+      if (user) {
+        setStatus('authenticated')
+      } else {
+        setProfile()
+        setStatus('unauthenticated')
       }
     }
 
-    authenticateServer()
-  }, [status.client, pathname])
+    handleAuth()
+  }, [user, pathname])
 
   return (
     <AuthContext.Provider
       value={{
         status,
-        isAuthenticated,
-        isLoading,
       }}
     >
       {children}

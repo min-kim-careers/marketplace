@@ -65,6 +65,7 @@ export default function ChatRoomList() {
         className={cn(
           'flex flex-1 flex-col gap-2',
           '[state=closed]:duration-300 data-[state=open]:duration-300',
+          'min-w-full sm:min-w-[50vw]',
         )}
       >
         <SheetHeader>

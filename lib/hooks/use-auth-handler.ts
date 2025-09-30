@@ -3,6 +3,7 @@
 import { revokeSession, signInWithGoogle } from '@/api/service/auth'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { clearSession } from '@/lib/helpers/server/clear-session'
+import { useLoadingStore } from '@/lib/providers/loading-provider'
 import useFirebaseStore from '@/lib/stores/firebase-store'
 import useProfileStore from '@/lib/stores/profile-store'
 import { auth, provider } from '@/lib/utils/firebase'
@@ -10,12 +11,11 @@ import { FirebaseError } from 'firebase/app'
 import { signInWithPopup, User } from 'firebase/auth'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { useLoadingStore } from '../../providers/loading-provider'
 
 export const useAuthHandler = () => {
   const { setLoading } = useLoadingStore()
   const { setProfile } = useProfileStore()
-  const { user, setUser } = useFirebaseStore()
+  const { setUser } = useFirebaseStore()
 
   const router = useRouter()
 
@@ -30,12 +30,13 @@ export const useAuthHandler = () => {
 
       const profile = await signInWithGoogle(token)
       if (!profile) throw new Error()
+      setProfile(profile)
 
       toastMsg = `Signed in as ${profile.handle}.`
-      router.refresh()
     } catch (error) {
       if (error instanceof FirebaseError) {
         if (error.code === 'auth/popup-closed-by-user') {
+          console.log('user closed popup')
         }
       } else {
         toastMsg = `Something went wrong.`

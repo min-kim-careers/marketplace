@@ -12,17 +12,10 @@ export default function Landing() {
   return (
     <div className='flex w-full flex-1 items-center justify-center'>
       <div className='flex w-3/4 flex-col items-center justify-center gap-8 sm:items-start'>
-        <h1 className='text-4xl font-bold'>
-          Welcome to the {APP_DATA.TITLE}!
-        </h1>
-        {profile && profile.handle && (
-          <p>{`Hi there, ${profile.handle}!`}</p>
-        )}
+        <h1 className='text-4xl font-bold'>Welcome to the {APP_DATA.TITLE}!</h1>
+        {profile && profile.handle && <p>{`Hi there, ${profile.handle}!`}</p>}
 
-        <Link
-          href={`${APP_ROUTES.MARKET.href}`}
-          passHref
-        >
+        <Link href={`${APP_ROUTES.MARKET.href}`} passHref>
           <Button>Browse the market</Button>
         </Link>
       </div>

@@ -1,38 +1,50 @@
 'use client'
 
-import { _UpsertItemQuery } from '@/api/endpoints/item'
-import { deleteItem, upsertItem } from '@/api/service/item'
+import { deleteItem, upsertItem, UpsertItemRequest } from '@/api/service/item'
 import { imageUrlsToFiles } from '@/lib/helpers/image-urls-to-files'
 import { Item } from '@/lib/types/item'
 import { toast } from 'sonner'
 import { useLoadingStore } from '../providers/loading-provider'
 
 interface ItemHandlerState {
-  handleUpsert: (
-    request: _UpsertItemQuery,
-    itemAlias?: string,
-  ) => Promise<boolean>
+  handleUpsert: ({
+    request,
+    imageUrls,
+    alias,
+  }: {
+    request: UpsertItemRequest
+    imageUrls?: string[]
+    alias?: string
+  }) => Promise<boolean>
   handleDelete: (item: Item) => Promise<boolean>
 }
 
 export const useItemHandler = (): ItemHandlerState => {
   const { setLoading } = useLoadingStore()
 
-  const handleUpsert = async (
-    request: _UpsertItemQuery,
-    itemAlias?: string,
-  ) => {
-    const isUpdate = !!itemAlias
+  const handleUpsert = async ({
+    request,
+    imageUrls,
+    alias,
+  }: {
+    request: UpsertItemRequest
+    imageUrls?: string[]
+    alias?: string
+  }) => {
+    const isUpdate = !!alias
     let toastMsg = ''
 
     try {
       setLoading(`${isUpdate ? 'Updating' : 'Posting'} your item`)
 
-      if (request.imageUrls) {
-        request.uploadImages = await imageUrlsToFiles(request.imageUrls)
+      if (imageUrls) {
+        request.uploadImages = await imageUrlsToFiles(imageUrls)
+        request.uploadIndices = imageUrls
+          .map((url, i) => (url.startsWith('blob:') ? i : null))
+          .filter((url) => url != null)
       }
 
-      if (!(await upsertItem(request, itemAlias))) {
+      if (!(await upsertItem(request, alias))) {
         throw new Error(`failed to ${isUpdate ? 'update' : 'post'}`)
       }
 

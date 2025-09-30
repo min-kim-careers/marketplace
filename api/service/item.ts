@@ -33,11 +33,12 @@ export const getItems = async (params: ItemPageParams) => {
   }
 }
 
-export const getUserItems = async (params: ItemPageParams) => {
+export const getUserListings = async (params: ItemPageParams) => {
   try {
     return await _getItems({
       ...params,
       userOption: 'user_only',
+      activeOnly: false,
     })
   } catch (error) {
     console.error(error)
@@ -64,7 +65,7 @@ export const deleteItem = async (itemAlias: string) => {
   }
 }
 
-type UpsertItemRequest = _UpsertItemQuery
+export type UpsertItemRequest = _UpsertItemQuery
 export const upsertItem = async (
   request: UpsertItemRequest,
   itemAlias?: string,

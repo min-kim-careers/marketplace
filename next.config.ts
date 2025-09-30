@@ -3,25 +3,13 @@ import type { NextConfig } from 'next'
 const nextConfig: NextConfig = {
   /* config options here */
   reactStrictMode: false,
-  images: {
-    remotePatterns: [
+  async rewrites() {
+    return [
       {
-        protocol: 'https',
-        hostname: 'dummyimage.com',
+        source: '/images/:path*',
+        destination: 'http://gateway-service/images/:path*',
       },
-      {
-        protocol: 'https',
-        hostname: 'picsum.photos'
-      },
-      {
-        protocol: 'https',
-        hostname: 'placekitten.com'
-      },
-      {
-        protocol: 'http',
-        hostname: '192.168.8.103'
-      }
-    ],
+    ]
   },
 }
 

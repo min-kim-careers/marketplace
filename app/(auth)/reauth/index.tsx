@@ -2,35 +2,37 @@
 
 import { verifySession } from '@/api'
 import LoadingDots from '@/components/loading-dots'
+import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { delay } from '@/lib/helpers/delay'
-import { useAuthHandler } from '@/lib/hooks/auth/use-auth-handler'
+import { useAuthHandler } from '@/lib/hooks/use-auth-handler'
 import { useAuthContext } from '@/lib/providers/auth-provider'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
 export default function Reauth({ next }: { next: string }) {
   const router = useRouter()
-  const { isAuthenticated, isLoading } = useAuthContext()
+  const { status } = useAuthContext()
   const { globalSignOut } = useAuthHandler()
 
   useEffect(() => {
     const handleReauth = async () => {
-      if (!next || isLoading) return
+      if (!next || status === 'loading') return
 
-      if (isAuthenticated) {
+      if (status === 'authenticated') {
         await verifySession()
         await delay(1000)
         router.replace(next)
       } else {
         await delay(1000)
         await globalSignOut()
+        router.replace(APP_ROUTES.HOME.href)
       }
     }
 
     handleReauth()
-  }, [next, isLoading, isAuthenticated])
+  }, [next, status])
 
-  if (isLoading)
+  if (status === 'loading')
     return (
       <div className='flex h-screen w-screen flex-1 items-center justify-center'>
         <div className='flex flex-col gap-4'>
@@ -42,7 +44,7 @@ export default function Reauth({ next }: { next: string }) {
 
   return (
     <div className='flex h-screen w-screen flex-1 items-center justify-center'>
-      {isAuthenticated ? (
+      {status === 'authenticated' ? (
         <div className='flex flex-col gap-4'>
           <p>Authenticated. Redirecting..</p>
         </div>

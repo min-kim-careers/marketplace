@@ -1,7 +1,7 @@
 import ChatDrawer from '@/chat/chat-drawer'
 import LoadingDots from '@/components/loading-dots'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
-import { useAuthHandler } from '@/lib/hooks/auth/use-auth-handler'
+import { useAuthHandler } from '@/lib/hooks/use-auth-handler'
 import { useAuthContext } from '@/lib/providers/auth-provider'
 import useProfileStore from '@/lib/stores/profile-store'
 import Link from 'next/link'
@@ -9,11 +9,11 @@ import { Button } from '../../shadcn/components/ui/button'
 import Dropdown from './dropdown'
 
 export default function NavBar() {
-  const { profile } = useProfileStore()
-  const { isLoading, isAuthenticated } = useAuthContext()
+  const profile = useProfileStore((state) => state.profile)
+  const { status } = useAuthContext()
   const { handleSignIn } = useAuthHandler()
 
-  if (isLoading) {
+  if (status === 'loading') {
     return (
       <div className='flex-1'>
         <LoadingDots className='h-2 w-2' />
@@ -54,5 +54,5 @@ export default function NavBar() {
     )
   }
 
-  return isAuthenticated ? authenticated() : unauthenticated()
+  return status === 'authenticated' ? authenticated() : unauthenticated()
 }

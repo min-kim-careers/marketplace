@@ -115,7 +115,7 @@ class Client {
         }
       }
 
-      console.log(this.url.toString())
+      // console.log(this.url.toString())
       // console.log({
       //   ...this.init,
       //   ...(this.init.body && { body: 'redacted' }),

@@ -8,10 +8,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/shadcn/components/ui/card'
-import { ITEM_STATUS_COLORS } from '@/lib/constants/item-status-colors'
+import { ITEM_STATUS_LABELS } from '@/lib/constants/item-status-labels'
 import { formatCurrency } from '@/lib/helpers/format-price'
 import { Item } from '@/lib/types/item'
-import { Circle } from 'lucide-react'
 
 export default function ProfileListingsCard({
   item,
@@ -29,13 +28,14 @@ export default function ProfileListingsCard({
     >
       <div className='flex flex-1 flex-col justify-between'>
         <CardHeader className='flex-1'>
-          <CardTitle className='line-clamp-1 flex items-center space-x-2'>
-            <span>
-              <Circle fill={ITEM_STATUS_COLORS[item.status]} size={8} />
+          <CardTitle className='line-clamp-1 flex items-center justify-between space-x-2'>
+            <span className='space-x-2'>
+              <span className='font-thin italic text-gray-400'>Listing</span>
+              <span>{item.name}</span>
+              <span className='font-normal'>{`${item.suburb}, ${item.postcode}`}</span>
             </span>
-            <span className='font-thin italic text-gray-400'>Listing</span>
-            <span>{item.name}</span>
-            <span className='font-normal'>{`${item.suburb}, ${item.postcode}`}</span>
+
+            <span>{ITEM_STATUS_LABELS[item.status]}</span>
           </CardTitle>
           <CardDescription className='line-clamp-1'>
             <div className='flex gap-1'>

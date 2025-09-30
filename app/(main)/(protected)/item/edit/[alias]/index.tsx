@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-import { _UpsertItemQuery } from '@/api/endpoints/item'
+import { UpsertItemRequest } from '@/api'
 import {
   CategoryField,
   ConditionField,
@@ -69,7 +69,7 @@ export default function ItemEdit({
       item.postcode === values.location.postcode,
       item.suburb === values.location.suburb,
       item.state === values.location.state,
-      item.imageUrls.every((url, i) => url === values.imageUrls[i]),
+      JSON.stringify(item.imageUrls) === JSON.stringify(values.imageUrls),
     ]
 
     return conditions.some((condition: boolean) => !condition)
@@ -85,13 +85,18 @@ export default function ItemEdit({
 
     const { location, imageUrls, ..._values } = values
 
-    const request: _UpsertItemQuery = {
+    const request: UpsertItemRequest = {
       ..._values,
       ...location,
-      imageUrls: imageUrls.filter((u) => u !== null),
     }
 
-    if (await handleUpsert(request, item.alias)) {
+    if (
+      await handleUpsert({
+        request,
+        imageUrls: imageUrls.filter((u) => u !== null),
+        alias: item.alias,
+      })
+    ) {
       router.replace(APP_ROUTES.PROFILE_LISTINGS.href)
     }
   }

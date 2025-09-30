@@ -5,12 +5,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/shadcn/components/ui/select'
-import { ITEM_STATUS_COLORS } from '@/lib/constants/item-status-colors'
 import { ITEM_STATUS_LABELS } from '@/lib/constants/item-status-labels'
 import { ItemStatus } from '@/lib/enums/item-status'
 import { useItemHandler } from '@/lib/hooks/use-item-handler'
 import { Item } from '@/lib/types/item'
-import { Circle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 export default function ItemStatusSelect({ item }: { item: Item }) {
@@ -30,9 +28,7 @@ export default function ItemStatusSelect({ item }: { item: Item }) {
           <SelectValue>
             <span className='flex flex-row items-center gap-2 pr-2'>
               <span>{ITEM_STATUS_LABELS[item.status]}</span>
-              <span>
-                <Circle fill={ITEM_STATUS_COLORS[item.status]} size={8} />
-              </span>
+              <span></span>
             </span>
           </SelectValue>
         </SelectTrigger>
