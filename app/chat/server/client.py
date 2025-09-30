@@ -24,7 +24,7 @@ from app.chat.server.schemas.internal import (
     ChatInternalTyping,
 )
 from app.chat.server.schemas.internal import ChatInternalText
-from app.core import logger
+from app.core.logger import logger
 from app.chat.server.cache import chat_cache
 
 

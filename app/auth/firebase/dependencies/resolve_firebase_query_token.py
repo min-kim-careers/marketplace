@@ -6,7 +6,7 @@ from app.db.session import get_db
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.auth.firebase.schemas.outbound import FirebaseUser
-from app.core import logger
+from app.core.logger import logger
 from app.core.schemas.error import ErrorResponse
 from fastapi import Query, status
 from firebase_admin import auth

@@ -2,19 +2,21 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core import helpers, logger
+from app.core import helpers
+from app.core.logger import log_class_exceptions
 from app.db.models.profile import ProfileDB
 from app.profile.constants.defaults import default_profile_extra
 from app.profile.schemas.inbound import ProfileInCreateDB, ProfileInUpdateDB
 
 
+@log_class_exceptions
 class ProfileRepository:
     @staticmethod
-    async def get_by_user_id(db: AsyncSession, user_id: UUID) -> ProfileDB | None:
+    async def get_by_user_id(db: AsyncSession, user_id: UUID) -> ProfileDB:
         return await helpers.get_one_by(db, ProfileDB, user_id=user_id)
 
     @staticmethod
-    async def get_by_handle(db: AsyncSession, handle: str) -> ProfileDB | None:
+    async def get_by_handle(db: AsyncSession, handle: str) -> ProfileDB:
         return await helpers.get_one_by(db, ProfileDB, handle=handle)
 
     @staticmethod
@@ -26,9 +28,7 @@ class ProfileRepository:
         return await helpers.get_exists_by(db, ProfileDB, email=email)
 
     @staticmethod
-    async def create(
-        db: AsyncSession, user_id: UUID, profile_in: ProfileInCreateDB
-    ) -> ProfileDB | None:
+    async def create(db: AsyncSession, user_id: UUID, profile_in: ProfileInCreateDB):
         try:
             profile_db = ProfileDB(
                 **profile_in.model_dump(
@@ -41,11 +41,9 @@ class ProfileRepository:
             db.add(profile_db)
             await db.commit()
             await db.refresh(profile_db)
-            return profile_db
-        except Exception as e:
+        except Exception:
             await db.rollback()
-            logger.info(e)
-            return None
+            raise
 
     @staticmethod
     async def update(
@@ -60,8 +58,6 @@ class ProfileRepository:
 
             await db.commit()
             await db.refresh(profile_db)
-            return profile_db
-        except Exception as e:
+        except Exception:
             await db.rollback()
-            logger.info(e)
-            return None
+            raise

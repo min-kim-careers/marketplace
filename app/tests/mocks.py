@@ -2,7 +2,7 @@ import asyncio
 import random
 from uuid import UUID, uuid4
 
-from app.core import logger
+from app.core.logger import logger
 from app.core.helpers import get_one_by
 from app.db.models.item import ItemDB
 from app.db.models.profile import ProfileDB
@@ -108,4 +108,5 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    # asyncio.run(main())
+    pass

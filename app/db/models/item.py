@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
-from sqlalchemy import String, DateTime, ForeignKey, Enum, ARRAY
+from sqlalchemy import String, DateTime, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from app.db.base import Base
 
@@ -48,8 +48,6 @@ class ItemDB(Base):
     )
     expires_at: Mapped[Optional[datetime]] = mapped_column(nullable=True)
 
-    image_urls: Mapped[list[str]] = mapped_column(ARRAY(String), default=list)
-
     user_id: Mapped[UUID] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
@@ -68,4 +66,45 @@ class ItemDB(Base):
         "UserDB",
         lazy="selectin",
         foreign_keys=[buyer_id],
+    )
+
+    images: Mapped[list["ItemImageDB"]] = relationship(
+        "ItemImageDB",
+        back_populates="item",
+        cascade="all, delete-orphan",
+        order_by="ItemImageDB.index",
+    )
+
+
+class ItemImageDB(Base):
+    __tablename__ = "item_images"
+
+    __table_args__ = (UniqueConstraint("item_id", "index"),)
+
+    id: Mapped[UUID] = mapped_column(
+        PG_UUID(as_uuid=True), primary_key=True, default=uuid4
+    )
+
+    index: Mapped[int] = mapped_column(nullable=False)
+    filename: Mapped[str] = mapped_column(nullable=False)
+
+    item_id: Mapped[UUID] = mapped_column(
+        ForeignKey("items.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    item: Mapped["ItemDB"] = relationship(
+        "ItemDB",
+        lazy="selectin",
+        foreign_keys=[item_id],
+    )
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
     )

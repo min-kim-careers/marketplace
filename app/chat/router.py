@@ -7,7 +7,6 @@ from app.chat.dependencies.resolve_room_alias import resolve_room_alias
 from app.chat.repositories.chat_room import ChatRoomRepository
 from app.chat.schemas.inbound import ChatRoomInDB, ChatRoomQuery
 from app.chat.schemas.outbound import ChatRoomOut
-from app.core.schemas.error import ErrorResponse
 from app.core.schemas.outbound import APIResponse
 from app.core.security import verify_service_key
 from app.db.models.user import UserDB
@@ -39,8 +38,6 @@ async def get_room_by_item(
     )
     if not room_db:
         item_db = await ItemRepository.by_item(db, item_id)
-        if not item_db:
-            raise ErrorResponse(message="item not found")
         room_db = await ChatRoomRepository.create_room_with_status(
             db,
             ChatRoomInDB(
@@ -49,8 +46,6 @@ async def get_room_by_item(
                 seller_id=item_db.user.id,
             ),
         )
-        if not room_db:
-            raise ErrorResponse(message="failed to create room")
 
     room = ChatRoomOut.from_db(room_db, user.id)
 

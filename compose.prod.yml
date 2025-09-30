@@ -1,0 +1,42 @@
+services:
+  api-db-service:
+    extends:
+      file: ./compose.yml
+      service: api-db-service
+    volumes:
+      - prod_api-db-data:/var/lib/postgresql/data
+
+  api-cache-service:
+    extends:
+      file: ./compose.yml
+      service: api-cache-service
+    volumes:
+      - prod_api-cache-data:/data
+
+  api-service:
+    extends:
+      file: ./compose.yml
+      service: api-service
+    environment:
+      - DB_HOST=api-db-service
+      - DB_PORT=5432
+      - DB_USER=apidbuser
+      - DB_PASSWORD=REDACTED
+      - DB_NAME=apidb
+
+      - CACHE_HOST=api-cache-service
+      - CACHE_PORT=6379
+      - CACHE_PASSWORD=REDACTED
+      - CACHE_DB=0
+
+      - SERVICE_KEY=GIUv6nI8S76oIdVPE3sSe3YvLkF7O6XwqeQp4MOvGUE=
+      - SERVICE_KEY_HEADER=x-api-key
+
+      - SESSION_HEADER=__session
+
+      - HOST_BASE=https://pcmarket.app
+      - CONTAINER_IMAGE_DIR=/code/images
+
+volumes:
+  prod_api-db-data:
+  prod_api-cache-data:

@@ -7,7 +7,7 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.auth.firebase.schemas.outbound import FirebaseUser
 from app.auth.helpers import get_session_from_request_optional
-from app.core import logger
+from app.core.logger import logger
 from app.core.schemas.error import ErrorResponse
 from fastapi import Depends, status
 from firebase_admin import auth

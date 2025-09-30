@@ -1,6 +1,6 @@
 from uuid import UUID
 from app.cache.cache import redis
-from app.core import logger
+from app.core.logger import logger
 
 
 class UnreadRooms:

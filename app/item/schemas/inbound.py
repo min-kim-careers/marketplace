@@ -25,7 +25,7 @@ class ItemsQuery(InboundBase):
     categories: Optional[List[ItemCategory]] = Query(default=None)
     conditions: Optional[List[ItemCondition]] = Query(default=None)
     user_option: Optional[ItemUserOption] = None
-    active_only: Optional[bool] = True
+    active_only: Optional[bool] = None
 
     @property
     def offset(self) -> int:
@@ -47,13 +47,13 @@ class ItemInForm(InboundBase):
     postcode: Optional[str] = Field(default=None, min_length=4, max_length=4)
     suburb: Optional[str] = None
     state: Optional[str] = None
-    image_urls: Optional[List[str]] = None
-    upload_images: Optional[List[UploadFile]] = File(default=None)
+    upload_indices: Optional[list[int]] = None
+    upload_images: Optional[list[UploadFile]] = File(...)
 
     @model_validator(mode="after")
-    def check_image_urls_if_upload_images(self):
-        if self.image_urls is None and self.upload_images is not None:
-            raise ValueError("image_urls must be None if upload_images is None")
+    def validate_uploads(self):
+        if (self.upload_indices, self.upload_images).count(None) == 1:
+            raise ValueError("missing upload prerequisites")
         return self
 
 
@@ -67,4 +67,3 @@ class ItemInDB(BaseModel):
     postcode: Optional[str] = Field(default=None, min_length=4, max_length=4)
     suburb: Optional[str] = None
     state: Optional[str] = None
-    image_urls: Optional[List[str]] = None

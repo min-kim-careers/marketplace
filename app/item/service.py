@@ -1,56 +1,79 @@
-import re
-from typing import List, Optional
+from typing import Optional
 from uuid import UUID
 
-from app.core import logger
+from app.core.logger import log_class_exceptions, logger
 from app.core.schemas.error import ErrorResponse
 from app.core.schemas.outbound import APIResponse
-from app.db.models.item import ItemDB
+from app.db.models.item import ItemDB, ItemImageDB
 from app.item.repository import ItemRepository
 from app.item.schemas.inbound import ItemInDB, ItemInForm, ItemsQuery
 from app.item.schemas.outbound import ItemOut
-from app.storage.image import remove_image_bulk, store_image_bulk
+from app.item.utils.image import store_image, remove_image_bulk
 from fastapi import UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
+@log_class_exceptions
 class ItemService:
     @staticmethod
-    async def upload_images_and_get_urls(
-        upload_images: List[UploadFile], image_urls: List[str]
-    ) -> List[str] | None:
-        new_urls = await store_image_bulk(upload_images)
-        if not new_urls:
-            return None
+    async def update_item_images(
+        db: AsyncSession,
+        item_db: ItemDB,
+        upload_images: list[UploadFile] | None,
+        upload_indices: list[int] | None,
+    ):
+        if not upload_images or not upload_indices:
+            return item_db
 
-        for image_url_index, existing_url in enumerate(image_urls):
-            match = re.match(r"^\{\{(\d+)\}\}$", existing_url)
-            if match:
-                placeholder_index = int(match.group(1))
-                image_urls[image_url_index] = new_urls[placeholder_index]
-        return new_urls
+        await db.refresh(item_db, attribute_names=["images"])
+        existing = {img.index: img for img in item_db.images}
+
+        for upload, idx in zip(upload_images, upload_indices):
+            filename = await store_image(upload)
+            if idx in existing:
+                existing[idx].filename = filename
+            else:
+                new_img = ItemImageDB(index=idx, filename=filename, item_id=item_db.id)
+                db.add(new_img)
+
+        await db.flush()
+        await db.refresh(item_db, attribute_names=["images"])
+        return item_db
 
     @staticmethod
     async def upsert_item(
-        db: AsyncSession, user_id: UUID, item_in: ItemInForm, item_db: ItemDB | None
+        db: AsyncSession, user_id: UUID, item_form: ItemInForm, item_db: ItemDB | None
     ):
-        item_in_db = ItemInDB.model_validate(item_in, from_attributes=True)
+        try:
+            if item_db:
+                logger.info("Updating...")
+                item_db = await ItemRepository.update(
+                    db,
+                    item_db,
+                    ItemInDB.model_validate(item_form, from_attributes=True),
+                )
+            else:
+                logger.info("Creating...")
+                item_db = await ItemRepository.create(
+                    db,
+                    user_id,
+                    ItemInDB.model_validate(item_form, from_attributes=True),
+                )
 
-        new_item_db = None
-        if item_db:
-            logger.info("Updating...")
-            new_item_db = await ItemRepository.update(db, item_db, item_in_db)
-        else:
-            logger.info("Creating...")
-            new_item_db = await ItemRepository.create(db, user_id, item_in_db)
+            item_db = await ItemService.update_item_images(
+                db, item_db, item_form.upload_images, item_form.upload_indices
+            )
 
-        return new_item_db
+            await db.commit()
+            return item_db
+        except Exception:
+            await db.rollback()
+            raise
 
     @staticmethod
     async def get_items(
         db: AsyncSession, query: ItemsQuery, user_id: Optional[UUID] = None
     ):
-
         item_count = await ItemRepository.count(db, query, user_id)
         if not item_count:
             return APIResponse(
@@ -78,9 +101,6 @@ class ItemService:
 
     @staticmethod
     async def delete_item(db: AsyncSession, item_db: ItemDB):
-        image_urls_copy = list(item_db.image_urls)
-
-        if not await ItemRepository.delete(db, item_db):
-            raise ErrorResponse(status_code=404, message="Failed to delete item")
-
-        remove_image_bulk(image_urls_copy)
+        filenames = [img.filename for img in item_db.images]
+        await ItemRepository.delete(db, item_db)
+        remove_image_bulk(filenames)

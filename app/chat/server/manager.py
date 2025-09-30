@@ -20,7 +20,7 @@ from app.chat.server.schemas.internal import (
     ChatInternalTyping,
 )
 from app.chat.services.chat_message import ChatMessageService
-from app.core import logger
+from app.core.logger import logger
 from app.chat.server.streamer import chat_streamer
 from app.chat.server.cache import chat_cache
 

@@ -1,6 +1,7 @@
 import logging
 import os
 from typing import Optional
+import functools
 
 
 class PathFilter(logging.Filter):
@@ -43,3 +44,28 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
     handlers=[handler],
 )
+
+logger = logging.getLogger(__name__)
+
+
+def log_exception(func):
+    """Decorator to log exceptions."""
+
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception:
+            logger.exception(f"Exception in {func.__name__}")
+            raise
+
+    return wrapper
+
+
+def log_class_exceptions(cls):
+    """Class decorator to apply a decorator to all methods."""
+    for name, method in cls.__dict__.items():
+        if callable(method) and not name.startswith("__"):
+            decorated_method = log_exception(method)
+            setattr(cls, name, decorated_method)
+    return cls

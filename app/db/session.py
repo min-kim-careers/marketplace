@@ -1,9 +1,7 @@
-import asyncio
 from typing import AsyncGenerator
 
 from app.core import env
 from app.db.base import Base
-from app.db.models.rating import RatingDB
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 DATABASE_URL = (

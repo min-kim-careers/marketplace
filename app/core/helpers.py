@@ -3,42 +3,38 @@ import json
 from typing import Any, Iterable
 from uuid import UUID
 
-from app.core import logger
+from app.core.logger import log_exception
 from rich import print_json
 from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-async def get_one_by(db: AsyncSession, model, **filters) -> Any | None:
-    try:
-        stmt = select(model).where(
-            and_(*(getattr(model, k) == v for k, v in filters.items()))
-        )
-        result = await db.execute(stmt)
-        return result.scalar_one_or_none()
-    except Exception as e:
-        logger.info(e)
-        return None
+@log_exception
+async def get_one_by(db: AsyncSession, model, **filters):
+    stmt = select(model).where(
+        and_(*(getattr(model, k) == v for k, v in filters.items()))
+    )
+    result = await db.execute(stmt)
+    return result.scalar_one()
 
 
+@log_exception
 async def get_exists_by(db: AsyncSession, model, **filters) -> bool:
-    try:
-        stmt = (
-            select(1)
-            .where(and_(*(getattr(model, k) == v for k, v in filters.items())))
-            .limit(1)
-        )
-        result = await db.execute(stmt)
-        return result.scalar_one_or_none() is not None
-    except Exception as e:
-        logger.info(e)
-        return False
+    stmt = (
+        select(1)
+        .where(and_(*(getattr(model, k) == v for k, v in filters.items())))
+        .limit(1)
+    )
+    result = await db.execute(stmt)
+    return result.scalar_one() is not None
 
 
+@log_exception
 def encode_uuid(u: UUID) -> str:
     return base64.urlsafe_b64encode(u.bytes).rstrip(b"=").decode()
 
 
+@log_exception
 def decode_uuid(s: str) -> UUID:
     padding = "=" * (-len(s) % 4)
     b = base64.urlsafe_b64decode(s + padding)

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from app.auth.firebase.dependencies import resolve_firebase_query_token
 from app.chat.server.client import ChatClient
-from app.core import logger
+from app.core.logger import logger
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.chat.server.manager import chat_manager
 

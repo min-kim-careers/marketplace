@@ -14,7 +14,7 @@ from app.chat.server.schemas.internal import (
 )
 from app.chat.server.schemas.internal import ChatInternalType
 from app.chat.server.schemas.internal import ChatInternalAdapter
-from app.core import logger
+from app.core.logger import logger
 from app.db.session import AsyncSessionLocal
 from sqlalchemy.ext.asyncio import AsyncSession
 

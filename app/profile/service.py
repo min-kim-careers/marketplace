@@ -4,7 +4,7 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.schemas.error import ErrorResponse
+from app.core.logger import log_class_exceptions
 from app.db.models.profile import ProfileDB
 from app.profile.constants.defaults import (
     DEFAULT_EMAIL_UPDATE_INTERVAL_IN_DAYS,
@@ -15,6 +15,7 @@ from app.profile.schemas.inbound import ProfileIn, ProfileInCreateDB, ProfileInU
 from app.profile.schemas.outbound import ProfileExtraOut, ProfileOut
 
 
+@log_class_exceptions
 class ProfileService:
     @staticmethod
     async def upsert_profile(
@@ -23,7 +24,6 @@ class ProfileService:
         profile_in: ProfileIn,
         user_id: Optional[UUID] = None,
     ):
-        new_profile_db = None
         if not user_id:
             if profile_in.handle:
                 profile_db.extra.next_handle_update = datetime.now(
@@ -34,7 +34,7 @@ class ProfileService:
                     timezone.utc
                 ) + timedelta(days=DEFAULT_EMAIL_UPDATE_INTERVAL_IN_DAYS)
 
-            new_profile_db = await ProfileRepository.update(
+            await ProfileRepository.update(
                 db,
                 profile_db,
                 ProfileInUpdateDB.model_validate(
@@ -43,7 +43,7 @@ class ProfileService:
                 ),
             )
         else:
-            new_profile_db = await ProfileRepository.create(
+            await ProfileRepository.create(
                 db,
                 user_id,
                 ProfileInCreateDB.model_validate(
@@ -51,9 +51,6 @@ class ProfileService:
                     from_attributes=True,
                 ),
             )
-
-        if not new_profile_db:
-            raise ErrorResponse(status_code=500, message="Failed to upsert profile")
 
         return ProfileOut.model_validate(profile_db, from_attributes=True)
 
@@ -63,7 +60,5 @@ class ProfileService:
         user_id: UUID,
     ):
         profile_db = await ProfileRepository.get_by_user_id(db, user_id)
-        if not profile_db:
-            return None
 
         return ProfileExtraOut.from_db(profile_db.extra)

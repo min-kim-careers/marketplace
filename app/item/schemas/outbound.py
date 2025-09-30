@@ -1,7 +1,6 @@
 from datetime import datetime
 from typing import List, Optional
 
-from app.core import env
 from app.core.helpers import encode_uuid
 from app.core.schemas.outbound import OutboundBase
 from app.db.models.item import ItemDB
@@ -29,19 +28,13 @@ class ItemOut(OutboundBase):
     profile: ProfileOut
 
     @classmethod
-    def concat_host_to_urls(cls, item_db: ItemDB):
-        return [f"http://{env.HOST_IP}{url}" for url in item_db.image_urls]
-
-    @classmethod
     def from_db(cls, item: ItemDB) -> "ItemOut":
-        return cls.model_validate(
-            {
-                **item.__dict__,
-                "profile": ProfileOut.model_validate(
-                    item.user.profile, from_attributes=True
-                ),
-                "alias": encode_uuid(item.id),
-                "image_urls": cls.concat_host_to_urls(item),
-            },
-            from_attributes=True,
+        return ItemOut(
+            **item.__dict__,
+            profile=ProfileOut.model_validate(item.user.profile, from_attributes=True),
+            alias=encode_uuid(item.id),
+            image_urls=[
+                img.filename
+                for img in list(sorted(item.images, key=lambda img: img.index))
+            ],
         )

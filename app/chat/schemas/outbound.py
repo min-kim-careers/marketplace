@@ -18,7 +18,7 @@ class ChatRoomItemOut(OutboundBase):
         return ChatRoomItemOut(
             name=item.name,
             price=item.price,
-            preview_url=item.image_urls[0] if len(item.image_urls) > 0 else None,
+            preview_url=item.filenames[0] if len(item.filenames) > 0 else None,
             alias=encode_uuid(item.id),
         )
 
