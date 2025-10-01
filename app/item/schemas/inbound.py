@@ -1,7 +1,7 @@
 from typing import List, Optional
 
-from fastapi import File, Query, UploadFile
-from pydantic import BaseModel, Field, field_validator, model_validator
+from fastapi import Query, UploadFile
+from pydantic import BaseModel, Field, field_validator
 
 from app.core.schemas.inbound import InboundBase
 from app.item.enums import (
@@ -47,14 +47,14 @@ class ItemInForm(InboundBase):
     postcode: Optional[str] = Field(default=None, min_length=4, max_length=4)
     suburb: Optional[str] = None
     state: Optional[str] = None
-    upload_indices: Optional[list[int]] = None
-    upload_images: Optional[list[UploadFile]] = File(...)
+    image_urls: list[str] = []
+    upload_images: list[UploadFile] = []
 
-    @model_validator(mode="after")
-    def validate_uploads(self):
-        if (self.upload_indices, self.upload_images).count(None) == 1:
-            raise ValueError("missing upload prerequisites")
-        return self
+    # @model_validator(mode="after")
+    # def validate_uploads(self):
+    #     if (self.image_urls, self.upload_images).count(None) == 1:
+    #         raise ValueError("missing upload prerequisites")
+    #     return self
 
 
 class ItemInDB(BaseModel):

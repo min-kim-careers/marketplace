@@ -12,6 +12,7 @@ from app.core.security import verify_service_key
 from app.db.models.user import UserDB
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.chat.server.cache import chat_cache
+from sqlalchemy.exc import NoResultFound
 
 from app.db.session import get_db
 from app.item.repository import ItemRepository
@@ -25,20 +26,24 @@ chat_router = APIRouter(
 
 
 @chat_router.post("/room/item/{itemAlias}")
-async def get_room_by_item(
+async def upsert_room(
     user: UserDB = Depends(resolve_firebase_session),
     item_id: UUID = Depends(resolve_room_alias),
     db: AsyncSession = Depends(get_db),
 ):
     buyer_id = user.id
-    room_db = await ChatRoomRepository.room_by_item_and_buyer(
-        db,
-        item_id,
-        buyer_id,
-    )
-    if not room_db:
-        item_db = await ItemRepository.by_item(db, item_id)
-        room_db = await ChatRoomRepository.create_room_with_status(
+    room_db = None
+
+    try:
+        room_db = await ChatRoomRepository.room_by_item_and_buyer(
+            db,
+            item_id,
+            buyer_id,
+        )
+    except NoResultFound:
+        item_db = await ItemRepository.by_id(db, item_id)
+
+        room_db = await ChatRoomRepository.create_with_status(
             db,
             ChatRoomInDB(
                 item_id=item_id,

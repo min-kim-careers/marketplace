@@ -20,9 +20,9 @@ class UnreadRooms:
     async def add_unread_room(self, user_id: UUID, room_id: UUID):
         added = await redis.sadd(self._unread_rooms_key(user_id), str(room_id))  # type: ignore
         if added != 1:
-            logger.info("unread room cached")
+            logger.info("failed to add unread room in cache")
 
     async def remove_unread_room(self, user_id: UUID, room_id: UUID):
         removed = await redis.srem(self._unread_rooms_key(user_id), str(room_id))  # type: ignore
         if removed != 1:
-            logger.info("unread room uncached")
+            logger.info("failed to remove unread room in cache")

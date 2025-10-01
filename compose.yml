@@ -59,7 +59,7 @@ services:
 
       - SESSION_HEADER=__session
 
-      - HOST_BASE=http://localhost
+      - FRONTEND_IMAGE_BASE=/images
       - CONTAINER_IMAGE_DIR=/code/images
 
     env_file:

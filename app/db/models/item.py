@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
-from sqlalchemy import String, DateTime, ForeignKey, UniqueConstraint
+from sqlalchemy import ARRAY, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from app.db.base import Base
 
@@ -68,43 +68,47 @@ class ItemDB(Base):
         foreign_keys=[buyer_id],
     )
 
-    images: Mapped[list["ItemImageDB"]] = relationship(
-        "ItemImageDB",
-        back_populates="item",
-        cascade="all, delete-orphan",
-        order_by="ItemImageDB.index",
-    )
+    image_filenames: Mapped[list[str]] = mapped_column(ARRAY(String), default=[])
 
 
-class ItemImageDB(Base):
-    __tablename__ = "item_images"
+#     images: Mapped[list["ItemImageDB"]] = relationship(
+#         "ItemImageDB",
+#         back_populates="item",
+#         cascade="all, delete-orphan",
+#         order_by="ItemImageDB.index",
+#         lazy="selectin",
+#     )
 
-    __table_args__ = (UniqueConstraint("item_id", "index"),)
 
-    id: Mapped[UUID] = mapped_column(
-        PG_UUID(as_uuid=True), primary_key=True, default=uuid4
-    )
+# class ItemImageDB(Base):
+#     __tablename__ = "item_images"
 
-    index: Mapped[int] = mapped_column(nullable=False)
-    filename: Mapped[str] = mapped_column(nullable=False)
+#     __table_args__ = (UniqueConstraint("item_id", "index"),)
 
-    item_id: Mapped[UUID] = mapped_column(
-        ForeignKey("items.id", ondelete="CASCADE"),
-        nullable=False,
-    )
-    item: Mapped["ItemDB"] = relationship(
-        "ItemDB",
-        lazy="selectin",
-        foreign_keys=[item_id],
-    )
+#     id: Mapped[UUID] = mapped_column(
+#         PG_UUID(as_uuid=True), primary_key=True, default=uuid4
+#     )
 
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
-        nullable=False,
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
-        nullable=False,
-    )
+#     index: Mapped[int] = mapped_column(nullable=False)
+#     filename: Mapped[str] = mapped_column(nullable=False)
+
+#     item_id: Mapped[UUID] = mapped_column(
+#         ForeignKey("items.id", ondelete="CASCADE"),
+#         nullable=False,
+#     )
+#     item: Mapped["ItemDB"] = relationship(
+#         "ItemDB",
+#         lazy="selectin",
+#         foreign_keys=[item_id],
+#     )
+
+#     created_at: Mapped[datetime] = mapped_column(
+#         DateTime(timezone=True),
+#         default=lambda: datetime.now(timezone.utc),
+#         nullable=False,
+#     )
+#     updated_at: Mapped[datetime] = mapped_column(
+#         DateTime(timezone=True),
+#         default=lambda: datetime.now(timezone.utc),
+#         nullable=False,
+#     )

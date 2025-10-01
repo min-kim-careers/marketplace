@@ -41,18 +41,18 @@ class ChatStreamer:
                 raise
 
     async def _handle_text(self, db: AsyncSession, payload: ChatInternalText):
-        msg_db = await ChatMessageRepository.create_message(
-            db,
-            user_id=UUID(payload.user_id),
-            room_id=UUID(payload.room_id),
-            content=payload.content,
-        )
-        if not msg_db:
-            raise Exception("error persisting text")
-
-        payload.timestamp = msg_db.timestamp.isoformat()
-        await broadcast_room(payload)
-        print(f"broadcasted text in: {room_broadcast_key(payload.room_id)}")
+        try:
+            msg_db = await ChatMessageRepository.create_message(
+                db,
+                user_id=UUID(payload.user_id),
+                room_id=UUID(payload.room_id),
+                content=payload.content,
+            )
+            payload.timestamp = msg_db.timestamp.isoformat()
+            await broadcast_room(payload)
+            print(f"broadcasted text in: {room_broadcast_key(payload.room_id)}")
+        except Exception:
+            logger.exception("error handling text in streamer")
 
     async def _process_payload(
         self, db: AsyncSession, stream_id: str, payload: ChatInternalType
@@ -66,8 +66,8 @@ class ChatStreamer:
                 await self._handle_text(db, payload)
 
             await redis.xack(self.STREAM_KEY, self.GROUP, stream_id)
-        except Exception as e:
-            logger.exception("error processing payload in stream: %s", e)
+        except Exception:
+            logger.exception("error processing payload in manager")
 
     async def _run_consumer(self):
         while True:
@@ -95,13 +95,13 @@ class ChatStreamer:
                                 await self._handle_text(db, payload)
 
                             await redis.xack(self.STREAM_KEY, self.GROUP, stream_id)
-                        except Exception as e:
+                        except Exception:
                             logger.exception(
-                                "error processing payload in stream: %s", e
+                                "error processing payload in streamer consumer"
                             )
 
-            except Exception as e:
-                logger.exception("stream consumer error: %s", e)
+            except Exception:
+                logger.exception("error in stream consumer")
                 continue
 
     async def stream_text(self, payload: ChatInternalText):

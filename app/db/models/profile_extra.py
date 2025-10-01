@@ -21,7 +21,7 @@ class ProfileExtraDB(Base):
 
     image_limit: Mapped[int] = mapped_column(nullable=False)
     listing_limit: Mapped[int] = mapped_column(nullable=False)
-    
+
     next_handle_update: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),

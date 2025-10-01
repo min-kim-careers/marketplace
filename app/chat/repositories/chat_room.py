@@ -75,21 +75,7 @@ class ChatRoomRepository:
         )
 
     @staticmethod
-    async def create_room(db: AsyncSession, room_in: ChatRoomInDB) -> ChatRoomDB:
-        try:
-            room = ChatRoomDB(**room_in.model_dump())
-            db.add(room)
-            await db.commit()
-            await db.refresh(room)
-            return room
-        except Exception:
-            await db.rollback()
-            raise
-
-    @staticmethod
-    async def create_room_with_status(
-        db: AsyncSession, room_in: ChatRoomInDB
-    ) -> ChatRoomDB:
+    async def create_with_status(db: AsyncSession, room_in: ChatRoomInDB) -> ChatRoomDB:
         try:
             room = ChatRoomDB(**room_in.model_dump())
             db.add(room)
@@ -144,24 +130,6 @@ class ChatRoomRepository:
             res = await db.execute(stmt)
             await db.commit()
             return res.rowcount > 0
-        except Exception:
-            await db.rollback()
-            raise
-
-    @staticmethod
-    async def create_status(
-        db: AsyncSession, user_id: UUID, room_id: UUID
-    ) -> ChatStatusDB:
-        try:
-            status = ChatStatusDB(
-                user_id=user_id,
-                room_id=room_id,
-            )
-
-            db.add(status)
-            await db.commit()
-            await db.refresh(status)
-            return status
         except Exception:
             await db.rollback()
             raise

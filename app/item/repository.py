@@ -1,6 +1,8 @@
 from typing import List, Optional, Sequence
 from uuid import UUID
 
+from fastapi import UploadFile
+
 from app.core.helpers import get_one_by
 from app.core.logger import log_class_exceptions
 from app.db.models.item import ItemDB
@@ -8,7 +10,8 @@ from app.item.enums import ItemSortOrder, ItemStatus, ItemUserOption
 from app.item.schemas.inbound import ItemInDB, ItemsQuery
 from sqlalchemy import Select, String, and_, asc, cast, desc, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
+
+from app.item.utils.image import store_image, store_image_bulk
 
 
 @log_class_exceptions
@@ -59,7 +62,7 @@ class ItemRepository:
         query: ItemsQuery,
         user_id: Optional[UUID] = None,
     ) -> Sequence[ItemDB]:
-        stmt = select(ItemDB).options(selectinload(ItemDB.images))
+        stmt = select(ItemDB)
 
         stmt = ItemRepository._build_query(stmt, query, user_id)
 
@@ -97,17 +100,15 @@ class ItemRepository:
         return result.scalar_one()
 
     @staticmethod
-    async def by_item(db: AsyncSession, item_id: UUID) -> ItemDB:
+    async def by_id(db: AsyncSession, item_id: UUID) -> ItemDB:
         return await get_one_by(db, ItemDB, id=item_id)
 
     @staticmethod
-    async def by_item_and_user(
-        db: AsyncSession, user_id: UUID, item_id: UUID
-    ) -> ItemDB:
+    async def by_id_and_user(db: AsyncSession, user_id: UUID, item_id: UUID) -> ItemDB:
         return await get_one_by(db, ItemDB, user_id=user_id, id=item_id)
 
     @staticmethod
-    async def by_items_and_user(
+    async def by_ids_and_user(
         db: AsyncSession, item_ids: List[UUID]
     ) -> Sequence[ItemDB]:
         stmt = select(ItemDB).where(
@@ -119,7 +120,9 @@ class ItemRepository:
         return result.scalars().all()
 
     @staticmethod
-    async def create(db: AsyncSession, user_id: UUID, item_in_db: ItemInDB) -> ItemDB:
+    async def create_item(
+        db: AsyncSession, user_id: UUID, item_in_db: ItemInDB
+    ) -> ItemDB:
         try:
             item_db = ItemDB(
                 **item_in_db.model_dump(),
@@ -135,7 +138,9 @@ class ItemRepository:
             raise
 
     @staticmethod
-    async def update(db: AsyncSession, item_db: ItemDB, item_in_db: ItemInDB) -> ItemDB:
+    async def update_item(
+        db: AsyncSession, item_db: ItemDB, item_in_db: ItemInDB
+    ) -> ItemDB:
         try:
             for field, value in item_in_db.model_dump(
                 exclude_unset=True, exclude_none=True
@@ -156,6 +161,49 @@ class ItemRepository:
             await db.delete(item_db)
             await db.commit()
             return True
+        except Exception:
+            await db.rollback()
+            raise
+
+    @staticmethod
+    async def create_images(
+        db: AsyncSession,
+        item_db: ItemDB,
+        upload_images: list[UploadFile],
+    ):
+        try:
+            updated_filenames = await store_image_bulk(upload_images)
+            item_db.image_filenames = updated_filenames
+            await db.flush()
+            return item_db
+        except Exception:
+            await db.rollback()
+            raise
+
+    @staticmethod
+    async def update_images(
+        db: AsyncSession,
+        item_db: ItemDB,
+        upload_images: list[UploadFile],
+        image_urls: list[str],
+    ):
+        try:
+            updated_filenames = []
+
+            upload_idx = 0
+            for url in image_urls:
+                if url.startswith("blob:"):
+                    new_fn = await store_image(upload_images[upload_idx])
+                    updated_filenames.append(new_fn)
+                    upload_idx += 1
+                else:
+                    existing_fn = url.split("/")[-1]
+                    updated_filenames.append(existing_fn)
+
+            item_db.image_filenames = updated_filenames
+
+            await db.flush()
+            return item_db
         except Exception:
             await db.rollback()
             raise

@@ -4,65 +4,50 @@ from uuid import UUID
 from app.core.logger import log_class_exceptions, logger
 from app.core.schemas.error import ErrorResponse
 from app.core.schemas.outbound import APIResponse
-from app.db.models.item import ItemDB, ItemImageDB
+from app.db.models.item import ItemDB
 from app.item.repository import ItemRepository
 from app.item.schemas.inbound import ItemInDB, ItemInForm, ItemsQuery
 from app.item.schemas.outbound import ItemOut
-from app.item.utils.image import store_image, remove_image_bulk
-from fastapi import UploadFile
+from app.item.utils.image import remove_image_bulk
 from sqlalchemy.ext.asyncio import AsyncSession
+from rich import print
 
 
 @log_class_exceptions
 class ItemService:
-    @staticmethod
-    async def update_item_images(
-        db: AsyncSession,
-        item_db: ItemDB,
-        upload_images: list[UploadFile] | None,
-        upload_indices: list[int] | None,
-    ):
-        if not upload_images or not upload_indices:
-            return item_db
-
-        await db.refresh(item_db, attribute_names=["images"])
-        existing = {img.index: img for img in item_db.images}
-
-        for upload, idx in zip(upload_images, upload_indices):
-            filename = await store_image(upload)
-            if idx in existing:
-                existing[idx].filename = filename
-            else:
-                new_img = ItemImageDB(index=idx, filename=filename, item_id=item_db.id)
-                db.add(new_img)
-
-        await db.flush()
-        await db.refresh(item_db, attribute_names=["images"])
-        return item_db
 
     @staticmethod
     async def upsert_item(
         db: AsyncSession, user_id: UUID, item_form: ItemInForm, item_db: ItemDB | None
     ):
+        print(item_form)
+        is_updating = bool(item_db)
+
         try:
-            if item_db:
+            if is_updating:
                 logger.info("Updating...")
-                item_db = await ItemRepository.update(
+                item_db = await ItemRepository.update_item(
                     db,
                     item_db,
                     ItemInDB.model_validate(item_form, from_attributes=True),
                 )
+                item_db = await ItemRepository.update_images(
+                    db,
+                    item_db,
+                    item_form.upload_images,
+                    item_form.image_urls,
+                )
+
             else:
                 logger.info("Creating...")
-                item_db = await ItemRepository.create(
+                item_db = await ItemRepository.create_item(
                     db,
                     user_id,
                     ItemInDB.model_validate(item_form, from_attributes=True),
                 )
-
-            item_db = await ItemService.update_item_images(
-                db, item_db, item_form.upload_images, item_form.upload_indices
-            )
+                item_db = await ItemRepository.create_images(
+                    db, item_db, item_form.upload_images
+                )
 
             await db.commit()
             return item_db
@@ -101,6 +86,6 @@ class ItemService:
 
     @staticmethod
     async def delete_item(db: AsyncSession, item_db: ItemDB):
-        filenames = [img.filename for img in item_db.images]
+        filenames = item_db.image_filenames
         await ItemRepository.delete(db, item_db)
         remove_image_bulk(filenames)

@@ -33,10 +33,10 @@ async def websocket_endpoint(
         while True:
             data = await conn.receive_json()
             await chat_manager.handle_payload(data, client)
-    except WebSocketDisconnect as e:
+    except WebSocketDisconnect:
         logger.info("websocket disconnected")
-    except Exception as e:
-        logger.exception("websocket error: %s", e)
+    except Exception:
+        logger.exception("websocket error")
     finally:
         if client:
             await chat_manager.disconnect(client)

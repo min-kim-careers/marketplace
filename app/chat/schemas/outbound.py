@@ -11,14 +11,16 @@ class ChatRoomItemOut(OutboundBase):
     alias: str
     name: str
     price: float
-    preview_url: Optional[str] = None
+    image_url: Optional[str] = None
 
     @classmethod
     def from_db(cls, item: ItemDB) -> "ChatRoomItemOut":
         return ChatRoomItemOut(
             name=item.name,
             price=item.price,
-            preview_url=item.filenames[0] if len(item.filenames) > 0 else None,
+            image_url=(
+                item.image_filenames[0] if len(item.image_filenames) > 0 else None
+            ),
             alias=encode_uuid(item.id),
         )
 

@@ -30,7 +30,7 @@ class Env(BaseSettings):
 
     SESSION_HEADER: str
 
-    HOST_BASE: str
+    FRONTEND_IMAGE_BASE: str
     CONTAINER_IMAGE_DIR: str
 
     model_config = SettingsConfigDict(

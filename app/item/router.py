@@ -1,12 +1,10 @@
-from typing import Annotated, List
+from typing import Annotated
 from uuid import UUID
 
 from app.auth.firebase.dependencies import (
     resolve_firebase_session,
     resolve_firebase_session_optional,
 )
-from app.core import helpers
-from app.core.schemas.error import ErrorResponse
 from app.core.schemas.outbound import APIResponse
 from app.core.security import verify_service_key
 from app.db.models.item import ItemDB
@@ -74,10 +72,11 @@ async def upsert_item(
     item_id: UUID | None = Depends(resolve_item_alias_query),
     db: AsyncSession = Depends(get_db),
 ):
+    print(item_form)
     item_db = None
     # check existing item
     if item_id:
-        item_db = await ItemRepository.by_item_and_user(db, user.id, item_id)
+        item_db = await ItemRepository.by_id_and_user(db, user.id, item_id)
 
     # upsert item
     new_item_db = await ItemService.upsert_item(
@@ -89,30 +88,4 @@ async def upsert_item(
 
     return APIResponse(
         data={"item": ItemOut.from_db(new_item_db)},
-    )
-
-
-@items_router.get("/aliases")
-async def get_items_by_aliases(
-    _=Depends(resolve_firebase_session),
-    item_aliases: List[str] = Query(..., alias="aliases"),
-    db: AsyncSession = Depends(get_db),
-):
-    item_ids = [helpers.decode_uuid(i) for i in item_aliases]
-
-    item_dbs = await ItemRepository.by_items_and_user(db, item_ids)
-
-    items = []
-    for item_id in item_ids:
-        for item_db in item_dbs:
-            if item_db.id == item_id:
-                items += [ItemOut.from_db(item_db)]
-
-    if len(items) != len(item_ids):
-        raise ErrorResponse(status_code=404, message="Error getting items by ids")
-
-    return APIResponse(
-        data={
-            "items": items,
-        },
     )

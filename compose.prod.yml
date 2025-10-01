@@ -34,7 +34,7 @@ services:
 
       - SESSION_HEADER=__session
 
-      - HOST_BASE=https://pcmarket.app
+      - FRONTEND_IMAGE_BASE=/images
       - CONTAINER_IMAGE_DIR=/code/images
 
 volumes:

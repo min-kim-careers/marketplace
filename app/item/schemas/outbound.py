@@ -1,6 +1,7 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 
+from app.core import env
 from app.core.helpers import encode_uuid
 from app.core.schemas.outbound import OutboundBase
 from app.db.models.item import ItemDB
@@ -23,7 +24,7 @@ class ItemOut(OutboundBase):
     created_at: datetime
     updated_at: datetime
     expires_at: Optional[datetime] = None
-    image_urls: List[str]
+    image_urls: list[str]
 
     profile: ProfileOut
 
@@ -34,7 +35,6 @@ class ItemOut(OutboundBase):
             profile=ProfileOut.model_validate(item.user.profile, from_attributes=True),
             alias=encode_uuid(item.id),
             image_urls=[
-                img.filename
-                for img in list(sorted(item.images, key=lambda img: img.index))
+                env.FRONTEND_IMAGE_BASE + "/" + fn for fn in item.image_filenames
             ],
         )

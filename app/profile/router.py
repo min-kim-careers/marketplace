@@ -11,6 +11,7 @@ from app.profile.repository import ProfileRepository
 from app.profile.schemas.inbound import ProfileIn
 from app.profile.schemas.outbound import ProfileExtraOut, ProfileOut
 from app.profile.service import ProfileService
+from sqlalchemy.exc import NoResultFound
 
 profiles_router = APIRouter(
     prefix="/api/profiles",
@@ -40,6 +41,7 @@ async def upsert_profile(
     db: AsyncSession = Depends(get_db),
 ) -> APIResponse:
     profile = await ProfileService.upsert_profile(db, user.profile, profile_in)
+
     return APIResponse(
         data={
             "profile": profile,
@@ -53,9 +55,15 @@ async def exists_by_handle(
     handle: str = Path(alias="handle"),
     db: AsyncSession = Depends(get_db),
 ) -> APIResponse:
+    exists = False
+    try:
+        exists = await ProfileRepository.exists_by_handle(db, handle)
+    except NoResultFound:
+        pass
+
     return APIResponse(
         data={
-            "exists": await ProfileRepository.exists_by_handle(db, handle),
+            "exists": exists,
         },
     )
 
@@ -66,9 +74,15 @@ async def exists_by_email(
     email: str = Path(alias="email"),
     db: AsyncSession = Depends(get_db),
 ) -> APIResponse:
+    exists = False
+    try:
+        exists = await ProfileRepository.exists_by_email(db, email)
+    except NoResultFound:
+        pass
+
     return APIResponse(
         data={
-            "exists": await ProfileRepository.exists_by_email(db, email),
+            "exists": exists,
         },
     )
 

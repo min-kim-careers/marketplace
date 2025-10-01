@@ -43,16 +43,16 @@ class ChatManager:
                 await client.reset_state()
 
             await client.init_state(payload.room_id)
-        except Exception as e:
-            logger.exception("error joining room: %s", e)
+        except Exception:
+            logger.exception("error handling join in manager")
 
     async def _handle_leave(self, client: ChatClient):
         print("leaving...")
         try:
             if client.is_in_session():
                 await client.reset_state()
-        except Exception as e:
-            logger.exception("error leaving room: %s", e)
+        except Exception:
+            logger.exception("error handling leave in manager")
 
     async def _handle_restore(self, client: ChatClient, payload: ChatRestoreIn):
         try:
@@ -70,25 +70,24 @@ class ChatManager:
             status = await ChatRoomRepository.status_by_user(
                 client.db, client.user.id, client.room.id
             )
-            if status:
-                for p in previous:
-                    if datetime.fromisoformat(p.timestamp) <= status.last_read:
-                        p.read = True
+            for p in previous:
+                if datetime.fromisoformat(p.timestamp) <= status.last_read:
+                    p.read = True
 
-                await client.send_message(ChatRestoredOut(previous=previous))
+            await client.send_message(ChatRestoredOut(previous=previous))
 
-                # tell peer, client has read latest messages
-                if client.peer:
-                    await broadcast_room(
-                        ChatInternalRead(
-                            room_id=str(client.room.id),
-                            user_id=str(client.peer.id),
-                        )
+            # tell peer, client has read latest messages
+            if client.peer:
+                await broadcast_room(
+                    ChatInternalRead(
+                        room_id=str(client.room.id),
+                        user_id=str(client.peer.id),
                     )
+                )
 
-                await chat_cache.remove_unread_room(client.user.id, client.room.id)
-        except Exception as e:
-            logger.exception("handle restore error: %s", e)
+            await chat_cache.remove_unread_room(client.user.id, client.room.id)
+        except Exception:
+            logger.exception("error handling restore in manager")
 
     async def _handle_text(self, client: ChatClient, payload: ChatTextIn):
         print("streaming text...")
@@ -105,8 +104,8 @@ class ChatManager:
 
                 await chat_cache.add_unread_room(client.peer.id, client.room.id)
 
-        except Exception as e:
-            logger.exception("handle text error: %s", e)
+        except Exception:
+            logger.exception("error handling text in manager")
 
     async def _handle_typing(self, client: ChatClient, payload: ChatTypingIn):
         print("typing...")
@@ -122,8 +121,8 @@ class ChatManager:
                 print(
                     f"broadcasted typing to: {room_broadcast_key(str(client.room.id))}"
                 )
-        except Exception as e:
-            logger.exception("error leaving room: %s", e)
+        except Exception:
+            logger.exception("error handling typing in manager")
 
     async def handle_payload(self, payload: dict, client: ChatClient):
         try:
@@ -143,8 +142,8 @@ class ChatManager:
             elif isinstance(payload, ChatTypingIn):
                 await self._handle_typing(client, payload)
 
-        except Exception as e:
-            logger.exception("handle payload error: %s", e)
+        except Exception:
+            logger.exception("error handling payload in manager")
 
 
 chat_manager = ChatManager()

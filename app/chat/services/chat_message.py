@@ -8,7 +8,10 @@ from app.chat.repositories.chat_message import ChatMessageRepository
 from app.chat.server.schemas.outbound import ChatTextOut
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.logger import log_class_exceptions
 
+
+@log_class_exceptions
 class ChatMessageService:
     @staticmethod
     async def get_messages(

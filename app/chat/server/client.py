@@ -98,11 +98,12 @@ class ChatClient:
 
             await self.send_message(ChatReadOut(last_read=now.isoformat()))
 
-            updated = await ChatRoomRepository.update_last_read(
-                self.db, self.user.id, self.room.id, now
-            )
-            if not updated:
-                logger.error("failed to update last read")
+            try:
+                await ChatRoomRepository.update_last_read(
+                    self.db, self.user.id, self.room.id, now
+                )
+            except Exception:
+                logger.exception("error sending read message from client")
 
             await chat_cache.remove_unread_room(self.user.id, self.room.id)
 
@@ -130,8 +131,8 @@ class ChatClient:
 
                 payload = json.loads(msg["data"])
                 await self._process_payload(payload)
-            except Exception as e:
-                logger.exception("handle room payload error: %s", e)
+            except Exception:
+                logger.exception("error handling message in room listener")
 
         pubsub = redis.pubsub()
         try:
@@ -146,19 +147,19 @@ class ChatClient:
                     if cmd == "subscribe":
                         await pubsub.unsubscribe(CHAT_IDLE_KEY)
                         await pubsub.subscribe(key)
-                        logger.info("subscribed:", key)
+                        logger.info("subscribed to: %s", key)
                     elif cmd == "unsubscribe":
                         await pubsub.unsubscribe(key)
                         await pubsub.subscribe(CHAT_IDLE_KEY)
-                        logger.info("unsubscribed:", key)
+                        logger.info("unsubscribed from: %s", key)
 
                 msg = await pubsub.get_message(
                     ignore_subscribe_messages=False, timeout=timeout
                 )
                 if msg:
                     await __handle_message(msg)
-        except Exception as e:
-            logger.exception("listener error: %s", e)
+        except Exception:
+            logger.exception("error in client room listener")
         finally:
             await pubsub.close()
 
@@ -178,8 +179,8 @@ class ChatClient:
                     room = ChatRoomOut.from_db(room_db, self.user.id)
                     room.unread = True
                     await self.send_message(ChatClientOut(room=room))
-            except Exception as e:
-                logger.exception("handle client payload error: %s", e)
+            except Exception:
+                logger.exception("error handling message in client listener")
 
         pubsub = redis.pubsub()
         try:
@@ -188,16 +189,16 @@ class ChatClient:
             async for msg in pubsub.listen():
                 await __handle_message(msg)
 
-        except Exception as e:
-            logger.exception("listener error: %s", e)
+        except Exception:
+            logger.exception("error in client listener")
         finally:
             await pubsub.close()
 
     async def send_message(self, payload: ChatPayloadOutType):
         try:
             await self.conn.send_json(payload.model_dump(mode="json", by_alias=True))
-        except Exception as e:
-            logger.exception("send message error: %s", e)
+        except Exception:
+            logger.exception("error sending message")
         print("sent:", payload)
 
     async def _subscribe(self, room_key: str):
@@ -211,16 +212,15 @@ class ChatClient:
 
     # on room join
     async def init_state(self, room_id: UUID):
-        # set room
-        room_db = await ChatRoomRepository.room_by_id(self.db, room_id)
-        if not room_db:
-            raise Exception("room not found")
-
-        await self._subscribe(room_broadcast_key(str(room_id)))
-        self.room = room_db
-        self._set_peer(room_db)
-        await chat_cache.set_user_active_room(self.room.id, self.user.id)
-        await self.send_message(ChatJoinedOut())
+        try:
+            room_db = await ChatRoomRepository.room_by_id(self.db, room_id)
+            await self._subscribe(room_broadcast_key(str(room_id)))
+            self.room = room_db
+            self._set_peer(room_db)
+            await chat_cache.set_user_active_room(self.room.id, self.user.id)
+            await self.send_message(ChatJoinedOut())
+        except Exception:
+            logger.exception("error initialising client state")
 
     # on room leave
     async def reset_state(self):
