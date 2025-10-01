@@ -1,0 +1,68 @@
+name: marketplace
+services:
+  # ----------------------------------- API -----------------------------------
+  api-db-service:
+    extends:
+      file: ./api/compose.prod.yml
+      service: api-db-service
+    networks:
+      - api-network
+
+  api-cache-service:
+    extends:
+      file: ./api/compose.prod.yml
+      service: api-cache-service
+    networks:
+      - api-network
+
+  api-service:
+    extends:
+      file: ./api/compose.prod.yml
+      service: api-service
+    depends_on:
+      api-db-service:
+        condition: service_healthy
+      api-cache-service:
+        condition: service_started
+    networks:
+      - gateway-network
+      - api-network
+
+  # ----------------------------------- WEB -----------------------------------
+  web-service:
+    extends:
+      file: ./web/compose.prod.yml
+      service: web-service
+    networks:
+      - gateway-network
+
+  # ----------------------------------- GATEWAY -----------------------------------
+  gateway-service:
+    extends:
+      file: ./gateway/compose.prod.yml
+      service: gateway-service
+    networks:
+      - tunnel-network
+      - gateway-network
+    depends_on:
+      - api-service
+      - web-service
+
+  # ----------------------------------- TUNNEL -----------------------------------
+  tunnel-service:
+    extends:
+      file: ./tunnel/compose.prod.yml
+      service: tunnel-service
+    networks:
+      - tunnel-network
+    depends_on:
+      - gateway-service
+
+volumes:
+  prod_api-db-data:
+  prod_api-cache-data:
+
+networks:
+  tunnel-network:
+  gateway-network:
+  api-network:

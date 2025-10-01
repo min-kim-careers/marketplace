@@ -1,14 +1,19 @@
+name: marketplace
 services:
   # ----------------------------------- API -----------------------------------
   api-db-service:
     extends:
       file: ./api/compose.yml
       service: api-db-service
+    networks:
+      - api-network
 
   api-cache-service:
     extends:
       file: ./api/compose.yml
       service: api-cache-service
+    networks:
+      - api-network
 
   api-service:
     extends:
@@ -19,20 +24,25 @@ services:
         condition: service_healthy
       api-cache-service:
         condition: service_started
-    ports:
-      - 8000:8000
+    networks:
+      - gateway-network
+      - api-network
 
   # ----------------------------------- WEB -----------------------------------
   web-service:
     extends:
       file: ./web/compose.yml
       service: web-service
+    networks:
+      - gateway-network
 
   # ----------------------------------- GATEWAY -----------------------------------
-  nginx-service:
+  gateway-service:
     extends:
-      file: ./nginx/compose.yml
-      service: nginx-service
+      file: ./gateway/compose.yml
+      service: gateway-service
+    networks:
+      - gateway-network
     depends_on:
       - api-service
       - web-service
@@ -40,3 +50,7 @@ services:
 volumes:
   api-db-data:
   api-cache-data:
+
+networks:
+  gateway-network:
+  api-network:

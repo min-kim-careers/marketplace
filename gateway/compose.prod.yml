@@ -1,0 +1,11 @@
+services:
+  gateway-service:
+    extends:
+      file: ./compose.yml
+      service: gateway-service
+    environment:
+      - WEB_SERVICE=web-service:3000
+      - API_SERVICE=api-service:8000
+      - FIREBASE_APP=market-by-kibon
+      - DOMAIN=pcmarket.app
+      - IMAGE_BASE=/images

@@ -1,0 +1,5 @@
+tunnel: a30ed355-348a-4d98-9a29-94e0748181c6
+ingress:
+  - hostname: pcmarket.app
+    service: http://gateway-service:80
+  - service: http_status:404
