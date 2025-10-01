@@ -4,7 +4,7 @@ export type ChatRoomItem = {
   alias: string
   name: string
   price: string
-  previewUrl?: string
+  imageUrl?: string
 }
 
 export type ChatRoom = {

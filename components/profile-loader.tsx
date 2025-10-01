@@ -5,30 +5,27 @@ import { useAuthContext } from '@/lib/providers/auth-provider'
 import useProfileStore from '@/lib/stores/profile-store'
 import { useEffect } from 'react'
 
-
 export const ProfileLoader = () => {
-  const { isAuthenticated } = useAuthContext()
+  const { status } = useAuthContext()
   const { profile, setProfile } = useProfileStore()
-
-  const fetchProfile = async () => {
-    const profile = await getProfile()
-    if (!profile) throw new Error('failed to get profile')
-    setProfile(profile)
-  }
 
   useEffect(() => {
     const handleProfile = async () => {
-      if (!isAuthenticated) return
+      if (status === 'loading') return
 
-      try {
-        profile ? await fetchProfile() : setProfile()
-      } catch (error) {
-        console.log(error)
+      if (status === 'authenticated') {
+        if (profile) {
+          const newProfile = await getProfile()
+          if (!newProfile) throw new Error('failed to get profile')
+          setProfile(newProfile)
+        }
+      } else if (status === 'unauthenticated') {
+        setProfile()
       }
     }
 
     handleProfile()
-  }, [isAuthenticated])
+  }, [status])
 
   return null
 }

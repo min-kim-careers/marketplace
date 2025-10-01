@@ -1,4 +1,3 @@
-import { imageSrc } from '@/lib/helpers/image-src'
 import Image from 'next/image'
 
 export default function CardImage({
@@ -13,7 +12,7 @@ export default function CardImage({
   return (
     <div className='relative w-[25%] rounded-r-lg bg-gray-300'>
       <Image
-        src={imageSrc(imageUrls[0])}
+        src={imageUrls[0]}
         alt='Failed to load'
         layout='fill'
         objectFit='contain'

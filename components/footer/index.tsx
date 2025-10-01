@@ -13,7 +13,7 @@ export default function Footer() {
           association with nor endorsement by the respective trademark owners.
         </p>
       </div>
-      <div>Copyright © 2025-2025 {APP_DATA.TITLE} ABN: 00 000 000 000</div>
+      <div>Copyright © 2025-2025 {APP_DATA.TITLE}</div>
     </div>
   )
 }

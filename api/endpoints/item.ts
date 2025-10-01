@@ -40,17 +40,17 @@ export const _deleteItemByUser = async (itemAlias: string) =>
     .asResult<{ deleted: boolean }>()
 
 export interface _UpsertItemQuery {
-  name: string
-  description: string
-  price: number
-  category: string
-  condition: string
-  postcode: string
-  state: string
-  suburb: string
+  name?: string
+  description?: string
+  price?: number
+  category?: string
+  condition?: string
+  postcode?: string
+  state?: string
+  suburb?: string
   status?: string
+  imageUrls?: string[]
   uploadImages?: File[]
-  uploadIndices?: number[]
 }
 export const _upsertItem = async (
   form: FormData,

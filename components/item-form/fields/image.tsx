@@ -8,7 +8,6 @@ import {
 } from '@/components/shadcn/components/ui/form'
 import { Input } from '@/components/shadcn/components/ui/input'
 import { Label } from '@/components/shadcn/components/ui/label'
-import { imageSrc } from '@/lib/helpers/image-src'
 import { Plus, Trash } from 'lucide-react'
 import Image from 'next/image'
 import { ChangeEvent } from 'react'
@@ -58,7 +57,7 @@ const ImageInput = ({
   return (
     <div className='relative h-24 w-24 bg-gray-200 sm:h-32 sm:w-32'>
       <Image
-        src={imageSrc(watcher[index])}
+        src={watcher[index]}
         alt='Failed to load'
         layout='fill'
         objectFit='contain'

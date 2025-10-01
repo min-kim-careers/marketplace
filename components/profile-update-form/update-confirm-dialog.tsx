@@ -12,6 +12,7 @@ import {
 } from '@/components/shadcn/components/ui/alert-dialog'
 import useProfileStore from '@/lib/stores/profile-store'
 import { Profile } from '@/lib/types/profile'
+import { ArrowRight } from 'lucide-react'
 import { ReactNode } from 'react'
 import { z } from 'zod'
 
@@ -35,9 +36,22 @@ export default function UpdateConfirmDialog({
           <AlertDialogDescription>
             This action cannot be undone.
           </AlertDialogDescription>
-          {Object.entries(newValues).map(([k, v], i) => (
-            <p key={i}>{` ${profile[k as keyof Profile]} -> ${v.value}`}</p>
-          ))}
+          <div className='space-y-4 py-2'>
+            {Object.entries(newValues).map(([k, v], i) => (
+              <div key={i}>
+                <p className='text-sm text-muted-foreground'>
+                  {k.slice(0, 1).toUpperCase() + k.slice(1)}
+                </p>
+                <p className='flex flex-nowrap items-center gap-2'>
+                  {profile[k as keyof Profile]}
+                  <span>
+                    <ArrowRight className='h-4 w-4' />
+                  </span>
+                  {v.value}
+                </p>
+              </div>
+            ))}
+          </div>
         </AlertDialogHeader>
 
         <AlertDialogFooter>

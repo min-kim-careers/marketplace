@@ -25,7 +25,7 @@ export default function ChatToolbar() {
         {currentRoom ? (
           <span className='flex items-center gap-2'>
             <Avatar className='h-8 w-8'>
-              <AvatarImage src={currentRoom.item.previewUrl} />
+              <AvatarImage src={currentRoom.item.imageUrl} />
               <AvatarFallback>
                 <p className='text-lg font-bold'>-</p>
               </AvatarFallback>

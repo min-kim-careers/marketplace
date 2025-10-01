@@ -62,11 +62,16 @@ export const useChatSocket = (): ChatSocketState => {
     onOpen: () => {
       setProps({ status: 'connecting' })
     },
+    onClose: () => {
+      if (status !== 'idling') {
+        setProps({ status: 'disconnected' })
+      }
+    },
 
     onMessage: async (e: MessageEvent<any>) => {
       try {
         const payload: ChatPayloadIn = JSON.parse(e.data)
-        console.log('received:', payload)
+        // console.log('received:', payload)
 
         switch (payload.type) {
           case 'connected':
@@ -104,7 +109,7 @@ export const useChatSocket = (): ChatSocketState => {
 
   const _sendMessage = (payload: ChatPayloadOut) => {
     sendJsonMessage(payload)
-    console.log('sent:', payload)
+    // console.log('sent:', payload)
   }
 
   const handleConnectedIn = (_: ChatConnectedIn) => {

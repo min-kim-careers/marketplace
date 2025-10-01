@@ -27,7 +27,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { setUser } = useFirebaseStore()
   const { setProfile } = useProfileStore()
   const user = useFirebaseStore((state) => state.user)
-  const profile = useProfileStore((state) => state.profile)
 
   useEffect(() => {
     const unsub = onIdTokenChanged(auth, async (fbUser) => {
@@ -49,7 +48,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (user) {
         setStatus('authenticated')
       } else {
-        setProfile()
         setStatus('unauthenticated')
       }
     }

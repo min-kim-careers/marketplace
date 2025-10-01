@@ -1,3 +1,3 @@
 export const APP_DATA = {
-  TITLE: 'AusMarket',
+  TITLE: 'PCMARKET',
 }

@@ -1,4 +1,5 @@
 import useChatStore from '@/chat/stores/chat-store'
+import { useEffect } from 'react'
 import { useIdleTimer } from 'react-idle-timer'
 
 export const useIdleHandler = (token?: string) => {
@@ -6,24 +7,30 @@ export const useIdleHandler = (token?: string) => {
 
   const status = useChatStore((state) => state.status)
 
+  useEffect(() => {
+    if (status === 'connected') {
+      startIdleTimer()
+    } else if (status === 'disconnected') {
+      pauseIdleTimer()
+    }
+  }, [status])
+
   const {
-    // start: startIdleTimer,
+    start: startIdleTimer,
     reset: resetIdleTimer,
     pause: pauseIdleTimer,
   } = useIdleTimer({
-    timeout: 1000 * 60 * 5, // set to idle after 5 min
+    timeout: 1000 * 5, // set to idle after 5 min
+    // timeout: 1000 * 60 * 5, // set to idle after 5 min
     startManually: true,
-    stopOnIdle: true,
     onIdle: () => {
-      console.log('idling')
+      // console.log('idling')
       setUrl()
       setProps({ status: 'idling' })
-      pauseIdleTimer()
     },
     onActive: () => {
-      console.log('unidling')
+      // console.log('unidling')
       setUrl(token)
-      resetIdleTimer()
     },
     debounce: 500,
   })

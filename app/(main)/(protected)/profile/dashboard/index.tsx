@@ -165,7 +165,7 @@ const FieldFallback = ({
   return (
     <div>
       {children}
-      <Label className='text-black/60'>{`Next update after ${intervalInDays} days`}</Label>
+      <Label className='text-black/60'>{`Can be updated again after ${intervalInDays} days`}</Label>
     </div>
   )
 }

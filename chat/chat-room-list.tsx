@@ -107,7 +107,7 @@ export default function ChatRoomList() {
                     disabled={currentRoom && currentRoom.alias === room.alias}
                   >
                     <Avatar className='h-9 w-9'>
-                      <AvatarImage src={room.item.previewUrl} />
+                      <AvatarImage src={room.item.imageUrl} />
                       <AvatarFallback>
                         <p className='text-lg font-bold'>-</p>
                       </AvatarFallback>

@@ -9,11 +9,9 @@ import { useLoadingStore } from '../providers/loading-provider'
 interface ItemHandlerState {
   handleUpsert: ({
     request,
-    imageUrls,
     alias,
   }: {
     request: UpsertItemRequest
-    imageUrls?: string[]
     alias?: string
   }) => Promise<boolean>
   handleDelete: (item: Item) => Promise<boolean>
@@ -24,31 +22,27 @@ export const useItemHandler = (): ItemHandlerState => {
 
   const handleUpsert = async ({
     request,
-    imageUrls,
     alias,
   }: {
     request: UpsertItemRequest
-    imageUrls?: string[]
     alias?: string
   }) => {
-    const isUpdate = !!alias
+    const isUpdating = !!alias
+
     let toastMsg = ''
-
     try {
-      setLoading(`${isUpdate ? 'Updating' : 'Posting'} your item`)
+      setLoading(`${isUpdating ? 'Updating' : 'Posting'} your item`)
 
-      if (imageUrls) {
-        request.uploadImages = await imageUrlsToFiles(imageUrls)
-        request.uploadIndices = imageUrls
-          .map((url, i) => (url.startsWith('blob:') ? i : null))
-          .filter((url) => url != null)
+      if (request.imageUrls) {
+        request.uploadImages = await imageUrlsToFiles(request.imageUrls)
       }
 
-      if (!(await upsertItem(request, alias))) {
-        throw new Error(`failed to ${isUpdate ? 'update' : 'post'}`)
+      const newItem = await upsertItem(request, alias)
+      if (!newItem) {
+        throw new Error(`failed to ${isUpdating ? 'update' : 'post'}`)
       }
 
-      toastMsg = `Your item was ${isUpdate ? 'updated' : 'posted'} successfully!`
+      toastMsg = `Your item was ${isUpdating ? 'updated' : 'posted'} successfully!`
     } catch (error) {
       console.error(error)
       toastMsg = `Something went wrong.`

@@ -128,7 +128,7 @@ class Client {
       const resp = await fetch(this.url.toString(), this.init as RequestInit)
       if (!resp.ok) {
         const err = (await resp.text()) as APIError
-        console.log(err)
+        // console.log(err)
         throw new Error()
       }
       return await resp.json()

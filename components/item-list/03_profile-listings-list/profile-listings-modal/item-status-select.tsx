@@ -16,7 +16,7 @@ export default function ItemStatusSelect({ item }: { item: Item }) {
   const router = useRouter()
 
   const handleStatusChange = async (status: ItemStatus) => {
-    if (await handleUpsert({ status }, item.alias)) {
+    if (await handleUpsert({ request: { status }, alias: item.alias })) {
       router.refresh()
     }
   }

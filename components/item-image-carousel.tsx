@@ -6,7 +6,6 @@ import {
   CarouselPrevious,
 } from '@/components/shadcn/components/ui/carousel'
 import { cn } from '@/components/shadcn/lib/utils'
-import { imageSrc } from '@/lib/helpers/image-src'
 import Image from 'next/image'
 
 export default function ItemImageCarousel({
@@ -26,7 +25,7 @@ export default function ItemImageCarousel({
             url && (
               <CarouselItem key={index} className='relative aspect-square'>
                 <Image
-                  src={imageSrc(url)}
+                  src={url}
                   alt='Failed to load'
                   fill
                   className={cn('object-contain', rounded ? 'rounded-xl' : '')}

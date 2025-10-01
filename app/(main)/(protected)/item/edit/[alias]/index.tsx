@@ -88,12 +88,12 @@ export default function ItemEdit({
     const request: UpsertItemRequest = {
       ..._values,
       ...location,
+      imageUrls: imageUrls.filter((u) => u !== null),
     }
 
     if (
       await handleUpsert({
         request,
-        imageUrls: imageUrls.filter((u) => u !== null),
         alias: item.alias,
       })
     ) {

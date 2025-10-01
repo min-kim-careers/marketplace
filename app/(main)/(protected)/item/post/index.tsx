@@ -56,12 +56,12 @@ export default function ItemPost({ props }: { props: ItemPostProps }) {
     const request: UpsertItemRequest = {
       ..._values,
       ...location,
+      imageUrls: imageUrls.filter((u) => u !== null),
     }
 
     if (
       await handleUpsert({
         request,
-        imageUrls: imageUrls.filter((u) => u !== null),
       })
     ) {
       router.replace(APP_ROUTES.PROFILE_LISTINGS.href)

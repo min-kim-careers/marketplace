@@ -10,6 +10,7 @@ export const useScrollHandler = () => {
   const messages = useChatStore((state) => state.messages)
   const peerTyping = useChatStore((state) => state.peerTyping)
   const noMessages = useChatStore((state) => state.noMessages)
+  const currentRoom = useChatStore((state) => state.currentRoom)
 
   const [position, setPosition] = useState<ScreenPosition | null>(null)
   const [timesteps, setTimesteps] = useState<string[]>(['', ''])
@@ -31,10 +32,10 @@ export const useScrollHandler = () => {
   useEffect(() => {
     const didRestoreMessages = () =>
       timesteps[0] === timesteps[1] && !noMessages
-    if (!didRestoreMessages()) {
+    if (!didRestoreMessages() || currentRoom) {
       _setToBottom()
     }
-  }, [timesteps, noMessages])
+  }, [timesteps, noMessages, currentRoom])
 
   useEffect(() => _setToBottom(), [peerTyping])
 
