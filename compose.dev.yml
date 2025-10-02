@@ -1,0 +1,59 @@
+name: marketplace
+services:
+  # ----------------------------------- API -----------------------------------
+  dev-api-db-service:
+    extends:
+      file: ./api/compose.dev.yml
+      service: dev-api-db-service
+    networks:
+      - dev-api-network
+
+  dev-api-cache-service:
+    extends:
+      file: ./api/compose.dev.yml
+      service: dev-api-cache-service
+    networks:
+      - dev-api-network
+
+  dev-api-service:
+    extends:
+      file: ./api/compose.dev.yml
+      service: dev-api-service
+    depends_on:
+      dev-api-db-service:
+        condition: service_healthy
+      dev-api-cache-service:
+        condition: service_started
+    networks:
+      - dev-gateway-network
+      - dev-api-network
+
+  # ----------------------------------- WEB -----------------------------------
+  dev-web-service:
+    extends:
+      file: ./web/compose.dev.yml
+      service: dev-web-service
+    networks:
+      - dev-gateway-network
+
+  # ----------------------------------- GATEWAY -----------------------------------
+  dev-gateway-service:
+    extends:
+      file: ./gateway/compose.dev.yml
+      service: dev-gateway-service
+    networks:
+      - dev-gateway-network
+    depends_on:
+      - dev-api-service
+      - dev-web-service
+
+volumes:
+  dev-api-db-data:
+  dev-api-cache-data:
+  dev-node_modules:
+  dev-venv:
+  dev-pip:
+
+networks:
+  dev-gateway-network:
+  dev-api-network:

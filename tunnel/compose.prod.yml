@@ -1,7 +1,7 @@
 name: marketplace
 services:
-  tunnel-service:
-    container_name: tunnel-container
+  prod-tunnel-service:
+    container_name: prod-tunnel-container
     image: cloudflare/cloudflared:latest
     command:
       [
@@ -12,4 +12,4 @@ services:
         "eyJhIjoiZTJmZmNmMTU1NmRmMzJiNmY5MDUxMTAxZmVjOGVlNzUiLCJ0IjoiYTMwZWQzNTUtMzQ4YS00ZDk4LTlhMjktOTRlMDc0ODE4MWM2IiwicyI6Ik9UWTVZVFZoTmpVdE5qaGxPUzAwTlRBeExUZ3haR1V0TkdNMU1tVmtNV0U1TVdWaCJ9",
       ]
     volumes:
-      - ./config.yml:/etc/cloudflared/config.yml
+      - ./config.yml:/etc/cloudflared/config.yml:ro

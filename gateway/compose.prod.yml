@@ -1,11 +1,17 @@
+name: marketplace
 services:
-  gateway-service:
-    extends:
-      file: ./compose.yml
-      service: gateway-service
+  prod-gateway-service:
+    container_name: prod-gateway-container
+    image: nginx:latest
+    ports:
+      - 80:80
     environment:
-      - WEB_SERVICE=web-service:3000
-      - API_SERVICE=api-service:8000
+      - GATEWAY_PORT=80
+      - WEB_SERVICE=prod-web-service:3000
+      - API_SERVICE=prod-api-service:8000
       - FIREBASE_APP=market-by-kibon
       - DOMAIN=pcmarket.app
       - IMAGE_BASE=/images
+    volumes:
+      - ./default.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ../api/prod-images:/app/images:ro

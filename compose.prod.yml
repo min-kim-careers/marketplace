@@ -1,68 +1,68 @@
 name: marketplace
 services:
   # ----------------------------------- API -----------------------------------
-  api-db-service:
+  prod-api-db-service:
     extends:
       file: ./api/compose.prod.yml
-      service: api-db-service
+      service: prod-api-db-service
     networks:
-      - api-network
+      - prod-api-network
 
-  api-cache-service:
+  prod-api-cache-service:
     extends:
       file: ./api/compose.prod.yml
-      service: api-cache-service
+      service: prod-api-cache-service
     networks:
-      - api-network
+      - prod-api-network
 
-  api-service:
+  prod-api-service:
     extends:
       file: ./api/compose.prod.yml
-      service: api-service
+      service: prod-api-service
     depends_on:
-      api-db-service:
+      prod-api-db-service:
         condition: service_healthy
-      api-cache-service:
+      prod-api-cache-service:
         condition: service_started
     networks:
-      - gateway-network
-      - api-network
+      - prod-gateway-network
+      - prod-api-network
 
   # ----------------------------------- WEB -----------------------------------
-  web-service:
+  prod-web-service:
     extends:
       file: ./web/compose.prod.yml
-      service: web-service
+      service: prod-web-service
     networks:
-      - gateway-network
+      - prod-gateway-network
 
   # ----------------------------------- GATEWAY -----------------------------------
-  gateway-service:
+  prod-gateway-service:
     extends:
       file: ./gateway/compose.prod.yml
-      service: gateway-service
+      service: prod-gateway-service
     networks:
-      - tunnel-network
-      - gateway-network
+      - prod-tunnel-network
+      - prod-gateway-network
     depends_on:
-      - api-service
-      - web-service
+      - prod-api-service
+      - prod-web-service
 
   # ----------------------------------- TUNNEL -----------------------------------
-  tunnel-service:
+  prod-tunnel-service:
     extends:
       file: ./tunnel/compose.prod.yml
-      service: tunnel-service
+      service: prod-tunnel-service
     networks:
-      - tunnel-network
+      - prod-tunnel-network
     depends_on:
-      - gateway-service
+      - prod-gateway-service
 
 volumes:
-  prod_api-db-data:
-  prod_api-cache-data:
+  prod-api-db-data:
+  prod-api-cache-data:
 
 networks:
-  tunnel-network:
-  gateway-network:
-  api-network:
+  prod-tunnel-network:
+  prod-gateway-network:
+  prod-api-network:
