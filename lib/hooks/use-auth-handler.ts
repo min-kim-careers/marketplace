@@ -57,6 +57,7 @@ export const useAuthHandler = () => {
       toastMsg = `See you again!`
       router.replace(APP_ROUTES.HOME.href)
     } catch (error) {
+      console.log(error)
       toastMsg = `Something went wrong.`
     } finally {
       setLoading()

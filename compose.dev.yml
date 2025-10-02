@@ -1,0 +1,25 @@
+name: marketplace
+services:
+  dev-web-service:
+    container_name: dev-web-container
+    image: dev-web-service
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    environment:
+      - NEXT_PUBLIC_CHAT_URL=localhost:8080/chat/ws
+
+      - API_URL=http://dev-api-service:8000
+      - API_KEY=REDACTED
+      - API_KEY_HEADER=REDACTED
+      - SESSION_HEADER=__session
+      - GATEWAY_URL=http://dev-gateway-service:8080
+
+    volumes:
+      - .:/app
+      - dev-node_modules:/app/node_modules
+
+volumes:
+  dev-node_modules:

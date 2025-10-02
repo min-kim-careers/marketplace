@@ -1,14 +1,22 @@
+name: marketplace
 services:
-  web-service:
-    extends:
-      file: ./compose.yml
-      service: web-service
+  prod-web-service:
+    container_name: prod-web-container
+    image: prod-web-service
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: prod
+      args:
+        - API_URL=http://prod-api-service:8000
+        - GATEWAY_URL=http://prod-gateway-service:80
+        - NEXT_PUBLIC_CHAT_URL=pcmarket.app/chat/ws
     environment:
-      - API_URL=http://api-service:8000
+      - API_URL=http://prod-api-service:8000
+      - NEXT_PUBLIC_CHAT_URL=pcmarket.app/chat/ws
+      - GATEWAY_URL=http://prod-gateway-service:80
+
       - API_KEY=REDACTED
       - API_KEY_HEADER=REDACTED
       - SESSION_HEADER=__session
-
-      - NEXT_PUBLIC_IMAGE_BASE=/images
-      - NEXT_PUBLIC_CHAT_ENDPOINT=/chat/ws
-      - NEXT_PUBLIC_DOMAIN=pcmarket.app

@@ -41,14 +41,9 @@ const useChatStore = create<ChatState>((set) => {
     setUrl: (token?: string) =>
       set({
         url: token
-          ? toPath(
-              'ws://' +
-                process.env.NEXT_PUBLIC_DOMAIN +
-                process.env.NEXT_PUBLIC_CHAT_ENDPOINT,
-              {
-                token,
-              },
-            )
+          ? toPath('ws://' + process.env.NEXT_PUBLIC_CHAT_URL, {
+              token,
+            })
           : undefined,
       }),
     setProps: (props: Partial<ChatProps>) => set({ ...props }),

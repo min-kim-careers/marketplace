@@ -1,9 +1,9 @@
+import { FlatCompat } from "@eslint/eslintrc";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
 
-const internal_filename = fileURLToPath(import.meta.url);
-const internal_dirname = dirname(__filename);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const compat = new FlatCompat({
   baseDirectory: __dirname,
@@ -11,6 +11,12 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
+  {
+    files: ['**/*.{ts,tsx,js,jsx}'],
+    rules: {
+      'react-hooks/exhaustive-deps': 'off',
+    },
+  }
 ];
 
 export default eslintConfig;

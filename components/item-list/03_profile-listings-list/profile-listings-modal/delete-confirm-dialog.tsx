@@ -44,7 +44,7 @@ export default function DeleteConfirmDialog({
         <AlertDialogFooter>
           <AlertDialogCancel>No, close this</AlertDialogCancel>
           <AlertDialogAction onClick={handleClick} className='bg-red-500'>
-            Yes, I'm sure
+            Yes, I&apos;m sure
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

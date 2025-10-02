@@ -1,3 +1,4 @@
+import { ItemFormSchema } from '@/components/item-form/schema'
 import {
   FormControl,
   FormField,
@@ -6,20 +7,10 @@ import {
   FormMessage,
 } from '@/components/shadcn/components/ui/form'
 import { Input } from '@/components/shadcn/components/ui/input'
-import { ItemFormSchema } from '@/components/item-form/schema'
-import {
-  ChangeEvent,
-  ChangeEventHandler,
-  KeyboardEvent,
-  useEffect,
-  useState,
-} from 'react'
+import { formatCurrency, unformatCurrency } from '@/lib/helpers/format-price'
+import { ChangeEvent, KeyboardEvent, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
-import {
-  formatCurrency,
-  unformatCurrency,
-} from '@/lib/helpers/format-price'
 
 export default function PriceField({
   form,
@@ -37,23 +28,14 @@ export default function PriceField({
     if (existingPrice) setPrice(formatCurrency(existingPrice.toString()))
   }, [])
 
-  const allowedKeys = [
-    'Backspace',
-    'Tab',
-    'ArrowLeft',
-    'ArrowRight',
-    'Delete',
-  ]
-  const handleKeyDown = (
-    e: KeyboardEvent<HTMLInputElement>,
-  ) => {
+  const allowedKeys = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete']
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     // Allow control keys
     if (allowedKeys.includes(e.key)) return
 
     // Allow only one dot and digits
     const isDigit = /[0-9]/.test(e.key)
-    const isDot =
-      e.key === '.' && !e.currentTarget.value.includes('.')
+    const isDot = e.key === '.' && !e.currentTarget.value.includes('.')
 
     if (!isDigit && !isDot) {
       e.preventDefault()
@@ -67,9 +49,7 @@ export default function PriceField({
     setPrice(val)
   }
 
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newPrice = e.target.value
 
     if (!newPrice || newPrice === '00') {

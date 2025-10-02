@@ -12,7 +12,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/images/:path*',
-        destination: 'http://gateway-service:8080/images/:path*',
+        destination: `${process.env.GATEWAY_URL}/images/:path*`,
       },
     ]
   },

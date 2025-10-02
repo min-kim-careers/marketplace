@@ -1,4 +1,4 @@
-'use server'
+export const dynamic = 'force-dynamic'
 
 import { getItemPostRestraints } from '@/api'
 import ItemPost from '@/app/(main)/(protected)/item/post'

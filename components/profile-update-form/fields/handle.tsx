@@ -1,8 +1,7 @@
 import { z } from 'zod'
 
 import { profileHandleExists } from '@/api'
-import LoadingDots from '@/components/loading-dots'
-import Spinner from '@/components/spinner'
+import { ProfileUpdateFormSchema } from '@/components/profile-update-form/schema'
 import { Button } from '@/components/shadcn/components/ui/button'
 import {
   FormControl,
@@ -12,11 +11,11 @@ import {
   FormMessage,
 } from '@/components/shadcn/components/ui/form'
 import { Input } from '@/components/shadcn/components/ui/input'
+import Spinner from '@/components/spinner'
 import useProfileStore from '@/lib/stores/profile-store'
 import { CheckCheck, X } from 'lucide-react'
 import { ChangeEvent, MouseEvent, ReactNode, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { ProfileUpdateFormSchema } from '@/components/profile-update-form/schema'
 
 const DefaultButtonNode = () => <>Confirm</>
 const HandleTakenButtonNode = () => <X />
@@ -29,12 +28,10 @@ export default function HandleField({
 }) {
   const { profile } = useProfileStore()
 
-  if (!profile) return <LoadingDots />
-
   const name = 'handle.value'
   const label = 'Handle'
   const type = 'text'
-  const placeholder = profile.handle
+  const placeholder = profile ? profile.handle : '...'
 
   const [input, setInput] = useState('')
   const [buttonNode, setButtonNode] = useState<ReactNode>(<DefaultButtonNode />)
@@ -67,7 +64,7 @@ export default function HandleField({
       setError(name, {
         message: error.errors[0]?.message,
       })
-    } else if (input === profile.handle) {
+    } else if (profile && input === profile.handle) {
       setError(name, {
         message: 'Handle is unchanged',
       })
@@ -92,7 +89,7 @@ export default function HandleField({
         setConfirmed(true)
       }
     } catch (error) {
-      console.error('Error confirming handle')
+      console.error('Error confirming handle:', error)
       setButtonNode(<DefaultButtonNode />)
       setConfirmed(false)
     }

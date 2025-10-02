@@ -44,19 +44,6 @@ export default function Dropdown() {
           {profile ? profile.handle : <LoadingDots />}
         </DropdownMenuLabel>
 
-        <DropdownMenuSeparator />
-
-        <span className='visible sm:hidden'>
-          <DropdownMenuItem>
-            <Link href={`${APP_ROUTES.MARKET.href}`} passHref>
-              Browse
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Link href={APP_ROUTES.ITEM_POST.href}>Post Ad</Link>
-          </DropdownMenuItem>
-        </span>
-
         <DropdownMenuItem asChild>
           <Link href={APP_ROUTES.PROFILE_DASHBOARD.href}>Dashboard</Link>
         </DropdownMenuItem>
@@ -64,6 +51,19 @@ export default function Dropdown() {
         <DropdownMenuItem asChild>
           <Link href={APP_ROUTES.PROFILE_LISTINGS.href}>Listings</Link>
         </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
+
+        <span className='visible sm:hidden'>
+          <DropdownMenuItem asChild>
+            <Link href={`${APP_ROUTES.MARKET.href}`} passHref>
+              Browse
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href={APP_ROUTES.ITEM_POST.href}>Post Ad</Link>
+          </DropdownMenuItem>
+        </span>
 
         <DropdownMenuItem onClick={handleSignOut}>Sign Out</DropdownMenuItem>
       </DropdownMenuContent>

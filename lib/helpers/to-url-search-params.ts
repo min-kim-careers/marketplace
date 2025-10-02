@@ -1,4 +1,4 @@
-export const toURLSearchParams = (o: Object) => {
+export const toURLSearchParams = (o: object) => {
   const params = new URLSearchParams()
   Object.entries(o).forEach(([key, value]) => {
     if (!value) return
@@ -10,5 +10,3 @@ export const toURLSearchParams = (o: Object) => {
   })
   return params
 }
-
-

@@ -1,8 +1,7 @@
 import { z } from 'zod'
 
 import { profileEmailExists } from '@/api'
-import LoadingDots from '@/components/loading-dots'
-import Spinner from '@/components/spinner'
+import { ProfileUpdateFormSchema } from '@/components/profile-update-form/schema'
 import { Button } from '@/components/shadcn/components/ui/button'
 import {
   FormControl,
@@ -12,11 +11,11 @@ import {
   FormMessage,
 } from '@/components/shadcn/components/ui/form'
 import { Input } from '@/components/shadcn/components/ui/input'
+import Spinner from '@/components/spinner'
 import useProfileStore from '@/lib/stores/profile-store'
 import { CheckCheck, X } from 'lucide-react'
 import { ChangeEvent, MouseEvent, ReactNode, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { ProfileUpdateFormSchema } from '@/components/profile-update-form/schema'
 
 const DefaultButtonNode = () => <>Confirm</>
 const HandleTakenButtonNode = () => <X />
@@ -29,14 +28,12 @@ export default function EmailField({
 }) {
   const { profile } = useProfileStore()
 
-  if (!profile) return <LoadingDots />
-
   const name = 'email.value'
   const label = 'Email'
   const type = 'email'
-  const placeholder = profile.email
+  const placeholder = profile ? profile.email : '...'
 
-  const [input, setInput] = useState('')
+  const [input, setInput] = useState<string>('')
   const [buttonNode, setButtonNode] = useState<ReactNode>(<DefaultButtonNode />)
 
   const {
@@ -62,14 +59,14 @@ export default function EmailField({
     setInput(input)
 
     const { success, error } = ProfileUpdateFormSchema.safeParse({
-      'email.value': input
+      'email.value': input,
     })
 
     if (!success && error) {
       setError(name, {
         message: error.errors[0]?.message,
       })
-    } else if (input === profile.email) {
+    } else if (profile && input === profile.email) {
       setError(name, {
         message: 'Email is unchanged',
       })
@@ -94,7 +91,7 @@ export default function EmailField({
         setConfirmed(true)
       }
     } catch (error) {
-      console.error('Error confirming email')
+      console.error('Error confirming email:', error)
       setButtonNode(<DefaultButtonNode />)
       setConfirmed(false)
     }

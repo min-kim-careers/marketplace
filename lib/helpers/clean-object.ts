@@ -1,2 +1,2 @@
-export const cleanObject = (obj: Object) =>
-  Object.fromEntries(Object.entries(obj).filter(([_, v]) => v))
+export const cleanObject = (obj: object) =>
+  Object.fromEntries(Object.entries(obj).filter(([, v]) => v))
