@@ -1,15 +1,13 @@
 name: marketplace
 services:
-  api-db-service:
-    container_name: api-db-container
+  dev-api-db-service:
+    container_name: dev-api-db-container
     restart: always
     image: postgres:latest
     environment:
       - POSTGRES_USER=apidbuser
       - POSTGRES_PASSWORD=REDACTED
       - POSTGRES_DB=apidb
-    volumes:
-      - api-db-data:/var/lib/postgresql/data
     healthcheck:
       test:
         [
@@ -20,13 +18,15 @@ services:
       timeout: 3s
       retries: 3
     command: ["postgres", "-c", "log_checkpoints=off"]
+    volumes:
+      - dev-api-db-data:/var/lib/postgresql/data
 
-  api-cache-service:
-    container_name: api-cache-container
+  dev-api-cache-service:
+    container_name: dev-api-cache-container
     restart: always
     image: redis:latest
     environment:
-      - REDIS_HOST=api-cache-service
+      - REDIS_HOST=dev-api-cache-service
       - REDIS_PORT=6379
       - REDIS_PASSWORD=REDACTED
     command:
@@ -36,20 +36,24 @@ services:
         "redis-server --save 20 1 --loglevel warning --requirepass $$REDIS_PASSWORD",
       ]
     volumes:
-      - api-cache-data:/data
+      - dev-api-cache-data:/data
 
-  api-service:
-    container_name: api-container
+  dev-api-service:
+    container_name: dev-api-container
+    image: dev-api-service
     restart: always
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
     environment:
-      - DB_HOST=api-db-service
+      - DB_HOST=dev-api-db-service
       - DB_PORT=5432
       - DB_USER=apidbuser
       - DB_PASSWORD=REDACTED
       - DB_NAME=apidb
 
-      - CACHE_HOST=api-cache-service
+      - CACHE_HOST=dev-api-cache-service
       - CACHE_PORT=6379
       - CACHE_PASSWORD=REDACTED
       - CACHE_DB=0
@@ -66,8 +70,12 @@ services:
       - .env.firebase
     volumes:
       - ./app:/code/app
-      - ./images:/code/images
+      - ./dev-images:/code/images
+      - dev-venv:/code/.venv
+      - dev-pip:/root/.cache/pip
 
 volumes:
-  api-db-data:
-  api-cache-data:
+  dev-api-db-data:
+  dev-api-cache-data:
+  dev-venv:
+  dev-pip:
