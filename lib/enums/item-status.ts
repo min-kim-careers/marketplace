@@ -3,5 +3,6 @@ export const enum ItemStatus {
   Pending = 'pending',
   Sold = 'sold',
   // Expired = 'expired',
-  Inactive = 'inactive'
+  Inactive = 'inactive',
+  Deleted = 'deleted',
 }

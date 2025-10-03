@@ -1,9 +1,12 @@
+import { ItemStatus } from '@/lib/enums/item-status'
 import { Profile } from '@/lib/types/profile'
 
 export type ChatRoomItem = {
   alias: string
   name: string
   price: string
+  status: ItemStatus
+  isDeleted: bool
   imageUrl?: string
 }
 

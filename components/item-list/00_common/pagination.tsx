@@ -48,6 +48,7 @@ export default function Pagination() {
             page <= lastPage && (
               <PaginationItem key={index}>
                 <PaginationLink
+                  disabled={params.page === page}
                   isActive={params.page === page}
                   href={toPath(route, { ...params, page: page })}
                 >

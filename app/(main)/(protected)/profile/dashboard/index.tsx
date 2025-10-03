@@ -22,7 +22,7 @@ import { Label } from '@/components/shadcn/components/ui/label'
 import { useProfileHandler } from '@/lib/hooks/use-profile-handler'
 import useProfileStore from '@/lib/stores/profile-store'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { ReactNode, useEffect, useState } from 'react'
 import { useForm, UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
@@ -32,15 +32,16 @@ const useCanUpdate = (
 ) => {
   const [canUpdate, setCanUpdate] = useState(false)
   const watcher = form.watch()
+  const pathname = usePathname()
+
   useEffect(() => {
     setCanUpdate(
       Boolean(
-        (watcher.email.confirmed && !watcher.handle.value) ||
-          (watcher.handle.confirmed && !watcher.email.value) ||
-          (watcher.handle.confirmed && watcher.email.confirmed),
+        (watcher.email.confirmed && watcher.email.value.trim()) ||
+          (watcher.handle.confirmed && watcher.handle.value.trim()),
       ),
     )
-  }, [watcher])
+  }, [watcher, pathname])
   return { canUpdate }
 }
 
@@ -72,6 +73,7 @@ export default function ProfileDashboard({
         handle: values.handle.value,
       })
     ) {
+      form.reset()
       router.refresh()
     }
   }
@@ -88,7 +90,7 @@ export default function ProfileDashboard({
 
   return (
     <div className='flex flex-1 flex-col items-center justify-center gap-4'>
-      <Card className='w-full min-w-lg'>
+      <Card className='w-full max-w-xl'>
         <CardHeader>
           <CardTitle>Update your Profile</CardTitle>
           <CardDescription>

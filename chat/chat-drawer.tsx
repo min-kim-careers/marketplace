@@ -50,7 +50,7 @@ export default function ChatDrawer({ useButton }: { useButton?: boolean }) {
         side='right'
         className={cn(
           'flex flex-1',
-          '[state=closed]:duration-200 data-[state=open]:duration-200',
+          '[state=closed]:duration-500 data-[state=open]:duration-500',
           'min-w-full sm:min-w-[50vw]',
         )}
       >

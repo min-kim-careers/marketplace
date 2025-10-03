@@ -2,11 +2,7 @@ import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   /* config options here */
-  experimental: {
-    serverActions: {
-      allowedOrigins: ['localhost:8080'],
-    },
-  },
+  crossOrigin: 'anonymous',
   reactStrictMode: false,
   async rewrites() {
     return [

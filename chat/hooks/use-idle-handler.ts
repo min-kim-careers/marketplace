@@ -20,8 +20,8 @@ export const useIdleHandler = (token?: string) => {
     reset: resetIdleTimer,
     pause: pauseIdleTimer,
   } = useIdleTimer({
-    timeout: 1000 * 5, // set to idle after 5 min
-    // timeout: 1000 * 60 * 5, // set to idle after 5 min
+    // timeout: 1000 * 5,
+    timeout: 1000 * 60 * 5, // set to idle after 5 min
     startManually: true,
     onIdle: () => {
       // console.log('idling')

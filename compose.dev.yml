@@ -1,4 +1,4 @@
-name: marketplace
+name: dev_pcmarket
 services:
   dev-web-service:
     container_name: dev-web-container
@@ -9,7 +9,7 @@ services:
       dockerfile: Dockerfile
       target: dev
     environment:
-      - NEXT_PUBLIC_CHAT_URL=localhost:8080/chat/ws
+      - NEXT_PUBLIC_CHAT_URL=ws://192.168.8.103:8080/chat/ws
 
       - API_URL=http://dev-api-service:8000
       - API_KEY=REDACTED

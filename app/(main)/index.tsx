@@ -11,12 +11,22 @@ export default function Landing() {
 
   return (
     <div className='flex w-full flex-1 items-center justify-center'>
-      <div className='flex w-3/4 flex-col items-center justify-center gap-8 sm:items-start'>
-        <h1 className='text-4xl font-bold'>Welcome to the {APP_DATA.TITLE}!</h1>
-        {profile && profile.handle && <p>{`Hi there, ${profile.handle}!`}</p>}
+      <div className='flex w-3/4 flex-col items-center justify-center gap-10 text-center sm:items-start sm:text-left'>
+        <div className='space-y-3'>
+          <h1 className='text-4xl font-bold'>
+            Welcome to the {APP_DATA.TITLE}!
+          </h1>
+          <p className='text-lg'>An Australian PC trading platform</p>
+        </div>
+
+        {profile && (
+          <p>
+            Logged in as <span className='italic'>{profile.handle}</span>!
+          </p>
+        )}
 
         <Link href={`${APP_ROUTES.MARKET.href}`} passHref>
-          <Button>Browse the market</Button>
+          <Button className='text-md'>Browse the market</Button>
         </Link>
       </div>
     </div>

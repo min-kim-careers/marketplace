@@ -30,27 +30,34 @@ export default function UpdateConfirmDialog({
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent className='max-w-[90vw] overflow-auto rounded sm:max-w-xl'>
         <AlertDialogHeader>
-          <AlertDialogTitle>Confirmation before proceeding</AlertDialogTitle>
-          <AlertDialogDescription>
+          <AlertDialogTitle className='text-left'>
+            Confirmation before proceeding
+          </AlertDialogTitle>
+          <AlertDialogDescription className='text-left'>
             This action cannot be undone.
           </AlertDialogDescription>
           <div className='space-y-4 py-2'>
-            {Object.entries(newValues).map(([k, v], i) => (
-              <div key={i}>
-                <p className='text-sm text-muted-foreground'>
-                  {k.slice(0, 1).toUpperCase() + k.slice(1)}
-                </p>
-                <p className='flex flex-nowrap items-center gap-2'>
-                  {profile[k as keyof Profile]}
-                  <span>
-                    <ArrowRight className='h-4 w-4' />
-                  </span>
-                  {v.value}
-                </p>
-              </div>
-            ))}
+            {Object.entries(newValues).map(
+              ([k, v], i) =>
+                Boolean(v.value) && (
+                  <div key={i}>
+                    <p className='text-left text-sm text-muted-foreground'>
+                      {k.slice(0, 1).toUpperCase() + k.slice(1)}
+                    </p>
+                    <div className='mt-2 flex items-center gap-2'>
+                      <span>{profile[k as keyof Profile]}</span>
+
+                      <span>
+                        <ArrowRight className='h-4 w-4' />
+                      </span>
+
+                      <span>{v.value}</span>
+                    </div>
+                  </div>
+                ),
+            )}
           </div>
         </AlertDialogHeader>
 

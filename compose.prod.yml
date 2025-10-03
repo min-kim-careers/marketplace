@@ -1,4 +1,4 @@
-name: marketplace
+name: prod_pcmarket
 services:
   prod-web-service:
     container_name: prod-web-container
@@ -11,10 +11,10 @@ services:
       args:
         - API_URL=http://prod-api-service:8000
         - GATEWAY_URL=http://prod-gateway-service:80
-        - NEXT_PUBLIC_CHAT_URL=pcmarket.app/chat/ws
+        - NEXT_PUBLIC_CHAT_URL=wss://pcmarket.app/chat/ws
     environment:
       - API_URL=http://prod-api-service:8000
-      - NEXT_PUBLIC_CHAT_URL=pcmarket.app/chat/ws
+      - NEXT_PUBLIC_CHAT_URL=wss://pcmarket.app/chat/ws
       - GATEWAY_URL=http://prod-gateway-service:80
 
       - API_KEY=REDACTED
