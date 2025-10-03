@@ -1,4 +1,4 @@
-name: marketplace
+name: dev_pcmarket
 services:
   # ----------------------------------- API -----------------------------------
   dev-api-db-service:

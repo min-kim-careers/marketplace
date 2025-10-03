@@ -1,4 +1,4 @@
-name: marketplace
+name: prod_pcmarket
 services:
   # ----------------------------------- API -----------------------------------
   prod-api-db-service:

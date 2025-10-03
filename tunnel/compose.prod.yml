@@ -1,4 +1,4 @@
-name: marketplace
+name: prod_pcmarket
 services:
   prod-tunnel-service:
     container_name: prod-tunnel-container

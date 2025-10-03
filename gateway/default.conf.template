@@ -1,17 +1,30 @@
-server {
-  listen ${GATEWAY_PORT};
+map $server_port $host_header {
+  80  $host;
+  443 $host;
+  default $host:$server_port;
+}
 
-  server_name ${DOMAIN};
+server {
+  listen ${PORT};
+  server_name ${HOST};
 
   location / {
     access_log off;
     proxy_pass http://${WEB_SERVICE};
-    proxy_set_header Host $host;
+    proxy_set_header Host $host_header;
+    proxy_set_header X-Forwarded-Host $host_header;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
   }
 
   location /api {
     proxy_pass http://${API_SERVICE};
-    proxy_set_header Host $host;
+    proxy_set_header Host $host_header;
+    proxy_set_header X-Forwarded-Host $host_header;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
   }
 
   location /chat/ws {
@@ -19,7 +32,9 @@ server {
     proxy_http_version 1.1;
     proxy_set_header Upgrade $http_upgrade;
     proxy_set_header Connection "Upgrade";
-    proxy_set_header Host $host;
+    proxy_set_header Host $host_header;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
     proxy_cache_bypass $http_upgrade;
   }
 
@@ -30,16 +45,21 @@ server {
 
   location /__/auth/ {
     add_header Cross-Origin-Opener-Policy "same-origin-allow-popups";
-
     proxy_pass https://${FIREBASE_APP}.firebaseapp.com/__/auth/;
+    proxy_set_header Host ${FIREBASE_APP}.firebaseapp.com;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
   }
 
   location /_next/webpack-hmr {
     access_log off;
-
     proxy_pass http://${WEB_SERVICE}/_next/webpack-hmr;
     proxy_http_version 1.1;
     proxy_set_header Upgrade $http_upgrade;
     proxy_set_header Connection "upgrade";
+    proxy_set_header Host $host_header;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
   }
 }
