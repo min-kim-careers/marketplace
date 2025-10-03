@@ -64,7 +64,9 @@ class ItemRepository:
     ) -> Sequence[ItemDB]:
         stmt = select(ItemDB)
 
-        stmt = ItemRepository._build_query(stmt, query, user_id)
+        stmt = ItemRepository._build_query(stmt, query, user_id).where(
+            ItemDB.status != ItemStatus.deleted
+        )
 
         if query.sort_by:
             sort_column = getattr(ItemDB, query.sort_by.value)

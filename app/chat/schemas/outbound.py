@@ -1,9 +1,11 @@
 from typing import Optional
 from uuid import UUID
+from app.core import env
 from app.core.helpers import encode_uuid
 from app.core.schemas.outbound import OutboundBase
 from app.db.models.chat_room import ChatRoomDB
 from app.db.models.item import ItemDB
+from app.item.enums import ItemStatus
 from app.profile.schemas.outbound import ProfileOut
 
 
@@ -12,6 +14,8 @@ class ChatRoomItemOut(OutboundBase):
     name: str
     price: float
     image_url: Optional[str] = None
+    status: ItemStatus
+    is_deleted: bool
 
     @classmethod
     def from_db(cls, item: ItemDB) -> "ChatRoomItemOut":
@@ -19,9 +23,13 @@ class ChatRoomItemOut(OutboundBase):
             name=item.name,
             price=item.price,
             image_url=(
-                item.image_filenames[0] if len(item.image_filenames) > 0 else None
+                env.FRONTEND_IMAGE_BASE + "/" + item.image_filenames[0]
+                if len(item.image_filenames) > 0
+                else None
             ),
             alias=encode_uuid(item.id),
+            status=item.status,
+            is_deleted=item.status == ItemStatus.deleted,
         )
 
 

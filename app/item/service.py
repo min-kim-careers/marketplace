@@ -1,16 +1,18 @@
 from typing import Optional
 from uuid import UUID
 
+from app.chat.repositories.chat_room import ChatRoomRepository
 from app.core.logger import log_class_exceptions, logger
 from app.core.schemas.error import ErrorResponse
 from app.core.schemas.outbound import APIResponse
 from app.db.models.item import ItemDB
+from app.item.enums import ItemStatus
 from app.item.repository import ItemRepository
 from app.item.schemas.inbound import ItemInDB, ItemInForm, ItemsQuery
 from app.item.schemas.outbound import ItemOut
-from app.item.utils.image import remove_image_bulk
 from sqlalchemy.ext.asyncio import AsyncSession
 from rich import print
+from app.chat.server.cache import chat_cache
 
 
 @log_class_exceptions
@@ -86,6 +88,15 @@ class ItemService:
 
     @staticmethod
     async def delete_item(db: AsyncSession, item_db: ItemDB):
-        filenames = item_db.image_filenames
-        await ItemRepository.delete(db, item_db)
-        remove_image_bulk(filenames)
+        # filenames = item_db.image_filenames
+        # await ItemRepository.delete(db, item_db)
+        # remove_image_bulk(filenames)
+        room = await ChatRoomRepository.room_by_item_and_buyer(
+            db, item_db.id, item_db.buyer_id
+        )
+        await chat_cache.remove_unread_room(room.buyer_id, room.id)
+        await chat_cache.remove_unread_room(room.seller_id, room.id)
+
+        await ItemRepository.update_item(
+            db, item_db, ItemInDB(status=ItemStatus.deleted)
+        )

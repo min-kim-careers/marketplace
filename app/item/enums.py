@@ -40,11 +40,12 @@ class ItemStatus(str, Enum):
     pending = "pending"
     sold = "sold"
     inactive = "inactive"
+    deleted = "deleted"
 
     # API ONLY
     expired = "expired"
 
+
 class ItemUserOption(str, Enum):
     exclude_user = "exclude_user"
     user_only = "user_only"
-    

@@ -13,17 +13,20 @@ COPY requirements.txt .
 # --- Dependencies ---
 FROM base AS deps
 RUN pip install --no-cache-dir -r requirements.txt
+ARG LOCAL_IMAGE_PATH
 
 # --- Dev ---
 FROM deps AS dev
+
 COPY ./app /code/app
-COPY ./dev-images /code/images
+COPY ${LOCAL_IMAGE_PATH} /code/images
 CMD ["fastapi", "run", "app/main.py", "--host", "0.0.0.0", "--port", "8000", "--reload"]
 
 # --- Prod ---
 FROM deps AS prod
+
 COPY ./app /code/app
-COPY ./prod-images /code/images
+COPY ${LOCAL_IMAGE_PATH} /code/images
 
 # Use uvicorn (lightweight ASGI server) for production
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

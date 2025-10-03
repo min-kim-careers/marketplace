@@ -1,4 +1,4 @@
-name: marketplace
+name: dev_pcmarket
 services:
   dev-api-db-service:
     container_name: dev-api-db-container
@@ -8,6 +8,8 @@ services:
       - POSTGRES_USER=apidbuser
       - POSTGRES_PASSWORD=REDACTED
       - POSTGRES_DB=apidb
+    volumes:
+      - dev-api-db-data:/var/lib/postgresql
     healthcheck:
       test:
         [
@@ -18,8 +20,6 @@ services:
       timeout: 3s
       retries: 3
     command: ["postgres", "-c", "log_checkpoints=off"]
-    volumes:
-      - dev-api-db-data:/var/lib/postgresql/data
 
   dev-api-cache-service:
     container_name: dev-api-cache-container
@@ -46,6 +46,8 @@ services:
       context: .
       dockerfile: Dockerfile
       target: dev
+      args:
+        - LOCAL_IMAGE_PATH=./images/dev-images
     environment:
       - DB_HOST=dev-api-db-service
       - DB_PORT=5432
@@ -70,7 +72,7 @@ services:
       - .env.firebase
     volumes:
       - ./app:/code/app
-      - ./dev-images:/code/images
+      - ./images/dev-images:/code/images
       - dev-venv:/code/.venv
       - dev-pip:/root/.cache/pip
 

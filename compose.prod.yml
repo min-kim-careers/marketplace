@@ -1,4 +1,4 @@
-name: marketplace
+name: prod_pcmarket
 services:
   prod-api-db-service:
     container_name: prod-api-db-container
@@ -19,7 +19,7 @@ services:
       retries: 3
     command: ["postgres", "-c", "log_checkpoints=off"]
     volumes:
-      - prod-api-db-data:/var/lib/postgresql/data
+      - prod-api-db-data:/var/lib/postgresql
 
   prod-api-cache-service:
     container_name: prod-api-cache-container
@@ -46,6 +46,8 @@ services:
       context: .
       dockerfile: Dockerfile
       target: prod
+      args:
+        - LOCAL_IMAGE_PATH=./images/prod-images
     environment:
       - DB_HOST=prod-api-db-service
       - DB_PORT=5432
@@ -70,7 +72,7 @@ services:
       - .env.firebase
     volumes:
       - ./app:/code/app
-      - ./prod-images:/code/images
+      - ./images/prod-images:/code/images
 
 volumes:
   prod-api-db-data:
