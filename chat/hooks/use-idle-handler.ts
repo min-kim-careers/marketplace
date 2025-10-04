@@ -30,7 +30,9 @@ export const useIdleHandler = (token?: string) => {
     },
     onActive: () => {
       // console.log('unidling')
-      setUrl(token)
+      if (token) {
+        setUrl(token)
+      }
     },
     debounce: 500,
   })

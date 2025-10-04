@@ -5,6 +5,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from '@/components/shadcn/components/ui/avatar'
+import { cn } from '@/components/shadcn/lib/utils'
 import { formatCurrency } from '@/lib/helpers/format-price'
 import { ArrowLeft } from 'lucide-react'
 
@@ -23,7 +24,7 @@ export default function ChatToolbar() {
 
       <span className='flex-[12] py-2'>
         {currentRoom ? (
-          <span className='flex items-center gap-2'>
+          <span className={cn('flex items-center gap-2', currentRoom.item.isDeleted && 'opacity-50')}>
             <Avatar className='h-8 w-8'>
               <AvatarImage src={currentRoom.item.imageUrl} />
               <AvatarFallback>

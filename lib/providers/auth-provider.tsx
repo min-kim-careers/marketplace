@@ -2,7 +2,7 @@
 
 import useFirebaseStore from '@/lib/stores/firebase-store'
 import { auth } from '@/lib/utils/firebase'
-import { onIdTokenChanged } from 'firebase/auth'
+import { onAuthStateChanged } from 'firebase/auth'
 import { usePathname } from 'next/navigation'
 import {
   createContext,
@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const user = useFirebaseStore((state) => state.user)
 
   useEffect(() => {
-    const unsub = onIdTokenChanged(auth, async (fbUser) => {
+    const unsub = onAuthStateChanged(auth, async (fbUser) => {
       if (fbUser) {
         setUser(fbUser)
         setStatus('authenticated')

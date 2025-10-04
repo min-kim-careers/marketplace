@@ -98,6 +98,7 @@ export default function ChatRoomList() {
                       currentRoom &&
                         currentRoom.alias === room.alias &&
                         'rounded bg-secondary',
+                      room.item.isDeleted && 'opacity-50',
                     )}
                     key={i}
                     onClick={() => {
@@ -118,15 +119,16 @@ export default function ChatRoomList() {
                         {formatCurrency(room.item.price)} - {room.item.name}
                       </span>
                     </div>
-                    {room.isSeller && (
-                      <p
-                        className={cn(
-                          'flex-1 pr-2 text-right italic text-black/50 transition-all',
-                        )}
-                      >
-                        Selling
-                      </p>
-                    )}
+
+                    <div
+                      className={cn(
+                        'flex-1 pr-2 text-right italic text-muted-foreground transition-all',
+                      )}
+                    >
+                      {room.isSeller && <p>Listing</p>}
+                      {room.item.isDeleted && <p>Deleted</p>}
+                    </div>
+
                     {room.unread && (
                       <div
                         className={cn(

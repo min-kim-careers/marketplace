@@ -88,14 +88,23 @@ export default function ChatWindow() {
         onScroll={handlePosition}
         ref={scrollRef}
       >
-        <div
-          className={cn(
-            'transition-all',
-            loading ? 'translate-y-0' : '-translate-y-10',
-          )}
-        >
-          <LoadingDots />
-        </div>
+        {currentRoom.item.isDeleted && !currentRoom.isSeller && (
+          <div className='sticky top-0 z-10 flex items-center justify-center rounded border bg-background p-4 text-center m-6'>
+            This item has been deleted. The seller can no longer receive your
+            messages.
+          </div>
+        )}
+
+        {!noMessages && (
+          <div
+            className={cn(
+              'transition-all',
+              loading ? 'translate-y-0' : '-translate-y-10',
+            )}
+          >
+            <LoadingDots />
+          </div>
+        )}
 
         {noMessages && (
           <div className='-mt-4 mb-2 flex items-center justify-center italic text-black/50'>
@@ -115,12 +124,17 @@ export default function ChatWindow() {
       {/* input */}
       <form onSubmit={handleSubmit} className='flex h-8 items-center gap-2'>
         <Input
+          disabled={currentRoom.item.isDeleted}
           name='input'
           type='text'
           onChange={handleChange}
           className='h-full flex-1 rounded'
         />
-        <Button type='submit' className='h-full w-[15%] rounded'>
+        <Button
+          disabled={currentRoom.item.isDeleted}
+          type='submit'
+          className='h-full w-[15%] rounded'
+        >
           Send
         </Button>
       </form>

@@ -45,7 +45,7 @@ export const useChatSocket = (): ChatSocketState => {
     } else {
       setUrl()
     }
-  }, [open, token])
+  }, [open])
 
   const joinRoom = () => {
     if (currentRoom) {
@@ -178,6 +178,8 @@ export const useChatSocket = (): ChatSocketState => {
 
   return {
     sendTextOut: (message: string) => {
+      if (currentRoom && currentRoom.item.isDeleted) return
+
       _sendMessage({ type: 'text', content: message })
     },
     sendRestoreOut: () => {
@@ -186,6 +188,8 @@ export const useChatSocket = (): ChatSocketState => {
       }
     },
     sendTypingOut: (typing: boolean) => {
+      if (currentRoom && currentRoom.item.isDeleted) return
+
       _sendMessage({ type: 'typing', typing })
     },
   }
