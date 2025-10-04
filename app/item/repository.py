@@ -18,6 +18,8 @@ from app.item.utils.image import store_image, store_image_bulk
 class ItemRepository:
     @staticmethod
     def _build_query(stmt: Select, query: ItemsQuery, user_id: Optional[UUID] = None):
+        stmt = stmt.where(ItemDB.status != ItemStatus.deleted)
+
         if query.keyword:
             or_conditions = [
                 func.lower(ItemDB.name).ilike(f"%{query.keyword}%"),
@@ -64,9 +66,7 @@ class ItemRepository:
     ) -> Sequence[ItemDB]:
         stmt = select(ItemDB)
 
-        stmt = ItemRepository._build_query(stmt, query, user_id).where(
-            ItemDB.status != ItemStatus.deleted
-        )
+        stmt = ItemRepository._build_query(stmt, query, user_id)
 
         if query.sort_by:
             sort_column = getattr(ItemDB, query.sort_by.value)
@@ -123,7 +123,10 @@ class ItemRepository:
 
     @staticmethod
     async def create_item(
-        db: AsyncSession, user_id: UUID, item_in_db: ItemInDB
+        db: AsyncSession,
+        user_id: UUID,
+        item_in_db: ItemInDB,
+        commit: Optional[bool] = False,
     ) -> ItemDB:
         try:
             item_db = ItemDB(
@@ -134,6 +137,8 @@ class ItemRepository:
             db.add(item_db)
             await db.flush()
             await db.refresh(item_db)
+            if commit:
+                await db.commit()
             return item_db
         except Exception:
             await db.rollback()
@@ -141,7 +146,10 @@ class ItemRepository:
 
     @staticmethod
     async def update_item(
-        db: AsyncSession, item_db: ItemDB, item_in_db: ItemInDB
+        db: AsyncSession,
+        item_db: ItemDB,
+        item_in_db: ItemInDB,
+        commit: Optional[bool] = False,
     ) -> ItemDB:
         try:
             for field, value in item_in_db.model_dump(
@@ -152,6 +160,8 @@ class ItemRepository:
 
             await db.flush()
             await db.refresh(item_db)
+            if commit:
+                await db.commit()
             return item_db
         except Exception:
             await db.rollback()
@@ -172,11 +182,14 @@ class ItemRepository:
         db: AsyncSession,
         item_db: ItemDB,
         upload_images: list[UploadFile],
+        commit: Optional[bool] = False,
     ):
         try:
             updated_filenames = await store_image_bulk(upload_images)
             item_db.image_filenames = updated_filenames
             await db.flush()
+            if commit:
+                await db.commit()
             return item_db
         except Exception:
             await db.rollback()
@@ -188,6 +201,7 @@ class ItemRepository:
         item_db: ItemDB,
         upload_images: list[UploadFile],
         image_urls: list[str],
+        commit: Optional[bool] = False,
     ):
         try:
             updated_filenames = []
@@ -205,6 +219,8 @@ class ItemRepository:
             item_db.image_filenames = updated_filenames
 
             await db.flush()
+            if commit:
+                await db.commit()
             return item_db
         except Exception:
             await db.rollback()

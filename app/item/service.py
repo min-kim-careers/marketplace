@@ -1,3 +1,4 @@
+import asyncio
 from typing import Optional
 from uuid import UUID
 
@@ -22,7 +23,6 @@ class ItemService:
     async def upsert_item(
         db: AsyncSession, user_id: UUID, item_form: ItemInForm, item_db: ItemDB | None
     ):
-        print(item_form)
         is_updating = bool(item_db)
 
         try:
@@ -91,12 +91,15 @@ class ItemService:
         # filenames = item_db.image_filenames
         # await ItemRepository.delete(db, item_db)
         # remove_image_bulk(filenames)
-        room = await ChatRoomRepository.room_by_item_and_buyer(
-            db, item_db.id, item_db.buyer_id
+        room = await ChatRoomRepository.room_by_item_and_seller(
+            db, item_db.id, item_db.user_id
         )
-        await chat_cache.remove_unread_room(room.buyer_id, room.id)
-        await chat_cache.remove_unread_room(room.seller_id, room.id)
+
+        await asyncio.gather(
+            chat_cache.remove_unread_room(room.buyer_id, room.id),
+            chat_cache.remove_unread_room(room.seller_id, room.id),
+        )
 
         await ItemRepository.update_item(
-            db, item_db, ItemInDB(status=ItemStatus.deleted)
+            db, item_db, ItemInDB(status=ItemStatus.deleted), commit=True
         )

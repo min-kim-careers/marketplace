@@ -65,6 +65,17 @@ class ChatRoomRepository:
             item_id=item_id,
             buyer_id=buyer_id,
         )
+    
+    @staticmethod
+    async def room_by_item_and_seller(
+        db: AsyncSession, item_id: UUID, seller_id: UUID
+    ) -> ChatRoomDB:
+        return await get_one_by(
+            db,
+            ChatRoomDB,
+            item_id=item_id,
+            seller_id=seller_id,
+        )
 
     @staticmethod
     async def room_by_id(db: AsyncSession, room_id: UUID) -> ChatRoomDB:
