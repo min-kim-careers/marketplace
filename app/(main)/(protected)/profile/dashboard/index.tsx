@@ -22,26 +22,35 @@ import { Label } from '@/components/shadcn/components/ui/label'
 import { useProfileHandler } from '@/lib/hooks/use-profile-handler'
 import useProfileStore from '@/lib/stores/profile-store'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { usePathname, useRouter } from 'next/navigation'
-import { ReactNode, useEffect, useState } from 'react'
-import { useForm, UseFormReturn } from 'react-hook-form'
+import { useRouter } from 'next/navigation'
+import { ReactNode } from 'react'
+import { useForm, UseFormReturn, useWatch } from 'react-hook-form'
 import { z } from 'zod'
 
 const useCanUpdate = (
   form: UseFormReturn<z.infer<typeof ProfileUpdateFormSchema>>,
 ) => {
-  const [canUpdate, setCanUpdate] = useState(false)
-  const watcher = form.watch()
-  const pathname = usePathname()
+  const {
+    control,
+    formState: { isValid },
+  } = form
 
-  useEffect(() => {
-    setCanUpdate(
-      Boolean(
-        (watcher.email.confirmed && watcher.email.value.trim()) ||
-          (watcher.handle.confirmed && watcher.handle.value.trim()),
-      ),
-    )
-  }, [watcher, pathname])
+  const [emailConfirmed, handleConfirmed, emailValue, handleValue] = useWatch({
+    control,
+    name: [
+      'email.confirmed',
+      'handle.confirmed',
+      'email.value',
+      'handle.value',
+    ],
+  })
+
+  const canUpdate = Boolean(
+    isValid &&
+      ((emailConfirmed && emailValue?.trim()) ||
+        (handleConfirmed && handleValue?.trim())),
+  )
+
   return { canUpdate }
 }
 

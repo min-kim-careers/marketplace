@@ -16,7 +16,7 @@ export default function Landing() {
           <h1 className='text-4xl font-bold'>
             Welcome to the {APP_DATA.TITLE}!
           </h1>
-          <p className='text-lg'>An Australian PC trading platform</p>
+          <p className='text-lg '>Built by Aussie PC enthusiasts for Aussie PC enthusiasts. Trade parts, share builds, save cash.</p>
         </div>
 
         {profile && (

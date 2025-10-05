@@ -12,16 +12,36 @@ import { NextResponse } from 'next/server'
 
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname
+
   const headers = new Headers(req.headers)
   headers.set('x-pathname', path)
+
   const nextResponse = NextResponse.next({ request: { headers } })
 
-  if (isFallbackRoute(path) || isAuthRoute(path) || req.method !== 'GET') {
+  if (
+    isPublicRoute(path) ||
+    isFallbackRoute(path) ||
+    isAuthRoute(path) ||
+    req.method !== 'GET'
+  ) {
     return nextResponse
   }
 
-  if (await hasSession()) {
-    if (!(await verifySession())) {
+  let session = false
+  try {
+    session = await hasSession()
+  } catch (e) {
+    console.error('hasSession() threw:', e)
+    session = false
+  }
+
+  if (session) {
+    try {
+      const ok = await verifySession()
+      if (!ok) throw new Error('invalid or missing session')
+      return nextResponse
+    } catch (e) {
+      console.error('verifySession() threw:', e)
       return NextResponse.redirect(
         new URL(
           toPath(APP_ROUTES.REAUTH.href, { redirect: path }),
@@ -29,12 +49,6 @@ export async function middleware(req: NextRequest) {
         ),
       )
     }
-
-    return nextResponse
-  }
-
-  if (isPublicRoute(path)) {
-    return nextResponse
   }
 
   return NextResponse.redirect(new URL(APP_ROUTES.NOTFOUND.href, req.nextUrl))

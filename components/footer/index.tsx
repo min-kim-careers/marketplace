@@ -14,6 +14,11 @@ export default function Footer() {
         </p>
       </div>
       <div>Copyright © 2025-2025 {APP_DATA.TITLE}</div>
+      <p>
+        <a href={`mailto:${process.env.NEXT_PUBLIC_CONTACT}`}>
+          {process.env.NEXT_PUBLIC_CONTACT}
+        </a>
+      </p>
     </div>
   )
 }

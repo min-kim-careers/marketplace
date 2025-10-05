@@ -12,11 +12,16 @@ services:
         - API_URL=http://prod-api-service:8000
         - GATEWAY_URL=http://prod-gateway-service:80
         - NEXT_PUBLIC_CHAT_URL=wss://pcmarket.app/chat/ws
+        - NEXT_PUBLIC_APP_URL=https://pcmarket.app
+        - NEXT_PUBLIC_CONTACT=contact@pcmarket.app
+        - NEXT_PUBLIC_SITE_KEY=REDACTED
+    env_file:
+      - .env.shared
     environment:
       - API_URL=http://prod-api-service:8000
-      - NEXT_PUBLIC_CHAT_URL=wss://pcmarket.app/chat/ws
       - GATEWAY_URL=http://prod-gateway-service:80
+      - NEXT_PUBLIC_CHAT_URL=wss://pcmarket.app/chat/ws
+      - NEXT_PUBLIC_APP_URL=https://pcmarket.app
+      - NEXT_PUBLIC_CONTACT=contact@pcmarket.app
+      - NEXT_PUBLIC_SITE_KEY=REDACTED
 
-      - API_KEY=REDACTED
-      - API_KEY_HEADER=REDACTED
-      - SESSION_HEADER=__session

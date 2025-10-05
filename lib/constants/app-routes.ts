@@ -42,7 +42,7 @@ export const isFallbackRoute = (path: string) =>
   isInConst(path, FALLBACK_ROUTES)
 
 const AUTH_ROUTES = [APP_ROUTES.REAUTH.href] as const
-export const isAuthRoute = (path: string) => isInConst(path, AUTH_ROUTES)
+export const isAuthRoute = (path: string) => AUTH_ROUTES.some((route) => path.startsWith(route))
 
 const validateRoutes = () => {
   const allRoutes = [

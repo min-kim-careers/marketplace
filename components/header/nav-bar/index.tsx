@@ -1,7 +1,7 @@
 import ChatDrawer from '@/chat/chat-drawer'
 import LoadingDots from '@/components/loading-dots'
+import SignInWithPasswordButton from '@/components/sign-in-with/password-button'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
-import { useAuthHandler } from '@/lib/hooks/use-auth-handler'
 import { useAuthContext } from '@/lib/providers/auth-provider'
 import useProfileStore from '@/lib/stores/profile-store'
 import Link from 'next/link'
@@ -11,7 +11,6 @@ import Dropdown from './dropdown'
 export default function NavBar() {
   const profile = useProfileStore((state) => state.profile)
   const { status } = useAuthContext()
-  const { handleSignIn } = useAuthHandler()
 
   if (status === 'loading') {
     return (
@@ -22,7 +21,9 @@ export default function NavBar() {
   }
 
   const unauthenticated = () => (
-    <Button onClick={handleSignIn}>Sign in with Google</Button>
+    <span className='flex items-center space-x-2'>
+      <SignInWithPasswordButton/>
+    </span>
   )
 
   const authenticated = () => {

@@ -1,7 +1,7 @@
 'use client'
 
 import useFirebaseStore from '@/lib/stores/firebase-store'
-import { auth } from '@/lib/utils/firebase'
+import { auth } from '@/lib/utils/firebase/config'
 import { onAuthStateChanged } from 'firebase/auth'
 import { usePathname } from 'next/navigation'
 import {
