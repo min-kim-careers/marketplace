@@ -11,7 +11,8 @@ from app.profile.constants.defaults import (
     DEFAULT_HANDLE_UPDATE_INTERVAL_IN_DAYS,
 )
 from app.profile.repository import ProfileRepository
-from app.profile.schemas.inbound import ProfileIn, ProfileInCreateDB, ProfileInUpdateDB
+from app.profile.schemas.internal import ProfileInCreateDB, ProfileInUpdateDB
+from app.profile.schemas.inbound import ProfileIn
 from app.profile.schemas.outbound import ProfileExtraOut, ProfileOut
 
 

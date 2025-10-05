@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 from app.db.base import Base
-from sqlalchemy import UniqueConstraint
+from sqlalchemy import String, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -19,6 +19,7 @@ class UserDB(Base):
         primary_key=True,
         default=uuid4,
     )
+    password: Mapped[str] = mapped_column(String, nullable=True)
 
     provider_name: Mapped[str] = mapped_column(nullable=False)
     provider_id: Mapped[str] = mapped_column(nullable=False, unique=True)

@@ -5,7 +5,8 @@ from uuid import UUID
 from sqlalchemy import asc, desc, or_, select, update
 
 from app.chat.enums import RoomSortOrder
-from app.chat.schemas.inbound import ChatRoomInDB, ChatRoomQuery
+from app.chat.schemas.internal import ChatRoomInDB
+from app.chat.schemas.inbound import ChatRoomQuery
 from app.core.logger import log_class_exceptions
 from app.core.helpers import get_one_by
 from app.db.models.chat_status import ChatStatusDB

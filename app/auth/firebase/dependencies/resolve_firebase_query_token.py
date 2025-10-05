@@ -27,7 +27,7 @@ async def get_firebase_user_from_query_token(
         firebase_user = FirebaseUser(
             uid=token_data["uid"],
             email=token_data["email"],
-            picture=token_data["picture"],
+            picture=token_data.get('picture') or None,
         )
 
         # logger.info(f"UID: {firebase_user.uid} verified, Email: {firebase_user.email}")

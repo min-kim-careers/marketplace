@@ -1,3 +1,4 @@
+from app.auth.firebase.schemas.inbound import GetSessionRequest
 from app.auth.firebase.schemas.outbound import FirebaseUser
 from app.auth.user.repository import UserRepository
 from app.core.schemas.error import ErrorResponse
@@ -13,21 +14,19 @@ from firebase_admin import auth
 from firebase_admin.exceptions import FirebaseError
 
 
-async def get_firebase_user_from_body_token(
-    id_token: str | None = Body(default=None, embed=True, alias="idToken"),
-) -> FirebaseUser:
-    if not id_token:
+async def get_firebase_user_from_request(request: GetSessionRequest) -> FirebaseUser:
+    if not request.id_token:
         raise ErrorResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,
             message="Not authenticated: No id token found.",
         )
     try:
-        token_data = auth.verify_id_token(id_token, check_revoked=True)
+        token_data: dict = auth.verify_id_token(request.id_token, check_revoked=True)
 
         firebase_user = FirebaseUser(
             uid=token_data["uid"],
             email=token_data["email"],
-            picture=token_data["picture"],
+            picture=token_data.get("picture") or None,
         )
 
         return firebase_user
@@ -46,7 +45,7 @@ async def get_firebase_user_from_body_token(
 
 
 async def resolve_firebase_body_token(
-    firebase_user: FirebaseUser = Depends(get_firebase_user_from_body_token),
+    firebase_user: FirebaseUser = Depends(get_firebase_user_from_request),
     db: AsyncSession = Depends(get_db),
 ) -> UserDB:
     user = await UserRepository.get_user_by_provider(db, firebase_user.uid)

@@ -6,7 +6,8 @@ from app.core import helpers
 from app.core.logger import log_class_exceptions
 from app.db.models.profile import ProfileDB
 from app.profile.constants.defaults import default_profile_extra
-from app.profile.schemas.inbound import ProfileInCreateDB, ProfileInUpdateDB
+from app.profile.schemas.internal import ProfileInCreateDB
+from app.profile.schemas.internal import ProfileInUpdateDB
 
 
 @log_class_exceptions

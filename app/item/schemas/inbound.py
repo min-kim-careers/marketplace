@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from fastapi import Query, UploadFile
-from pydantic import BaseModel, Field, field_validator
+from pydantic import Field, field_validator
 
 from app.core.schemas.inbound import InboundBase
 from app.item.enums import (
@@ -57,13 +57,3 @@ class ItemInForm(InboundBase):
     #     return self
 
 
-class ItemInDB(BaseModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
-    price: Optional[float] = None
-    category: Optional[ItemCategory] = None
-    condition: Optional[ItemCondition] = None
-    status: Optional[ItemStatus] = None
-    postcode: Optional[str] = Field(default=None, min_length=4, max_length=4)
-    suburb: Optional[str] = None
-    state: Optional[str] = None

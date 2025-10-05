@@ -1,12 +1,12 @@
 from uuid import UUID
 
-from app.auth.user.schemas.inbound import UserInDB
+from app.auth.user.schemas.internal import UserInDB
 from app.core.helpers import get_one_by
 from app.core.logger import log_class_exceptions
 from app.db.models.profile import ProfileDB
 from app.db.models.user import UserDB
 from app.profile.constants.defaults import default_profile_extra
-from app.profile.schemas.inbound import ProfileInCreateDB
+from app.profile.schemas.internal import ProfileInCreateDB
 from sqlalchemy.ext.asyncio import AsyncSession
 
 

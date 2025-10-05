@@ -1,7 +1,5 @@
 from typing import Optional
-from uuid import UUID
 
-from pydantic import BaseModel
 
 from app.chat.constants import (
     DEFAULT_PAGINATION_LIMIT,
@@ -11,12 +9,6 @@ from app.chat.constants import (
 )
 from app.chat.enums import RoomSortBy, RoomSortOrder
 from app.core.schemas.inbound import InboundBase
-
-
-class ChatRoomInDB(BaseModel):
-    item_id: UUID
-    buyer_id: UUID
-    seller_id: UUID
 
 
 class ChatRoomQuery(InboundBase):

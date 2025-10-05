@@ -7,7 +7,8 @@ from app.core.helpers import get_one_by
 from app.core.logger import log_class_exceptions
 from app.db.models.item import ItemDB
 from app.item.enums import ItemSortOrder, ItemStatus, ItemUserOption
-from app.item.schemas.inbound import ItemInDB, ItemsQuery
+from app.item.schemas.internal import ItemInDB
+from app.item.schemas.inbound import ItemsQuery
 from sqlalchemy import Select, String, and_, asc, cast, desc, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 

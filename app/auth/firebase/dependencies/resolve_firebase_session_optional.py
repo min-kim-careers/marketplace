@@ -1,4 +1,5 @@
 from app.auth.firebase.schemas.outbound import FirebaseUser
+from app.auth.helpers.get_session_from_request_optional import get_session_from_request_optional
 from app.auth.user.repository import UserRepository
 from app.core.schemas.error import ErrorResponse
 from app.db.models.user import UserDB
@@ -6,7 +7,6 @@ from app.db.session import get_db
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.auth.firebase.schemas.outbound import FirebaseUser
-from app.auth.helpers import get_session_from_request_optional
 from app.core.logger import logger
 from app.core.schemas.error import ErrorResponse
 from fastapi import Depends, status
@@ -26,7 +26,7 @@ async def get_firebase_user_from_session_optional(
         decoded_token = FirebaseUser(
             uid=token_data["uid"],
             email=token_data["email"],
-            picture=token_data["picture"],
+            picture=token_data.get('picture') or None,
         )
 
         # logger.info(f"UID: {decoded_token.uid} verified, Email: {decoded_token.email}")

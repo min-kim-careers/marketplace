@@ -33,6 +33,11 @@ class Env(BaseSettings):
     FRONTEND_IMAGE_BASE: str
     CONTAINER_IMAGE_DIR: str
 
+    TURNSTILE_URL: str
+    TURNSTILE_SECRET: str
+    NONCE_SECRET: str
+    NONCE_LIFETIME_MINUTES: int
+
     model_config = SettingsConfigDict(
         env_file=".env",
     )

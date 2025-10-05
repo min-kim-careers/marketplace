@@ -50,26 +50,11 @@ services:
         - LOCAL_IMAGE_PATH=./images/dev-images
     environment:
       - DB_HOST=dev-api-db-service
-      - DB_PORT=5432
-      - DB_USER=apidbuser
-      - DB_PASSWORD=REDACTED
-      - DB_NAME=apidb
-
       - CACHE_HOST=dev-api-cache-service
-      - CACHE_PORT=6379
-      - CACHE_PASSWORD=REDACTED
-      - CACHE_DB=0
-
-      - SERVICE_KEY=GIUv6nI8S76oIdVPE3sSe3YvLkF7O6XwqeQp4MOvGUE=
-      - SERVICE_KEY_HEADER=x-api-key
-
-      - SESSION_HEADER=__session
-
-      - FRONTEND_IMAGE_BASE=/images
-      - CONTAINER_IMAGE_DIR=/code/images
-
     env_file:
+      - .env.cloudflare
       - .env.firebase
+      - .env.shared
     volumes:
       - ./app:/code/app
       - ./images/dev-images:/code/images

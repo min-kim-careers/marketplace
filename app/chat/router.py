@@ -5,7 +5,8 @@ from fastapi import APIRouter, Depends, Query
 from app.auth.firebase.dependencies import resolve_firebase_session
 from app.chat.dependencies.resolve_room_alias import resolve_room_alias
 from app.chat.repositories.chat_room import ChatRoomRepository
-from app.chat.schemas.inbound import ChatRoomInDB, ChatRoomQuery
+from app.chat.schemas.internal import ChatRoomInDB
+from app.chat.schemas.inbound import ChatRoomQuery
 from app.chat.schemas.outbound import ChatRoomOut
 from app.core.schemas.outbound import APIResponse
 from app.core.security import verify_service_key

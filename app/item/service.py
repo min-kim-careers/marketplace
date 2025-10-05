@@ -9,7 +9,8 @@ from app.core.schemas.outbound import APIResponse
 from app.db.models.item import ItemDB
 from app.item.enums import ItemStatus
 from app.item.repository import ItemRepository
-from app.item.schemas.inbound import ItemInDB, ItemInForm, ItemsQuery
+from app.item.schemas.internal import ItemInDB
+from app.item.schemas.inbound import ItemInForm, ItemsQuery
 from app.item.schemas.outbound import ItemOut
 from sqlalchemy.ext.asyncio import AsyncSession
 from rich import print
