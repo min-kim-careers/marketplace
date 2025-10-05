@@ -5,6 +5,8 @@ services:
     image: nginx:latest
     ports:
       - 80:80
+    env_file:
+      - .env.shared
     environment:
       - HOST=pcmarket.app
       - PORT=80

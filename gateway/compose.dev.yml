@@ -5,6 +5,8 @@ services:
     image: nginx:latest
     ports:
       - 8080:8080
+    env_file:
+      - .env.shared
     environment:
       - HOST=192.168.8.103
       - PORT=8080
