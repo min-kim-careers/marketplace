@@ -1,7 +1,7 @@
-name: dev_pcmarket
+name: dev_market
 services:
-  dev-gateway-service:
-    container_name: dev-gateway-container
+  dev_gateway-service:
+    container_name: dev_gateway-container
     image: nginx:latest
     ports:
       - 8080:8080
@@ -10,10 +10,10 @@ services:
     environment:
       - HOST=192.168.8.103
       - PORT=8080
-      - WEB_SERVICE=dev-web-service:3000
-      - API_SERVICE=dev-api-service:8000
+      - WEB_SERVICE=dev_web-service:3000
+      - API_SERVICE=dev_api-service:8000
       - FIREBASE_APP=market-by-kibon
       - IMAGE_BASE=/images
     volumes:
       - ./default.conf.template:/etc/nginx/templates/default.conf.template:ro
-      - ../api/images/dev-images:/app/images:ro
+      - ../api/images/dev_images:/app/images:ro

@@ -1,59 +1,59 @@
-name: dev_pcmarket
+name: dev_market
 services:
   # ----------------------------------- API -----------------------------------
-  dev-api-db-service:
+  dev_api-db-service:
     extends:
       file: ./api/compose.dev.yml
-      service: dev-api-db-service
+      service: dev_api-db-service
     networks:
-      - dev-api-network
+      - dev_api-network
 
-  dev-api-cache-service:
+  dev_api-cache-service:
     extends:
       file: ./api/compose.dev.yml
-      service: dev-api-cache-service
+      service: dev_api-cache-service
     networks:
-      - dev-api-network
+      - dev_api-network
 
-  dev-api-service:
+  dev_api-service:
     extends:
       file: ./api/compose.dev.yml
-      service: dev-api-service
+      service: dev_api-service
     depends_on:
-      dev-api-db-service:
+      dev_api-db-service:
         condition: service_healthy
-      dev-api-cache-service:
+      dev_api-cache-service:
         condition: service_started
     networks:
-      - dev-gateway-network
-      - dev-api-network
+      - dev_gateway-network
+      - dev_api-network
 
   # ----------------------------------- WEB -----------------------------------
-  dev-web-service:
+  dev_web-service:
     extends:
       file: ./web/compose.dev.yml
-      service: dev-web-service
+      service: dev_web-service
     networks:
-      - dev-gateway-network
+      - dev_gateway-network
 
   # ----------------------------------- GATEWAY -----------------------------------
-  dev-gateway-service:
+  dev_gateway-service:
     extends:
       file: ./gateway/compose.dev.yml
-      service: dev-gateway-service
+      service: dev_gateway-service
     networks:
-      - dev-gateway-network
+      - dev_gateway-network
     depends_on:
-      - dev-api-service
-      - dev-web-service
+      - dev_api-service
+      - dev_web-service
 
 volumes:
-  dev-api-db-data:
-  dev-api-cache-data:
-  dev-node_modules:
-  dev-venv:
-  dev-pip:
+  dev_api-db-data:
+  dev_api-cache-data:
+  dev_node_modules:
+  dev_venv:
+  dev_pip:
 
 networks:
-  dev-gateway-network:
-  dev-api-network:
+  dev_gateway-network:
+  dev_api-network:

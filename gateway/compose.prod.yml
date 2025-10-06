@@ -1,7 +1,7 @@
-name: prod_pcmarket
+name: prod_market
 services:
-  prod-gateway-service:
-    container_name: prod-gateway-container
+  prod_gateway-service:
+    container_name: prod_gateway-container
     image: nginx:latest
     ports:
       - 80:80
@@ -10,10 +10,10 @@ services:
     environment:
       - HOST=pcmarket.app
       - PORT=80
-      - WEB_SERVICE=prod-web-service:3000
-      - API_SERVICE=prod-api-service:8000
+      - WEB_SERVICE=prod_web-service:3000
+      - API_SERVICE=prod_api-service:8000
       - FIREBASE_APP=market-by-kibon
       - IMAGE_BASE=/images
     volumes:
       - ./default.conf.template:/etc/nginx/templates/default.conf.template:ro
-      - ../api/images/prod-images:/app/images:ro
+      - ../api/images/prod_images:/app/images:ro
