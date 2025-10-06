@@ -1,7 +1,7 @@
-name: dev_pcmarket
+name: dev_market
 services:
-  dev-api-db-service:
-    container_name: dev-api-db-container
+  dev_api-db-service:
+    container_name: dev_api-db-container
     restart: always
     image: postgres:latest
     environment:
@@ -9,7 +9,7 @@ services:
       - POSTGRES_PASSWORD=REDACTED
       - POSTGRES_DB=apidb
     volumes:
-      - dev-api-db-data:/var/lib/postgresql
+      - dev_api-db-data:/var/lib/postgresql
     healthcheck:
       test:
         [
@@ -21,12 +21,12 @@ services:
       retries: 3
     command: ["postgres", "-c", "log_checkpoints=off"]
 
-  dev-api-cache-service:
-    container_name: dev-api-cache-container
+  dev_api-cache-service:
+    container_name: dev_api-cache-container
     restart: always
     image: redis:latest
     environment:
-      - REDIS_HOST=dev-api-cache-service
+      - REDIS_HOST=dev_api-cache-service
       - REDIS_PORT=6379
       - REDIS_PASSWORD=REDACTED
     command:
@@ -36,33 +36,33 @@ services:
         "redis-server --save 20 1 --loglevel warning --requirepass $$REDIS_PASSWORD",
       ]
     volumes:
-      - dev-api-cache-data:/data
+      - dev_api-cache-data:/data
 
-  dev-api-service:
-    container_name: dev-api-container
-    image: dev-api-service
+  dev_api-service:
+    container_name: dev_api-container
+    image: dev_market_api-image
     restart: always
     build:
       context: .
       dockerfile: Dockerfile
       target: dev
       args:
-        - LOCAL_IMAGE_PATH=./images/dev-images
+        - LOCAL_IMAGE_PATH=./images/dev_images
     environment:
-      - DB_HOST=dev-api-db-service
-      - CACHE_HOST=dev-api-cache-service
+      - DB_HOST=dev_api-db-service
+      - CACHE_HOST=dev_api-cache-service
     env_file:
       - .env.cloudflare
       - .env.firebase
       - .env.shared
     volumes:
       - ./app:/code/app
-      - ./images/dev-images:/code/images
-      - dev-venv:/code/.venv
-      - dev-pip:/root/.cache/pip
+      - ./images/dev_images:/code/images
+      - dev_venv:/code/.venv
+      - dev_pip:/root/.cache/pip
 
 volumes:
-  dev-api-db-data:
-  dev-api-cache-data:
-  dev-venv:
-  dev-pip:
+  dev_api-db-data:
+  dev_api-cache-data:
+  dev_venv:
+  dev_pip:

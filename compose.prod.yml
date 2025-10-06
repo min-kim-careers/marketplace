@@ -1,7 +1,7 @@
-name: prod_pcmarket
+name: prod_market
 services:
-  prod-api-db-service:
-    container_name: prod-api-db-container
+  prod_api-db-service:
+    container_name: prod_api-db-container
     restart: always
     image: postgres:latest
     environment:
@@ -19,14 +19,14 @@ services:
       retries: 3
     command: ["postgres", "-c", "log_checkpoints=off"]
     volumes:
-      - prod-api-db-data:/var/lib/postgresql
+      - prod_api-db-data:/var/lib/postgresql
 
-  prod-api-cache-service:
-    container_name: prod-api-cache-container
+  prod_api-cache-service:
+    container_name: prod_api-cache-container
     restart: always
     image: redis:latest
     environment:
-      - REDIS_HOST=prod-api-cache-service
+      - REDIS_HOST=prod_api-cache-service
       - REDIS_PORT=6379
       - REDIS_PASSWORD=REDACTED
     command:
@@ -36,29 +36,29 @@ services:
         "redis-server --save 20 1 --loglevel warning --requirepass $$REDIS_PASSWORD",
       ]
     volumes:
-      - prod-api-cache-data:/data
+      - prod_api-cache-data:/data
 
-  prod-api-service:
-    container_name: prod-api-container
-    image: prod-api-service
+  prod_api-service:
+    container_name: prod_api-container
+    image: prod_market_api-image
     restart: always
     build:
       context: .
       dockerfile: Dockerfile
       target: prod
       args:
-        - LOCAL_IMAGE_PATH=./images/prod-images
+        - LOCAL_IMAGE_PATH=./images/prod_images
     environment:
-      - DB_HOST=prod-api-db-service
-      - CACHE_HOST=prod-api-cache-service
+      - DB_HOST=prod_api-db-service
+      - CACHE_HOST=prod_api-cache-service
     env_file:
       - .env.cloudflare
       - .env.firebase
       - .env.shared
     volumes:
       - ./app:/code/app
-      - ./images/prod-images:/code/images
+      - ./images/prod_images:/code/images
 
 volumes:
-  prod-api-db-data:
-  prod-api-cache-data:
+  prod_api-db-data:
+  prod_api-cache-data:

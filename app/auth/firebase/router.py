@@ -19,7 +19,7 @@ from app.profile.schemas.outbound import ProfileOut
 from fastapi import APIRouter, Body, Depends, Request
 from firebase_admin import auth
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.exc import NoResultFound
+from sqlalchemy.exc import NoResultFound, IntegrityError
 
 firebase_router = APIRouter(prefix="/auth/firebase", tags=["Auth - Firebase"])
 
@@ -39,7 +39,14 @@ async def get_session(
     try:
         user = await UserRepository.get_user_by_provider(db, firebase_user.uid)
     except NoResultFound:
-        user = await FirebaseService.handle_new_user(db, firebase_user)
+        try:
+            user = await FirebaseService.handle_new_user(db, firebase_user)
+        except IntegrityError:
+            if request.is_new_user:
+                auth.delete_user(firebase_user.uid)
+                raise ErrorResponse(
+                    status_code=403, message="User already exists in DB"
+                )
 
     expires_in_seconds = int(timedelta(days=5).total_seconds())
     session_cookie = auth.create_session_cookie(
