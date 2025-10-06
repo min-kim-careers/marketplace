@@ -6,7 +6,7 @@ export default function SignInWithGoogleButton() {
   const { handleSignInWithGoogle } = useAuthHandler()
 
   return (
-    <Button onClick={handleSignInWithGoogle}>
+    <Button onClick={handleSignInWithGoogle} className='w-full'>
       <span className='flex items-center gap-2'>
         <GoogleLogo />
         <p>Sign In with Google</p>

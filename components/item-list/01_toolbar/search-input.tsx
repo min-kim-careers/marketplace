@@ -116,6 +116,7 @@ export default function SearchInput() {
 
   const RecentKeywords = () => (
     <div className='flex max-h-60 flex-col overflow-y-auto'>
+      {!recentKeywords.length && <p className='italic text-muted-foreground text-sm flex justify-center'>...</p>}
       {recentKeywords.map((k, i) => (
         <span
           key={i}

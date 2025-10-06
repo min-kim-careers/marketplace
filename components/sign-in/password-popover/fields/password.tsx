@@ -7,7 +7,7 @@ import {
   FormMessage
 } from '@/components/shadcn/components/ui/form'
 import { Input } from '@/components/shadcn/components/ui/input'
-import { SignInWithPasswordSchema } from '@/components/sign-in-with/password-button/schema'
+import { SignInWithPasswordSchema } from '@/components/sign-in/password-popover/schema'
 import { UseFormReturn } from 'react-hook-form'
 
 export default function PasswordField({

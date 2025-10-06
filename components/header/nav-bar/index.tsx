@@ -1,6 +1,6 @@
 import ChatDrawer from '@/chat/chat-drawer'
 import LoadingDots from '@/components/loading-dots'
-import SignInWithPasswordButton from '@/components/sign-in-with/password-button'
+import SignInWithPasswordPopover from '@/components/sign-in/password-popover'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { useAuthContext } from '@/lib/providers/auth-provider'
 import useProfileStore from '@/lib/stores/profile-store'
@@ -22,7 +22,7 @@ export default function NavBar() {
 
   const unauthenticated = () => (
     <span className='flex items-center space-x-2'>
-      <SignInWithPasswordButton/>
+      <SignInWithPasswordPopover/>
     </span>
   )
 

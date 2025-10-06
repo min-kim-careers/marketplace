@@ -3,6 +3,7 @@
 import { APP_DATA } from '@/lib/constants/app-data'
 import { APP_ROUTES } from '@/lib/constants/app-routes'
 import { getPathLabel } from '@/lib/helpers/get-path-label'
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import NavBar from './nav-bar'
@@ -19,11 +20,19 @@ export default function Header() {
           href={APP_ROUTES.HOME.href}
           className='flex items-center gap-2 text-2xl font-bold'
         >
-          <img src='/logo.png' alt='logo' width={30} height={30} />
+          <Image
+            src='/logo.png'
+            alt='logo'
+            width={30}
+            height={30}
+            unoptimized
+          />
           <span>{APP_DATA.TITLE}</span>
         </Link>
         {pathLabel && (
-          <span className='text-sm text-muted-foreground items-baseline flex'>{pathLabel}</span>
+          <span className='flex items-baseline text-sm text-muted-foreground'>
+            {pathLabel}
+          </span>
         )}
       </span>
 

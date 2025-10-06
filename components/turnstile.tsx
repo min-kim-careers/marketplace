@@ -6,15 +6,18 @@ if (!siteKey) throw new Error('missing turnstile site key')
 
 export default function Turnstile({
   onVerify,
+  trigger
 }: {
   onVerify: (token: string) => void
+  trigger: boolean
 }) {
   const widgetRef = useRef(null)
   const scriptLoaded = useRef(false)
 
   useEffect(() => {
     if (scriptLoaded.current) return
-
+    
+    // eslint-disable-next-line prefer-const
     let widgetId = null
     const script = document.createElement('script')
     script.src =
@@ -39,7 +42,8 @@ export default function Turnstile({
         window.turnstile.remove(widgetId)
       }
     }
-  }, [onVerify])
+  }, [onVerify, trigger])
 
+  if (!trigger) return null
   return <div ref={widgetRef} id='turnstile-container' ></div>
 }

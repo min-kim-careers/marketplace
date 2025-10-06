@@ -72,6 +72,7 @@ export const useAuthHandler = () => {
 
       toastMsg = `Signed in as ${profile.handle}.`
     } catch (error) {
+      console.log(error)
       toastMsg = `Something went wrong.`
       await globalSignOut()
     } finally {
