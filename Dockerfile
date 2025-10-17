@@ -38,7 +38,6 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 COPY --from=build /app ./
-
 CMD ["pnpm", "start"]
 
 # --- Dev ---

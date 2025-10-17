@@ -1,16 +1,16 @@
-name: prod_market
+name: market_prod
 services:
-  prod_web-service:
-    container_name: prod_web-container
-    image: prod_market_web-image
+  market_prod_web-service:
+    container_name: market_prod_web-container
+    image: market_prod_web-image
     restart: always
     build:
       context: .
       dockerfile: Dockerfile
       target: prod
       args:
-        - API_URL=http://prod_api-service:8000
-        - GATEWAY_URL=http://prod_gateway-service:80
+        - API_URL=http://market_prod_api-service:8000
+        - GATEWAY_URL=http://market_prod_gateway-service:80
         - NEXT_PUBLIC_CHAT_URL=wss://pcmarket.app/chat/ws
         - NEXT_PUBLIC_APP_URL=https://pcmarket.app
         - NEXT_PUBLIC_CONTACT=contact@pcmarket.app
@@ -18,8 +18,8 @@ services:
     env_file:
       - .env.shared
     environment:
-      - API_URL=http://prod_api-service:8000
-      - GATEWAY_URL=http://prod_gateway-service:80
+      - API_URL=http://market_prod_api-service:8000
+      - GATEWAY_URL=http://market_prod_gateway-service:80
       - NEXT_PUBLIC_CHAT_URL=wss://pcmarket.app/chat/ws
       - NEXT_PUBLIC_APP_URL=https://pcmarket.app
       - NEXT_PUBLIC_CONTACT=contact@pcmarket.app
