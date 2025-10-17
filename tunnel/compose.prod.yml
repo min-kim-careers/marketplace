@@ -1,7 +1,7 @@
-name: prod_market
+name: market_prod
 services:
-  prod_tunnel-service:
-    container_name: prod_tunnel-container
+  market_prod_tunnel-service:
+    container_name: market_prod_tunnel-container
     image: cloudflare/cloudflared:latest
     command:
       [

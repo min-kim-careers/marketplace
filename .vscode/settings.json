@@ -1,5 +1,5 @@
 {
-  "explorer.excludeGitIgnore": true,
+  // "explorer.excludeGitIgnore": true,
   "editor.codeActionsOnSave": {
     "source.organizeImports": "always",
     "source.removeUnusedImports": "always"

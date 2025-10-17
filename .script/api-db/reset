@@ -1,4 +1,4 @@
 #!/bin/bash
 
-docker exec -it dev_api-db-container psql -U apidbuser -d apidb -c 'drop schema public cascade;'
-docker exec -it dev_api-db-container psql -U apidbuser -d apidb -c 'create schema public;'
+docker exec -it market_dev_api-db-container psql -U apidbuser -d apidb -c 'drop schema public cascade;'
+docker exec -it market_dev_api-db-container psql -U apidbuser -d apidb -c 'create schema public;'

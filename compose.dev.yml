@@ -1,59 +1,59 @@
-name: dev_market
+name: market_dev
 services:
   # ----------------------------------- API -----------------------------------
-  dev_api-db-service:
+  market_dev_api-db-service:
     extends:
       file: ./api/compose.dev.yml
-      service: dev_api-db-service
+      service: market_dev_api-db-service
     networks:
-      - dev_api-network
+      - market_dev_api-network
 
-  dev_api-cache-service:
+  market_dev_api-cache-service:
     extends:
       file: ./api/compose.dev.yml
-      service: dev_api-cache-service
+      service: market_dev_api-cache-service
     networks:
-      - dev_api-network
+      - market_dev_api-network
 
-  dev_api-service:
+  market_dev_api-service:
     extends:
       file: ./api/compose.dev.yml
-      service: dev_api-service
+      service: market_dev_api-service
     depends_on:
-      dev_api-db-service:
+      market_dev_api-db-service:
         condition: service_healthy
-      dev_api-cache-service:
+      market_dev_api-cache-service:
         condition: service_started
     networks:
-      - dev_gateway-network
-      - dev_api-network
+      - market_dev_gateway-network
+      - market_dev_api-network
 
   # ----------------------------------- WEB -----------------------------------
-  dev_web-service:
+  market_dev_web-service:
     extends:
       file: ./web/compose.dev.yml
-      service: dev_web-service
+      service: market_dev_web-service
     networks:
-      - dev_gateway-network
+      - market_dev_gateway-network
 
   # ----------------------------------- GATEWAY -----------------------------------
-  dev_gateway-service:
+  market_dev_gateway-service:
     extends:
       file: ./gateway/compose.dev.yml
-      service: dev_gateway-service
+      service: market_dev_gateway-service
     networks:
-      - dev_gateway-network
+      - market_dev_gateway-network
     depends_on:
-      - dev_api-service
-      - dev_web-service
+      - market_dev_api-service
+      - market_dev_web-service
 
 volumes:
-  dev_api-db-data:
-  dev_api-cache-data:
-  dev_node_modules:
-  dev_venv:
-  dev_pip:
+  market_dev_api-db-data:
+  market_dev_api-cache-data:
+  market_dev_node_modules:
+  market_dev_venv:
+  market_dev_pip:
 
 networks:
-  dev_gateway-network:
-  dev_api-network:
+  market_dev_gateway-network:
+  market_dev_api-network:

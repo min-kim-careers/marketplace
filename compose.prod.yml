@@ -1,68 +1,68 @@
-name: prod_market
+name: market_prod
 services:
   # ----------------------------------- API -----------------------------------
-  prod_api-db-service:
+  market_prod_api-db-service:
     extends:
       file: ./api/compose.prod.yml
-      service: prod_api-db-service
+      service: market_prod_api-db-service
     networks:
-      - prod_api-network
+      - market_prod_api-network
 
-  prod_api-cache-service:
+  market_prod_api-cache-service:
     extends:
       file: ./api/compose.prod.yml
-      service: prod_api-cache-service
+      service: market_prod_api-cache-service
     networks:
-      - prod_api-network
+      - market_prod_api-network
 
-  prod_api-service:
+  market_prod_api-service:
     extends:
       file: ./api/compose.prod.yml
-      service: prod_api-service
+      service: market_prod_api-service
     depends_on:
-      prod_api-db-service:
+      market_prod_api-db-service:
         condition: service_healthy
-      prod_api-cache-service:
+      market_prod_api-cache-service:
         condition: service_started
     networks:
-      - prod_gateway-network
-      - prod_api-network
+      - market_prod_gateway-network
+      - market_prod_api-network
 
   # ----------------------------------- WEB -----------------------------------
-  prod_web-service:
+  market_prod_web-service:
     extends:
       file: ./web/compose.prod.yml
-      service: prod_web-service
+      service: market_prod_web-service
     networks:
-      - prod_gateway-network
+      - market_prod_gateway-network
 
   # ----------------------------------- GATEWAY -----------------------------------
-  prod_gateway-service:
+  market_prod_gateway-service:
     extends:
       file: ./gateway/compose.prod.yml
-      service: prod_gateway-service
+      service: market_prod_gateway-service
     networks:
-      - prod_tunnel-network
-      - prod_gateway-network
+      - market_prod_tunnel-network
+      - market_prod_gateway-network
     depends_on:
-      - prod_api-service
-      - prod_web-service
+      - market_prod_api-service
+      - market_prod_web-service
 
   # ----------------------------------- TUNNEL -----------------------------------
-  prod_tunnel-service:
+  market_prod_tunnel-service:
     extends:
       file: ./tunnel/compose.prod.yml
-      service: prod_tunnel-service
+      service: market_prod_tunnel-service
     networks:
-      - prod_tunnel-network
+      - market_prod_tunnel-network
     depends_on:
-      - prod_gateway-service
+      - market_prod_gateway-service
 
 volumes:
-  prod_api-db-data:
-  prod_api-cache-data:
+  market_prod_api-db-data:
+  market_prod_api-cache-data:
 
 networks:
-  prod_tunnel-network:
-  prod_gateway-network:
-  prod_api-network:
+  market_prod_tunnel-network:
+  market_prod_gateway-network:
+  market_prod_api-network:
