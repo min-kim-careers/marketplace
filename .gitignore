@@ -34,4 +34,5 @@ Thumbs.db
 
 # .env
 
-/images
+/images/dev/**/*
+/images/prod/**/*
