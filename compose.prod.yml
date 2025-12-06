@@ -2,67 +2,131 @@ name: market_prod
 services:
   # ----------------------------------- API -----------------------------------
   market_prod_api-db-service:
-    extends:
-      file: ./api/compose.prod.yml
-      service: market_prod_api-db-service
+    container_name: market_prod_api-db-container
+    restart: always
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=apidbuser
+      - POSTGRES_PASSWORD=REDACTED
+      - POSTGRES_DB=apidb
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB} -h localhost",
+        ]
+      interval: 3s
+      timeout: 3s
+      retries: 3
+    command: ["postgres", "-c", "log_checkpoints=off"]
+    volumes:
+      - api-db-data:/var/lib/postgresql
     networks:
-      - market_prod_api-network
+      - api-network
 
   market_prod_api-cache-service:
-    extends:
-      file: ./api/compose.prod.yml
-      service: market_prod_api-cache-service
+    container_name: market_prod_api-cache-container
+    restart: always
+    image: redis:latest
+    environment:
+      - REDIS_HOST=market_prod_api-cache-service
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=REDACTED
+    command:
+      [
+        "/bin/sh",
+        "-c",
+        "redis-server --save 20 1 --loglevel warning --requirepass $$REDIS_PASSWORD",
+      ]
+    volumes:
+      - api-cache-data:/data
     networks:
-      - market_prod_api-network
+      - api-network
 
   market_prod_api-service:
-    extends:
-      file: ./api/compose.prod.yml
-      service: market_prod_api-service
-    depends_on:
-      market_prod_api-db-service:
-        condition: service_healthy
-      market_prod_api-cache-service:
-        condition: service_started
+    container_name: market_prod_api-container
+    image: market_prod_api-image
+    restart: always
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+      target: prod
+      args:
+        - LOCAL_IMAGE_PATH=./images/prod
+    environment:
+      - DB_HOST=market_prod_api-db-service
+      - CACHE_HOST=market_prod_api-cache-service
+    env_file:
+      - ./api/.env.cloudflare
+      - ./api/.env.firebase
+      - ./api/.env.shared
+    volumes:
+      - ./api/app:/code/app
+      - ./api/images/prod:/code/images
     networks:
-      - market_prod_gateway-network
-      - market_prod_api-network
+      - api-network
+      - gateway-network
 
   # ----------------------------------- WEB -----------------------------------
   market_prod_web-service:
-    extends:
-      file: ./web/compose.prod.yml
-      service: market_prod_web-service
+    container_name: market_prod_web-container
+    image: market_prod_web-image
+    restart: always
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      target: prod
+      args:
+        - API_URL=http://market_prod_api-service:8000
+        - GATEWAY_URL=http://market_prod_gateway-service:80
+        - NEXT_PUBLIC_CHAT_URL=wss://pcmarket.app/chat/ws
+        - NEXT_PUBLIC_APP_URL=https://pcmarket.app
+        - NEXT_PUBLIC_CONTACT=contact@pcmarket.app
+        - NEXT_PUBLIC_SITE_KEY=REDACTED
+    env_file:
+      - ./web/.env.shared
+    environment:
+      - API_URL=http://market_prod_api-service:8000
+      - GATEWAY_URL=http://market_prod_gateway-service:80
+      - NEXT_PUBLIC_CHAT_URL=wss://pcmarket.app/chat/ws
+      - NEXT_PUBLIC_APP_URL=https://pcmarket.app
+      - NEXT_PUBLIC_CONTACT=contact@pcmarket.app
+      - NEXT_PUBLIC_SITE_KEY=REDACTED
     networks:
-      - market_prod_gateway-network
+      - gateway-network
 
   # ----------------------------------- GATEWAY -----------------------------------
   market_prod_gateway-service:
-    extends:
-      file: ./gateway/compose.prod.yml
-      service: market_prod_gateway-service
+    container_name: market_prod_gateway-container
+    image: nginx:latest
+    ports:
+      - 80:80
+    env_file:
+      - ./gateway/.env.shared
+    environment:
+      - HOST=pcmarket.app
+      - PORT=80
+      - WEB_SERVICE=market_prod_web-service:3000
+      - API_SERVICE=market_prod_api-service:8000
+      - FIREBASE_APP=market-by-kibon
+      - IMAGE_BASE=/images
+    volumes:
+      - ./gateway/default.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./api/api/images/prod:/app/images:ro
     networks:
-      - market_prod_tunnel-network
-      - market_prod_gateway-network
-    depends_on:
-      - market_prod_api-service
-      - market_prod_web-service
+      - tunnel-network
+      - gateway-network
 
   # ----------------------------------- TUNNEL -----------------------------------
-  market_prod_tunnel-service:
-    extends:
-      file: ./tunnel/compose.prod.yml
-      service: market_prod_tunnel-service
-    networks:
-      - market_prod_tunnel-network
-    depends_on:
-      - market_prod_gateway-service
 
 volumes:
-  market_prod_api-db-data:
-  market_prod_api-cache-data:
+  api-db-data:
+  api-cache-data:
 
 networks:
-  market_prod_tunnel-network:
-  market_prod_gateway-network:
-  market_prod_api-network:
+  gateway-network:
+  api-network:
+  tunnel-network:
+    name: prod_tunnel_network
+    external: true
+
