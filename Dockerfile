@@ -1,18 +1,13 @@
-# --- Base ---
 FROM node:23-slim AS base
 RUN npm install -g pnpm
 WORKDIR /app
 
-# --- Dependencies ---
 FROM base AS deps
-ENV NODE_ENV=development
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml /app/
 RUN pnpm install --frozen-lockfile
 RUN pnpm exec next telemetry disable
 
-# --- Build ---
 FROM deps AS build
-ENV NODE_ENV=production
 
 ARG API_URL
 ARG GATEWAY_URL
@@ -31,16 +26,11 @@ ENV NEXT_PUBLIC_SITE_KEY=${NEXT_PUBLIC_SITE_KEY}
 COPY . .
 RUN pnpm build
 
-# --- Prod ---
-FROM node:23-slim AS prod
-RUN npm install -g pnpm
-WORKDIR /app
+FROM deps AS prod
 ENV NODE_ENV=production
-
-COPY --from=build /app ./
+COPY --from=build /app /app
 CMD ["pnpm", "start"]
 
-# --- Dev ---
 FROM deps AS dev
-COPY . .
+ENV NODE_ENV=development
 CMD ["pnpm", "dev"]
