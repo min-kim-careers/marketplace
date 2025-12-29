@@ -19,6 +19,7 @@ import { ITEM_CONDITION_LABELS } from '@/lib/constants/item-condition-labels'
 import { ItemCondition } from '@/lib/enums/item-condition'
 import { formatCurrency } from '@/lib/helpers/format-price'
 import { useLoadingStore } from '@/lib/providers/loading-provider'
+import useProfileStore from '@/lib/stores/profile-store'
 import { Item } from '@/lib/types/item'
 import { CircleUserIcon } from 'lucide-react'
 import { ReactNode } from 'react'
@@ -31,11 +32,14 @@ export default function MarketModal({
   children: ReactNode
   item: Item
 }) {
+  const { profile } = useProfileStore()
   const { setLoading } = useLoadingStore()
   const { setProps } = useChatStore()
 
   const handleChatButton = async () => {
     try {
+      if (!profile) throw new Error()
+
       setLoading('Joining chat...')
 
       const room = await getRoom(item.alias)
@@ -97,7 +101,9 @@ export default function MarketModal({
           </div>
 
           <div className='flex items-center justify-between gap-2'>
-            <Button onClick={handleChatButton}>Chat</Button>
+            <Button onClick={handleChatButton} disabled={!profile}>
+              {profile ? 'Chat' : 'Sign in to Chat'}
+            </Button>
 
             <span className='rounded-lg border p-2 font-semibold'>
               Offered at {formatCurrency(item.price.toString())}
