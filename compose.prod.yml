@@ -112,7 +112,7 @@ services:
       - IMAGE_BASE=/images
     volumes:
       - ./gateway/default.conf.template:/etc/nginx/templates/default.conf.template:ro
-      - ./api/api/images/prod:/app/images:ro
+      - ./api/images/prod:/app/images:ro
     networks:
       - tunnel-network
       - gateway-network

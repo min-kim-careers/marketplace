@@ -4,6 +4,7 @@
     "source.organizeImports": "always",
     "source.removeUnusedImports": "always"
   },
+  "python.defaultInterpreterPath": "./api/.venv/bin/python",
   "files.exclude": {
     "**/.git": true,
     "**/.svn": true,
