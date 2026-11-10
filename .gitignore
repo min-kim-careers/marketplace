@@ -38,3 +38,4 @@ Thumbs.db
 /images/prod/**/*.env*
 !.env.example
 *.key
+!.env*.example
