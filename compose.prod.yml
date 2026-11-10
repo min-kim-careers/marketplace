@@ -7,7 +7,7 @@ services:
     image: postgres:latest
     environment:
       - POSTGRES_USER=apidbuser
-      - POSTGRES_PASSWORD=REDACTED
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=apidb
     healthcheck:
       test:
@@ -31,7 +31,7 @@ services:
     environment:
       - REDIS_HOST=market_prod_api-cache-service
       - REDIS_PORT=6379
-      - REDIS_PASSWORD=REDACTED
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
     command:
       [
         "/bin/sh",
@@ -82,7 +82,7 @@ services:
         - NEXT_PUBLIC_CHAT_URL=wss://pcmarket.app/chat/ws
         - NEXT_PUBLIC_APP_URL=https://pcmarket.app
         - NEXT_PUBLIC_CONTACT=contact@pcmarket.app
-        - NEXT_PUBLIC_SITE_KEY=REDACTED
+        - NEXT_PUBLIC_SITE_KEY=${NEXT_PUBLIC_SITE_KEY}
     env_file:
       - ./web/.env.shared
     environment:
@@ -91,7 +91,7 @@ services:
       - NEXT_PUBLIC_CHAT_URL=wss://pcmarket.app/chat/ws
       - NEXT_PUBLIC_APP_URL=https://pcmarket.app
       - NEXT_PUBLIC_CONTACT=contact@pcmarket.app
-      - NEXT_PUBLIC_SITE_KEY=REDACTED
+      - NEXT_PUBLIC_SITE_KEY=${NEXT_PUBLIC_SITE_KEY}
     networks:
       - gateway-network
 
