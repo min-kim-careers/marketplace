@@ -2,7 +2,7 @@ import { getApps, initializeApp } from 'firebase/app'
 import { getAuth, GoogleAuthProvider } from 'firebase/auth'
 
 const firebaseConfig = {
-  apiKey: 'REDACTED',
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: 'market-by-kibon.firebaseapp.com',
   projectId: 'market-by-kibon',
   storageBucket: 'market-by-kibon.firebasestorage.app',
