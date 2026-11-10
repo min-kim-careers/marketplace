@@ -15,8 +15,8 @@ Browser ─▶ nginx gateway ─┬─▶ marketplace-web (Next.js)
 ```
 | Service | Repo | Stack |
 |---|---|---|
-| Web | [marketplace-web](../marketplace-web) | Next.js 15, React, Zustand, Tailwind |
-| API + chat | [marketplace-api](../marketplace-api) | FastAPI, SQLAlchemy, PostgreSQL, Redis |
+| Web | [marketplace-web](https://github.com/min-kim-careers/marketplace-web) | Next.js 15, React, Zustand, Tailwind |
+| API + chat | [marketplace-api](https://github.com/min-kim-careers/marketplace-api) | FastAPI, SQLAlchemy, PostgreSQL, Redis |
 
 This repo holds both services as git submodules, along with the Docker Compose files and the nginx gateway config.
 
@@ -30,13 +30,8 @@ This repo holds both services as git submodules, along with the Docker Compose f
 ## Stack
 Next.js · FastAPI · PostgreSQL · Redis · Firebase Auth · Cloudflare Turnstile · Docker Compose · nginx · Cloudflare Tunnel
 
-## Run locally
-Requires a Firebase project and a Cloudflare Turnstile key. See `.env.example`.
-```bash
-git clone --recurse-submodules https://github.com/min-kim-careers/marketplace
-cd marketplace && cp .env.example .env
-docker compose -f compose.dev.yml up
-```
+## Running it
+Runs on Docker Compose: the Next.js web app, the FastAPI API with WebSocket chat, PostgreSQL, Redis and an nginx gateway, with Firebase Auth and Cloudflare Turnstile. See `compose.dev.yml` for the full setup.
 
 ## What I'd improve next
 - Full-text search with ranking (Postgres `tsvector`)
