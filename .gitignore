@@ -35,4 +35,6 @@ Thumbs.db
 # .env
 
 /images/dev/**/*
-/images/prod/**/*
+/images/prod/**/*.env*
+!.env.example
+*.key
