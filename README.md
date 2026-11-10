@@ -1,6 +1,6 @@
 # Marketplace API
 
-The FastAPI backend for the [PC Parts Marketplace](../marketplace). See that repo for the demo and the architecture.
+The FastAPI backend for the [PC Parts Marketplace](https://github.com/min-kim-careers/marketplace). See that repo for the demo and the architecture.
 
 - Separate modules for `auth`, `item`, `profile` and `chat`
 - Firebase ID tokens verified with firebase-admin
@@ -9,4 +9,4 @@ The FastAPI backend for the [PC Parts Marketplace](../marketplace). See that rep
 
 **Stack:** FastAPI · SQLAlchemy · PostgreSQL · Redis · Firebase Admin · WebSockets
 
-Run it through the [marketplace](../marketplace) repo's Docker Compose.
+Run it through the [marketplace](https://github.com/min-kim-careers/marketplace) repo's Docker Compose.
