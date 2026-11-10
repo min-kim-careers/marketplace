@@ -83,6 +83,7 @@ services:
         - NEXT_PUBLIC_APP_URL=https://pcmarket.app
         - NEXT_PUBLIC_CONTACT=contact@pcmarket.app
         - NEXT_PUBLIC_SITE_KEY=${NEXT_PUBLIC_SITE_KEY}
+        - NEXT_PUBLIC_FIREBASE_API_KEY=${NEXT_PUBLIC_FIREBASE_API_KEY}
     env_file:
       - ./web/.env.shared
     environment:
@@ -92,6 +93,7 @@ services:
       - NEXT_PUBLIC_APP_URL=https://pcmarket.app
       - NEXT_PUBLIC_CONTACT=contact@pcmarket.app
       - NEXT_PUBLIC_SITE_KEY=${NEXT_PUBLIC_SITE_KEY}
+      - NEXT_PUBLIC_FIREBASE_API_KEY=${NEXT_PUBLIC_FIREBASE_API_KEY}
     networks:
       - gateway-network
 

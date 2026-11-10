@@ -87,6 +87,7 @@ services:
       - NEXT_PUBLIC_CONTACT=contact@dummy.email
       - NEXT_PUBLIC_APP_URL=http://192.168.8.103:8080
       - NEXT_PUBLIC_SITE_KEY=${NEXT_PUBLIC_SITE_KEY}
+      - NEXT_PUBLIC_FIREBASE_API_KEY=${NEXT_PUBLIC_FIREBASE_API_KEY}
     volumes:
       - ./web:/app
       - node_modules:/app/node_modules
