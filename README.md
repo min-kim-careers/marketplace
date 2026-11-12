@@ -2,7 +2,7 @@
 
 A marketplace for Australians to buy and sell used PC components, with image-first listings, fast search and real-time buyer–seller chat.
 
-Status: **Not currently hosted**
+![Demo](./assets/demo.gif)
 
 ## Why
 General marketplaces bury PC parts among everything else and don't show the details that matter, such as specs, condition and photos. This one is built just for PC hardware.
