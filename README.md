@@ -18,7 +18,7 @@ Browser ─▶ nginx gateway ─┬─▶ marketplace-web (Next.js)
 | Web | [marketplace-web](https://github.com/min-kim-careers/marketplace-web) | Next.js 15, React, Zustand, Tailwind |
 | API + chat | [marketplace-api](https://github.com/min-kim-careers/marketplace-api) | FastAPI, SQLAlchemy, PostgreSQL, Redis |
 
-This repo holds both services as git submodules, along with the Docker Compose files and the nginx gateway config.
+This repo holds both services (`api/` and `web/`), along with the Docker Compose files and the nginx gateway config.
 
 ## Key design decisions
 | Decision | Why | Trade-off |

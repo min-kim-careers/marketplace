@@ -56,10 +56,23 @@ services:
         - LOCAL_IMAGE_PATH=./images/dev
     environment:
       - DB_HOST=market_dev_api-db-service
+      - DB_PORT=5432
+      - DB_USER=apidbuser
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_NAME=apidb
       - CACHE_HOST=market_dev_api-cache-service
-    env_file:
-      - ./api/.env.cloudflare
-      - ./api/.env.shared
+      - CACHE_PORT=6379
+      - CACHE_PASSWORD=${REDIS_PASSWORD}
+      - CACHE_DB=0
+      - SERVICE_KEY=${SERVICE_KEY}
+      - SERVICE_KEY_HEADER=x-api-key
+      - SESSION_HEADER=x-session
+      - NONCE_SECRET=${NONCE_SECRET}
+      - NONCE_LIFETIME_MINUTES=5
+      - TURNSTILE_SECRET=${TURNSTILE_SECRET}
+      - TURNSTILE_URL=https://challenges.cloudflare.com/turnstile/v0/siteverify
+      - CONTAINER_IMAGE_DIR=/code/images
+      - FRONTEND_IMAGE_BASE=http://${PUBLIC_HOST}:8080/images
     volumes:
       - ./api/app:/code/app
       - ./api/images/dev:/code/images
@@ -78,14 +91,15 @@ services:
       context: ./web
       dockerfile: Dockerfile
       target: dev
-    env_file:
-      - ./web/.env.shared
     environment:
+      - API_KEY=${SERVICE_KEY}
+      - API_KEY_HEADER=x-api-key
+      - SESSION_HEADER=x-session
       - API_URL=http://market_dev_api-service:8000
       - GATEWAY_URL=http://market_dev_gateway-service:8080
-      - NEXT_PUBLIC_CHAT_URL=ws://192.168.8.103:8080/chat/ws
+      - NEXT_PUBLIC_CHAT_URL=ws://${PUBLIC_HOST}:8080/chat/ws
       - NEXT_PUBLIC_CONTACT=contact@dummy.email
-      - NEXT_PUBLIC_APP_URL=http://192.168.8.103:8080
+      - NEXT_PUBLIC_APP_URL=http://${PUBLIC_HOST}:8080
       - NEXT_PUBLIC_SITE_KEY=${NEXT_PUBLIC_SITE_KEY}
       - NEXT_PUBLIC_FIREBASE_API_KEY=${NEXT_PUBLIC_FIREBASE_API_KEY}
     volumes:
@@ -100,10 +114,8 @@ services:
     image: nginx:latest
     ports:
       - 8080:8080
-    env_file:
-      - ./gateway/.env.shared
     environment:
-      - HOST=192.168.8.103
+      - HOST=${PUBLIC_HOST}
       - PORT=8080
       - WEB_SERVICE=market_dev_web-service:3000
       - API_SERVICE=market_dev_api-service:8000
