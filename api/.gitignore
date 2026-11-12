@@ -40,3 +40,5 @@ Thumbs.db
 *.key
 /firebase-service-account.json
 !.env*.example
+
+!/images/dev/.gitkeep
