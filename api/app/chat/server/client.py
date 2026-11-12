@@ -75,14 +75,9 @@ class ChatClient:
             )
         )
 
-        # send to peers only
+        # we're in the room and received the peer's message, so it's been read
         if not mine:
-            await broadcast_room(
-                ChatInternalRead(
-                    room_id=payload.room_id,
-                    user_id=payload.user_id,
-                )
-            )
+            await self.mark_peer_messages_read()
 
         if mine:
             await broadcast_client(
@@ -92,19 +87,36 @@ class ChatClient:
                 )
             )
 
+    async def mark_peer_messages_read(self):
+        """
+        Called on the reader's side. Persists the peer's (author's) last_read
+        directly so it is saved even when the author is offline or in another
+        room, then notifies the author's client if it is listening.
+        """
+        if not self.room or not self.peer:
+            return
+
+        now = datetime.now(timezone.utc)
+        try:
+            await ChatRoomRepository.update_last_read(
+                self.db, self.peer.id, self.room.id, now
+            )
+        except Exception:
+            logger.exception("error persisting peer last read")
+
+        await broadcast_room(
+            ChatInternalRead(
+                room_id=str(self.room.id),
+                user_id=str(self.peer.id),
+                last_read=now.isoformat(),
+            )
+        )
+
     async def _send_read(self, payload: ChatInternalRead):
+        # relay to the author only; persistence happens on the reader's side
         if UUID(payload.user_id) == self.user.id and self.room:
-            now = datetime.now(timezone.utc)
-
-            await self.send_message(ChatReadOut(last_read=now.isoformat()))
-
-            try:
-                await ChatRoomRepository.update_last_read(
-                    self.db, self.user.id, self.room.id, now
-                )
-            except Exception:
-                logger.exception("error sending read message from client")
-
+            last_read = payload.last_read or datetime.now(timezone.utc).isoformat()
+            await self.send_message(ChatReadOut(last_read=last_read))
             await chat_cache.remove_unread_room(self.user.id, self.room.id)
 
     async def _send_typing(self, payload: ChatInternalTyping):

@@ -67,23 +67,20 @@ class ChatManager:
                 payload.since,
             )
 
+            # our status.last_read = how far the peer has read our messages
             status = await ChatRoomRepository.status_by_user(
                 client.db, client.user.id, client.room.id
             )
+            # the peer's connection may have updated it; don't trust the identity map
+            await client.db.refresh(status)
             for p in previous:
-                if datetime.fromisoformat(p.timestamp) <= status.last_read:
+                if p.mine and datetime.fromisoformat(p.timestamp) <= status.last_read:
                     p.read = True
 
             await client.send_message(ChatRestoredOut(previous=previous))
 
             # tell peer, client has read latest messages
-            if client.peer:
-                await broadcast_room(
-                    ChatInternalRead(
-                        room_id=str(client.room.id),
-                        user_id=str(client.peer.id),
-                    )
-                )
+            await client.mark_peer_messages_read()
 
             await chat_cache.remove_unread_room(client.user.id, client.room.id)
         except Exception:
@@ -102,7 +99,11 @@ class ChatManager:
                 )
                 await ChatRoomRepository.update_room_activity(client.db, client.room.id)
 
-                await chat_cache.add_unread_room(client.peer.id, client.room.id)
+                # peer viewing this room sees it live; flagging it would leave a stale badge
+                if not await chat_cache.is_user_active_room(
+                    client.room.id, client.peer.id
+                ):
+                    await chat_cache.add_unread_room(client.peer.id, client.room.id)
 
         except Exception:
             logger.exception("error handling text in manager")

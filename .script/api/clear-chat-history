@@ -1,0 +1,93 @@
+#!/bin/bash
+# Clear chat history in the dev stack.
+#
+# Usage: clear-chat-history [handle] [--rooms] [-y]
+#   handle   only clear chats this user is in (buyer or seller); default: all chats
+#   --rooms  also delete the chat rooms (and their read statuses), not just messages
+#   -y       skip the confirmation prompt
+
+set -euo pipefail
+
+DB_CONTAINER=market_dev_api-db-container
+CACHE_CONTAINER=market_dev_api-cache-container
+
+HANDLE=""
+DELETE_ROOMS=false
+ASSUME_YES=false
+for arg in "$@"; do
+  case "$arg" in
+    --rooms) DELETE_ROOMS=true ;;
+    -y) ASSUME_YES=true ;;
+    -h|--help) sed -n '2,8p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -*) echo "unknown option: $arg" >&2; exit 1 ;;
+    *) HANDLE="$arg" ;;
+  esac
+done
+
+# no -i: these must not consume the script's stdin (the confirmation prompt reads it)
+psql() {
+  docker exec "$DB_CONTAINER" psql -U apidbuser -d apidb -v ON_ERROR_STOP=1 -tA "$@"
+}
+redis() {
+  docker exec "$CACHE_CONTAINER" sh -c 'redis-cli --no-auth-warning -a "$REDIS_PASSWORD" "$@"' _ "$@"
+}
+
+# rooms in scope
+if [[ -n "$HANDLE" ]]; then
+  if [[ ! "$HANDLE" =~ ^[A-Za-z0-9_.-]+$ ]]; then
+    echo "invalid handle: $HANDLE" >&2; exit 1
+  fi
+  USER_ID=$(psql -c "select user_id from profiles where handle = '$HANDLE';")
+  if [[ -z "$USER_ID" ]]; then
+    echo "no user with handle '$HANDLE'" >&2; exit 1
+  fi
+  ROOM_FILTER="buyer_id = '$USER_ID' or seller_id = '$USER_ID'"
+  SCOPE="chats involving '$HANDLE'"
+else
+  ROOM_FILTER="true"
+  SCOPE="ALL chats"
+fi
+
+ROOM_COUNT=$(psql -c "select count(*) from chat_rooms where $ROOM_FILTER;")
+MSG_COUNT=$(psql -c "select count(*) from chat_messages where room_id in (select id from chat_rooms where $ROOM_FILTER);")
+
+if [[ "$ROOM_COUNT" -eq 0 ]]; then
+  echo "No chat rooms found for $SCOPE. Nothing to do."
+  exit 0
+fi
+
+echo "Scope:    $SCOPE"
+echo "Rooms:    $ROOM_COUNT $($DELETE_ROOMS && echo '(will be deleted)' || echo '(kept, emptied)')"
+echo "Messages: $MSG_COUNT (will be deleted)"
+
+if ! $ASSUME_YES; then
+  reply=""
+  read -r -p "This cannot be undone. Continue? [y/N] " reply || true
+  [[ "$reply" =~ ^[Yy]$ ]] || { echo "Aborted."; exit 1; }
+fi
+
+# collect "user_id room_id" pairs for unread cleanup before rows are deleted
+PAIRS=$(psql -c "select buyer_id || ' ' || id from chat_rooms where $ROOM_FILTER
+                 union select seller_id || ' ' || id from chat_rooms where $ROOM_FILTER;")
+
+if $DELETE_ROOMS; then
+  # chat_statuses cascade on room delete; messages reference rooms without cascade
+  psql -c "begin;
+           delete from chat_messages where room_id in (select id from chat_rooms where $ROOM_FILTER);
+           delete from chat_rooms where $ROOM_FILTER;
+           commit;" >/dev/null
+else
+  psql -c "delete from chat_messages where room_id in (select id from chat_rooms where $ROOM_FILTER);" >/dev/null
+fi
+
+# clear unread badges for the affected rooms
+while read -r uid rid; do
+  [[ -n "$uid" ]] && redis SREM "chat:user:$uid:unread_rooms" "$rid" >/dev/null
+done <<< "$PAIRS"
+
+# when clearing everything, also drop message copies kept in the redis stream
+if [[ -z "$HANDLE" ]]; then
+  redis XTRIM chat:stream MAXLEN 0 >/dev/null
+fi
+
+echo "Done. Users with a chat open need to reopen it to see the change."

@@ -16,7 +16,10 @@ class ChatInternalText(ChatInternalBase):
 
 
 class ChatInternalRead(ChatInternalBase):
+    """user_id is the message author whose messages were read."""
+
     type: Literal["read"] = "read"
+    last_read: Optional[str] = None
 
 
 class ChatInternalTyping(ChatInternalBase):

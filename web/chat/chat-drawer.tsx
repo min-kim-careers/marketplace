@@ -15,16 +15,28 @@ import {
 import { cn } from '@/components/shadcn/lib/utils'
 import { useEffect } from 'react'
 
+// the chat socket is only connected while the drawer is open, so poll for
+// unread messages while it's closed
+const UNREAD_POLL_MS = 15_000
+
 export default function ChatDrawer({ useButton }: { useButton?: boolean }) {
   const { open, setProps, hasUnread } = useChatStore()
 
   useEffect(() => {
+    if (open) return
+
     const checkUnreadExists = async () => {
+      if (document.visibilityState !== 'visible') return
       setProps({ hasUnread: await unreadExists() })
     }
 
-    if (!open) {
-      checkUnreadExists()
+    checkUnreadExists()
+    const interval = setInterval(checkUnreadExists, UNREAD_POLL_MS)
+    document.addEventListener('visibilitychange', checkUnreadExists)
+
+    return () => {
+      clearInterval(interval)
+      document.removeEventListener('visibilitychange', checkUnreadExists)
     }
   }, [open])
 

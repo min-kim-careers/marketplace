@@ -33,7 +33,6 @@ export const useChatSocket = (): ChatSocketState => {
   const url = useChatStore((state) => state.url)
   const currentRoom = useChatStore((state) => state.currentRoom)
   const status = useChatStore((state) => state.status)
-  const peerLastRead = useChatStore((state) => state.peerlastRead)
   const rooms = useChatStore((state) => state.rooms)
 
   const token = useLoadToken()
@@ -150,11 +149,11 @@ export const useChatSocket = (): ChatSocketState => {
   }
 
   const handleReadIn = (payload: ChatReadIn) => {
-    for (const msg of messages) {
-      if (msg.timestamp <= peerLastRead) break
-      flagMessageRead(msg, new Date(payload.lastRead))
-    }
+    const lastRead = new Date(payload.lastRead)
+    // read latest state; a new array is required for ChatWindow to re-render
+    const current = useChatStore.getState().messages
     setProps({
+      messages: current.map((m) => flagMessageRead(m, lastRead)),
       peerlastRead: payload.lastRead,
     })
   }
@@ -173,7 +172,11 @@ export const useChatSocket = (): ChatSocketState => {
   }
 
   const handleClientIn = (payload: ChatClientIn) => {
-    setProps({ rooms: upsertChatRoom(rooms, payload.room) })
+    // server only sends this when we're not in that room, i.e. it's unread
+    setProps({
+      rooms: upsertChatRoom(useChatStore.getState().rooms, payload.room),
+      hasUnread: true,
+    })
   }
 
   return {
