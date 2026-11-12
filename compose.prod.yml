@@ -68,7 +68,7 @@ services:
       - SESSION_HEADER=x-session
       - NONCE_SECRET=${NONCE_SECRET}
       - NONCE_LIFETIME_MINUTES=5
-      - TURNSTILE_SECRET=${TURNSTILE_SECRET}
+      - CF_TURNSTILE_SECRET=${CF_TURNSTILE_SECRET}
       - TURNSTILE_URL=https://challenges.cloudflare.com/turnstile/v0/siteverify
       - CONTAINER_IMAGE_DIR=/code/images
       - FRONTEND_IMAGE_BASE=https://pcmarket.app/images
@@ -95,7 +95,7 @@ services:
         - NEXT_PUBLIC_CHAT_URL=wss://pcmarket.app/chat/ws
         - NEXT_PUBLIC_APP_URL=https://pcmarket.app
         - NEXT_PUBLIC_CONTACT=contact@pcmarket.app
-        - NEXT_PUBLIC_SITE_KEY=${NEXT_PUBLIC_SITE_KEY}
+        - NEXT_PUBLIC_CF_TURNSTILE_SITE_KEY=${NEXT_PUBLIC_CF_TURNSTILE_SITE_KEY}
         - NEXT_PUBLIC_FIREBASE_API_KEY=${NEXT_PUBLIC_FIREBASE_API_KEY}
     environment:
       - API_KEY=${SERVICE_KEY}
@@ -106,7 +106,7 @@ services:
       - NEXT_PUBLIC_CHAT_URL=wss://pcmarket.app/chat/ws
       - NEXT_PUBLIC_APP_URL=https://pcmarket.app
       - NEXT_PUBLIC_CONTACT=contact@pcmarket.app
-      - NEXT_PUBLIC_SITE_KEY=${NEXT_PUBLIC_SITE_KEY}
+      - NEXT_PUBLIC_CF_TURNSTILE_SITE_KEY=${NEXT_PUBLIC_CF_TURNSTILE_SITE_KEY}
       - NEXT_PUBLIC_FIREBASE_API_KEY=${NEXT_PUBLIC_FIREBASE_API_KEY}
     networks:
       - gateway-network

@@ -24,7 +24,7 @@ class Env(BaseSettings):
     CONTAINER_IMAGE_DIR: str
 
     TURNSTILE_URL: str
-    TURNSTILE_SECRET: str
+    CF_TURNSTILE_SECRET: str
     NONCE_SECRET: str
     NONCE_LIFETIME_MINUTES: int
 

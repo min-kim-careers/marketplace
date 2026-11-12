@@ -15,7 +15,7 @@ async def verify_challenge(cf_token: str = Body(..., embed=True, alias="cfToken"
     async with httpx.AsyncClient() as client:
         resp = await client.post(
             env.TURNSTILE_URL,
-            data={"secret": env.TURNSTILE_SECRET, "response": cf_token},
+            data={"secret": env.CF_TURNSTILE_SECRET, "response": cf_token},
         )
         result = resp.json()
 

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-const siteKey = process.env.NEXT_PUBLIC_SITE_KEY
+const siteKey = process.env.NEXT_PUBLIC_CF_TURNSTILE_SITE_KEY
 
 if (!siteKey) throw new Error('missing turnstile site key')
 
@@ -27,7 +27,7 @@ export default function Turnstile({
     script.onload = () => {
       if (window.turnstile && widgetRef.current) {
         const widgetId = window.turnstile.render(widgetRef.current, {
-          sitekey: process.env.NEXT_PUBLIC_SITE_KEY!,
+          sitekey: process.env.NEXT_PUBLIC_CF_TURNSTILE_SITE_KEY!,
           callback: (token: string) => onVerify(token),
         })
         scriptLoaded.current = true
