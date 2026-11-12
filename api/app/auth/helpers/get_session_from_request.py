@@ -1,0 +1,17 @@
+from app import core
+from app.core.schemas.error import ErrorResponse
+
+
+from fastapi import Cookie, status
+
+
+def get_session_from_request(
+    session: str | None = Cookie(default=None, alias=core.env.SESSION_HEADER)
+) -> str:
+    if not session:
+        raise ErrorResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            message="Not authenticated: No session cookie found in Cookie header.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return session

@@ -1,0 +1,9 @@
+fastapi[standard]
+pydantic
+pydantic-settings
+firebase-admin
+sqlalchemy[asyncio]
+asyncpg
+faker
+humanize
+redis

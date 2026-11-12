@@ -1,0 +1,42 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+
+# VSCode settings
+.vscode/
+
+# Test and coverage reports
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# Mypy
+.mypy_cache/
+
+# PyInstaller
+dist/
+build/
+
+# Logs
+# *.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+/config/
+
+# .env
+
+/images/dev/**/*
+/images/prod/**/*.env*
+!.env.example
+*.key
+/firebase-service-account.json
+!.env*.example
