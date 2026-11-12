@@ -4,12 +4,32 @@ import {
   _UpdateConstraint,
   _UpdateConstraintMap,
   _UpsertProfileRequest,
+  _deleteAvatar,
   _getProfile,
   _getProfileExtra,
   _profileEmailExists,
   _profileHandleExists,
   _upsertProfile,
+  _uploadAvatar,
 } from '@/api/endpoints'
+
+export const uploadAvatar = async (form: FormData) => {
+  try {
+    const { profile } = await _uploadAvatar(form)
+    return profile
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+export const removeAvatar = async () => {
+  try {
+    const { profile } = await _deleteAvatar()
+    return profile
+  } catch (error) {
+    console.error(error)
+  }
+}
 
 export const getProfile = async () => {
   try {

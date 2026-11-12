@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Body, Depends, Path
+from fastapi import APIRouter, Body, Depends, File, Path, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth.firebase.dependencies import resolve_firebase_session
+from app.core.schemas.error import ErrorResponse
 from app.core.schemas.outbound import APIResponse
 from app.core.security import verify_service_key
 from app.db.models.user import UserDB
@@ -47,6 +48,38 @@ async def upsert_profile(
             "profile": profile,
         },
     )
+
+
+AVATAR_MAX_BYTES = 2 * 1024 * 1024
+
+
+@profiles_router.put("/avatar")
+async def upload_avatar(
+    avatar: UploadFile = File(...),
+    user: UserDB = Depends(resolve_firebase_session),
+    db: AsyncSession = Depends(get_db),
+) -> APIResponse:
+    if not (avatar.content_type or "").startswith("image/"):
+        raise ErrorResponse(status_code=400, message="Avatar must be an image")
+
+    content = await avatar.read()
+    if not content:
+        raise ErrorResponse(status_code=400, message="Avatar file is empty")
+    if len(content) > AVATAR_MAX_BYTES:
+        raise ErrorResponse(status_code=400, message="Avatar exceeds 2MB")
+    await avatar.seek(0)
+
+    profile = await ProfileService.update_avatar(db, user.profile, avatar)
+    return APIResponse(data={"profile": profile})
+
+
+@profiles_router.delete("/avatar")
+async def delete_avatar(
+    user: UserDB = Depends(resolve_firebase_session),
+    db: AsyncSession = Depends(get_db),
+) -> APIResponse:
+    profile = await ProfileService.remove_avatar(db, user.profile)
+    return APIResponse(data={"profile": profile})
 
 
 @profiles_router.get("/handle/{handle}")

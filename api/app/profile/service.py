@@ -2,10 +2,12 @@ from datetime import datetime, timedelta, timezone
 from typing import Optional
 from uuid import UUID
 
+from fastapi import UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.logger import log_class_exceptions
+from app.core.logger import log_class_exceptions, logger
 from app.db.models.profile import ProfileDB
+from app.item.utils.image import remove_image, store_image
 from app.profile.constants.defaults import (
     DEFAULT_EMAIL_UPDATE_INTERVAL_IN_DAYS,
     DEFAULT_HANDLE_UPDATE_INTERVAL_IN_DAYS,
@@ -53,6 +55,50 @@ class ProfileService:
                 ),
             )
 
+        return ProfileOut.model_validate(profile_db, from_attributes=True)
+
+    @staticmethod
+    def _remove_local_avatar(avatar_url: Optional[str]):
+        """Delete a previously uploaded avatar file; external urls are ignored."""
+        if not avatar_url or "://" in avatar_url:
+            return
+        try:
+            remove_image(avatar_url)
+        except FileNotFoundError:
+            logger.warning(f"Avatar file {avatar_url} already missing")
+
+    @staticmethod
+    async def update_avatar(
+        db: AsyncSession,
+        profile_db: ProfileDB,
+        avatar: UploadFile,
+    ) -> ProfileOut:
+        old_avatar = profile_db.avatar_url
+        filename = await store_image(avatar)
+        try:
+            profile_db.avatar_url = filename
+            await db.commit()
+            await db.refresh(profile_db)
+        except Exception:
+            await db.rollback()
+            remove_image(filename)
+            raise
+
+        ProfileService._remove_local_avatar(old_avatar)
+        return ProfileOut.model_validate(profile_db, from_attributes=True)
+
+    @staticmethod
+    async def remove_avatar(db: AsyncSession, profile_db: ProfileDB) -> ProfileOut:
+        old_avatar = profile_db.avatar_url
+        try:
+            profile_db.avatar_url = None
+            await db.commit()
+            await db.refresh(profile_db)
+        except Exception:
+            await db.rollback()
+            raise
+
+        ProfileService._remove_local_avatar(old_avatar)
         return ProfileOut.model_validate(profile_db, from_attributes=True)
 
     @staticmethod

@@ -1,6 +1,9 @@
 from datetime import datetime, timezone
 from typing import Dict, Optional
 
+from pydantic import field_validator
+
+from app.core import env
 from app.core.schemas.outbound import OutboundBase
 from app.db.models.profile_extra import ProfileExtraDB
 from app.profile.constants.defaults import (
@@ -60,3 +63,11 @@ class ProfileOut(OutboundBase):
     # suburb: Optional[str] = None
     # state: Optional[str] = None
     avatar_url: Optional[str] = None
+
+    @field_validator("avatar_url")
+    @classmethod
+    def resolve_avatar_url(cls, v: Optional[str]) -> Optional[str]:
+        # uploaded avatars are stored as bare filenames; external urls pass through
+        if v and "://" not in v and not v.startswith(env.FRONTEND_IMAGE_BASE):
+            return env.FRONTEND_IMAGE_BASE + "/" + v
+        return v

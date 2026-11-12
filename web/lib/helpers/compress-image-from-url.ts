@@ -20,14 +20,16 @@ async function urlToFile(
   })
 }
 
-const compressFile = async (
+export const compressFile = async (
   file: File,
   filename?: string,
+  options: { maxSizeMB?: number; maxWidthOrHeight?: number } = {},
 ) => {
   const blob = await imageCompression(file, {
     maxSizeMB: 1,
     maxWidthOrHeight: 1024,
     useWebWorker: true,
+    ...options,
   })
 
   return new File([blob], filename || blob.name, {

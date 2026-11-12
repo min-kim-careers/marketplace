@@ -2,6 +2,7 @@
 
 import { UpdateConstraint, UpdateConstraintMap } from '@/api'
 import LoadingDots from '@/components/loading-dots'
+import AvatarField from '@/components/profile-update-form/avatar-field'
 import {
   EmailField,
   HandleField,
@@ -107,6 +108,9 @@ export default function ProfileDashboard({
           </CardDescription>
         </CardHeader>
         <CardContent>
+          <div className='mb-6'>
+            <AvatarField />
+          </div>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} id='profileUpdateForm'>
               <div className='flex flex-col gap-4'>

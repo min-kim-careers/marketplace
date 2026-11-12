@@ -71,7 +71,8 @@ services:
       - CF_TURNSTILE_SECRET=${CF_TURNSTILE_SECRET}
       - TURNSTILE_URL=https://challenges.cloudflare.com/turnstile/v0/siteverify
       - CONTAINER_IMAGE_DIR=/code/images
-      - FRONTEND_IMAGE_BASE=https://pcmarket.app/images
+      # relative so next/image treats it as local; web rewrites /images/* to the gateway
+      - FRONTEND_IMAGE_BASE=/images
     volumes:
       - ./api/app:/code/app
       - ./api/images/prod:/code/images

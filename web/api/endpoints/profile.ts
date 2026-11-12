@@ -53,3 +53,16 @@ export const _upsertProfile = async (request: _UpsertProfileRequest) =>
     .withSession()
     .setBody(request)
     .asResult<{ profile: Profile }>()
+
+export const _uploadAvatar = async (form: FormData) =>
+  (await client())
+    .put(`/api/profiles/avatar`)
+    .withSession()
+    .setForm(form)
+    .asResult<{ profile: Profile }>()
+
+export const _deleteAvatar = async () =>
+  (await client())
+    .delete(`/api/profiles/avatar`)
+    .withSession()
+    .asResult<{ profile: Profile }>()
