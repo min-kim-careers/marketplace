@@ -1,0 +1,26 @@
+import { ItemCategory } from '@/lib/enums/item-category'
+import { ItemCondition } from '@/lib/enums/item-condition'
+import { ItemStatus } from '@/lib/enums/item-status'
+import { Profile } from '@/lib/types/profile'
+
+export type Item = {
+  alias: string
+  name: string
+  description: string
+  price: number
+  brand?: string
+  category: ItemCategory
+  condition: ItemCondition
+  status: ItemStatus
+  createdAt: string
+  // createdAtLabel: string
+  updatedAt: string
+  // updatedAtLabel: string
+  expiresAt?: string
+  postcode: string
+  suburb: string
+  state: string
+  imageUrls: string[]
+
+  profile: Profile
+}

@@ -1,0 +1,38 @@
+FROM node:23-slim AS base
+RUN npm install -g pnpm@10
+WORKDIR /app
+
+FROM base AS deps
+COPY package.json pnpm-lock.yaml /app/
+RUN pnpm install --frozen-lockfile
+RUN pnpm exec next telemetry disable
+
+FROM deps AS build
+
+ARG API_URL
+ARG GATEWAY_URL
+ARG NEXT_PUBLIC_CHAT_URL
+ARG NEXT_PUBLIC_APP_URL
+ARG NEXT_PUBLIC_CONTACT
+ARG NEXT_PUBLIC_SITE_KEY
+ARG NEXT_PUBLIC_FIREBASE_API_KEY
+
+ENV API_URL=${API_URL}
+ENV GATEWAY_URL=${GATEWAY_URL}
+ENV NEXT_PUBLIC_CHAT_URL=${NEXT_PUBLIC_CHAT_URL}
+ENV NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
+ENV NEXT_PUBLIC_CONTACT=${NEXT_PUBLIC_CONTACT}
+ENV NEXT_PUBLIC_SITE_KEY=${NEXT_PUBLIC_SITE_KEY}
+ENV NEXT_PUBLIC_FIREBASE_API_KEY=${NEXT_PUBLIC_FIREBASE_API_KEY}
+
+COPY . .
+RUN pnpm build
+
+FROM deps AS prod
+ENV NODE_ENV=production
+COPY --from=build /app /app
+CMD ["pnpm", "start"]
+
+FROM deps AS dev
+ENV NODE_ENV=development
+CMD ["pnpm", "dev"]

@@ -1,0 +1,55 @@
+import 'server-only'
+
+import { client } from '@/api/_utils/client'
+import { Profile } from '@/lib/types/profile'
+
+export const _getProfile = async () =>
+  (await client())
+    .get(`/api/profiles`)
+    .withSession()
+    .asResult<{ profile: Profile }>()
+
+export const _profileHandleExists = async (handle: string) =>
+  (await client())
+    .get(`/api/profiles/handle/${handle}`)
+    .withSession()
+    .asResult<{ exists: boolean }>()
+
+export const _profileEmailExists = async (email: string) =>
+  (await client())
+    .get(`/api/profiles/email/${email}`)
+    .withSession()
+    .asResult<{ exists: boolean }>()
+
+export type _UpdateConstraint = {
+  canUpdate: boolean
+  nextUpdateInDays: number
+  intervalInDays: number
+}
+export type _UpdateConstraintMap = Record<string, _UpdateConstraint>
+export interface _ProfileExtra {
+  imageLimit: number
+  listingLimit: number
+  updateConstraints: _UpdateConstraintMap
+}
+export const _getProfileExtra = async () =>
+  (await client()).get(`/api/profiles/extra`).withSession().asResult<{
+    extra: _ProfileExtra
+  }>()
+
+export interface _UpsertProfileRequest {
+  email?: string
+  handle?: string
+  rating?: number
+  ratingCount?: number
+  postcode?: string
+  suburb?: string
+  state?: string
+  avatarUrl?: string
+}
+export const _upsertProfile = async (request: _UpsertProfileRequest) =>
+  (await client())
+    .put(`/api/profiles`)
+    .withSession()
+    .setBody(request)
+    .asResult<{ profile: Profile }>()
