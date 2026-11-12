@@ -38,4 +38,5 @@ Thumbs.db
 /images/prod/**/*.env*
 !.env.example
 *.key
+/firebase-service-account.json
 !.env*.example
