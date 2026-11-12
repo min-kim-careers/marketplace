@@ -59,11 +59,11 @@ services:
       - CACHE_HOST=market_dev_api-cache-service
     env_file:
       - ./api/.env.cloudflare
-      - ./api/.env.firebase
       - ./api/.env.shared
     volumes:
       - ./api/app:/code/app
       - ./api/images/dev:/code/images
+      - ./api/firebase-service-account.json:/run/secrets/firebase-service-account.json:ro
       - venv:/code/.venv
       - pip:/root/.cache/pip
     networks:
