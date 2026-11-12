@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker exec -it api-container sh -c 'rm images/*'
+docker exec -it market_dev_api-container sh -c 'rm images/*'

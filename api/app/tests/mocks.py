@@ -1,9 +1,9 @@
 import asyncio
 import random
+import sys
 from uuid import UUID, uuid4
 
 from app.core.logger import logger
-from app.core.helpers import get_one_by
 from app.db.models.item import ItemDB
 from app.db.models.profile import ProfileDB
 from app.db.models.user import UserDB
@@ -18,7 +18,7 @@ fake = Faker(locale="en_AU")
 
 def create_mock_user() -> UserDB:
     return UserDB(
-        provider_name="firebase",
+        provider_name="mock",
         provider_id=str(uuid4()),
     )
 
@@ -54,13 +54,9 @@ def create_mock_item(user_id: UUID) -> ItemDB:
     )
 
 
-async def seed_db():
+async def seed_db(user_count: int = 5, items_per_user: int = 4):
     async for db in get_db():
-        res = await db.execute(select(ProfileDB))
-        if res.first():
-            return
-
-        mock_users = [create_mock_user() for _ in range(5)]
+        mock_users = [create_mock_user() for _ in range(user_count)]
         db.add_all(mock_users)
         await db.commit()
 
@@ -69,18 +65,23 @@ async def seed_db():
         await db.commit()
 
         for user in mock_users:
-            mock_items = [create_mock_item(user.id) for _ in range(4)]
+            mock_items = [create_mock_item(user.id) for _ in range(items_per_user)]
             db.add_all(mock_items)
-            await db.commit()
+        await db.commit()
 
-        logger.info("Seeding complete.")
+        logger.info(
+            f"Seeding complete: {user_count} mock users, "
+            f"{items_per_user} items each."
+        )
 
 
 async def seed_user_items(email, count):
     async for db in get_db():
-        profile = await get_one_by(db, ProfileDB, email=email)
+        res = await db.execute(select(ProfileDB).where(ProfileDB.email == email))
+        profile = res.scalar_one_or_none()
         if not profile:
-            raise ValueError("Profile not found")
+            logger.warning(f"Profile {email} not found, skipping item seeding.")
+            return
         items = [
             create_mock_item(
                 user_id=profile.user_id,
@@ -93,20 +94,11 @@ async def seed_user_items(email, count):
 
 
 async def main():
-    await asyncio.gather(
-        *(
-            seed_user_items(
-                email,
-                random.randint(1, 3),
-            )
-            for email in [
-                "user1@example.com",
-                "user2@example.com",
-            ]
-        )
-    )
+    # Usage: python app/tests/mocks.py [user_count] [items_per_user]
+    user_count = int(sys.argv[1]) if len(sys.argv) > 1 else 5
+    items_per_user = int(sys.argv[2]) if len(sys.argv) > 2 else 4
+    await seed_db(user_count, items_per_user)
 
 
 if __name__ == "__main__":
-    # asyncio.run(main())
-    pass
+    asyncio.run(main())
