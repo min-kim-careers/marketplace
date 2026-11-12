@@ -14,7 +14,7 @@ from firebase_admin.exceptions import FirebaseError
 
 
 async def get_firebase_user_from_query_token(
-    token: str | None = Query(default=None, embed=True, alias="token"),
+    token: str | None = Query(default=None, alias="token"),
 ) -> FirebaseUser:
     if not token:
         raise ErrorResponse(

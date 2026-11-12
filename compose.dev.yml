@@ -80,6 +80,7 @@ services:
       - venv:/code/.venv
       - pip:/root/.cache/pip
     networks:
+      - api-network
       - gateway-network
 
   # ----------------------------------- WEB -----------------------------------
